@@ -1,0 +1,20 @@
+{
+  "architecture": "arm64",
+  "bootMode": "rootDisk",
+  "cpuCount": 1,
+  "sourceCommit": "e75ae371ad777ffd1eecdd28d2781a6519b05591",
+  "kernelSHA256": "35dc83e45a0cbf9a292469e902fd6a5f4db58c9ead47e69233b4197661795fc8",
+  "systemDiskSHA256": "58ccf79df20d21831083e38a11815232d5ea4c953b49f92f92f9553148012e88",
+  "networkDevices": 0,
+  "hostShares": 0,
+  "diagnostic_only_kernel": true,
+  "kernel_version": "6.12.76-linuxkit",
+  "consecutive_prior_native_runs": 3,
+  "prior_native_boots": 9,
+  "final_manifest_native_run": true,
+  "final_cli_boots": 6,
+  "final_force_restart_cycles": 3,
+  "stable_release_accepted": false,
+  "native_click_visual_parity": "pending",
+  "portable_kernel_source_build": "pending"
+}
