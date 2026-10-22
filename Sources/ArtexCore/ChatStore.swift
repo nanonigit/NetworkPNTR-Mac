@@ -25,6 +25,7 @@ import Observation
     @ObservationIgnored private let pause: @MainActor (Duration) async throws -> Void
     @ObservationIgnored private var lifetime = UUID()
     @ObservationIgnored private var selection = UUID()
+    @ObservationIgnored private var tailRevision = UUID()
     @ObservationIgnored private var listPolling = false
     @ObservationIgnored private var tailPolling = false
 
@@ -47,6 +48,10 @@ import Observation
     private func advanceCursor(_ page: ChatPage) {
         cursor = max(cursor, max(page.cursor, page.items.map(\.seq).max() ?? 0))
     }
+    private func requireTailReconciliation(newTurn: Bool = false) {
+        tailRevision = UUID(); needsTailReconciliation = true
+        if newTurn { running = true }
+    }
     public func refreshList() async {
         guard !isLoadingList else { return }
         let ticket = lifetime; isLoadingList = true
@@ -56,7 +61,9 @@ import Observation
             guard ticket == lifetime, !Task.isCancelled else { return }
             conversations = items; listError = nil
             // A stale false list snapshot must not terminate the selected transcript tail.
-            if let id = selectedID, items.first(where: { $0.id == id })?.isRunning == true { running = true }
+            if let id = selectedID, !running, items.first(where: { $0.id == id })?.isRunning == true {
+                requireTailReconciliation(newTurn: true)
+            }
         } catch {
             if ticket == lifetime, !Task.isCancelled, !(error is CancellationError) { listError = safeMessage(error) }
         }
@@ -107,18 +114,26 @@ import Observation
         let life = lifetime; let ticket = selection; isLoadingDelta = true
         defer { if life == lifetime, ticket == selection { isLoadingDelta = false } }
         do {
-            let page = try await service.delta(id: id, since: cursor)
-            guard current(life, ticket, id) else { return }
-            messages = ChatTranscript.merge(messages, incoming: page.items); advanceCursor(page)
-            running = page.running
-            // Upstream caps a delta at 1000 events even when running=false. Drain a full final burst.
-            needsTailReconciliation = page.items.count >= 1000
-            if !running, !needsTailReconciliation { stopStatus = nil }
-            transcriptError = nil
+            while current(life, ticket, id) {
+                let revision = tailRevision
+                let page = try await service.delta(id: id, since: cursor)
+                guard current(life, ticket, id) else { return }
+                messages = ChatTranscript.merge(messages, incoming: page.items); advanceCursor(page)
+                transcriptError = nil
+                // A response begun before an accepted mutation cannot settle its newer tail.
+                // Keep the single request slot and fetch again after that response completes.
+                if revision != tailRevision { continue }
+                running = page.running
+                // Upstream caps a delta at 1000 events even when running=false. Drain a full final burst.
+                needsTailReconciliation = page.items.count >= 1000
+                if !running, !needsTailReconciliation { stopStatus = nil }
+                return
+            }
         } catch {
             if current(life, ticket, id), !(error is CancellationError) { transcriptError = safeMessage(error) }
         }
     }
+
     public func sendCurrentDraft() async -> Bool {
         guard let id = selectedID, hasLoadedHistory, !isLoadingHistory, !sendingIDs.contains(id) else { return false }
         let submitted = drafts[id] ?? ""; let ticket = lifetime
@@ -128,7 +143,7 @@ import Observation
             try await service.send(id: id, message: submitted)
             guard ticket == lifetime, !Task.isCancelled else { return false }
             if drafts[id] == submitted { drafts[id] = nil }
-            if selectedID == id { running = true; stopStatus = nil }
+            if selectedID == id { requireTailReconciliation(newTurn: true); stopStatus = nil }
             // Confirmation stays successful even if a subsequent refresh fails.
             await refreshList()
             if selectedID == id { await refreshDelta() }
@@ -145,7 +160,7 @@ import Observation
         do {
             let status = try await service.stop(id: id)
             guard ticket == lifetime, !Task.isCancelled else { return false }
-            if selectedID == id { stopStatus = status; needsTailReconciliation = true; await refreshDelta() }
+            if selectedID == id { stopStatus = status; requireTailReconciliation(); await refreshDelta() }
             return true
         } catch {
             if ticket == lifetime, !Task.isCancelled, !(error is CancellationError) { mutationErrors[id] = safeMessage(error) }
