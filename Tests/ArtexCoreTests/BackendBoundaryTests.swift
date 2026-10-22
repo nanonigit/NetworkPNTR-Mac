@@ -45,4 +45,22 @@ final class BackendBoundaryTests: XCTestCase {
         XCTAssertEqual(config.directorySharingDevices.count, 0)
         XCTAssertThrowsError(try VMConfiguration.make(kernel: root.appendingPathComponent("Image"), initramfs: root.appendingPathComponent("initramfs"), input: nil, output: .standardOutput, systemDisk: system))
     }
+    func testBackendManifestRejectsPartialAndTamperedSystemDisk() throws {
+        let root = FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString)
+        try FileManager.default.createDirectory(at: root, withIntermediateDirectories: true)
+        defer { try? FileManager.default.removeItem(at: root) }
+        let bytes = Data("fixture".utf8)
+        let digest = ArtifactIntegrity.sha256(bytes)
+        for name in ["Image", "initramfs", "system.ext4"] { try bytes.write(to: root.appendingPathComponent(name)) }
+        var manifest: [String: String] = ["architecture": "arm64", "kernel": "Image", "kernelSHA256": digest, "initramfs": "initramfs", "initramfsSHA256": digest, "systemDisk": "system.ext4"]
+        func save() throws { try JSONSerialization.data(withJSONObject: manifest).write(to: root.appendingPathComponent("manifest.json")) }
+        try save()
+        XCTAssertThrowsError(try GuestArtifacts.load(from: root))
+        manifest["systemDiskSHA256"] = digest
+        try save()
+        XCTAssertNoThrow(try GuestArtifacts.load(from: root))
+        try Data("tampered".utf8).write(to: root.appendingPathComponent("system.ext4"))
+        XCTAssertThrowsError(try GuestArtifacts.load(from: root))
+    }
+
 }
