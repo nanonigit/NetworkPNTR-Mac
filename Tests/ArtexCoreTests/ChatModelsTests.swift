@@ -62,6 +62,14 @@ final class ChatModelsTests: XCTestCase {
         XCTAssertNil(item.llmProfileId)
         XCTAssertFalse(item.isRunning)
     }
+    func testMetadataUnsignedBoundaryAndConversationRunningState() throws {
+        let value = try BackendJSONCoding.decode(ChatJSONValue.self, from: Data("18446744073709551615".utf8))
+        XCTAssertEqual(value, .unsigned(UInt64.max))
+        XCTAssertEqual(try BackendJSONCoding.decode(ChatJSONValue.self, from: BackendJSONCoding.encode(value)), value)
+        let conversation = try BackendJSONCoding.decode(ChatConversation.self, from: Data(#"{"id":7,"agent_key":"auto","title":"fixture","created_at":"fixture","updated_at":"fixture","llm_profile_id":9,"running":true}"#.utf8))
+        XCTAssertTrue(conversation.isRunning)
+        XCTAssertEqual(conversation.llmProfileId, 9)
+    }
     func testRequiredEventShapeCannotSilentlyBecomeAnEmptyTranscript() {
         for data in [Data(#"{"seq":1,"kind":"text"}"#.utf8), Data(#"{"seq":"oops","worker":"x","ts":"x","kind":"text","summary":"x"}"#.utf8)] {
             XCTAssertThrowsError(try BackendJSONCoding.decode(ChatActivity.self, from: data))
