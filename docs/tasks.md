@@ -9,4 +9,4 @@
 
 Phase evidence: unit tests for invariants/state/integrity, real-VM integration outputs, browser/native screenshot pairs for each workflow, API-contract comparison against deterministic fixtures, and failure injection. Never count a pending screen as passed because its title exists in a sidebar. Do not use real external security targets in parity fixtures. Each matrix row must have source reference, controls, fixture, actions, expected output, native status, evidence and known differences before release.
 
-Backend checkpoint: see docs/phase2-verification.md. Guest boot, authenticated vsock, data/auth persistence and five reference API fixture contracts pass; native integration, streaming/egress and broader parity are still pending.
+Backend checkpoint: see docs/phase2-verification.md. Guest boot, authenticated vsock, data/auth persistence and five reference API fixture contracts pass; native auth integration is implemented but intermittent guest startup/recovery failures keep the runtime gate open. Streaming/egress, native-click/visual acceptance and broader parity remain pending.

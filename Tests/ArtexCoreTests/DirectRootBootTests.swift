@@ -15,6 +15,11 @@ final class DirectRootBootTests: XCTestCase {
         XCTAssertNil(loader.initialRamdiskURL)
         XCTAssertTrue(loader.commandLine.contains("root=/dev/vda"))
         XCTAssertTrue(loader.commandLine.contains("init=/sbin/artex-init"))
+        let single = try VMConfiguration.make(kernel: root.appendingPathComponent("Image"), initramfs: root.appendingPathComponent("initrd"), input: nil, output: .standardOutput, systemDisk: system, dataDisk: data, directRoot: true, cpuCount: 1)
+        XCTAssertEqual(single.cpuCount, 1)
+        for count in [0, 3] {
+            XCTAssertThrowsError(try VMConfiguration.make(kernel: root.appendingPathComponent("Image"), initramfs: root.appendingPathComponent("initrd"), input: nil, output: .standardOutput, systemDisk: system, dataDisk: data, directRoot: true, cpuCount: count))
+        }
         XCTAssertThrowsError(try VMConfiguration.make(kernel: root.appendingPathComponent("Image"), initramfs: root.appendingPathComponent("initrd"), input: nil, output: .standardOutput, directRoot: true))
     }
 }

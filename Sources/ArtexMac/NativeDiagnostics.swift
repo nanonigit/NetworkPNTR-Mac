@@ -3,45 +3,80 @@ import AppKit
 import ArtexCore
 import Foundation
 
-/// Developer acceptance harness for this app's own VM service and rendered content view.
-/// It does not control or capture other applications, and is absent from release builds.
+/// Exercises this app's production services with an isolated fixture disk and Keychain item.
+/// Internal rendering/service diagnostics do not replace external native click acceptance.
 @MainActor enum NativeDiagnostics {
-    static func run(runtime: VMController, directory: URL) async {
-        var result: [String: Any] = ["ui_click_workflow_verified": false, "visual_acceptance": "pending native automation; content snapshots do not replace real screen comparison"]
+    static func run(environment: DesktopRuntime, directory: URL) async {
+        var result: [String: Any] = ["ui_click_workflow_verified": false, "visual_acceptance": "pending external native automation"]
         do {
             try FileManager.default.createDirectory(at: directory, withIntermediateDirectories: true)
             result["native_window_rendered"] = try capture(to: directory.appendingPathComponent("native-launch.png"))
-            guard let resources = Bundle.main.resourceURL else { throw RuntimeError.integrity("bundle resources") }
-            try await runtime.start(artifacts: resources.appendingPathComponent("Guest"), logs: directory.appendingPathComponent("guest"))
-            for _ in 0..<600 {
-                if runtime.guestReady || runtime.state == .failed { break }
+            await environment.start()
+            for _ in 0..<1500 {
+                if (!environment.isStarting && environment.authentication?.phase != nil && environment.authentication?.phase != .checking) || environment.error != nil || environment.controller.state == .failed { break }
                 try await Task.sleep(for: .milliseconds(100))
             }
-            guard runtime.guestReady else { throw RuntimeError.timeout("native diagnostics readiness") }
-            result["app_owned_vm_ready"] = true
+            guard let authentication = environment.authentication, authentication.phase == .needsSetup else { throw RuntimeError.integrity(environment.authentication?.error ?? environment.error ?? environment.controller.lastError ?? "fresh native setup state") }
+            result["app_owned_backend_ready"] = environment.controller.guestReady
+            result["virtual_cpu_count"] = environment.controller.configuredCPUCount
             try await Task.sleep(for: .milliseconds(300))
-            result["ready_content_snapshot"] = try capture(to: directory.appendingPathComponent("native-runtime.png"))
-            try await runtime.stop()
-            result["app_owned_vm_stopped"] = runtime.state == .stopped
+            result["setup_content_snapshot"] = try capture(to: directory.appendingPathComponent("native-setup.png"))
+            let password = UUID().uuidString + "-native-fixture"
+            await authentication.setup(password: "short", confirmation: "short")
+            guard authentication.phase == .needsSetup, authentication.error != nil else { throw RuntimeError.integrity("native setup validation") }
             try await Task.sleep(for: .milliseconds(300))
-            result["stopped_content_snapshot"] = try capture(to: directory.appendingPathComponent("native-stopped.png"))
+            result["validation_content_snapshot"] = try capture(to: directory.appendingPathComponent("native-validation.png"))
+            await authentication.setup(password: password, confirmation: password)
+            guard authentication.phase == .authenticated else { throw RuntimeError.integrity(authentication.error ?? "native setup authentication") }
+            result["native_setup_authenticated"] = true
+            try await environment.stop()
+            await environment.start()
+            guard environment.authentication?.phase == .authenticated else { throw RuntimeError.integrity(environment.authentication?.error ?? environment.error ?? "Keychain session restore") }
+            result["real_keychain_session_restored_after_vm_restart"] = true
+            guard let login = environment.authentication else { throw RuntimeError.integrity("native login state") }
+            login.logout()
+            guard login.phase == .needsLogin else { throw RuntimeError.integrity("Keychain logout") }
+            await login.login(password: password, agreed: false)
+            guard login.phase == .needsLogin, login.error != nil else { throw RuntimeError.integrity("native terms validation") }
+            await login.login(password: "wrong", agreed: true)
+            guard login.phase == .needsLogin, login.error != nil else { throw RuntimeError.integrity("native incorrect password") }
+            await login.login(password: password, agreed: true)
+            guard login.phase == .authenticated else { throw RuntimeError.integrity(login.error ?? "native login") }
+            result["native_login_validation_and_real_auth"] = true
+            try await Task.sleep(for: .milliseconds(300))
+            result["authenticated_content_snapshot"] = try capture(to: directory.appendingPathComponent("native-authenticated.png"))
+            login.logout()
+            guard login.phase == .needsLogin, login.error == nil else { throw RuntimeError.integrity("Keychain fixture cleanup") }
+            result["temporary_keychain_item_removed"] = true
+            try await environment.stop()
+            result["app_owned_backend_stopped"] = environment.controller.state == .stopped
+            let starting = Task { await environment.start() }
+            for _ in 0..<300 {
+                if environment.controller.state == .running || environment.controller.state == .failed { break }
+                try await Task.sleep(for: .milliseconds(100))
+            }
+            try await environment.stop()
+            await starting.value
+            guard environment.controller.state == .stopped else { throw RuntimeError.integrity("startup cancellation shutdown") }
+            result["cooperative_stop_during_boot"] = true
         } catch {
             result["diagnostics_failed"] = true
             try? Data(error.localizedDescription.utf8).write(to: directory.appendingPathComponent("error.txt"))
-            try? await runtime.forceStop()
+            environment.authentication?.logout()
+            try? await environment.forceStop()
         }
         if let data = try? JSONSerialization.data(withJSONObject: result, options: [.prettyPrinted, .sortedKeys]) {
             try? data.write(to: directory.appendingPathComponent("native-results.json"))
         }
+        if !environment.controller.hasMachine {
+            NSApp.terminate(nil)
+        }
     }
     private static func capture(to url: URL) throws -> Bool {
         let candidates = NSApp.windows.filter { $0.isVisible && $0.frame.width >= 980 && $0.frame.height >= 680 }
-        guard candidates.count == 1,
-              let view = candidates[0].contentView,
+        guard candidates.count == 1, let view = candidates[0].contentView,
               let bitmap = view.bitmapImageRepForCachingDisplay(in: view.bounds) else { throw RuntimeError.integrity("native window capture") }
-        candidates[0].effectiveAppearance.performAsCurrentDrawingAppearance {
-            view.cacheDisplay(in: view.bounds, to: bitmap)
-        }
+        candidates[0].effectiveAppearance.performAsCurrentDrawingAppearance { view.cacheDisplay(in: view.bounds, to: bitmap) }
         guard let png = bitmap.representation(using: .png, properties: [:]), bitmap.pixelsWide > 900, bitmap.pixelsHigh > 600 else { throw RuntimeError.integrity("native rendered content") }
         try png.write(to: url)
         return true

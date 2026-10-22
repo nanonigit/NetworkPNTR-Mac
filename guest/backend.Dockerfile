@@ -4,7 +4,7 @@ RUN apk add --no-cache postgresql16=16.15-r0 postgresql16-client=16.15-r0 su-exe
     && ln -s /state/auth/jwt.key /opt/artex/jwt.key
 COPY artex /opt/artex/artex
 COPY skills/ /opt/artex/skills/
-COPY vsock_relay.py check_blank_disk.py /opt/artex-mac/
+COPY vsock_relay.py check_blank_disk.py check_network.py summarize_failure.py /opt/artex-mac/
 COPY backend-init /sbin/artex-init
 COPY backend-packages.lock /expected-packages.lock
 RUN apk info -vv > /actual-packages.lock && cmp -s /actual-packages.lock /expected-packages.lock

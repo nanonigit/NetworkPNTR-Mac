@@ -2,21 +2,20 @@ import ArtexCore
 import SwiftUI
 
 struct RuntimeView: View {
-    let runtime: VMController
-    private var guestDirectory: URL { Bundle.main.resourceURL!.appendingPathComponent("Guest") }
-    private var logDirectory: URL { FileManager.default.temporaryDirectory.appendingPathComponent("artex-mac-proof", isDirectory: true) }
+    let environment: DesktopRuntime
+    private var runtime: VMController { environment.controller }
     var body: some View {
         ScrollView {
             VStack(alignment: .leading, spacing: 24) {
                 VStack(alignment: .leading, spacing: 6) {
                     Text("専用Linux実行環境").font(.largeTitle.bold())
-                    Text("Phase 1 · Macアプリが管理する仮想マシンの技術実証").foregroundStyle(.secondary)
+                    Text("専用VM内でARTEXとPostgreSQLを実行").foregroundStyle(.secondary)
                 }
                 GroupBox {
                     HStack(spacing: 16) {
                         Image(systemName: runtime.guestReady ? "checkmark.shield.fill" : "shield.lefthalf.filled").font(.system(size: 32)).foregroundStyle(runtime.guestReady ? .green : .secondary)
                         VStack(alignment: .leading, spacing: 5) {
-                            Text(runtime.guestReady ? "Linuxの起動を確認しました" : runtime.state == .running ? "Linuxを起動しています" : "状態：" + runtime.state.rawValue).font(.headline)
+                            Text(runtime.guestReady ? "ARTEXとDBの起動を確認しました" : runtime.state == .running ? "ARTEXを起動しています" : "状態：" + runtime.state.rawValue).font(.headline)
                             Text("Docker不要 · ホスト共有なし · ネットワークなし").font(.callout).foregroundStyle(.secondary)
                         }
                         Spacer()
@@ -25,22 +24,22 @@ struct RuntimeView: View {
                 }
                 HStack {
                     Button("隔離Linuxを起動", systemImage: "play.fill") {
-                        Task { do { try await runtime.start(artifacts: guestDirectory, logs: logDirectory) } catch { /* VMController presents the failure. */ } }
-                    }.buttonStyle(.borderedProminent).disabled(!runtime.mayStart).keyboardShortcut("r", modifiers: [.command, .shift])
+                        Task { await environment.start() }
+                    }.buttonStyle(.borderedProminent).disabled(environment.isStarting || !runtime.mayStart).keyboardShortcut("r", modifiers: [.command, .shift])
                     Button("停止", systemImage: "stop.fill") {
-                        Task { do { try await runtime.stop() } catch { /* VMController presents the failure. */ } }
+                        Task { do { try await environment.stop() } catch { /* VMController presents the failure. */ } }
                     }.disabled(!runtime.state.canStop)
-                    if runtime.state == .failed && runtime.hasMachine {
-                        Button("強制停止", role: .destructive) { Task { do { try await runtime.forceStop() } catch { /* Visible in runtime.lastError. */ } } }
+                    if runtime.hasMachine && (runtime.state == .failed || runtime.state == .stopping) {
+                        Button("強制停止", role: .destructive) { Task { do { try await environment.forceStop() } catch { /* Visible in runtime.lastError. */ } } }
                     }
                 }
-                if let error = runtime.lastError { Label(error, systemImage: "exclamationmark.triangle.fill").foregroundStyle(.red).textSelection(.enabled) }
-                GroupBox("このフェーズで確認すること") {
+                if let error = environment.error ?? runtime.lastError { Label(error, systemImage: "exclamationmark.triangle.fill").foregroundStyle(.red).textSelection(.enabled) }
+                GroupBox("専用実行環境") {
                     VStack(alignment: .leading, spacing: 8) {
                         Label("AppleのVirtualization.frameworkで実際のLinuxを実行", systemImage: "cpu")
-                        Label("起動前にカーネルと初期RAMディスクのSHA-256を照合", systemImage: "checkmark.seal")
-                        Label("ゲスト起動と停止を実ログで確認", systemImage: "terminal")
-                        Text("ARTEX本体・DB・AIタスクの接続は次のフェーズです。サイドバーのブラウザ版機能は現在、移植待ちです。")
+                        Label("起動前にカーネル・初期RAM・OSディスクのSHA-256を照合", systemImage: "checkmark.seal")
+                        Label("設定と認証情報を専用ディスクに保持", systemImage: "terminal")
+                        Text("認証はアカウント画面から操作できます。クラウドAPI向け通信は現在オフです。サイドバーの各機能は、比較検証を経て順に接続します。")
                             .font(.callout).foregroundStyle(.secondary)
                     }.frame(maxWidth: .infinity, alignment: .leading).padding(8)
                 }

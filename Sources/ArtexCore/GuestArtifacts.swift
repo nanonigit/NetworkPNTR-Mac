@@ -23,10 +23,16 @@ public struct GuestArtifacts: Codable, Sendable {
     public let kernelSHA256: String
     public let initramfs: String
     public let initramfsSHA256: String
+    public let bootMode: String?
+    public let cpuCount: Int?
     public let systemDisk: String?
     public let systemDiskSHA256: String?
     public static func load(from directory: URL) throws -> GuestArtifacts {
         let manifest = try JSONDecoder().decode(Self.self, from: Data(contentsOf: directory.appendingPathComponent("manifest.json")))
+        if let mode = manifest.bootMode {
+            guard ["initramfs", "rootDisk"].contains(mode), mode != "rootDisk" || manifest.systemDisk != nil else { throw RuntimeError.integrity("guest boot profile") }
+        }
+        guard [1, 2].contains(manifest.cpuCount ?? 2) else { throw RuntimeError.integrity("guest CPU budget") }
         guard manifest.architecture == "arm64" else { throw RuntimeError.integrity("architecture") }
         _ = try ArtifactIntegrity.verify(name: manifest.kernel, expected: manifest.kernelSHA256, directory: directory)
         _ = try ArtifactIntegrity.verify(name: manifest.initramfs, expected: manifest.initramfsSHA256, directory: directory)

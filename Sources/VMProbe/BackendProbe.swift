@@ -21,7 +21,9 @@ import Foundation
             }
             func requireReady() throws {
                 guard controller.guestReady else { throw RuntimeError.timeout("backend boot: " + controller.guestLog) }
-                guard controller.guestLog.contains("network_interfaces=lo"), controller.guestLog.contains("shared_mounts=0") else { throw RuntimeError.integrity("guest isolation evidence") }
+                let required = ["network_hardware_devices=0", "network_nonloopback_up=0", "network_external_routes=0", "shared_mounts=0"]
+                let lines = Set(controller.guestLog.components(separatedBy: .newlines))
+                guard required.allSatisfy(lines.contains) else { throw RuntimeError.integrity("guest isolation evidence") }
                 guard !controller.guestLog.contains(provisioning.transportToken), !controller.guestLog.contains(provisioning.setupToken) else { throw RuntimeError.integrity("credentials appeared in guest log") }
             }
             func request(_ method: String, _ path: String, body: [String: Any]? = nil, token: String? = nil) async throws -> (Int, [String: Any]) {
@@ -79,10 +81,12 @@ import Foundation
             guard afterRestart.1["initialized"] as? Bool == true else { throw RuntimeError.integrity("admin password persistence") }
             _ = try await profile()
             print("PASS normal_restart_db_password_jwt_profile_persist=true")
-            try await controller.forceStop()
-            provisioning = try GuestProvisioning.generate()
-            try await boot(disk); try requireReady()
-            _ = try await profile()
+            for _ in 0..<3 {
+                try await controller.forceStop()
+                provisioning = try GuestProvisioning.generate()
+                try await boot(disk); try requireReady()
+                _ = try await profile()
+            }
             print("PASS force_stop_restart_db_jwt_profile_persist=true")
             try await controller.stop()
             let badDisk = logs.appendingPathComponent("invalid-" + UUID().uuidString + ".ext4")

@@ -2,6 +2,11 @@
 set -eu
 umask 077
 export PATH=/usr/libexec/postgresql16:/usr/bin:/usr/sbin:/bin:/sbin
+# Direct-root kernels supply no early initramfs mounts.
+/bin/busybox mountpoint -q /dev || mount -t devtmpfs devtmpfs /dev
+/bin/busybox mountpoint -q /proc || mount -t proc proc /proc
+/bin/busybox mountpoint -q /sys || mount -t sysfs sysfs /sys
+/bin/busybox mountpoint -q /run || mount -t tmpfs -o mode=755 tmpfs /run
 exec </dev/hvc0 >/dev/hvc0 2>&1
 fail() { echo "ARTEX_MAC_GUEST_ERROR stage=$1"; while true; do sleep 10; done; }
 trap 'fail unexpected-init-exit' EXIT
@@ -11,6 +16,7 @@ mkdir -p /dev/shm /dev/pts
 mount -t tmpfs -o mode=1777 tmpfs /dev/shm
 mount -t devpts devpts /dev/pts
 ip link set lo up
+python3 /opt/artex-mac/check_network.py || fail guest-network-isolation
 echo ARTEX_MAC_STAGE_state_probe
 # Existing filesystems are mounted as-is. Only an entirely zero disk is formatted.
 if ! blkid /dev/vdb | grep -q 'TYPE="ext4"'; then
@@ -45,6 +51,14 @@ if [ "$fresh" = yes ]; then
     printf "CREATE ROLE artex LOGIN PASSWORD '%s';\nCREATE DATABASE artex OWNER artex;\n" "$password" |
         su-exec 70:70 psql -h /run/postgres -U postgres -v ON_ERROR_STOP=1 >/run/database-init.log 2>&1 || fail database-role
 fi
+# A live postmaster is not proof that crash recovery has made the app database usable.
+# Verify the actual role/database before starting ARTEX, without logging credentials.
+echo ARTEX_MAC_STAGE_database_ready
+count=0
+until PGPASSWORD="$password" PGCONNECT_TIMEOUT=2 psql -h 127.0.0.1 -U artex -d artex -Aqt -v ON_ERROR_STOP=1 -c 'SELECT 1' >/run/database-ready.log 2>&1; do
+    count=$((count+1)); [ "$count" -lt 60 ] || fail database-readiness
+    sleep .5
+done
 stty -F /dev/hvc0 -echo || fail serial-echo
 printf '\nARTEX_MAC_GUEST_BOOTSTRAP\n'
 IFS=' ' read -r operation transport setup extra
@@ -68,13 +82,18 @@ su-exec 65534:65534 python3 /opt/artex-mac/vsock_relay.py >/run/relay.log 2>&1 &
 relay_pid=$!
 count=0
 until curl --fail --silent http://127.0.0.1:8787/api/auth/status >/dev/null; do
-    kill -0 "$artex_pid" 2>/dev/null || fail backend-exited
+    if ! kill -0 "$artex_pid" 2>/dev/null; then
+        if wait "$artex_pid"; then status=0; else status=$?; fi
+        echo "backend_exit_status=$status"
+        python3 /opt/artex-mac/summarize_failure.py || true
+        fail backend-exited
+    fi
     count=$((count+1)); [ "$count" -lt 120 ] || fail backend-readiness
     sleep .5
 done
 kill -0 "$relay_pid" 2>/dev/null || fail relay-exited
 echo "guest_arch=$(uname -m)"
-echo "network_interfaces=$(ls /sys/class/net | tr '\n' ',' | sed 's/,$//')"
+python3 /opt/artex-mac/check_network.py || fail guest-network-isolation
 echo "shared_mounts=$(grep -c virtiofs /proc/mounts || true)"
 echo 'backend=artex postgres_major=16 system_disk=readonly state_disk=readwrite'
 echo ARTEX_MAC_GUEST_READY

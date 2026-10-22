@@ -8,6 +8,7 @@ import Virtualization
     public private(set) var guestReady = false
     public private(set) var lastError: String?
     public private(set) var guestLog = ""
+    public private(set) var configuredCPUCount = 0
     @ObservationIgnored private var machine: VZVirtualMachine?
     @ObservationIgnored private var input: Pipe?
     @ObservationIgnored private var output: FileHandle?
@@ -34,8 +35,9 @@ import Virtualization
             let handle = try FileHandle(forWritingTo: log)
             output = handle
             let pipe = Pipe(); input = pipe
-            let configuration = try VMConfiguration.make(kernel: directory.appendingPathComponent(manifest.kernel), initramfs: directory.appendingPathComponent(manifest.initramfs), input: pipe.fileHandleForReading, output: handle, systemDisk: manifest.systemDisk.map { directory.appendingPathComponent($0) }, dataDisk: dataDisk)
+            let configuration = try VMConfiguration.make(kernel: directory.appendingPathComponent(manifest.kernel), initramfs: directory.appendingPathComponent(manifest.initramfs), input: pipe.fileHandleForReading, output: handle, systemDisk: manifest.systemDisk.map { directory.appendingPathComponent($0) }, dataDisk: dataDisk, directRoot: manifest.bootMode == "rootDisk", cpuCount: manifest.cpuCount ?? 2)
             try configuration.validate()
+            configuredCPUCount = configuration.cpuCount
             let vm = VZVirtualMachine(configuration: configuration)
             vm.delegate = self; machine = vm
             try await startMachine(vm)
@@ -71,7 +73,16 @@ import Virtualization
         guard state.canStop, let input else { throw RuntimeError.invalidTransition(state.rawValue, "stopping") }
         try state.transition(to: .stopping)
         do {
-            // Fixed management token interpreted by our minimal guest init; never a shell command.
+            // Bootstrap must complete before the guest can interpret management tokens.
+            // Sending STOP into its credential reader would corrupt the bootstrap protocol.
+            for _ in 0..<1300 {
+                if guestReady || state == .stopped { break }
+                if state == .failed { throw RuntimeError.timeout("guest initialization before shutdown") }
+                try await Task.sleep(for: .milliseconds(100))
+            }
+            if state == .stopped { return }
+            guard guestReady else { throw RuntimeError.timeout("guest initialization before shutdown") }
+            // Fixed management token interpreted by our guest init; never a shell command.
             try input.fileHandleForWriting.write(contentsOf: Data("ARTEX_CONTROL_STOP\n".utf8))
             for _ in 0..<100 {
                 if state == .stopped { return }

@@ -15,6 +15,9 @@ final class HTTPBoundaryTests: XCTestCase {
             XCTAssertThrowsError(try BackendHTTPResponse.parse(Data(wire.utf8)))
         }
     }
+    func testOversizedResponseIsRejectedBeforeParsing() {
+        XCTAssertThrowsError(try BackendHTTPResponse.parse(Data(repeating: 65, count: 4 * 1024 * 1024 + 1)))
+    }
     func testRequestCannotInjectHeadersOrChangeDestination() throws {
         let request = try BackendHTTPRequest.make(method: "GET", path: "/api/auth/status", body: nil, bearer: nil)
         XCTAssertTrue(String(decoding: request, as: UTF8.self).contains("Host: localhost\r\n"))

@@ -5,8 +5,15 @@ case "$MODE" in run|--verify|--build-only|--debug|--logs|--telemetry) ;; *) echo
 ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 cd "$ROOT_DIR"
 [[ "$(uname -m)" == arm64 ]] || { echo 'Phase 1 currently supports Apple Silicon only.' >&2; exit 1; }
-python3 script/prepare_guest.py
-pkill -x ArtexMac >/dev/null 2>&1 || true
+GUEST_BUILD_DIR="${ARTEX_MAC_GUEST_BUILD_DIR:-$ROOT_DIR/guest/backend-artifacts}"
+if [[ ! -f "$GUEST_BUILD_DIR/manifest.json" ]]; then
+  echo 'Build the pinned backend guest first: python3 script/prepare_backend.py --source /path/to/pinned/artex-global' >&2
+  exit 1
+fi
+if pgrep -x ArtexMac >/dev/null; then
+  echo 'Quit ARTEX Mac normally before replacing its bundle so its VM can flush and stop.' >&2
+  exit 1
+fi
 swift build
 BIN_DIR="$(swift build --show-bin-path)"
 APP="$ROOT_DIR/dist/ARTEX Mac.app"
@@ -17,7 +24,7 @@ cp "$BIN_DIR/ArtexMac" "$APP/Contents/MacOS/ArtexMac"
 for bundle in "$BIN_DIR"/*.bundle; do
   [[ -d "$bundle" ]] && cp -R "$bundle" "$APP/Contents/Resources/"
 done
-cp guest/artifacts/Image guest/artifacts/initramfs.cpio.gz guest/artifacts/manifest.json "$APP/Contents/Resources/Guest/"
+cp "$GUEST_BUILD_DIR/Image" "$GUEST_BUILD_DIR/initramfs.cpio.gz" "$GUEST_BUILD_DIR/manifest.json" "$GUEST_BUILD_DIR/system.ext4" "$APP/Contents/Resources/Guest/"
 cat > "$APP/Contents/Info.plist" <<'PLIST'
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">

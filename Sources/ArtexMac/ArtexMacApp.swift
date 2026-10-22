@@ -3,26 +3,25 @@ import ArtexCore
 import SwiftUI
 
 @MainActor final class AppDelegate: NSObject, NSApplicationDelegate {
-    weak var runtime: VMController?
+    weak var environment: DesktopRuntime?
     func applicationDidFinishLaunching(_ notification: Notification) {
         NSApp.setActivationPolicy(.regular)
         NSApp.activate(ignoringOtherApps: true)
         #if DEBUG
-        let args = CommandLine.arguments
-        if let index = args.firstIndex(of: "--phase1-diagnostics"), args.indices.contains(index + 1) {
+        if let directory = RuntimeFactory.diagnosticsDirectory {
             Task {
                 try? await Task.sleep(for: .milliseconds(700))
-                guard let runtime else { return }
-                await NativeDiagnostics.run(runtime: runtime, directory: URL(fileURLWithPath: args[index + 1]))
+                guard let environment else { return }
+                await NativeDiagnostics.run(environment: environment, directory: directory)
             }
         }
         #endif
     }
     func applicationShouldTerminate(_ sender: NSApplication) -> NSApplication.TerminateReply {
-        guard let runtime, runtime.hasMachine else { return .terminateNow }
+        guard let environment, environment.controller.hasMachine else { return .terminateNow }
         Task {
             do {
-                if runtime.state.canStop { try await runtime.stop() }
+                if environment.controller.state.canStop { try await environment.stop() }
                 else { return sender.reply(toApplicationShouldTerminate: false) }
                 sender.reply(toApplicationShouldTerminate: true)
             } catch { sender.reply(toApplicationShouldTerminate: false) }
@@ -32,11 +31,11 @@ import SwiftUI
 }
 @main struct ArtexMacApp: App {
     @NSApplicationDelegateAdaptor(AppDelegate.self) private var delegate
-    @State private var runtime = VMController()
+    @State private var environment = RuntimeFactory.make()
     var body: some Scene {
         WindowGroup("ARTEX Mac") {
-            RootView(runtime: runtime)
-                .onAppear { delegate.runtime = runtime }
+            RootView(environment: environment)
+                .onAppear { delegate.environment = environment }
                 .frame(minWidth: 980, minHeight: 680)
         }
         .defaultSize(width: 1180, height: 800)

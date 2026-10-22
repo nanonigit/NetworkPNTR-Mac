@@ -56,11 +56,23 @@ final class BackendBoundaryTests: XCTestCase {
         let bytes = Data("fixture".utf8)
         let digest = ArtifactIntegrity.sha256(bytes)
         for name in ["Image", "initramfs", "system.ext4"] { try bytes.write(to: root.appendingPathComponent(name)) }
-        var manifest: [String: String] = ["architecture": "arm64", "kernel": "Image", "kernelSHA256": digest, "initramfs": "initramfs", "initramfsSHA256": digest, "systemDisk": "system.ext4"]
+        var manifest: [String: Any] = ["architecture": "arm64", "kernel": "Image", "kernelSHA256": digest, "initramfs": "initramfs", "initramfsSHA256": digest, "systemDisk": "system.ext4"]
         func save() throws { try JSONSerialization.data(withJSONObject: manifest).write(to: root.appendingPathComponent("manifest.json")) }
         try save()
         XCTAssertThrowsError(try GuestArtifacts.load(from: root))
         manifest["systemDiskSHA256"] = digest
+        try save()
+        XCTAssertNoThrow(try GuestArtifacts.load(from: root))
+        manifest["bootMode"] = "unsupported"
+        try save()
+        XCTAssertThrowsError(try GuestArtifacts.load(from: root))
+        manifest["bootMode"] = "rootDisk"
+        try save()
+        XCTAssertNoThrow(try GuestArtifacts.load(from: root))
+        manifest["cpuCount"] = 0
+        try save()
+        XCTAssertThrowsError(try GuestArtifacts.load(from: root))
+        manifest["cpuCount"] = 1
         try save()
         XCTAssertNoThrow(try GuestArtifacts.load(from: root))
         try Data("tampered".utf8).write(to: root.appendingPathComponent("system.ext4"))

@@ -1,6 +1,6 @@
 # Phase 2 backend checkpoint
 
-The full product is still in progress. The application window continues to run the Phase 1 proof guest. The real backend guest is exercised by the signed `VMProbe --backend` acceptance runner; the native UI/backend integration, streaming client and cloud egress are pending. No backend test is counted as native workflow parity.
+The full product is still in progress. Historical P2 results below describe successful runs, not a stable-runtime acceptance. The app now bundles the real backend and native authentication services. Current Swift/Python test counts are 20/14. Repeated native testing exposed intermittent guest faults; see docs/bugs/guest-boot-investigation.md. Streaming, cloud egress and external native interaction/visual acceptance remain pending. No backend test counts as full native workflow parity.
 
 ## Verified locally
 

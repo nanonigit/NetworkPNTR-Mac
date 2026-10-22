@@ -71,7 +71,7 @@ def main():
         run('docker', 'cp', identifier + ':/opt/artex/skills', str(context / 'skills'))
     finally:
         run('docker', 'rm', identifier, stdout=subprocess.DEVNULL)
-    for name in ['backend.Dockerfile', 'backend-init', 'vsock_relay.py', 'check_blank_disk.py', 'backend-packages.lock']:
+    for name in ['backend.Dockerfile', 'backend-init', 'vsock_relay.py', 'check_blank_disk.py', 'check_network.py', 'summarize_failure.py', 'backend-packages.lock']:
         shutil.copyfile(ROOT / 'guest' / name, context / name)
     run('docker', 'build', '--platform', 'linux/arm64', '-f', str(context / 'backend.Dockerfile'), '-t', 'artex-mac-guest:phase2', str(context))
     output = ROOT / 'guest/backend-artifacts'

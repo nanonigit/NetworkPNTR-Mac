@@ -1,0 +1,32 @@
+# Guest boot investigation: native app checkpoint
+
+Status: investigation in progress; no stable-runtime or product-completion claim.
+
+## Evidence and timeline
+
+1. P2 signed CLI boot/persistence/API tests passed, including normal and forced restart. This established functionality on successful boots, not long-run reliability.
+2. A signed native .app fresh setup run using Alpine linux-virt 6.12.114-r0 failed in PostgreSQL startup with a guest kernel NULL dereference in fib_table_lookup. The host app recognized the kernel fault and stopped the VM. No credentials or browser state were used.
+3. Another native run completed actual first setup and stored its session in Keychain, but encountered EAGAIN while restoring after restart. A separate socketpair regression reproduced a delayed response on a nonblocking descriptor. Poll the descriptor before reads/writes, retaining byte/time limits; this is an application transport defect with a verified targeted repair.
+4. A pinned Alpine 6.18.58-r0 candidate with matching modules passed the CLI suite and one real native setup/login/Keychain-restore run. Another fresh run exposed a diagnostics race: it treated the existence of the auth-session object as completion of its asynchronous status request. Wait for a terminal auth-check phase instead.
+5. A further 6.18 native run reproduced a guest undefined-instruction/paging fault during blank-disk scanning. A kernel-version upgrade alone is therefore not a demonstrated fix. A one-vCPU experiment timed out during the same scan; it was reverted. The new kernel was not promoted in the source recipe.
+6. Compare a direct-root, built-in-driver kernel profile against the initramfs/module/switch-root profile. The already-installed official Docker Desktop GPL LinuxKit 6.12.76 kernel is a diagnostic input only, identified by SHA-256 35dc83e45a0cbf9a292469e902fd6a5f4db58c9ead47e69233b4197661795fc8. Its embedded configuration disables initramfs and includes block/ext4/vsock drivers, so it must boot the read-only system disk directly. This does not call Docker at application runtime. Do not distribute this binary without corresponding-source/license review or replace the portable source-build requirement.
+
+7. Direct-root boot reached ARTEX readiness with no physical NIC, no active non-loopback interface and no external route. LinuxKit creates inactive fallback tunnel devices even without VZ NICs. Replace the overly narrow `lo`-only assertion with explicit hardware/up/route checks before backend startup and at readiness; unit fixtures reject each violation and missing evidence. Framework configuration still requires zero NICs and shares. This does not enable network access.
+8. The first full direct-root run passed setup and normal restart, then the backend exited during forced-stop recovery. Its volatile private log was lost when the failed VM was stopped, so the application exit cause is unknown. Add bounded fixed-category log classification and numeric exit status; never print raw logs. The next full run passed all four boots, including forced restart and nonblank-disk rejection. One subsequent success does not erase the failure or establish reliability.
+
+9. The first signed native app run on that same direct-root LinuxKit profile panicked during the blank-disk Python scan (`anon_vma_clone` / `__split_vma` / `munmap`), with no loadable modules. This contradicts the hypothesis that the initramfs/module/switch-root path alone explains the faults. The profile is not promoted. A one-vCPU direct-root comparison is diagnostic only; production remains two vCPUs pending evidence. No host or hardware cause has been established.
+
+10. Direct-root LinuxKit with one vCPU completed three consecutive fresh signed-app diagnostics: nine boots total, actual setup/login, real Keychain restoration, logout cleanup, and cooperative stop during startup. These runs used a temporary one-vCPU build; no cause or release reliability claim follows. Add a bounded manifest CPU budget (1 or 2, default 2) so follow-up experiments are reproducible without editing source; unknown/out-of-budget values fail closed. Re-test the selected manifest through both native and CLI runners before accepting it. Portable kernel construction and visual/click acceptance remain open.
+
+## Causal analysis (5 Whys / fishbone)
+
+Why did the first app run fail? The guest kernel faulted before backend readiness. Why could an earlier green result coexist? The failure is intermittent across otherwise identical boots; narrow success tests did not establish reliability. Why was an auth restore also failing? A nonblocking descriptor can report EAGAIN before data arrives; per-socket timeouts do not make it blocking. Why was a later completed boot marked failed? The diagnostic checked session allocation rather than the completion of its status request. Why is kernel root cause still open? Fault locations vary and changing the kernel version did not eliminate the symptom; boot profile, module loading, kernel configuration and host/framework behavior need isolated comparisons.
+
+Fishbone axes: guest kernel/configuration, initramfs/module/switch-root lifecycle, block I/O and sparse blank-disk reads, vCPU scheduling, host/framework environment, and app-side readiness/transport timing. No fault is attributed to macOS, hardware, or a particular kernel patch without a controlled reproduction proving it. Related upstream reports are background only and have different signatures.
+
+## Restoration criteria
+
+- Repeat fresh native setup, real Keychain restore, wrong-password/terms rejection, logout, restart and stop-during-start on the final pinned profile; no Oops/panic/hang.
+- Repeat CLI persistence/invalid-disk/reference-contract tests against that same profile.
+- Preserve negative outcomes and explicit native-click/visual gates; a passing developer snapshot/service harness is insufficient for complete browser UI parity.
+- Keep all state/secrets local and ignored. Publish only normalized non-secret results. Do not weaken host isolation or silently reformat existing disks to get a passing run.

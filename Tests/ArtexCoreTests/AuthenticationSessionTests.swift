@@ -29,6 +29,14 @@ final class AuthenticationSessionTests: XCTestCase {
         XCTAssertEqual(vault.value, "existing.jwt")
         XCTAssertNotNil(session.error)
     }
+    @MainActor func testProtectedEndpointFailurePreservesSavedSession() async throws {
+        let api = FixtureAPI(); try api.enqueue(200, ["initialized": true, "setup_token_required": false]); try api.enqueue(503, [:])
+        let vault = FixtureVault(); vault.value = "existing.jwt"
+        let session = AuthenticationSession(client: api, vault: vault, setupToken: "fixture-setup")
+        await session.refresh()
+        XCTAssertEqual(session.phase, .unavailable)
+        XCTAssertEqual(vault.value, "existing.jwt")
+    }
     @MainActor func testSetupValidatesBeforeNetworkAndPersistsOnlySession() async throws {
         let api = FixtureAPI(); try api.enqueue(200, ["initialized": false, "setup_token_required": true])
         let vault = FixtureVault()
