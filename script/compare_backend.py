@@ -54,7 +54,7 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('vm_contract', type=Path)
     parser.add_argument('output_directory', type=Path)
-    parser.add_argument('--kind', choices=['backend', 'llm'], default='backend')
+    parser.add_argument('--kind', choices=['backend', 'llm', 'chat'], default='backend')
     args = parser.parse_args()
     expected = json.loads(args.vm_contract.read_text())
     identity = 'artex-mac-parity-' + uuid.uuid4().hex[:12]
@@ -77,7 +77,7 @@ def main():
             raise RuntimeError('Reference PostgreSQL readiness failed')
         run('docker', 'run', '-d', '--name', app, '--network', network, '--read-only', '--user', '1000:1000', '--cap-drop', 'ALL', '--security-opt', 'no-new-privileges:true', '--tmpfs', '/state:rw,nosuid,nodev,size=256m,uid=1000,gid=1000,mode=700', '--tmpfs', '/tmp:rw,noexec,nosuid,nodev,size=64m', '--workdir', '/tmp', '-e', 'ARTEX_PG_DSN', '-e', 'ARTEX_SETUP_TOKEN', '--entrypoint', '/bin/sh', BACKEND_IMAGE, '-c', 'mkdir -p /state/home /state/data; exec /opt/artex/artex -addr 127.0.0.1:8787 -data /state/data -proxy ""', env=env, stdout=subprocess.DEVNULL)
         created.append(app)
-        fixture = FIXTURE if args.kind == 'backend' else (Path(__file__).with_name('llm_contract_fixture.py')).read_text()
+        fixture = FIXTURE if args.kind == 'backend' else Path(__file__).with_name(args.kind + '_contract_fixture.py').read_text()
         output = subprocess.check_output(['docker', 'exec', '-i', app, 'python3', '-'], input=fixture.encode())
         actual = json.loads(output)
         args.output_directory.mkdir(parents=True, exist_ok=True)
@@ -85,6 +85,10 @@ def main():
         if actual != expected:
             raise RuntimeError('VM and pinned reference API contracts differ; inspect normalized JSON')
         cases = ['first_run_auth_status', 'protected_api_requires_login', 'wrong_setup_token_rejected', 'setup', 'profile_save_and_read'] if args.kind == 'backend' else ['three_api_formats', 'profile_create_edit', 'blank_key_preservation', 'streaming_and_thinking_fields', 'active_selection', 'active_delete_rejected', 'inactive_delete', 'rotation_and_exclusion', 'retry_policy', 'missing_key_model_query', 'missing_key_connection_test']
+        if args.kind == 'chat':
+            cases = ['conversation_create_rename', 'pin_unpin', 'profile_clear_restore', 'empty_history_delta',
+                     'missing_detail_empty', 'idle_stop', 'empty_send_rejected', 'missing_profile_rejected',
+                     'partial_batch_delete_deduplication', 'single_delete_cleanup']
         (args.output_directory / 'api-contract-comparison.json').write_text(json.dumps({'baseline': 'e75ae371ad777ffd1eecdd28d2781a6519b05591', 'identical_fixture': True, 'api_contract_equal': True, 'cases': cases, 'browser_data_modified': False, 'ui_workflow_parity': 'pending'}, indent=2) + '\n')
         print('PASS VM and disposable pinned browser-backend API contracts match; existing browser data untouched.')
     finally:
