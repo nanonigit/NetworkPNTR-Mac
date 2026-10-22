@@ -25,5 +25,9 @@
     "whole feature parity"
   ],
   "interruption": "Native pipe closed while selecting retry tab. Process still live; state retry and fresh CUA reset failed. Do not count the retry click as passed.",
-  "complete_ui_parity": false
+  "complete_ui_parity": false,
+  "notes": [
+    "The streaming switch was clicked before Return-save; its persisted value was not independently re-opened through CUA. Separate native-service fixtures verify false streaming persistence.",
+    "The two screenshots use different records and viewport scales; they are layout references, not identical-fixture visual acceptance."
+  ]
 }

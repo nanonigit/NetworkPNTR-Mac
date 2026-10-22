@@ -1,3 +1,26 @@
-Browser tab: 3, Title: "ARTEX: Autonomous Penetration Testing Console", URL: "http://127.0.0.1:8787/system/llm/".
-There has been no change in the accessibility tree.
-The focused UI element is 0 AXWebArea ARTEX: Autonomous Penetration Testing Console, URL: 127.0.0.1:8787/system/llm/
+Observed browser control inventory (transcribed from CUA accessibility snapshots, not a replayable DOM dump)
+Baseline: e75ae371ad777ffd1eecdd28d2781a6519b05591
+Screen: /system/llm/
+
+Observed live page:
+- Rotation settings; New
+- Model profiles; Retry & backoff tabs
+- Profile cards: name, format, key hint/No key, per-second/per-minute limits, proxy indicator
+- Set active; Delete profile
+
+Observed live new-profile sheet:
+- Name; Format (Anthropic / OpenAI Chat Completions / OpenAI Responses)
+- Model; Load available models from the API
+- Base URL (optional); Proxy (optional); Custom session header (optional)
+- API Key (password input)
+- Rate limit per second; Rate limit per minute; Context window (K)
+- Rotation priority; Exclude from rotation
+- Streaming output; Output cap / max tokens; Cap field name
+- Thinking switch / thinking.type; Reasoning effort / reasoning_effort
+- Retry override: connection, empty response, same-provider stream safe window
+- Each retry override has retry count and interval in milliseconds
+- Test connection; Create; Close
+
+Global retry and rotation sheet control definitions were also read in the pinned source.
+Their complete external native interaction gate remains open. The observed browser
+form was closed without saving, and existing browser profile data was not changed.
