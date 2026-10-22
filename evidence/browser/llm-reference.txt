@@ -1,0 +1,82 @@
+Browser tab: 2, Title: "ARTEX: Autonomous Penetration Testing Console", URL: "http://127.0.0.1:8787/system/llm/".
+0 AXWebArea ARTEX: Autonomous Penetration Testing Console, URL: 127.0.0.1:8787/system/llm/
+	1 container
+		2 content list
+			3 link Description: ARTEX ARTEX, Value: 127.0.0.1:8787/function/tasks/
+		4 container
+			5 text Features
+			6 content list
+				7 link Description: Dashboard, Value: 127.0.0.1:8787/dashboard/
+				8 link Description: Chat, Value: 127.0.0.1:8787/chat/
+				9 link Description: Tasks, Value: 127.0.0.1:8787/function/tasks/
+				10 link Description: Findings, Value: 127.0.0.1:8787/function/findings/
+				11 link Description: Traffic, Value: 127.0.0.1:8787/function/traffic/
+				12 link Description: Tool runs, Value: 127.0.0.1:8787/function/commands/
+				13 link Description: LLM records, Value: 127.0.0.1:8787/function/llm-records/
+				14 link Description: Assets, Value: 127.0.0.1:8787/function/assets/
+				15 link Description: Asset sync, Value: 127.0.0.1:8787/function/sync/
+				16 link Description: Workspace, Value: 127.0.0.1:8787/function/workspace/
+		17 container
+			18 text System
+			19 content list
+				20 link Description: LLM, Value: 127.0.0.1:8787/system/llm/
+				21 link Description: Agents, Value: 127.0.0.1:8787/system/agents/
+				22 link Description: MCP, Value: 127.0.0.1:8787/system/mcp/
+				23 link Description: Skills, Value: 127.0.0.1:8787/system/skills/
+				24 link Description: Tools, Value: 127.0.0.1:8787/system/tools/
+				25 link Description: Notifications, Value: 127.0.0.1:8787/system/notify/
+				26 link Description: Intercept rules, Value: 127.0.0.1:8787/system/intercept/
+				27 link Description: Asset blocking, Value: 127.0.0.1:8787/system/intercept/assets/
+				28 link Description: Approvals, Value: 127.0.0.1:8787/system/intercept/approvals/
+				29 link Description: Logs, Value: 127.0.0.1:8787/system/logs/
+				30 link Description: System settings, Value: 127.0.0.1:8787/system/settings/
+		31 content list
+			32 pop up button (collapsed) A ARTEX, ID: radix-_r_l_, Secondary Actions: Expand
+	33 container
+		34 button Toggle Sidebar
+		35 button Search ⌘ J
+			36 text Search
+			37 text ⌘
+			38 text J
+		39 container
+			40 heading Command Palette, Value: 2, ID: radix-_r_r_
+				41 text Command Palette
+			42 text Search for a command to run...
+		43 text Version · local-e75ae371ad777ffd1eecdd28d2781a6519b05591
+		44 pop up button (collapsed) Secondary Actions: Expand
+		45 button Current theme: dark. Click to cycle themes
+		46 text A
+		47 heading LLM, Value: 1
+			48 text LLM
+		49 text Format / model / rate-limit settings shared by all agents. Click a card to edit; the star marks the active profile.
+		50 button Rotation settings
+		51 button New
+		52 tab group
+			53 tab (selected, settable, boolean) Model profiles, Value: 1, ID: radix-_r_13_-trigger-profiles
+			54 tab (selectable, settable, boolean) Retry & backoff, Value: 0, ID: radix-_r_13_-trigger-retry
+		55 container Description: Model profiles, ID: radix-_r_13_-content-profiles
+			56 button OpenAI - isolated gateway OPENAI-RESPONSES No key 0/s · 0/min Proxy http://egress:3128 Set active Delete profile
+				57 text OpenAI - isolated gateway
+				58 text OPENAI-RESPONSES
+				59 text No key
+				60 text 0
+				61 text /s ·
+				62 text 0
+				63 text /min
+				64 text Proxy http://egress:3128
+				65 button Set active
+				66 button Delete profile
+			67 button Anthropic - isolated gateway ANTHROPIC No key 0/s · 0/min Proxy http://egress:3128 Set active Delete profile
+				68 text Anthropic - isolated gateway
+				69 text ANTHROPIC
+				70 text No key
+				71 text 0
+				72 text /s ·
+				73 text 0
+				74 text /min
+				75 text Proxy http://egress:3128
+				76 button Set active
+				77 button Delete profile
+	78 container Notifications alt+T
+
+The focused UI element is 0 AXWebArea ARTEX: Autonomous Penetration Testing Console, URL: 127.0.0.1:8787/system/llm/

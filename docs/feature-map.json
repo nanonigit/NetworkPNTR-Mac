@@ -1,0 +1,687 @@
+{
+  "baseline": "e75ae371ad777ffd1eecdd28d2781a6519b05591",
+  "features": [
+    {
+      "id": "dashboard",
+      "title": "Dashboard",
+      "browserPath": "/dashboard",
+      "icon": "LayoutDashboard",
+      "nativeStatus": "pending",
+      "phase": 3,
+      "acceptance": [
+        "Compare equivalent fixture data and visible controls",
+        "Compare success, empty, validation and server-error states",
+        "Verify mutations, persistence, cancellation and keyboard access"
+      ]
+    },
+    {
+      "id": "chat",
+      "title": "Chat",
+      "browserPath": "/chat",
+      "icon": "MessageSquare",
+      "nativeStatus": "pending",
+      "phase": 3,
+      "acceptance": [
+        "Compare equivalent fixture data and visible controls",
+        "Compare success, empty, validation and server-error states",
+        "Verify mutations, persistence, cancellation and keyboard access"
+      ]
+    },
+    {
+      "id": "tasks",
+      "title": "Tasks",
+      "browserPath": "/function/tasks",
+      "icon": "Target",
+      "nativeStatus": "pending",
+      "phase": 3,
+      "acceptance": [
+        "Compare equivalent fixture data and visible controls",
+        "Compare success, empty, validation and server-error states",
+        "Verify mutations, persistence, cancellation and keyboard access"
+      ]
+    },
+    {
+      "id": "findings",
+      "title": "Findings",
+      "browserPath": "/function/findings",
+      "icon": "Bug",
+      "nativeStatus": "pending",
+      "phase": 3,
+      "acceptance": [
+        "Compare equivalent fixture data and visible controls",
+        "Compare success, empty, validation and server-error states",
+        "Verify mutations, persistence, cancellation and keyboard access"
+      ]
+    },
+    {
+      "id": "traffic",
+      "title": "Traffic",
+      "browserPath": "/function/traffic",
+      "icon": "Activity",
+      "nativeStatus": "pending",
+      "phase": 4,
+      "acceptance": [
+        "Compare equivalent fixture data and visible controls",
+        "Compare success, empty, validation and server-error states",
+        "Verify mutations, persistence, cancellation and keyboard access"
+      ]
+    },
+    {
+      "id": "commands",
+      "title": "Tool runs",
+      "browserPath": "/function/commands",
+      "icon": "Terminal",
+      "nativeStatus": "pending",
+      "phase": 4,
+      "acceptance": [
+        "Compare equivalent fixture data and visible controls",
+        "Compare success, empty, validation and server-error states",
+        "Verify mutations, persistence, cancellation and keyboard access"
+      ]
+    },
+    {
+      "id": "llm-records",
+      "title": "LLM records",
+      "browserPath": "/function/llm-records",
+      "icon": "Radio",
+      "nativeStatus": "pending",
+      "phase": 4,
+      "acceptance": [
+        "Compare equivalent fixture data and visible controls",
+        "Compare success, empty, validation and server-error states",
+        "Verify mutations, persistence, cancellation and keyboard access"
+      ]
+    },
+    {
+      "id": "assets",
+      "title": "Assets",
+      "browserPath": "/function/assets",
+      "icon": "Network",
+      "nativeStatus": "pending",
+      "phase": 4,
+      "acceptance": [
+        "Compare equivalent fixture data and visible controls",
+        "Compare success, empty, validation and server-error states",
+        "Verify mutations, persistence, cancellation and keyboard access"
+      ]
+    },
+    {
+      "id": "sync",
+      "title": "Asset sync",
+      "browserPath": "/function/sync",
+      "icon": "FolderSync",
+      "nativeStatus": "pending",
+      "phase": 4,
+      "acceptance": [
+        "Compare equivalent fixture data and visible controls",
+        "Compare success, empty, validation and server-error states",
+        "Verify mutations, persistence, cancellation and keyboard access"
+      ]
+    },
+    {
+      "id": "workspace",
+      "title": "Workspace",
+      "browserPath": "/function/workspace",
+      "icon": "FolderOpen",
+      "nativeStatus": "pending",
+      "phase": 4,
+      "acceptance": [
+        "Compare equivalent fixture data and visible controls",
+        "Compare success, empty, validation and server-error states",
+        "Verify mutations, persistence, cancellation and keyboard access"
+      ]
+    },
+    {
+      "id": "llm",
+      "title": "LLM",
+      "browserPath": "/system/llm",
+      "icon": "Brain",
+      "nativeStatus": "pending",
+      "phase": 3,
+      "acceptance": [
+        "Compare equivalent fixture data and visible controls",
+        "Compare success, empty, validation and server-error states",
+        "Verify mutations, persistence, cancellation and keyboard access"
+      ]
+    },
+    {
+      "id": "agents",
+      "title": "Agents",
+      "browserPath": "/system/agents",
+      "icon": "Bot",
+      "nativeStatus": "pending",
+      "phase": 4,
+      "acceptance": [
+        "Compare equivalent fixture data and visible controls",
+        "Compare success, empty, validation and server-error states",
+        "Verify mutations, persistence, cancellation and keyboard access"
+      ]
+    },
+    {
+      "id": "mcp",
+      "title": "MCP",
+      "browserPath": "/system/mcp",
+      "icon": "Plug",
+      "nativeStatus": "pending",
+      "phase": 4,
+      "acceptance": [
+        "Compare equivalent fixture data and visible controls",
+        "Compare success, empty, validation and server-error states",
+        "Verify mutations, persistence, cancellation and keyboard access"
+      ]
+    },
+    {
+      "id": "skills",
+      "title": "Skills",
+      "browserPath": "/system/skills",
+      "icon": "Sparkles",
+      "nativeStatus": "pending",
+      "phase": 4,
+      "acceptance": [
+        "Compare equivalent fixture data and visible controls",
+        "Compare success, empty, validation and server-error states",
+        "Verify mutations, persistence, cancellation and keyboard access"
+      ]
+    },
+    {
+      "id": "tools",
+      "title": "Tools",
+      "browserPath": "/system/tools",
+      "icon": "Wrench",
+      "nativeStatus": "pending",
+      "phase": 4,
+      "acceptance": [
+        "Compare equivalent fixture data and visible controls",
+        "Compare success, empty, validation and server-error states",
+        "Verify mutations, persistence, cancellation and keyboard access"
+      ]
+    },
+    {
+      "id": "notify",
+      "title": "Notifications",
+      "browserPath": "/system/notify",
+      "icon": "BellRing",
+      "nativeStatus": "pending",
+      "phase": 4,
+      "acceptance": [
+        "Compare equivalent fixture data and visible controls",
+        "Compare success, empty, validation and server-error states",
+        "Verify mutations, persistence, cancellation and keyboard access"
+      ]
+    },
+    {
+      "id": "intercept",
+      "title": "Intercept rules",
+      "browserPath": "/system/intercept",
+      "icon": "ShieldAlert",
+      "nativeStatus": "pending",
+      "phase": 4,
+      "acceptance": [
+        "Compare equivalent fixture data and visible controls",
+        "Compare success, empty, validation and server-error states",
+        "Verify mutations, persistence, cancellation and keyboard access"
+      ]
+    },
+    {
+      "id": "asset-intercept",
+      "title": "Asset blocking",
+      "browserPath": "/system/intercept/assets",
+      "icon": "Ban",
+      "nativeStatus": "pending",
+      "phase": 4,
+      "acceptance": [
+        "Compare equivalent fixture data and visible controls",
+        "Compare success, empty, validation and server-error states",
+        "Verify mutations, persistence, cancellation and keyboard access"
+      ]
+    },
+    {
+      "id": "approvals",
+      "title": "Approvals",
+      "browserPath": "/system/intercept/approvals",
+      "icon": "ClipboardList",
+      "nativeStatus": "pending",
+      "phase": 4,
+      "acceptance": [
+        "Compare equivalent fixture data and visible controls",
+        "Compare success, empty, validation and server-error states",
+        "Verify mutations, persistence, cancellation and keyboard access"
+      ]
+    },
+    {
+      "id": "logs",
+      "title": "Logs",
+      "browserPath": "/system/logs",
+      "icon": "ScrollText",
+      "nativeStatus": "pending",
+      "phase": 4,
+      "acceptance": [
+        "Compare equivalent fixture data and visible controls",
+        "Compare success, empty, validation and server-error states",
+        "Verify mutations, persistence, cancellation and keyboard access"
+      ]
+    },
+    {
+      "id": "settings",
+      "title": "System settings",
+      "browserPath": "/system/settings",
+      "icon": "Settings2",
+      "nativeStatus": "pending",
+      "phase": 4,
+      "acceptance": [
+        "Compare equivalent fixture data and visible controls",
+        "Compare success, empty, validation and server-error states",
+        "Verify mutations, persistence, cancellation and keyboard access"
+      ]
+    }
+  ],
+  "routes": [
+    {
+      "route": "/login",
+      "source": "web/src/app/(auth)/login/page.tsx",
+      "status": "pending",
+      "required": true
+    },
+    {
+      "route": "/setup",
+      "source": "web/src/app/(auth)/setup/page.tsx",
+      "status": "pending",
+      "required": true
+    },
+    {
+      "route": "/",
+      "source": "web/src/app/(external)/page.tsx",
+      "status": "pending",
+      "required": true
+    },
+    {
+      "route": "/chat",
+      "source": "web/src/app/(main)/chat/page.tsx",
+      "status": "pending",
+      "required": true
+    },
+    {
+      "route": "/dashboard",
+      "source": "web/src/app/(main)/dashboard/page.tsx",
+      "status": "pending",
+      "required": true
+    },
+    {
+      "route": "/function/assets",
+      "source": "web/src/app/(main)/function/assets/page.tsx",
+      "status": "pending",
+      "required": true
+    },
+    {
+      "route": "/function/commands",
+      "source": "web/src/app/(main)/function/commands/page.tsx",
+      "status": "pending",
+      "required": true
+    },
+    {
+      "route": "/function/findings/detail",
+      "source": "web/src/app/(main)/function/findings/detail/page.tsx",
+      "status": "pending",
+      "required": true
+    },
+    {
+      "route": "/function/findings",
+      "source": "web/src/app/(main)/function/findings/page.tsx",
+      "status": "pending",
+      "required": true
+    },
+    {
+      "route": "/function/llm-records",
+      "source": "web/src/app/(main)/function/llm-records/page.tsx",
+      "status": "pending",
+      "required": true
+    },
+    {
+      "route": "/function/sync",
+      "source": "web/src/app/(main)/function/sync/page.tsx",
+      "status": "pending",
+      "required": true
+    },
+    {
+      "route": "/function/tasks/detail",
+      "source": "web/src/app/(main)/function/tasks/detail/page.tsx",
+      "status": "pending",
+      "required": true
+    },
+    {
+      "route": "/function/tasks",
+      "source": "web/src/app/(main)/function/tasks/page.tsx",
+      "status": "pending",
+      "required": true
+    },
+    {
+      "route": "/function/traffic",
+      "source": "web/src/app/(main)/function/traffic/page.tsx",
+      "status": "pending",
+      "required": true
+    },
+    {
+      "route": "/function/workspace",
+      "source": "web/src/app/(main)/function/workspace/page.tsx",
+      "status": "pending",
+      "required": true
+    },
+    {
+      "route": "/system/agents/detail",
+      "source": "web/src/app/(main)/system/agents/detail/page.tsx",
+      "status": "pending",
+      "required": true
+    },
+    {
+      "route": "/system/agents",
+      "source": "web/src/app/(main)/system/agents/page.tsx",
+      "status": "pending",
+      "required": true
+    },
+    {
+      "route": "/system/intercept/approvals",
+      "source": "web/src/app/(main)/system/intercept/approvals/page.tsx",
+      "status": "pending",
+      "required": true
+    },
+    {
+      "route": "/system/intercept/assets",
+      "source": "web/src/app/(main)/system/intercept/assets/page.tsx",
+      "status": "pending",
+      "required": true
+    },
+    {
+      "route": "/system/intercept",
+      "source": "web/src/app/(main)/system/intercept/page.tsx",
+      "status": "pending",
+      "required": true
+    },
+    {
+      "route": "/system/llm",
+      "source": "web/src/app/(main)/system/llm/page.tsx",
+      "status": "pending",
+      "required": true
+    },
+    {
+      "route": "/system/logs",
+      "source": "web/src/app/(main)/system/logs/page.tsx",
+      "status": "pending",
+      "required": true
+    },
+    {
+      "route": "/system/mcp",
+      "source": "web/src/app/(main)/system/mcp/page.tsx",
+      "status": "pending",
+      "required": true
+    },
+    {
+      "route": "/system/notify",
+      "source": "web/src/app/(main)/system/notify/page.tsx",
+      "status": "pending",
+      "required": true
+    },
+    {
+      "route": "/system/settings",
+      "source": "web/src/app/(main)/system/settings/page.tsx",
+      "status": "pending",
+      "required": true
+    },
+    {
+      "route": "/system/skills",
+      "source": "web/src/app/(main)/system/skills/page.tsx",
+      "status": "pending",
+      "required": true
+    },
+    {
+      "route": "/system/tools",
+      "source": "web/src/app/(main)/system/tools/page.tsx",
+      "status": "pending",
+      "required": true
+    }
+  ],
+  "endpoints": [
+    "GET /api/auth/status",
+    "POST /api/auth/init",
+    "POST /api/auth/login",
+    "POST /api/auth/change-password",
+    "GET /api/health",
+    "GET /api/stats",
+    "GET /api/logs",
+    "GET /api/logs/history",
+    "GET /api/logs/stream",
+    "GET /api/update/check",
+    "POST /api/update/apply",
+    "POST /api/update/rollback",
+    "GET /api/update/stream",
+    "GET /api/tasks",
+    "POST /api/tasks",
+    "GET /api/task-categories",
+    "POST /api/task-categories",
+    "PATCH /api/task-categories/{id}",
+    "DELETE /api/task-categories/{id}",
+    "POST /api/tasks/category/batch",
+    "GET /api/task-templates",
+    "POST /api/task-templates",
+    "PATCH /api/task-templates/{id}",
+    "DELETE /api/task-templates/{id}",
+    "GET /api/tasks/{id}",
+    "PATCH /api/tasks/{id}",
+    "PATCH /api/tasks/{id}/category",
+    "GET /api/tasks/{id}/intercept-rules",
+    "POST /api/tasks/{id}/intercept-rules",
+    "PUT /api/tasks/{id}/intercept-rules/{rid}",
+    "DELETE /api/tasks/{id}/intercept-rules/{rid}",
+    "POST /api/tasks/{id}/intercept-rules/{rid}/toggle",
+    "POST /api/tasks/control/batch",
+    "GET /api/task-archives",
+    "GET /api/task-archives/{id}",
+    "POST /api/tasks/{id}/archive",
+    "POST /api/tasks/archive/batch",
+    "POST /api/task-archives/{id}/restore",
+    "POST /api/task-archives/restore/batch",
+    "DELETE /api/task-archives/{id}",
+    "POST /api/task-archives/delete/batch",
+    "GET /api/tasks/{id}/coverage",
+    "GET /api/tasks/{id}/coverage-graph",
+    "GET /api/tasks/{id}/asset-refs",
+    "POST /api/tasks/{id}/assets",
+    "DELETE /api/tasks/{id}/assets/{assetID}",
+    "GET /api/tasks/{id}/intent-assets",
+    "GET /api/workspace/list",
+    "GET /api/workspace/read",
+    "POST /api/workspace/write",
+    "POST /api/workspace/mkdir",
+    "DELETE /api/workspace/delete",
+    "GET /api/workspace/download",
+    "POST /api/workspace/upload",
+    "GET /api/tasks/{id}/scope",
+    "POST /api/tasks/{id}/scope",
+    "DELETE /api/tasks/{id}/scope/{sid}",
+    "GET /api/tasks/{id}/goals",
+    "POST /api/tasks/{id}/goals",
+    "PATCH /api/tasks/{id}/goals/{gid}",
+    "DELETE /api/tasks/{id}/goals/{gid}",
+    "GET /api/tasks/{id}/constraints",
+    "POST /api/tasks/{id}/constraints",
+    "PATCH /api/tasks/{id}/constraints/{cid}",
+    "DELETE /api/tasks/{id}/constraints/{cid}",
+    "POST /api/tasks/{id}/control",
+    "PUT /api/tasks/{id}/llm",
+    "GET /api/tasks/{id}/llm/resolution",
+    "POST /api/tasks/{id}/intents/{iid}/control",
+    "POST /api/tasks/{id}/intents/{iid}/messages",
+    "POST /api/tasks/{id}/intents/{iid}/rerun",
+    "POST /api/tasks/{id}/intents/rerun-blocked",
+    "POST /api/active",
+    "GET /api/llm",
+    "POST /api/llm",
+    "POST /api/llm/test",
+    "GET /api/assets",
+    "GET /api/assets/counts",
+    "POST /api/assets",
+    "DELETE /api/assets",
+    "GET /api/companies",
+    "POST /api/companies",
+    "GET /api/companies/{id}",
+    "DELETE /api/companies/{id}",
+    "POST /api/companies/{id}/scope",
+    "POST /api/companies/reattribute",
+    "GET /api/exploration/frontier",
+    "GET /api/exploration/findings",
+    "GET /api/exploration/findings/groups",
+    "GET /api/exploration/findings/asset-tree",
+    "GET /api/exploration/findings/stats",
+    "GET /api/exploration/findings/export",
+    "GET /api/exploration/findings/{id}",
+    "GET /api/exploration/findings/{id}/lineage",
+    "POST /api/exploration/findings/{id}/deepen",
+    "GET /api/exploration/findings/{id}/retests",
+    "GET /api/exploration/findings/retests/active",
+    "POST /api/exploration/findings/{id}/retests",
+    "PATCH /api/exploration/findings/{id}",
+    "DELETE /api/exploration/findings/{id}",
+    "GET /api/exploration/intents",
+    "GET /api/exploration/graph",
+    "GET /api/exploration/nodes",
+    "GET /api/exploration/activity",
+    "GET /api/exploration/activity/history",
+    "GET /api/exploration/main-sessions",
+    "POST /api/exploration/main-session/new",
+    "GET /api/exploration/activity/stream",
+    "GET /api/exploration/activity/{seq}",
+    "GET /api/exploration/tokens",
+    "GET /api/tokens/daily",
+    "GET /api/tokens/conversations",
+    "GET /api/tokens/usage",
+    "GET /api/audit",
+    "POST /api/gc",
+    "GET /api/traffic",
+    "GET /api/traffic/hosts",
+    "DELETE /api/traffic",
+    "DELETE /api/traffic/hosts",
+    "DELETE /api/traffic/all",
+    "GET /api/traffic/exchange",
+    "GET /api/traffic/blob",
+    "GET /api/commands",
+    "GET /api/commands/stats",
+    "GET /api/llm/records",
+    "DELETE /api/llm/records",
+    "GET /api/llm/records/tasks",
+    "GET /api/llm/records/by-model",
+    "GET /api/llm/records/{id}",
+    "GET /api/settings",
+    "PUT /api/settings",
+    "GET /api/notify/meta",
+    "GET /api/notify/channels",
+    "POST /api/notify/channels",
+    "PATCH /api/notify/channels/{id}",
+    "DELETE /api/notify/channels/{id}",
+    "POST /api/notify/channels/{id}/test",
+    "GET /api/notify/deliveries",
+    "POST /api/notify/deliveries/{id}/retry",
+    "POST /api/settings/web-search/test",
+    "GET /api/report",
+    "GET /api/chat/mentions",
+    "POST /api/chat",
+    "POST /api/chat/upload",
+    "GET /api/tasks/{id}/chat/status",
+    "POST /api/tasks/{id}/chat/stop",
+    "DELETE /api/tasks/{id}",
+    "GET /api/conversations",
+    "POST /api/conversations",
+    "POST /api/conversations/delete/batch",
+    "PATCH /api/conversations/{id}",
+    "PATCH /api/conversations/{id}/profile",
+    "DELETE /api/conversations/{id}",
+    "GET /api/conversations/{id}/messages",
+    "POST /api/conversations/{id}/messages",
+    "POST /api/conversations/{id}/stop",
+    "GET /api/conversations/{id}/messages/{seq}",
+    "GET /api/agents",
+    "POST /api/agents",
+    "GET /api/agents/{key}",
+    "PATCH /api/agents/{key}",
+    "DELETE /api/agents/{key}",
+    "PUT /api/agents/{key}/config",
+    "PUT /api/agents/{key}/prompt",
+    "POST /api/agents/{key}/prompt/reset",
+    "PUT /api/agents/{key}/wrapup",
+    "POST /api/agents/{key}/wrapup/reset",
+    "PUT /api/agents/{key}/wrapup/task-timeout",
+    "POST /api/agents/{key}/wrapup/task-timeout/reset",
+    "GET /api/agents/{key}/triggers",
+    "POST /api/agents/{key}/triggers",
+    "PATCH /api/triggers/{id}",
+    "DELETE /api/triggers/{id}",
+    "GET /api/agents/{key}/prompts",
+    "GET /api/agents/{key}/variables",
+    "POST /api/agents/{key}/prompt/preview",
+    "GET /api/agents/{key}/visibility",
+    "PUT /api/agents/{key}/visibility",
+    "GET /api/tools",
+    "PUT /api/tools/{key}",
+    "POST /api/tools/custom",
+    "POST /api/tools/custom/test",
+    "PUT /api/tools/custom/{key}",
+    "DELETE /api/tools/custom/{key}",
+    "POST /api/settings/python/detect",
+    "POST /api/tools/{key}/reset",
+    "GET /api/mcp",
+    "POST /api/mcp",
+    "DELETE /api/mcp/{id}",
+    "GET /api/mcp/{id}/tools",
+    "POST /api/mcp/{id}/refresh",
+    "GET /api/sync/scopesentry/status",
+    "POST /api/sync/scopesentry/datasource",
+    "GET /api/sync/scopesentry/projects",
+    "GET /api/sync/scopesentry/tasks",
+    "POST /api/sync/scopesentry/sync",
+    "GET /api/skills",
+    "POST /api/skills",
+    "POST /api/skills/upload",
+    "DELETE /api/skills/{name}",
+    "GET /api/skills/missing",
+    "GET /api/skills/{name}/usage",
+    "PUT /api/skills/{name}/meta",
+    "POST /api/skills/{name}/dirs",
+    "GET /api/skills/{name}/files",
+    "GET /api/skills/{name}/files/{file...}",
+    "PUT /api/skills/{name}/files/{file...}",
+    "DELETE /api/skills/{name}/files/{file...}",
+    "GET /api/visibility/{kind}/{id}",
+    "POST /api/visibility/toggle",
+    "GET /api/visibility/skill/{name}",
+    "POST /api/visibility/skill/toggle",
+    "GET /api/llm/profiles",
+    "POST /api/llm/profiles",
+    "DELETE /api/llm/profiles/{id}",
+    "POST /api/llm/profiles/active",
+    "GET /api/llm/retry-policy",
+    "POST /api/llm/retry-policy",
+    "GET /api/llm/pool",
+    "POST /api/llm/pool/reset",
+    "POST /api/llm/models",
+    "GET /api/intercept/rules",
+    "POST /api/intercept/rules",
+    "PUT /api/intercept/rules/{id}",
+    "DELETE /api/intercept/rules/{id}",
+    "POST /api/intercept/rules/{id}/toggle",
+    "GET /api/asset-intercept/rules",
+    "POST /api/asset-intercept/rules",
+    "PUT /api/asset-intercept/rules/{id}",
+    "DELETE /api/asset-intercept/rules/{id}",
+    "POST /api/asset-intercept/rules/{id}/toggle",
+    "GET /api/intercept/pending",
+    "GET /api/intercept/pending/{id}",
+    "POST /api/intercept/pending/{id}/decide",
+    "GET /api/intercept/history",
+    "GET /api/intercept/history/{id}",
+    "GET /api/intercept/history/{id}/execution",
+    "GET /api/intercept/task/{taskID}",
+    "GET /api/intercept/tool-config",
+    "PUT /api/intercept/tool-config",
+    "GET /api/intercept/judge",
+    "PUT /api/intercept/judge",
+    "GET /api/intercept/judge/usage"
+  ]
+}

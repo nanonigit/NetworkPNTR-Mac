@@ -1,0 +1,19 @@
+#!/bin/sh
+/bin/busybox --install -s /bin
+mount -t devtmpfs devtmpfs /dev
+mount -t proc proc /proc
+mount -t sysfs sysfs /sys
+exec </dev/hvc0 >/dev/hvc0 2>&1
+echo "guest_arch=$(uname -m)"
+interfaces="$(ls /sys/class/net | tr '\n' ',')"
+echo "network_interfaces=${interfaces%,}"
+shares="$(grep -c virtiofs /proc/mounts || true)"
+echo "shared_mounts=$shares"
+echo ARTEX_MAC_GUEST_READY
+while read -r command; do
+    case "$command" in
+        ARTEX_CONTROL_STOP) echo ARTEX_MAC_GUEST_STOPPING; poweroff -f ;;
+        *) echo ARTEX_CONTROL_REJECTED ;;
+    esac
+done
+while true; do sleep 1; done

@@ -1,0 +1,15 @@
+name: Native core and guest format checks
+on:
+  push:
+  pull_request:
+permissions:
+  contents: read
+jobs:
+  core:
+    runs-on: macos-15
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+      - run: swift test
+      - run: python3 -m unittest discover -s Tests/GuestArtifactTests -v
+      - run: bash -n script/build_and_run.sh script/test_vm.sh
+      # Real VZ boot is a local hardware acceptance gate, not presumed available on hosted runners.

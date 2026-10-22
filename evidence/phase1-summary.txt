@@ -1,0 +1,5 @@
+Four XCTest cases and three Python guest-format regression tests passed.
+Real VM: tampered kernel rejection, two clean boot/stop cycles, actual no-readiness timeout and force-stop recovery passed.
+App-owned VM start/stop diagnostic passed.
+Native button-click and visual acceptance: pending due native automation connector failure.
+Browser workflow parity: pending for all 21 features.

@@ -1,0 +1,10 @@
+{
+  "repository": "https://github.com/nanonigit/artex-global",
+  "commit": "e75ae371ad777ffd1eecdd28d2781a6519b05591",
+  "runtime_url": "http://127.0.0.1:8787",
+  "feature_count": 21,
+  "route_count": 27,
+  "endpoint_count": 243,
+  "live_mutations": "Do not change existing data; use independent guest fixtures for comparisons.",
+  "source_checkout": "Supply a pinned checkout to script/check_baseline.py; never a runtime dependency."
+}
