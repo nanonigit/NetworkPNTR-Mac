@@ -177,11 +177,12 @@ import Observation
     public func stop() {
         lifetime = UUID(); selection = UUID(); listPolling = false; tailPolling = false
         isLoadingList = false; isLoadingHistory = false; isLoadingOlder = false; isLoadingDelta = false
-        sendingIDs = []; stoppingIDs = []; running = false; needsTailReconciliation = false; stopStatus = nil
+        sendingIDs = []; stoppingIDs = []; running = false
+        needsTailReconciliation = selectedID != nil && hasLoadedHistory; stopStatus = nil
     }
     public func reset() {
         stop(); conversations = []; selectedID = nil; messages = []; cursor = 0
         hasLoadedHistory = false; hasMore = false; listError = nil; transcriptError = nil
-        drafts = [:]; mutationErrors = [:]
+        drafts = [:]; mutationErrors = [:]; needsTailReconciliation = false
     }
 }
