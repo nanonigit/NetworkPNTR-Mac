@@ -145,30 +145,7 @@ import Virtualization
         let bytes = Data(("ARTEX_VSOCK_1 " + credential + "\n").utf8) + request
         return try await Task.detached {
             defer { Darwin.close(descriptor) }
-            var noSignal: Int32 = 1
-            guard setsockopt(descriptor, SOL_SOCKET, SO_NOSIGPIPE, &noSignal, socklen_t(MemoryLayout<Int32>.size)) == 0 else { throw POSIXError(POSIXErrorCode(rawValue: errno) ?? .EIO) }
-            var timeout = timeval(tv_sec: 10, tv_usec: 0)
-            guard setsockopt(descriptor, SOL_SOCKET, SO_RCVTIMEO, &timeout, socklen_t(MemoryLayout<timeval>.size)) == 0,
-                  setsockopt(descriptor, SOL_SOCKET, SO_SNDTIMEO, &timeout, socklen_t(MemoryLayout<timeval>.size)) == 0 else { throw POSIXError(POSIXErrorCode(rawValue: errno) ?? .EIO) }
-            try bytes.withUnsafeBytes { buffer in
-                var offset = 0
-                while offset < buffer.count {
-                    let sent = Darwin.write(descriptor, buffer.baseAddress!.advanced(by: offset), buffer.count - offset)
-                    if sent < 0 && errno == EINTR { continue }
-                    guard sent > 0 else { throw POSIXError(POSIXErrorCode(rawValue: errno) ?? .EIO) }
-                    offset += sent
-                }
-            }
-            var result = Data()
-            var buffer = [UInt8](repeating: 0, count: 16384)
-            while true {
-                let count = Darwin.read(descriptor, &buffer, buffer.count)
-                if count < 0 && errno == EINTR { continue }
-                guard count >= 0 else { throw POSIXError(POSIXErrorCode(rawValue: errno) ?? .EIO) }
-                if count == 0 { return result }
-                guard result.count + count <= 4 * 1024 * 1024 else { throw RuntimeError.integrity("probe response size") }
-                result.append(contentsOf: buffer.prefix(count))
-            }
+            return try BackendSocketExchange.exchange(descriptor: descriptor, request: bytes)
         }.value
     }
     private func connectBackend() async throws -> UUID {
