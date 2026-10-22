@@ -41,3 +41,52 @@ class TransportTests(unittest.TestCase):
         finally:
             first.close()
             second.close()
+
+    def test_large_bidirectional_stream_preserves_bytes_and_half_close(self):
+        import threading
+        client, guest_input = socket.socketpair()
+        guest_output, backend = socket.socketpair()
+        payload = b'fixture-request-' * 40000
+        reply = b'fixture-response-' * 40000
+        errors = []
+
+        def relay():
+            try:
+                vsock_relay.forward(guest_input, guest_output)
+            except Exception as error:
+                errors.append(error)
+            finally:
+                guest_input.close()
+                guest_output.close()
+
+        def service():
+            try:
+                received = bytearray()
+                while data := backend.recv(16384):
+                    received.extend(data)
+                self.assertEqual(received, payload)
+                backend.sendall(reply)
+                backend.shutdown(socket.SHUT_WR)
+            except Exception as error:
+                errors.append(error)
+            finally:
+                backend.close()
+
+        for connection in [client, backend]:
+            connection.settimeout(5)
+        workers = [threading.Thread(target=relay, daemon=True), threading.Thread(target=service, daemon=True)]
+        for worker in workers:
+            worker.start()
+        try:
+            client.sendall(payload)
+            client.shutdown(socket.SHUT_WR)
+            response = bytearray()
+            while data := client.recv(16384):
+                response.extend(data)
+            self.assertEqual(response, reply)
+        finally:
+            client.close()
+            for worker in workers:
+                worker.join(5)
+        self.assertFalse(errors)
+        self.assertTrue(all(not worker.is_alive() for worker in workers))

@@ -1,0 +1,96 @@
+#!/bin/sh
+set -eu
+umask 077
+export PATH=/usr/libexec/postgresql16:/usr/bin:/usr/sbin:/bin:/sbin
+exec </dev/hvc0 >/dev/hvc0 2>&1
+fail() { echo "ARTEX_MAC_GUEST_ERROR stage=$1"; while true; do sleep 10; done; }
+trap 'fail unexpected-init-exit' EXIT
+echo ARTEX_MAC_STAGE_runtime_mounts
+mount -t tmpfs -o mode=1777 tmpfs /tmp
+mkdir -p /dev/shm /dev/pts
+mount -t tmpfs -o mode=1777 tmpfs /dev/shm
+mount -t devpts devpts /dev/pts
+ip link set lo up
+echo ARTEX_MAC_STAGE_state_probe
+# Existing filesystems are mounted as-is. Only an entirely zero disk is formatted.
+if ! blkid /dev/vdb | grep -q 'TYPE="ext4"'; then
+    echo ARTEX_MAC_STAGE_state_zero_check
+    python3 /opt/artex-mac/check_blank_disk.py || fail nonblank-state-disk
+    echo ARTEX_MAC_STAGE_state_format
+    mkfs.ext4 -q -F -E nodiscard -L artex-state /dev/vdb || fail format-state-disk
+fi
+echo ARTEX_MAC_STAGE_state_mount
+mount -t ext4 -o nosuid,nodev /dev/vdb /state || { dmesg | tail -10; fail mount-state-disk; }
+mkdir -p /state/postgres /state/app/data /state/home /state/auth /state/private /run/postgres /run/relay
+chown 70:70 /state/postgres /run/postgres
+chown -R 1000:1000 /state/app /state/home /state/auth
+chmod 755 /state /state/app
+chmod 700 /state/postgres /state/private /state/auth /run/postgres
+echo ARTEX_MAC_STAGE_postgres_init
+if [ ! -f /state/postgres/PG_VERSION ]; then
+    [ -z "$(ls -A /state/postgres)" ] || fail incomplete-database
+    [ ! -e /state/private/database.password ] || fail orphan-database-credential
+    su-exec 70:70 initdb -D /state/postgres --auth-local=trust --auth-host=scram-sha-256 >/run/initdb.log 2>&1 || fail initdb
+    head -c 32 /dev/urandom | od -An -tx1 | tr -d ' \n' > /state/private/database.password
+    chmod 600 /state/private/database.password
+    fresh=yes
+else
+    [ -f /state/private/database.password ] || fail missing-database-credential
+    fresh=no
+fi
+su-exec 70:70 pg_ctl -D /state/postgres -l /run/postgres/server.log -o "-h 127.0.0.1 -k /run/postgres -c unix_socket_permissions=0700" -w start >/run/postgres-start.log 2>&1 || fail postgres-start
+password="$(cat /state/private/database.password)"
+if [ "$fresh" = yes ]; then
+    # Generated lowercase hex only, never user-controlled SQL or a logged credential.
+    printf "CREATE ROLE artex LOGIN PASSWORD '%s';\nCREATE DATABASE artex OWNER artex;\n" "$password" |
+        su-exec 70:70 psql -h /run/postgres -U postgres -v ON_ERROR_STOP=1 >/run/database-init.log 2>&1 || fail database-role
+fi
+stty -F /dev/hvc0 -echo || fail serial-echo
+printf '\nARTEX_MAC_GUEST_BOOTSTRAP\n'
+IFS=' ' read -r operation transport setup extra
+[ "$operation" = ARTEX_BOOTSTRAP ] && [ -z "${extra:-}" ] || fail bootstrap-frame
+[ "${#transport}" -eq 64 ] && [ "${#setup}" -eq 64 ] || fail bootstrap-length
+case "$transport$setup" in *[!0-9a-f]*) fail bootstrap-encoding ;; esac
+printf '%s' "$transport" > /run/relay/transport.token
+chown -R 65534:65534 /run/relay
+chmod 700 /run/relay
+chmod 400 /run/relay/transport.token
+unset transport
+export ARTEX_PG_DSN="postgres://artex:$password@127.0.0.1:5432/artex?sslmode=disable"
+unset password
+export ARTEX_SETUP_TOKEN="$setup" ARTEX_LANG=ja ARTEX_SKILL_DIR=/opt/artex/skills HOME=/state/home
+unset setup
+cd /state/app/data
+su-exec 1000:1000 /opt/artex/artex -addr 127.0.0.1:8787 -data /state/app/data -proxy '' >/run/artex.log 2>&1 &
+artex_pid=$!
+unset ARTEX_PG_DSN ARTEX_SETUP_TOKEN
+su-exec 65534:65534 python3 /opt/artex-mac/vsock_relay.py >/run/relay.log 2>&1 &
+relay_pid=$!
+count=0
+until curl --fail --silent http://127.0.0.1:8787/api/auth/status >/dev/null; do
+    kill -0 "$artex_pid" 2>/dev/null || fail backend-exited
+    count=$((count+1)); [ "$count" -lt 120 ] || fail backend-readiness
+    sleep .5
+done
+kill -0 "$relay_pid" 2>/dev/null || fail relay-exited
+echo "guest_arch=$(uname -m)"
+echo "network_interfaces=$(ls /sys/class/net | tr '\n' ',' | sed 's/,$//')"
+echo "shared_mounts=$(grep -c virtiofs /proc/mounts || true)"
+echo 'backend=artex postgres_major=16 system_disk=readonly state_disk=readwrite'
+echo ARTEX_MAC_GUEST_READY
+while read -r command; do
+    case "$command" in
+        ARTEX_CONTROL_STOP)
+            echo ARTEX_MAC_GUEST_STOPPING
+            kill "$relay_pid" "$artex_pid" 2>/dev/null || true
+            wait "$artex_pid" 2>/dev/null || true
+            su-exec 70:70 pg_ctl -D /state/postgres -m fast -w stop >/run/postgres-stop.log 2>&1 || fail postgres-stop
+            sync
+            cd /
+            umount /state || fail unmount-state
+            poweroff -f
+            ;;
+        *) echo ARTEX_CONTROL_REJECTED ;;
+    esac
+done
+fail serial-disconnected

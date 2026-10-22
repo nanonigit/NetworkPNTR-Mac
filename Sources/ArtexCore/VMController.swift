@@ -1,3 +1,4 @@
+import Darwin
 import Foundation
 import Observation
 import Virtualization
@@ -12,15 +13,20 @@ import Virtualization
     @ObservationIgnored private var output: FileHandle?
     @ObservationIgnored private var poller: Task<Void, Never>?
     @ObservationIgnored private var logURL: URL?
+    @ObservationIgnored private var backendConnections: [UUID: VZVirtioSocketConnection] = [:]
+    @ObservationIgnored private var pendingConnections: [UUID: CheckedContinuation<UUID, Error>] = [:]
     public var mayStart: Bool { state.canStart && machine == nil }
     public var hasMachine: Bool { machine != nil }
-    public func start(artifacts directory: URL, logs: URL, readinessTimeout: Duration = .seconds(60)) async throws {
+    public func start(artifacts directory: URL, logs: URL, readinessTimeout: Duration = .seconds(60), dataDisk: URL? = nil, provisioning: GuestProvisioning? = nil) async throws {
         guard mayStart else { throw RuntimeError.invalidTransition(state.rawValue, "starting") }
         try state.transition(to: .starting)
         lastError = nil; guestReady = false; guestLog = ""
         do {
             guard VZVirtualMachine.isSupported else { throw RuntimeError.unsupported }
             let manifest = try GuestArtifacts.load(from: directory)
+            guard (manifest.systemDisk == nil) == (dataDisk == nil), (manifest.systemDisk == nil) == (provisioning == nil) else {
+                throw RuntimeError.integrity("backend provisioning and data disk")
+            }
             try FileManager.default.createDirectory(at: logs, withIntermediateDirectories: true)
             let log = logs.appendingPathComponent("guest-" + UUID().uuidString + ".log")
             guard FileManager.default.createFile(atPath: log.path, contents: nil, attributes: [.posixPermissions: 0o600]) else { throw CocoaError(.fileWriteUnknown) }
@@ -28,22 +34,31 @@ import Virtualization
             let handle = try FileHandle(forWritingTo: log)
             output = handle
             let pipe = Pipe(); input = pipe
-            let configuration = try VMConfiguration.make(kernel: directory.appendingPathComponent(manifest.kernel), initramfs: directory.appendingPathComponent(manifest.initramfs), input: pipe.fileHandleForReading, output: handle)
+            let configuration = try VMConfiguration.make(kernel: directory.appendingPathComponent(manifest.kernel), initramfs: directory.appendingPathComponent(manifest.initramfs), input: pipe.fileHandleForReading, output: handle, systemDisk: manifest.systemDisk.map { directory.appendingPathComponent($0) }, dataDisk: dataDisk)
             try configuration.validate()
             let vm = VZVirtualMachine(configuration: configuration)
             vm.delegate = self; machine = vm
             try await startMachine(vm)
             try state.transition(to: .running)
             poller = Task { [weak self] in
+                var bootstrapSent = false
                 let deadline = ContinuousClock.now.advanced(by: readinessTimeout)
-                while ContinuousClock.now < deadline {
-                    guard !Task.isCancelled, let self, self.machine != nil else { return }
+                while !Task.isCancelled {
+                    guard let self, self.machine != nil else { return }
                     self.refreshLog()
-                    if self.guestReady { return }
-                    try? await Task.sleep(for: .milliseconds(100))
+                    if self.state == .failed { return }
+                    if !bootstrapSent, let provisioning, self.guestLog.contains("ARTEX_MAC_GUEST_BOOTSTRAP") {
+                        do {
+                            try pipe.fileHandleForWriting.write(contentsOf: Data(provisioning.serialBootstrap.utf8))
+                            bootstrapSent = true
+                        } catch { self.fail(error); return }
+                    }
+                    if !self.guestReady && ContinuousClock.now >= deadline {
+                        self.fail(RuntimeError.timeout("guest readiness"))
+                        return
+                    }
+                    try? await Task.sleep(for: .milliseconds(self.guestReady ? 500 : 100))
                 }
-                guard !Task.isCancelled, let self, !self.guestReady else { return }
-                self.fail(RuntimeError.timeout("guest readiness"))
             }
         } catch {
             if let vm = machine, vm.canStop { try? await stopMachine(vm) }
@@ -94,8 +109,13 @@ import Virtualization
         defer { try? handle.close() }
         let length = (try? handle.seekToEnd()) ?? 0
         try? handle.seek(toOffset: length > 65536 ? length - 65536 : 0)
-        guestLog = String(decoding: (try? handle.readToEnd()) ?? Data(), as: UTF8.self)
-        guestReady = guestLog.contains("ARTEX_MAC_GUEST_READY")
+        guestLog = String(decoding: (try? handle.read(upToCount: 65536)) ?? Data(), as: UTF8.self)
+        if guestLog.contains("Kernel panic") || guestLog.contains("Internal error: Oops") { guestReady = false; fail(RuntimeError.integrity("guest kernel panic")); return }
+        guestReady = guestReady || guestLog.contains("ARTEX_MAC_GUEST_READY")
+        if let failure = guestLog.components(separatedBy: .newlines).last(where: { $0.hasPrefix("ARTEX_MAC_GUEST_ERROR stage=") }) {
+            guestReady = false
+            fail(RuntimeError.integrity(String(failure.prefix(160))))
+        }
     }
     private func fail(_ error: Error) { lastError = error.localizedDescription; if state != .failed { try? state.transition(to: .failed) } }
     // Completion-handler calls stay on our MainActor. Older SDK async overlays treat
@@ -113,7 +133,73 @@ import Virtualization
             }
         }
     }
+    /// Bounded HTTP exchange for backend acceptance probes. Streaming UI integration is a separate pending gate.
+    public func probeBackend(request: Data, provisioning: GuestProvisioning, rejectTransport: Bool = false) async throws -> Data {
+        guard guestReady, state == .running else { throw RuntimeError.integrity("backend not ready") }
+        let identifier = try await connectBackend()
+        defer { backendConnections.removeValue(forKey: identifier)?.close() }
+        guard let connection = backendConnections[identifier] else { throw RuntimeError.integrity("closed backend connection") }
+        let descriptor = dup(connection.fileDescriptor)
+        guard descriptor >= 0 else { throw POSIXError(.EIO) }
+        let credential = rejectTransport ? String(repeating: "0", count: 64) : provisioning.transportToken
+        let bytes = Data(("ARTEX_VSOCK_1 " + credential + "\n").utf8) + request
+        return try await Task.detached {
+            defer { Darwin.close(descriptor) }
+            var noSignal: Int32 = 1
+            guard setsockopt(descriptor, SOL_SOCKET, SO_NOSIGPIPE, &noSignal, socklen_t(MemoryLayout<Int32>.size)) == 0 else { throw POSIXError(POSIXErrorCode(rawValue: errno) ?? .EIO) }
+            var timeout = timeval(tv_sec: 10, tv_usec: 0)
+            guard setsockopt(descriptor, SOL_SOCKET, SO_RCVTIMEO, &timeout, socklen_t(MemoryLayout<timeval>.size)) == 0,
+                  setsockopt(descriptor, SOL_SOCKET, SO_SNDTIMEO, &timeout, socklen_t(MemoryLayout<timeval>.size)) == 0 else { throw POSIXError(POSIXErrorCode(rawValue: errno) ?? .EIO) }
+            try bytes.withUnsafeBytes { buffer in
+                var offset = 0
+                while offset < buffer.count {
+                    let sent = Darwin.write(descriptor, buffer.baseAddress!.advanced(by: offset), buffer.count - offset)
+                    if sent < 0 && errno == EINTR { continue }
+                    guard sent > 0 else { throw POSIXError(POSIXErrorCode(rawValue: errno) ?? .EIO) }
+                    offset += sent
+                }
+            }
+            var result = Data()
+            var buffer = [UInt8](repeating: 0, count: 16384)
+            while true {
+                let count = Darwin.read(descriptor, &buffer, buffer.count)
+                if count < 0 && errno == EINTR { continue }
+                guard count >= 0 else { throw POSIXError(POSIXErrorCode(rawValue: errno) ?? .EIO) }
+                if count == 0 { return result }
+                guard result.count + count <= 4 * 1024 * 1024 else { throw RuntimeError.integrity("probe response size") }
+                result.append(contentsOf: buffer.prefix(count))
+            }
+        }.value
+    }
+    private func connectBackend() async throws -> UUID {
+        guard let device = machine?.socketDevices.first as? VZVirtioSocketDevice else { throw RuntimeError.integrity("backend vsock device") }
+        let identifier = UUID()
+        return try await withCheckedThrowingContinuation { continuation in
+            pendingConnections[identifier] = continuation
+            device.connect(toPort: 8787) { [weak self] result in
+                // VZVirtualMachine's default queue invokes all callbacks on the main queue.
+                MainActor.assumeIsolated {
+                    guard let self, let pending = self.pendingConnections.removeValue(forKey: identifier) else {
+                        if case let .success(connection) = result { connection.close() }
+                        return
+                    }
+                    switch result {
+                    case let .success(connection): self.backendConnections[identifier] = connection; pending.resume(returning: identifier)
+                    case let .failure(error): pending.resume(throwing: error)
+                    }
+                }
+            }
+            Task { [weak self] in
+                try? await Task.sleep(for: .seconds(10))
+                self?.pendingConnections.removeValue(forKey: identifier)?.resume(throwing: RuntimeError.timeout("backend connection"))
+            }
+        }
+    }
     private func releaseResources() {
+        for continuation in pendingConnections.values { continuation.resume(throwing: RuntimeError.integrity("VM connection closed")) }
+        pendingConnections.removeAll()
+        for connection in backendConnections.values { connection.close() }
+        backendConnections.removeAll()
         poller?.cancel(); poller = nil; machine = nil
         try? output?.close(); output = nil
         try? input?.fileHandleForReading.close(); try? input?.fileHandleForWriting.close(); input = nil

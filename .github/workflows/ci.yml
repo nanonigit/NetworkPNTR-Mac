@@ -11,5 +11,6 @@ jobs:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
       - run: swift test
       - run: python3 -m unittest discover -s Tests/GuestArtifactTests -v
-      - run: bash -n script/build_and_run.sh script/test_vm.sh
+      - run: bash -n script/build_and_run.sh script/test_vm.sh script/test_backend.sh
+      - run: sh -n guest/init guest/backend-init guest/backend-early-init
       # Real VZ boot is a local hardware acceptance gate, not presumed available on hosted runners.

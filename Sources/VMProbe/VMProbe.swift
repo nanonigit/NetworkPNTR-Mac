@@ -5,6 +5,7 @@ import Foundation
     @MainActor static func main() async {
         let args = CommandLine.arguments
         guard args.count >= 3 else { FileHandle.standardError.write(Data("Usage: VMProbe guest-artifacts log-directory\n".utf8)); exit(2) }
+        if args[1] == "--backend" { await BackendProbe.run(Array(args.dropFirst(2))); return }
         let controller = VMController()
         do {
             let badDirectory = FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString)

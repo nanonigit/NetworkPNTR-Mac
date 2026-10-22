@@ -1,0 +1,23 @@
+#!/bin/sh
+/bin/busybox --install -s /bin
+mount -t devtmpfs devtmpfs /dev
+mount -t proc proc /proc
+mount -t sysfs sysfs /sys
+mkdir -p /run /newroot
+mount -t tmpfs -o mode=755 tmpfs /run
+exec </dev/hvc0 >/dev/hvc0 2>&1
+fail() { echo "ARTEX_MAC_GUEST_ERROR stage=$1"; while true; do sleep 10; done; }
+modprobe virtio_blk || fail block-module
+modprobe ext4 || fail filesystem-module
+modprobe vmw_vsock_virtio_transport || fail vsock-module
+count=0
+while [ ! -b /dev/vda ] || [ ! -b /dev/vdb ]; do
+    count=$((count+1)); [ "$count" -lt 100 ] || fail disk-detection
+    sleep .1
+done
+mount -t ext4 -o ro /dev/vda /newroot || { dmesg | tail -20; fail system-disk; }
+mount --move /proc /newroot/proc || fail move-proc
+mount --move /sys /newroot/sys || fail move-sys
+mount --move /dev /newroot/dev || fail move-dev
+mount --move /run /newroot/run || fail move-run
+exec switch_root /newroot /sbin/artex-init

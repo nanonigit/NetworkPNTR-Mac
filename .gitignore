@@ -7,3 +7,5 @@ guest/artifacts/
 evidence/local/
 **/__pycache__/
 *.pyc
+
+guest/backend-artifacts/

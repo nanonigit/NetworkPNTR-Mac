@@ -41,6 +41,10 @@ final class BackendBoundaryTests: XCTestCase {
         let config = try VMConfiguration.make(kernel: root.appendingPathComponent("Image"), initramfs: root.appendingPathComponent("initramfs"), input: nil, output: .standardOutput, systemDisk: system, dataDisk: state)
         XCTAssertEqual(config.storageDevices.count, 2)
         XCTAssertEqual(config.socketDevices.count, 1)
+        let systemAttachment = (config.storageDevices[0] as? VZVirtioBlockDeviceConfiguration)?.attachment as? VZDiskImageStorageDeviceAttachment
+        let stateAttachment = (config.storageDevices[1] as? VZVirtioBlockDeviceConfiguration)?.attachment as? VZDiskImageStorageDeviceAttachment
+        XCTAssertEqual(systemAttachment?.isReadOnly, true)
+        XCTAssertEqual(stateAttachment?.isReadOnly, false)
         XCTAssertEqual(config.networkDevices.count, 0)
         XCTAssertEqual(config.directorySharingDevices.count, 0)
         XCTAssertThrowsError(try VMConfiguration.make(kernel: root.appendingPathComponent("Image"), initramfs: root.appendingPathComponent("initramfs"), input: nil, output: .standardOutput, systemDisk: system))

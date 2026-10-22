@@ -1,0 +1,91 @@
+ada-libs-2.9.2-r4 - WHATWG-compliant and fast URL parser written in modern C++ (libraries)
+alpine-baselayout-3.7.0-r0 - Alpine base dir structure and init scripts
+alpine-baselayout-data-3.7.0-r0 - Alpine base dir structure and init scripts
+alpine-keys-2.5-r0 - Public keys for Alpine Linux packages
+alpine-release-3.22.7-r0 - Alpine release data
+apk-tools-2.14.12-r0 - Alpine Package Keeper - package manager for alpine
+bind-libs-9.20.29-r0 - The ISC DNS server (libraries)
+bind-tools-9.20.29-r0 - The ISC DNS tools
+brotli-libs-1.1.1-r0 - Generic lossless compressor (libraries)
+busybox-1.37.0-r20 - Size optimized toolbox of many common UNIX utilities
+busybox-binsh-1.37.0-r20 - busybox ash /bin/sh
+c-ares-1.34.9-r0 - Asynchronous DNS/names resolver library
+ca-certificates-20261020-r0 - Common CA certificates PEM files from Mozilla
+ca-certificates-bundle-20261020-r0 - Pre generated bundle of Mozilla certificates
+curl-8.14.1-r4 - URL retrival utility and library
+e2fsprogs-1.47.2-r2 - Standard Ext2/3/4 filesystem utilities
+e2fsprogs-libs-1.47.2-r2 - Standard Ext2/3/4 filesystem utilities (libraries)
+fstrm-0.6.1-r4 - Frame Streams implementation in C
+gdbm-1.24-r0 - GNU dbm is a set of database routines that use extensible hashing
+git-2.49.1-r0 - Distributed version control system
+git-init-template-2.49.1-r0 - Git init template directory
+icu-data-en-76.1-r1 - Stripped down ICU data with only en_US/GB locale and no legacy charset converters
+icu-libs-76.1-r1 - International Components for Unicode library (libraries)
+jq-1.8.2-r0 - A lightweight and flexible command-line JSON processor
+json-c-0.18-r1 - A JSON implementation in C
+keyutils-libs-1.6.3-r4 - Key utilities library
+krb5-conf-1.0-r2 - Shared krb5.conf for both MIT krb5 and heimdal
+krb5-libs-1.21.3-r0 - The shared libraries used by Kerberos 5
+libapk2-2.14.12-r0 - Alpine Package Keeper - package manager for alpine
+libblkid-2.41.6-r1 - Block device identification library from util-linux
+libbsd-0.12.2-r0 - commonly-used BSD functions not implemented by all libcs
+libbz2-1.0.8-r6 - Shared library for bz2
+libcom_err-1.47.2-r2 - Common error description library
+libcrypto3-3.5.9-r0 - Crypto library from openssl
+libcurl-8.14.1-r4 - The multiprotocol file transfer library
+libeconf-0.6.3-r0 - Enhanced Config File Parser
+libexpat-2.9.0-r0 - XML Parser library written in C (libraries)
+libffi-3.4.8-r0 - portable, high level programming interface to various calling conventions.
+libgcc-14.2.0-r6 - GNU C compiler runtime libraries
+libidn2-2.3.7-r0 - Encode/Decode library for internationalized domain names
+libldap-2.6.8-r0 - OpenLDAP libraries
+libmd-1.1.0-r0 - Message Digest functions from BSD systems
+libncursesw-6.5_p20250503-r0 - Console display library (libncursesw)
+libpanelw-6.5_p20250503-r0 - Console display library (libpanelw)
+libpcap-1.10.7-r0 - Portable library for network traffic capture
+libpq-17.11-r0 - PostgreSQL client library
+libpsl-0.21.5-r3 - C library for the Publix Suffix List
+libsasl-2.1.28-r8 - Cyrus Simple Authentication and Security Layer (SASL) library
+libssh2-1.11.1-r3 - library for accessing ssh1/ssh2 protocol servers
+libssl3-3.5.9-r0 - SSL shared libraries
+libstdc++-14.2.0-r6 - GNU C++ standard runtime library
+libunistring-1.3-r0 - Library for manipulating Unicode strings and C strings
+libuuid-2.41.6-r1 - DCE compatible Universally Unique Identifier library
+libuv-1.51.0-r0 - Cross-platform asychronous I/O
+libverto-0.3.2-r2 - Main loop abstraction library
+libxml2-2.13.9-r1 - XML parsing library, version 2
+lua5.4-libs-5.4.7-r0 - Lua dynamic library runtime
+lz4-libs-1.10.0-r0 - LZ4 is lossless compression algorithm with fast decoder @ multiple GB/s per core. (libraries)
+mpdecimal-4.0.1-r0 - complete implementation of the General Decimal Arithmetic Specification
+musl-1.2.5-r13 - the musl c library (libc) implementation
+musl-utils-1.2.5-r13 - the musl c library (libc) implementation
+ncurses-terminfo-base-6.5_p20250503-r0 - Descriptions of common terminals
+netcat-openbsd-1.229.1-r0 - The TCP/IP swiss army knife. OpenBSD variant from debian.
+nghttp2-libs-1.69.0-r0 - HTTP/2 C client, server and proxy (libraries)
+nmap-7.97-r0 - network exploration tool and security/port scanner
+nodejs-22.23.2-r0 - JavaScript runtime built on V8 engine - LTS version
+npm-11.6.4-r0 - The package manager for JavaScript
+oniguruma-6.9.10-r0 - a regular expressions library
+pcre2-10.46-r1 - Perl-compatible regular expression library
+postgresql-common-1.2-r1 - Common files for PostgreSQL
+postgresql16-16.15-r0 - A sophisticated object-relational DBMS, version 16
+postgresql16-client-16.15-r0 - PostgreSQL client
+protobuf-c-1.5.2-r0 - Protocol Buffers implementation in C
+pyc-3.12.15-r0 - Meta package for pulling in all -pyc packages
+python3-3.12.15-r0 - High-level scripting language
+python3-pyc-3.12.15-r0 - High-level scripting language (install .pyc cache files)
+python3-pycache-pyc0-3.12.15-r0 - High-level scripting language (.pyc pycache files)
+readline-8.2.13-r1 - GNU readline library
+ripgrep-14.1.1-r0 - ripgrep combines the usability of The Silver Searcher with the raw speed of grep
+scanelf-1.3.8-r1 - Scan ELF binaries for stuff
+simdjson-3.12.0-r0 - Parsing gigabytes of JSON per second
+simdutf-7.2.1-r0 - Unicode validation and transcoding at billions of characters per second
+sqlite-libs-3.49.2-r1 - C library that implements an SQL database engine (libraries)
+ssl_client-1.37.0-r20 - External ssl_client for busybox wget
+su-exec-0.2-r3 - switch user and group id, setgroups and exec
+tzdata-2026e-r0 - Timezone data
+userspace-rcu-0.15.2-r0 - Userspace RCU (read-copy-update) library
+whois-5.6.3-r0 - Intelligent WHOIS client by Marco d'Itri
+xz-libs-5.8.4-r0 - Library and CLI tools for XZ and LZMA compressed files (libraries)
+zlib-1.3.2-r1 - A compression/decompression Library
+zstd-libs-1.5.7-r0 - Zstandard - Fast real-time compression algorithm (libraries)

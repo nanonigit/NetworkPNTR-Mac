@@ -10,7 +10,7 @@ public enum VMConfiguration {
         configuration.memorySize = (systemDisk == nil ? 512 : 2048) * 1024 * 1024
         let boot = VZLinuxBootLoader(kernelURL: kernel)
         boot.initialRamdiskURL = initramfs
-        boot.commandLine = "console=hvc0 rdinit=/init panic=-1 quiet"
+        boot.commandLine = "console=hvc0 rdinit=/init panic=0 quiet"
         configuration.bootLoader = boot
         let serial = VZVirtioConsoleDeviceSerialPortConfiguration()
         serial.attachment = VZFileHandleSerialPortAttachment(fileHandleForReading: input, fileHandleForWriting: output)

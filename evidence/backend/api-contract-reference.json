@@ -1,0 +1,20 @@
+{
+  "initial_auth": {
+    "initialized": false,
+    "setup_token_required": true
+  },
+  "profile": {
+    "base_url": "https://api.openai.com/v1",
+    "context_window_k": 64,
+    "format": "openai",
+    "max_tokens": 256,
+    "model": "fixture-no-request",
+    "name": "Native parity fixture",
+    "pool_exclude": true,
+    "streaming": false
+  },
+  "profile_status": 200,
+  "protected_status": 401,
+  "setup_status": 200,
+  "wrong_setup_status": 403
+}
