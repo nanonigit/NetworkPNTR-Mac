@@ -55,6 +55,7 @@ final class ChatModelsTests: XCTestCase {
             try BackendJSONCoding.decode(ChatConversation.self, from: Data((base + suffix + "}").utf8))
         }
         XCTAssertFalse(try conversation("").isPinned)
+        XCTAssertFalse(try conversation(#", "pinned_at":"""#).isPinned)
         XCTAssertTrue(try conversation(#", "pinned_at":"fixture""#).isPinned)
         XCTAssertFalse(try conversation(#", "pinned":false,"pinned_at":"fixture""#).isPinned)
         XCTAssertTrue(try conversation(#", "pinned":true"#).isPinned)
