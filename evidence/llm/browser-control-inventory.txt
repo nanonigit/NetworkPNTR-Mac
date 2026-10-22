@@ -1,0 +1,3 @@
+Browser tab: 3, Title: "ARTEX: Autonomous Penetration Testing Console", URL: "http://127.0.0.1:8787/system/llm/".
+There has been no change in the accessibility tree.
+The focused UI element is 0 AXWebArea ARTEX: Autonomous Penetration Testing Console, URL: 127.0.0.1:8787/system/llm/

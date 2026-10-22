@@ -1,6 +1,6 @@
 # Phase 2 backend checkpoint
 
-The full product is still in progress. Historical P2 results below describe successful runs, not a stable-runtime acceptance. The app now bundles the real backend and native authentication services. Current Swift/Python test counts are 20/14. Repeated native testing exposed intermittent guest faults; see docs/bugs/guest-boot-investigation.md. Streaming, cloud egress and external native interaction/visual acceptance remain pending. No backend test counts as full native workflow parity.
+The full product is still in progress. Historical P2 results below describe successful runs, not a stable-runtime acceptance. The app now bundles the real backend and native authentication services. Current Swift/Python test counts are 30/14. Repeated native testing exposed intermittent guest faults; see docs/bugs/guest-boot-investigation.md. Streaming, cloud egress and external native interaction/visual acceptance remain pending. No backend test counts as full native workflow parity.
 
 ## Verified locally
 

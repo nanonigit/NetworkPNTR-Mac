@@ -32,6 +32,12 @@ struct RootView: View {
             else if selection == "auth", let session = environment.authentication { AuthenticationView(session: session) }
             else if selection == "auth" { ContentUnavailableView("ARTEXを起動してください", systemImage: "power", description: Text("実行環境の準備が完了すると認証画面を開きます。")) }
             else if selection == "parity", let catalog { ParityView(catalog: catalog) }
+            else if selection == "llm", let session = environment.authentication, session.phase == .authenticated {
+                LLMSettingsView(session: session).id(ObjectIdentifier(session))
+            }
+            else if selection == "llm" {
+                ContentUnavailableView("ログインが必要です", systemImage: "person.crop.circle", description: Text("アカウント画面でログインしてからLLM設定を開いてください。"))
+            }
             else if let feature = catalog?.features.first(where: { $0.id == selection }) {
                 ContentUnavailableView {
                     Label(feature.title, systemImage: "hammer")

@@ -1,0 +1,70 @@
+{
+  "active_delete_status" : 409,
+  "bind_fallback" : true,
+  "blank_key_preserved" : true,
+  "created_formats" : [
+    "anthropic",
+    "openai",
+    "openai-responses"
+  ],
+  "inactive_delete_remaining" : 1,
+  "missing_key_models_rejected" : true,
+  "missing_key_test_rejected" : true,
+  "profile" : {
+    "base_url" : "https:\/\/api.example.invalid\/v1",
+    "context_window_k" : 64,
+    "format" : "openai",
+    "is_default" : true,
+    "key_present" : true,
+    "max_tokens" : 256,
+    "max_tokens_field" : "max_completion_tokens",
+    "model" : "fixture-edited",
+    "name" : "Fixture OpenAI edited",
+    "pool_exclude" : false,
+    "priority" : 3,
+    "proxy" : "",
+    "rate_per_minute" : 60,
+    "rate_per_second" : 2.5,
+    "reasoning_effort" : "high",
+    "retry" : {
+      "connect" : {
+        "attempts" : -1,
+        "interval_ms" : 0
+      },
+      "empty" : {
+        "attempts" : 2,
+        "interval_ms" : 1234
+      },
+      "stream" : {
+        "attempts" : 1,
+        "interval_ms" : 500
+      }
+    },
+    "session_header_key" : "X-Artex-Session",
+    "streaming" : false,
+    "thinking_type" : "enabled"
+  },
+  "retry_policy" : {
+    "breaker" : {
+      "attempts" : 3,
+      "interval_ms" : 60000
+    },
+    "connect" : {
+      "attempts" : 4,
+      "interval_ms" : 1000
+    },
+    "empty" : {
+      "attempts" : -1,
+      "interval_ms" : 0
+    },
+    "intent" : {
+      "attempts" : 1,
+      "interval_ms" : 3000
+    },
+    "stream" : {
+      "attempts" : 2,
+      "interval_ms" : 500
+    }
+  },
+  "rotation_enabled" : true
+}

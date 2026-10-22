@@ -1,0 +1,29 @@
+{
+  "fixture": "native-llm-review-02; dedicated disposable VM; no browser data changed",
+  "method": "CUA native accessibility actions and independent window screenshot",
+  "verified": [
+    "open native LLM sidebar",
+    "read actual profile cards and active marker",
+    "open editor and enumerate every browser profile field",
+    "reject invalid numeric text and disable save/test",
+    "correct numeric text and re-enable save",
+    "switch Anthropic to OpenAI and enable cap-field picker",
+    "missing-key model query shows actual backend failure",
+    "create new profile with empty key",
+    "reopen and edit name/rate/streaming",
+    "save using Return",
+    "activate new profile and disable its delete button",
+    "restore original active profile"
+  ],
+  "screenshot": "native-profile-cards.png",
+  "not_verified": [
+    "global retry tab external clicks",
+    "rotation sheet external clicks",
+    "delete confirmation final action",
+    "positive model discovery/connection reply",
+    "resize/light mode/accessibility audit",
+    "whole feature parity"
+  ],
+  "interruption": "Native pipe closed while selecting retry tab. Process still live; state retry and fresh CUA reset failed. Do not count the retry click as passed.",
+  "complete_ui_parity": false
+}

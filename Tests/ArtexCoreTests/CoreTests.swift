@@ -11,7 +11,8 @@ final class CoreTests: XCTestCase {
         XCTAssertEqual(Set(catalog.features.map(\.id)).count, 21)
         XCTAssertEqual(catalog.features.first?.id, "dashboard")
         XCTAssertEqual(catalog.features.last?.id, "settings")
-        XCTAssertTrue(catalog.features.allSatisfy { $0.nativeStatus == "pending" })
+        XCTAssertEqual(catalog.features.first(where: { $0.id == "llm" })?.nativeStatus, "in_progress")
+        XCTAssertTrue(catalog.features.filter { $0.id != "llm" }.allSatisfy { $0.nativeStatus == "pending" })
     }
     func testLifecycleRejectsDuplicateStartAndPrematureReady() throws {
         var state = LifecycleState.idle

@@ -29,9 +29,13 @@ import Foundation
             await authentication.setup(password: password, confirmation: password)
             guard authentication.phase == .authenticated else { throw RuntimeError.integrity(authentication.error ?? "native setup authentication") }
             result["native_setup_authenticated"] = true
+            let llm = try await NativeLLMDiagnostics.run(session: authentication, directory: directory)
+            result["native_llm_three_formats_crud_key_preservation_pool_retry"] = true
             try await environment.stop()
             await environment.start()
             guard environment.authentication?.phase == .authenticated else { throw RuntimeError.integrity(environment.authentication?.error ?? environment.error ?? "Keychain session restore") }
+            if let restored = environment.authentication { try await NativeLLMDiagnostics.verify(llm, session: restored) }
+            result["native_llm_restart_persistence"] = true
             result["real_keychain_session_restored_after_vm_restart"] = true
             guard let login = environment.authentication else { throw RuntimeError.integrity("native login state") }
             login.logout()
@@ -45,6 +49,17 @@ import Foundation
             result["native_login_validation_and_real_auth"] = true
             try await Task.sleep(for: .milliseconds(300))
             result["authenticated_content_snapshot"] = try capture(to: directory.appendingPathComponent("native-authenticated.png"))
+            if CommandLine.arguments.contains("--native-review") {
+                // Keep this disposable authenticated fixture open for external UI testing.
+                // The fixed completion marker cannot execute commands or access the guest.
+                try JSONSerialization.data(withJSONObject: ["ready": true, "fixture_only": true], options: [.sortedKeys]).write(to: directory.appendingPathComponent("native-review-ready.json"))
+                let finish = directory.appendingPathComponent("native-review-finish")
+                for _ in 0..<900 {
+                    if FileManager.default.fileExists(atPath: finish.path) { break }
+                    try await Task.sleep(for: .seconds(1))
+                }
+                guard FileManager.default.fileExists(atPath: finish.path) else { throw RuntimeError.timeout("external native fixture review") }
+            }
             login.logout()
             guard login.phase == .needsLogin, login.error == nil else { throw RuntimeError.integrity("Keychain fixture cleanup") }
             result["temporary_keychain_item_removed"] = true

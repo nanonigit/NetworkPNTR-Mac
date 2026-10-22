@@ -1,0 +1,18 @@
+{
+  "app_owned_backend_ready" : true,
+  "app_owned_backend_stopped" : true,
+  "authenticated_content_snapshot" : true,
+  "cooperative_stop_during_boot" : true,
+  "native_llm_restart_persistence" : true,
+  "native_llm_three_formats_crud_key_preservation_pool_retry" : true,
+  "native_login_validation_and_real_auth" : true,
+  "native_setup_authenticated" : true,
+  "native_window_rendered" : true,
+  "real_keychain_session_restored_after_vm_restart" : true,
+  "setup_content_snapshot" : true,
+  "temporary_keychain_item_removed" : true,
+  "ui_click_workflow_verified" : false,
+  "validation_content_snapshot" : true,
+  "virtual_cpu_count" : 1,
+  "visual_acceptance" : "pending external native automation"
+}

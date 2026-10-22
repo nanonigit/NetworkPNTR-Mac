@@ -136,12 +136,24 @@
       "title": "LLM",
       "browserPath": "/system/llm",
       "icon": "Brain",
-      "nativeStatus": "pending",
+      "nativeStatus": "in_progress",
       "phase": 3,
       "acceptance": [
         "Compare equivalent fixture data and visible controls",
         "Compare success, empty, validation and server-error states",
         "Verify mutations, persistence, cancellation and keyboard access"
+      ],
+      "evidence": [
+        "evidence/llm/api-contract-comparison.json",
+        "evidence/llm/native-service-results.json",
+        "evidence/llm/external-ui-results.json",
+        "docs/llm-settings-verification.md"
+      ],
+      "remainingGates": [
+        "Positive model discovery and provider reply with controlled networking",
+        "External rotation/retry/delete interaction completion",
+        "Resize, appearance, accessibility and interrupted-request coverage",
+        "Full browser/native workflow acceptance"
       ]
     },
     {
