@@ -121,4 +121,32 @@ final class ChatStoreTests: XCTestCase {
         XCTAssertEqual(waits.last, .seconds(1)); XCTAssertEqual(store.messages.map(\.seq), [1])
         store.stop(); sleepers.removeFirst().resume(); await tail.value
     }
+    @MainActor func testResumeReconcilesFinalMessagesAfterPollingWasStopped() async throws {
+        let api = ChatTestTransport(); let store = ChatStore(service: ChatService(client: api))
+        try api.enqueue(ChatFixture.page([1], cursor: 1, running: true)); await store.select(id: 7)
+        store.stop()
+        try api.enqueue(["conversations": [ChatFixture.conversation(running: false)]])
+        await store.refreshList()
+        try api.enqueue(ChatFixture.page([2], cursor: 2, running: false)); await store.refreshDelta()
+        XCTAssertEqual(store.messages.map(\.seq), [1, 2])
+        XCTAssertEqual(store.cursor, 2); XCTAssertFalse(store.running)
+    }
+    @MainActor func testStopAcknowledgementStillReadsFinalTailAndUnchangedSubmittedDraftClears() async throws {
+        let api = ChatTestTransport(); let store = ChatStore(service: ChatService(client: api))
+        try api.enqueue(ChatFixture.page([], cursor: 0)); await store.select(id: 7); store.draft = "send"
+        try api.enqueue(["status": "accepted"], status: 202)
+        try api.enqueue(["conversations": [ChatFixture.conversation(running: true)]])
+        try api.enqueue(ChatFixture.page([1], cursor: 1, running: true))
+        let sent = await store.sendCurrentDraft()
+        XCTAssertTrue(sent); XCTAssertEqual(store.draft, ""); XCTAssertTrue(store.running)
+        try api.enqueue(["status": "stopping"])
+        try api.enqueue(ChatFixture.page([2], cursor: 2))
+        let stopped = await store.requestStop()
+        XCTAssertTrue(stopped); XCTAssertFalse(store.running); XCTAssertFalse(store.isStopping)
+        XCTAssertEqual(store.messages.map(\.seq), [1, 2])
+        try api.enqueue(["error": "private-error"], status: 503)
+        let failed = await store.requestStop(); XCTAssertFalse(failed)
+        XCTAssertFalse(store.mutationError?.contains("private-error") ?? true)
+    }
+
 }
