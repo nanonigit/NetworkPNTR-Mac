@@ -1,0 +1,29 @@
+{
+  "version": "6.12.114",
+  "source": {
+    "url": "https://cdn.kernel.org/pub/linux/kernel/v6.x/linux-6.12.114.tar.xz",
+    "sha256": "7a8589912bd7a8adb07fed074283652cf482a35facef8954554654f0154b4af3",
+    "maximum_bytes": 268435456
+  },
+  "configSource": {
+    "url": "https://raw.githubusercontent.com/linuxkit/linuxkit/f935f6b18cad69f08c1830b432d7dab90bf67614/kernel/6.12.x/config-aarch64",
+    "sha256": "53280e08ae286156a31049c90ab8b2077db93c0366a8a9e6bb4b3fa7c02f65fe",
+    "maximum_bytes": 1048576
+  },
+  "configSourceCommit": "f935f6b18cad69f08c1830b432d7dab90bf67614",
+  "recipeSHA256": "43bb1338577b1a68723ac9ca750abed1df5e93e1598b588f72cf6e6d5f69dcca",
+  "builderImage": "sha256:0354242e324c014d6a64ece6ef80052f0263be00a82f0c18973fa9616d7a87c6",
+  "builderBase": "alpine:3.22.7@sha256:e9f2de928efcc1b53d0948e684b4f490315f280de6044844ec0ff26c0b44d3cf",
+  "networkMode": "none",
+  "hostShares": 0,
+  "cpuCount": 1,
+  "files": {
+    "COPYING": "fb5a425bd3b3cd6071a3a9aff9909a859e7c1158d54d32e07658398cd67eb6a0",
+    "Image": "8e57308787c420cb42e4c4ea80e6def6438a52232692c010dc4609bb9bf21879",
+    "LICENSES.tar.gz": "58538d2098828d0938e316638cb182ccdf47164361ea9b7dbb4317f0143de381",
+    "build-report.json": "e9be20bc644e0d9b785844bb1779dcc46c3b797e80ee7d549b46e682748b48c0",
+    "config-LICENSE": "9361b05d8049b26dbef821a13bba0f275e3ca569e1dfcd3220952daf452202c1",
+    "kernel.config": "f270a97fe4830adda7bf66b2f98c12b5e1c7be36fb8a323a9c36f3b4867d2b49",
+    "linux-source.tar.xz": "7a8589912bd7a8adb07fed074283652cf482a35facef8954554654f0154b4af3"
+  }
+}

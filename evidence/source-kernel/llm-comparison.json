@@ -1,0 +1,20 @@
+{
+  "baseline": "e75ae371ad777ffd1eecdd28d2781a6519b05591",
+  "identical_fixture": true,
+  "api_contract_equal": true,
+  "cases": [
+    "three_api_formats",
+    "profile_create_edit",
+    "blank_key_preservation",
+    "streaming_and_thinking_fields",
+    "active_selection",
+    "active_delete_rejected",
+    "inactive_delete",
+    "rotation_and_exclusion",
+    "retry_policy",
+    "missing_key_model_query",
+    "missing_key_connection_test"
+  ],
+  "browser_data_modified": false,
+  "ui_workflow_parity": "pending"
+}

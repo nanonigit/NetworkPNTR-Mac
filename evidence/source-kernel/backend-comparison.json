@@ -1,0 +1,14 @@
+{
+  "baseline": "e75ae371ad777ffd1eecdd28d2781a6519b05591",
+  "identical_fixture": true,
+  "api_contract_equal": true,
+  "cases": [
+    "first_run_auth_status",
+    "protected_api_requires_login",
+    "wrong_setup_token_rejected",
+    "setup",
+    "profile_save_and_read"
+  ],
+  "browser_data_modified": false,
+  "ui_workflow_parity": "pending"
+}

@@ -1,0 +1,4 @@
+PASS real_artex_postgres16=true vsock_http=true wrong_transport_rejected=true protected_api=401 wrong_setup=403 profile_save_read=true
+PASS normal_restart_db_password_jwt_profile_persist=true
+PASS force_stop_restart_db_jwt_profile_persist=true
+PASS nonblank_invalid_disk_rejected_without_formatting=true secret_logging=false network_devices=0 host_shares=0

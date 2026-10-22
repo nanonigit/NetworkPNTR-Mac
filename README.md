@@ -11,6 +11,8 @@ Native SwiftUI macOS application with an app-managed isolated Linux VM. **Develo
 
 The separate backend acceptance guest now boots pinned ARTEX and PostgreSQL 16 with authenticated vsock and a private persistent disk. Real normal/forced restarts preserve authentication and an LLM fixture. Five normalized API contract cases match a disposable pinned browser backend. See [Phase 2 evidence](docs/phase2-verification.md). The app now bundles this real backend by default and provides native setup/login/logout with a Keychain session. Two-vCPU experiments exposed intermittent kernel faults. A one-vCPU direct-root diagnostic profile passed repeated native auth runs; a separate database recovery readiness race was repaired and three forced recoveries passed. Release reliability is not accepted; see [the investigation](docs/bugs/guest-boot-investigation.md).
 
+A separately source-built, hash-pinned Linux kernel candidate passed real VM recovery and signed native service/reference comparisons. Independent rebuild comparison is running; release reliability and UI parity remain open. See [source-kernel verification](docs/kernel-build-verification.md).
+
 ## Build and test (Apple Silicon, macOS 15+, Xcode/Swift 6 toolchain, Python 3)
 
 ```sh

@@ -1,0 +1,9 @@
+{
+  "kernelRelease": "6.12.114-artex",
+  "compiler": "gcc (Alpine 14.2.0) 14.2.0",
+  "packageLockSHA256": "c11a5bded2130d7947ef844840b0b125c28eceb93cdd375c12a14de9426417ed",
+  "configSHA256": "f270a97fe4830adda7bf66b2f98c12b5e1c7be36fb8a323a9c36f3b4867d2b49",
+  "kernelSHA256": "8e57308787c420cb42e4c4ea80e6def6438a52232692c010dc4609bb9bf21879",
+  "timestamp": "2026-10-22T00:00:00Z",
+  "compileJobs": 2
+}

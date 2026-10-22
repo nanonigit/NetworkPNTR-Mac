@@ -1,0 +1,10 @@
+{
+  "baseline": "e75ae371ad777ffd1eecdd28d2781a6519b05591",
+  "native_matches_independent_browser_math": true,
+  "vm_matches_disposable_reference": true,
+  "nonempty_data": true,
+  "token_scenarios": 12,
+  "existing_browser_data_modified": false,
+  "traffic_capture_runtime": "pending; both fixture runtimes disable the proxy",
+  "external_ui_acceptance": "pending"
+}

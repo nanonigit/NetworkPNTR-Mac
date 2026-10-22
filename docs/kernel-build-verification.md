@@ -1,0 +1,23 @@
+# Source-built kernel verification (2026-10-23)
+
+Status: functional candidate, not release qualification. Independent rebuild comparison is in progress.
+
+## Inputs and construction
+
+Upstream Linux 6.12.114 and LinuxKit ARM64 configuration commit f935f6b18cad69f08c1830b432d7dab90bf67614 are pinned in guest/kernel/source.lock.json, with the Alpine builder digest, a 73-package exact inventory and explicit overrides. The build resolves to 6.12.114-artex, GCC 14.2.0, one-vCPU runtime, direct ext4 root and built-in virtio/vsock drivers. GCC stackleak remains enabled. Actual compilation uses a fresh private Linux ARM64 container with network=none, no host mounts, all capabilities dropped, no-new-privileges, two CPU compilation jobs, 3 GiB memory and 512 processes. App runtime invokes neither Docker nor host guest executables. Source acquisition is a separate HTTPS step; PGP signatures were not verified.
+
+The source archive, configuration, COPYING, configuration license and LICENSES archive are retained locally in ignored guest/source-kernel-artifacts. Git records hashes and normalized evidence, not the generated binary/source archive. Corresponding-source distribution/legal review remains a release gate.
+
+## Observed results
+
+- 42 Swift tests and 24 Python tests pass. The read-only Python review approved provenance, local builder selection and negative-test fixes. GitHub Actions run 39837058467 passed for ab22995649ee8764cdc2dcdddad6fdc9434d08b0.
+- First successful offline source build: kernel SHA256 8e57308787c420cb42e4c4ea80e6def6438a52232692c010dc4609bb9bf21879; resolved configuration f270a97fe4830adda7bf66b2f98c12b5e1c7be36fb8a323a9c36f3b4867d2b49. Recipe and toolchain evidence are in evidence/source-kernel.
+- Signed VMProbe completed six boots: fresh setup, normal restart, three forced recoveries, and rejection of a nonblank invalid disk without formatting. Authentication, DB credentials/JWT and an LLM profile survive recovery; unauthenticated transport and protected APIs are rejected. Hardware NICs, active nonloopback interfaces, external routes and host shares are all zero. Five normalized backend contracts match a disposable pinned browser backend.
+- The signed .app completed fresh setup, actual Keychain restoration after restart, login/validation, logout cleanup and cooperative stop during startup. Its actual guest LLM CRUD/key preservation/pool/retry checks and populated dashboard diagnostics pass. Eleven LLM contract groups and twelve dashboard scenarios match disposable pinned reference instances and independent browser calculations. User browser data is untouched.
+- Previous LinuxKit diagnostic kernel/system hashes still match. The new candidate is assembled separately under .build-cache/backend-source; the standard backend source recipe is not promoted. A retired failed 6.18 cache was removed after preserving its manifest/hash inventory locally; no user data or unrelated Docker storage was pruned.
+
+## Limits and next gates
+
+The second compilation starts from the same verified source in a new private container, reusing dependency-image layers but no compilation output. Its Image/config hashes have not yet been compared. Repeat fresh native/lifecycle workload tests after a final selected recipe; intermittent earlier two-vCPU faults remain unexplained. These tests establish functionality on successful runs, not long-run reliability.
+
+Internal .app/service diagnostics and diagnostic content snapshots do not replace external click/visual acceptance. Cloud API egress, streaming, interception/capture, remaining features, migration, clean-Mac installation, signing/notarization and whole-product browser parity remain open.
