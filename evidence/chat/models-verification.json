@@ -1,0 +1,46 @@
+{
+  "baseline": "e75ae371ad777ffd1eecdd28d2781a6519b05591",
+  "swift_tests": 49,
+  "swift_failures": 0,
+  "chat_model_tests": 7,
+  "new_model_coverage": {
+    "branches": {
+      "count": 0,
+      "covered": 0,
+      "notcovered": 0,
+      "percent": 0
+    },
+    "functions": {
+      "count": 10,
+      "covered": 10,
+      "percent": 100
+    },
+    "instantiations": {
+      "count": 10,
+      "covered": 10,
+      "percent": 100
+    },
+    "lines": {
+      "count": 37,
+      "covered": 37,
+      "percent": 100
+    },
+    "mcdc": {
+      "count": 0,
+      "covered": 0,
+      "notcovered": 0,
+      "percent": 0
+    },
+    "regions": {
+      "count": 36,
+      "covered": 36,
+      "notcovered": 0,
+      "percent": 100
+    }
+  },
+  "branch_coverage_measured": false,
+  "whole_product_coverage_claimed": false,
+  "review": "approved after empty pin timestamp correction",
+  "live_guest_chat_service": "pending",
+  "external_chat_ui_parity": "pending"
+}

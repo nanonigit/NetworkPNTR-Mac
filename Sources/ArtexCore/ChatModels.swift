@@ -10,7 +10,7 @@ public struct ChatConversation: Codable, Identifiable, Equatable, Sendable {
     public let running: Bool?
     public let createdAt: String
     public let updatedAt: String
-    public var isPinned: Bool { pinned ?? (pinnedAt != nil) }
+    public var isPinned: Bool { pinned ?? !(pinnedAt?.isEmpty ?? true) }
     public var isRunning: Bool { running ?? false }
 }
 
