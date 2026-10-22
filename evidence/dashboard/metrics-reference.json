@@ -1,0 +1,300 @@
+{
+  "activity_seq": [
+    3,
+    1
+  ],
+  "asset_total": 3,
+  "asset_types": [
+    {
+      "count": 2,
+      "name": "endpoint"
+    },
+    {
+      "count": 1,
+      "name": "ip"
+    }
+  ],
+  "finding_ids": [
+    "2",
+    "1"
+  ],
+  "llm_configured": true,
+  "pending_count": 4,
+  "running_tasks": 0,
+  "scenarios": {
+    "ledger/Dashboard secondary/30": {
+      "cache_hit_percent": 10,
+      "cache_read": 5,
+      "cache_write": 2,
+      "daily": [
+        {
+          "cache_read": 5,
+          "date": "2026-10-20",
+          "input": 50,
+          "output": 20
+        }
+      ],
+      "input": 50,
+      "output": 20,
+      "task_count": 1,
+      "uncached_input": 45
+    },
+    "ledger/Dashboard secondary/7": {
+      "cache_hit_percent": 10,
+      "cache_read": 5,
+      "cache_write": 2,
+      "daily": [
+        {
+          "cache_read": 5,
+          "date": "2026-10-20",
+          "input": 50,
+          "output": 20
+        }
+      ],
+      "input": 50,
+      "output": 20,
+      "task_count": 1,
+      "uncached_input": 45
+    },
+    "ledger/Fixture OpenAI edited/30": {
+      "cache_hit_percent": 2,
+      "cache_read": 21,
+      "cache_write": 3,
+      "daily": [
+        {
+          "cache_read": 0,
+          "date": "2026-10-01",
+          "input": 999,
+          "output": 0
+        },
+        {
+          "cache_read": 20,
+          "date": "2026-10-21",
+          "input": 80,
+          "output": 10
+        },
+        {
+          "cache_read": 1,
+          "date": "2026-10-22",
+          "input": 10,
+          "output": 2
+        }
+      ],
+      "input": 1089,
+      "output": 12,
+      "task_count": 2,
+      "uncached_input": 1068
+    },
+    "ledger/Fixture OpenAI edited/7": {
+      "cache_hit_percent": 2,
+      "cache_read": 21,
+      "cache_write": 3,
+      "daily": [
+        {
+          "cache_read": 20,
+          "date": "2026-10-21",
+          "input": 80,
+          "output": 10
+        },
+        {
+          "cache_read": 1,
+          "date": "2026-10-22",
+          "input": 10,
+          "output": 2
+        }
+      ],
+      "input": 1089,
+      "output": 12,
+      "task_count": 2,
+      "uncached_input": 1068
+    },
+    "ledger/all/30": {
+      "cache_hit_percent": 2,
+      "cache_read": 26,
+      "cache_write": 5,
+      "daily": [
+        {
+          "cache_read": 0,
+          "date": "2026-10-01",
+          "input": 999,
+          "output": 0
+        },
+        {
+          "cache_read": 5,
+          "date": "2026-10-20",
+          "input": 50,
+          "output": 20
+        },
+        {
+          "cache_read": 20,
+          "date": "2026-10-21",
+          "input": 80,
+          "output": 10
+        },
+        {
+          "cache_read": 1,
+          "date": "2026-10-22",
+          "input": 10,
+          "output": 2
+        }
+      ],
+      "input": 1139,
+      "output": 32,
+      "task_count": 3,
+      "uncached_input": 1113
+    },
+    "ledger/all/7": {
+      "cache_hit_percent": 2,
+      "cache_read": 26,
+      "cache_write": 5,
+      "daily": [
+        {
+          "cache_read": 5,
+          "date": "2026-10-20",
+          "input": 50,
+          "output": 20
+        },
+        {
+          "cache_read": 20,
+          "date": "2026-10-21",
+          "input": 80,
+          "output": 10
+        },
+        {
+          "cache_read": 1,
+          "date": "2026-10-22",
+          "input": 10,
+          "output": 2
+        }
+      ],
+      "input": 1139,
+      "output": 32,
+      "task_count": 3,
+      "uncached_input": 1113
+    },
+    "old/Dashboard secondary/30": {
+      "cache_hit_percent": 10,
+      "cache_read": 5,
+      "cache_write": 1,
+      "daily": [
+        {
+          "cache_read": 5,
+          "date": "2026-10-20",
+          "input": 50,
+          "output": 10
+        }
+      ],
+      "input": 50,
+      "output": 10,
+      "task_count": 1,
+      "uncached_input": 45
+    },
+    "old/Dashboard secondary/7": {
+      "cache_hit_percent": 10,
+      "cache_read": 5,
+      "cache_write": 1,
+      "daily": [
+        {
+          "cache_read": 5,
+          "date": "2026-10-20",
+          "input": 50,
+          "output": 10
+        }
+      ],
+      "input": 50,
+      "output": 10,
+      "task_count": 1,
+      "uncached_input": 45
+    },
+    "old/Fixture OpenAI edited/30": {
+      "cache_hit_percent": 38,
+      "cache_read": 50,
+      "cache_write": 5,
+      "daily": [
+        {
+          "cache_read": 50,
+          "date": "2026-10-21",
+          "input": 130,
+          "output": 25
+        }
+      ],
+      "input": 130,
+      "output": 25,
+      "task_count": 1,
+      "uncached_input": 80
+    },
+    "old/Fixture OpenAI edited/7": {
+      "cache_hit_percent": 38,
+      "cache_read": 50,
+      "cache_write": 5,
+      "daily": [
+        {
+          "cache_read": 50,
+          "date": "2026-10-21",
+          "input": 130,
+          "output": 25
+        }
+      ],
+      "input": 130,
+      "output": 25,
+      "task_count": 1,
+      "uncached_input": 80
+    },
+    "old/all/30": {
+      "cache_hit_percent": 31,
+      "cache_read": 55,
+      "cache_write": 6,
+      "daily": [
+        {
+          "cache_read": 5,
+          "date": "2026-10-20",
+          "input": 50,
+          "output": 10
+        },
+        {
+          "cache_read": 50,
+          "date": "2026-10-21",
+          "input": 130,
+          "output": 25
+        }
+      ],
+      "input": 180,
+      "output": 35,
+      "task_count": 2,
+      "uncached_input": 125
+    },
+    "old/all/7": {
+      "cache_hit_percent": 31,
+      "cache_read": 55,
+      "cache_write": 6,
+      "daily": [
+        {
+          "cache_read": 5,
+          "date": "2026-10-20",
+          "input": 50,
+          "output": 10
+        },
+        {
+          "cache_read": 50,
+          "date": "2026-10-21",
+          "input": 130,
+          "output": 25
+        }
+      ],
+      "input": 180,
+      "output": 35,
+      "task_count": 2,
+      "uncached_input": 125
+    }
+  },
+  "severity_counts": {
+    "high": 1,
+    "low": 1
+  },
+  "task_ids": [
+    "1",
+    "2"
+  ],
+  "traffic_capture": false,
+  "traffic_count": 0
+}

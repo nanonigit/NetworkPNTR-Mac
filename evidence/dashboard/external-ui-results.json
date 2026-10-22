@@ -1,0 +1,28 @@
+{
+  "baseline": "e75ae371ad777ffd1eecdd28d2781a6519b05591",
+  "method": "external CUA native clicks and AX inspection",
+  "fixture_only": true,
+  "verified": [
+    "old_to_ledger_changes_215_to_1171",
+    "seven_day_chart_range",
+    "secondary_profile_total_70",
+    "rendered_activity_findings_assets_system_approvals",
+    "task_detail_id_1_pending_destination",
+    "escape_closes_detail",
+    "command_r_keeps_model_and_range",
+    "approval_destination",
+    "explicit_date_oct20_matches_50_10_5_after_hover_fix",
+    "day_data_table",
+    "activity_tasks_destination_after_link_fix"
+  ],
+  "scope": "partial",
+  "browser_screenshot_scope": "live empty baseline layout only; not identical populated visual data",
+  "pending": [
+    "populated_browser_native_visual_pairs",
+    "live_empty_error_stale_ui",
+    "resize_light_mode",
+    "complete_keyboard_accessibility",
+    "populated_traffic_runtime"
+  ],
+  "all_dashboard_acceptance_passed": false
+}

@@ -12,3 +12,5 @@ Phase evidence: unit tests for invariants/state/integrity, real-VM integration o
 Backend checkpoint: see docs/phase2-verification.md. Guest boot, authenticated vsock, data/auth persistence and five reference API fixture contracts pass; native auth integration is implemented but intermittent guest startup/recovery failures keep the runtime gate open. Streaming/egress, native-click/visual acceptance and broader parity remain pending.
 
 P3 LLM checkpoint: typed profile/pool/retry services and native screens implemented; 11 normalized contract groups match the pinned reference. External create/edit/validation/keyboard-save/activation checks pass. Full LLM interaction/cloud/visual gates remain open; see docs/llm-settings-verification.md.
+
+P3 dashboard checkpoint: all visible sections and 11 authenticated read routes are connected. 12 nonempty token scenarios match an independent browser calculation and disposable pinned reference. Partial external UI interactions passed; populated visual pairs, traffic capture and remaining error/accessibility/runtime gates stay open. See docs/dashboard-verification.md.

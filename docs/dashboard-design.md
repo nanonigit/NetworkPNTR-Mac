@@ -1,0 +1,31 @@
+# Native dashboard: requirements, design and test plan
+
+## Baseline and scope
+
+Implement the entire visible dashboard at artex-global e75ae371ad777ffd1eecdd28d2781a6519b05591, web/src/app/(main)/dashboard/page.tsx. Preserve the complete app goal and all other pending screens. Source inspection identifies five summary cards; old/new token sources; all/per-profile and 7/30/90/180/365-day controls; token totals, cache ratio, stacked daily chart/tooltip; recent activity/findings; a five-task table with detail navigation; asset distribution; sampled traffic status/recent requests; LLM/capture status, active model and pending approvals with navigation.
+
+Lazyweb `AI agent activity dashboard` (desktop, 2026-10-22) returned Astrix Security 189821 (agent visibility metrics and charts), OpenAI 243519 (logs/completions/responses navigation) and Glean 7440 (marketing page, weaker relevance). Metadata descriptions are supplemental references, not claimed screenshot inspection. Use stable navigation, clear summary-to-detail hierarchy and visible chart legends; the pinned ARTEX screen governs data and controls.
+
+## Data and calculations
+
+D1. Tasks: running count/total; paused/done badges; latest five by last_activity_unix falling back to created_unix; description/ID, task status, engine mode, goal fraction, in-flight count and relative time. Findings: count/all severities (critical/high/medium/low) and latest eight. Activity: exclude usage, descending seq, latest six; kind counts, worker/tool/kind/summary/time.
+D2. Old token source: sum task.tokens plus conversation totals by explicit profile ID or active default; count tasks only, not conversations. New source: fold usage.by_profile by exact profile name, unmatched names fall back to active default (including nil), last same-name profile wins as in the browser. Preserve cache-write values even though the dashboard does not render them. All-profile totals include unmatched buckets. Profile selection must not conflate 'all' and an unassigned/default-nil bucket.
+D3. Total=input+output; uncached input=input-cache_read; hit ratio=rounded(cache_read/input*100), zero if no input. Old daily buckets use creation-date prefixes (approximate consumption); new daily buckets use actual UTC ledger days. Date cutoff matches browser calendar-day subtraction then UTC date prefix; inject clock/calendar in tests. Range changes affect the chart only, not all-time totals (the ledger day series alone is limited to 365 days). Keep the browser's raw chart series input/output/cacheRead: its input already includes cache, so the stacked bar height must not be described as a non-overlapping total. Record this inherited display limitation rather than silently change accounting during migration.
+D4. Assets: sum counts, positive types sorted descending, first eight. Traffic: the same latest-50 sample, status buckets floor(status/100)*100, latest five timestamp-descending. LLM configured and traffic capture come from their actual endpoints; active model comes from the active profile; approvals show count/first three/more navigation.
+D5. Explicit null arrays are empty; missing fields, wrong shapes, transport/401/503 are failures. Do not replace failed loads with empty/successful zero metrics. Preserve the last successful group, display stale/error status and allow retry. Nonfinite or overflowing arithmetic must not crash the host; no raw error bodies/credentials in logs.
+
+## Architecture and polling
+
+ArtexCore owns read DTOs, pure derived metrics, authenticated dashboard service and observable grouped store. Use a shared finite-JSON coding helper with the existing LLM client. Fetch the visible sources in three independent groups: tasks every 5s; findings/stats/settings/pending/activity/conversation tokens every 5s; traffic/assets/profiles/365-day usage every 15s. Do not overlap a group's requests; cancel/ignore stale completions after stop or disappearance. A slow task fetch must not block the other groups. The pinned browser also fetches agents/MCP/skills/tools and an exploration-token aggregate that are unused by its render; do not fetch those unused payloads solely to duplicate dead state.
+
+SwiftUI uses adaptive summary cards, grouped panels, Charts, accessible legends/tooltips and native selection controls. All visible links route to the corresponding feature or task-detail destination; task/findings/approval destinations remain explicitly incomplete until those screens are migrated. A dashboard link alone cannot pass their feature gates. Do not fabricate working detail screens.
+
+## Build order and acceptance
+
+1. Write pure tests before implementing DTO/aggregation: mixed profiles/default/nil/unmatched/duplicate names, task-versus-conversation counts, cache semantics, both day sources/cutoffs, sorting/truncation, severity/assets/status distributions, empty/invalid/nonfinite/overflow values.
+2. Service/store tests: exact routes and query limits, null versus malformed payload, partial failure with previous data retained, independent task refresh, no overlapping calls and no late writes after cancellation. Use deterministic fixtures.
+3. Implement native sections and navigation, all selectors, hover/keyboard chart values, loading/empty/error/refresh behavior. Preserve selection across polling. Add no mock product data.
+4. Signed real-app fixture reads all visible endpoints inside the dedicated VM. Seed safe local fixture rows without agent/external execution; compare normalized dashboard outputs with the pinned browser backend and an independent JavaScript translation of the pinned calculations. Test non-empty data; an empty dashboard alone is insufficient evidence.
+5. External browser/native interaction and screenshot pairs: selectors, profile buckets/ranges, detail routing, empty/populated/error/stale states, resizing/appearance/accessibility and lifecycle cancellation. The native CUA connection is intermittent; partial success does not waive unfinished gates.
+
+Status: native implementation and partial comparison complete; see dashboard-verification.md. Full dashboard and whole-product acceptance remain open. Runtime reproducibility/stability work continues independently; the diagnostic kernel is not a release input.

@@ -1,0 +1,240 @@
+{
+  "tasks": [
+    {
+      "id": "1",
+      "description": "Fixture task A",
+      "status": "running",
+      "created_at": "2026-10-21T10:00:00Z",
+      "created_unix": 1792576800,
+      "last_activity_unix": 1792663200,
+      "llm_profile_id": null,
+      "tokens": {
+        "input_tokens": 100,
+        "output_tokens": 20,
+        "cache_read_tokens": 40,
+        "cache_write_tokens": 5
+      },
+      "goals_total": 4,
+      "goals_met": 1,
+      "in_flight": 2,
+      "engine_mode": "exploring"
+    },
+    {
+      "id": "2",
+      "description": "Fixture task B",
+      "status": "paused",
+      "created_at": "2026-10-20T10:00:00Z",
+      "created_unix": 1792490400,
+      "last_activity_unix": 0,
+      "llm_profile_id": 2,
+      "tokens": {
+        "input_tokens": 50,
+        "output_tokens": 10,
+        "cache_read_tokens": 5,
+        "cache_write_tokens": 1
+      }
+    }
+  ],
+  "fast": {
+    "findings": [
+      {
+        "id": "f1",
+        "vulnclass": "fixture-high",
+        "severity": "high",
+        "summary": "Safe fixture",
+        "ts": "2026-10-21T12:00:00Z"
+      },
+      {
+        "id": "f2",
+        "vulnclass": "fixture-low",
+        "severity": "low",
+        "summary": "Safe fixture",
+        "ts": "2026-10-22T12:00:00Z"
+      }
+    ],
+    "stats": {
+      "llm_configured": true
+    },
+    "settings": {
+      "traffic_capture": true
+    },
+    "pending": [
+      {
+        "id": 1,
+        "agent_name": "fixture-agent",
+        "tool_name": "fixture-tool"
+      }
+    ],
+    "activity": [
+      {
+        "seq": 1,
+        "worker": "worker",
+        "kind": "text",
+        "summary": "Safe fixture",
+        "ts": "2026-10-22T12:00:00Z",
+        "tool": "fixture-tool"
+      },
+      {
+        "seq": 2,
+        "worker": "worker",
+        "kind": "tool_use",
+        "summary": "Safe fixture",
+        "ts": "2026-10-22T12:00:00Z",
+        "tool": "fixture-tool"
+      },
+      {
+        "seq": 3,
+        "worker": "worker",
+        "kind": "usage",
+        "summary": "Safe fixture",
+        "ts": "2026-10-22T12:00:00Z",
+        "tool": "fixture-tool"
+      },
+      {
+        "seq": 4,
+        "worker": "worker",
+        "kind": "result",
+        "summary": "Safe fixture",
+        "ts": "2026-10-22T12:00:00Z",
+        "tool": "fixture-tool"
+      }
+    ],
+    "conversations": [
+      {
+        "llm_profile_id": null,
+        "created_at": "2026-10-21T11:00:00Z",
+        "input_tokens": 30,
+        "output_tokens": 5,
+        "cache_read_tokens": 10,
+        "cache_write_tokens": 0
+      },
+      {
+        "llm_profile_id": 2,
+        "created_at": "2026-10-21T12:00:00Z",
+        "input_tokens": 20,
+        "output_tokens": 5,
+        "cache_read_tokens": 0,
+        "cache_write_tokens": 0
+      }
+    ]
+  },
+  "slow": {
+    "profiles": [
+      {
+        "id": "1",
+        "name": "A",
+        "format": "openai",
+        "model": "fixture",
+        "is_default": true,
+        "rate_per_second": 0,
+        "rate_per_minute": 0
+      },
+      {
+        "id": "2",
+        "name": "B",
+        "format": "openai",
+        "model": "fixture",
+        "is_default": false,
+        "rate_per_second": 0,
+        "rate_per_minute": 0
+      }
+    ],
+    "usage": {
+      "by_profile": [
+        {
+          "profile_name": "A",
+          "tasks": 2,
+          "input_tokens": 1079,
+          "output_tokens": 10,
+          "cache_read_tokens": 20,
+          "cache_write_tokens": 3
+        },
+        {
+          "profile_name": "B",
+          "tasks": 1,
+          "input_tokens": 50,
+          "output_tokens": 20,
+          "cache_read_tokens": 5,
+          "cache_write_tokens": 2
+        },
+        {
+          "profile_name": "removed-name",
+          "tasks": 1,
+          "input_tokens": 10,
+          "output_tokens": 2,
+          "cache_read_tokens": 1,
+          "cache_write_tokens": 0
+        }
+      ],
+      "daily": [
+        {
+          "profile_name": "A",
+          "date": "2026-10-21",
+          "input_tokens": 80,
+          "output_tokens": 10,
+          "cache_read_tokens": 20
+        },
+        {
+          "profile_name": "B",
+          "date": "2026-10-20",
+          "input_tokens": 50,
+          "output_tokens": 20,
+          "cache_read_tokens": 5
+        },
+        {
+          "profile_name": "removed-name",
+          "date": "2026-10-22",
+          "input_tokens": 10,
+          "output_tokens": 2,
+          "cache_read_tokens": 1
+        },
+        {
+          "profile_name": "A",
+          "date": "2026-10-01",
+          "input_tokens": 999,
+          "output_tokens": 0,
+          "cache_read_tokens": 0
+        }
+      ]
+    },
+    "asset_counts": {
+      "ip": 3,
+      "endpoint": 5,
+      "unused": 0
+    },
+    "traffic": [
+      {
+        "id": "1",
+        "ts": "2026-10-22T12:00:01Z",
+        "host": "fixture.invalid",
+        "method": "GET",
+        "url": "https://fixture.invalid/path",
+        "status": 200
+      },
+      {
+        "id": "2",
+        "ts": "2026-10-22T12:00:02Z",
+        "host": "fixture.invalid",
+        "method": "GET",
+        "url": "https://fixture.invalid/path",
+        "status": 201
+      },
+      {
+        "id": "3",
+        "ts": "2026-10-22T12:00:03Z",
+        "host": "fixture.invalid",
+        "method": "GET",
+        "url": "https://fixture.invalid/path",
+        "status": 404
+      },
+      {
+        "id": "4",
+        "ts": "2026-10-22T12:00:04Z",
+        "host": "fixture.invalid",
+        "method": "GET",
+        "url": "https://fixture.invalid/path",
+        "status": 503
+      }
+    ]
+  }
+}

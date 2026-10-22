@@ -31,10 +31,15 @@ import Foundation
             result["native_setup_authenticated"] = true
             let llm = try await NativeLLMDiagnostics.run(session: authentication, directory: directory)
             result["native_llm_three_formats_crud_key_preservation_pool_retry"] = true
+            if CommandLine.arguments.contains("--dashboard-diagnostics") { try await NativeDashboardDiagnostics.seed(session: authentication) }
             try await environment.stop()
             await environment.start()
             guard environment.authentication?.phase == .authenticated else { throw RuntimeError.integrity(environment.authentication?.error ?? environment.error ?? "Keychain session restore") }
             if let restored = environment.authentication { try await NativeLLMDiagnostics.verify(llm, session: restored) }
+            if CommandLine.arguments.contains("--dashboard-diagnostics"), let restored = environment.authentication {
+                try await NativeDashboardDiagnostics.collect(session: restored, directory: directory)
+                result["native_dashboard_nonempty_endpoints_and_metrics"] = true
+            }
             result["native_llm_restart_persistence"] = true
             result["real_keychain_session_restored_after_vm_restart"] = true
             guard let login = environment.authentication else { throw RuntimeError.integrity("native login state") }

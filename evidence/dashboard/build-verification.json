@@ -1,0 +1,14 @@
+{
+  "swift_tests": 42,
+  "python_tests": 14,
+  "debug_app_ad_hoc_signed": true,
+  "release_build_passed": true,
+  "release_diagnostic_symbols_absent": true,
+  "distribution_notarized": false,
+  "fixture_review_runs": {
+    "run1": "normal cleanup passed",
+    "run2": "normal cleanup passed",
+    "run3": "15 minute review hold timed out; not a full pass",
+    "run4": "noninteractive current build passed; normal cleanup"
+  }
+}

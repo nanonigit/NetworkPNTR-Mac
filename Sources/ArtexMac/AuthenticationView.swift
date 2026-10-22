@@ -63,9 +63,12 @@ struct AuthenticationView: View {
         .background(Color(nsColor: .windowBackgroundColor))
         .navigationTitle("アカウント")
         .sheet(isPresented: $showTerms) { TermsView(agreed: $agreed) }
-        .onAppear { focused = .password }
-        .onChange(of: session.phase) { _, _ in password = ""; confirmation = ""; focused = .password }
-        .onDisappear { password = ""; confirmation = "" }
+        .onAppear { focused = session.phase == .needsSetup || session.phase == .needsLogin ? .password : nil }
+        .onChange(of: session.phase) { _, phase in
+            password = ""; confirmation = ""
+            focused = phase == .needsSetup || phase == .needsLogin ? .password : nil
+        }
+        .onDisappear { password = ""; confirmation = ""; focused = nil }
     }
     private func submit() {
         let value = password; let repeated = confirmation

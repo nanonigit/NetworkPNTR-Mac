@@ -7,6 +7,7 @@ struct RootView: View {
     @State private var selection: String? = "runtime"
     @State private var catalog: FeatureCatalog?
     @State private var catalogError: String?
+    @State private var taskDetailID: String?
     var body: some View {
         NavigationSplitView {
             List(selection: $selection) {
@@ -32,6 +33,17 @@ struct RootView: View {
             else if selection == "auth", let session = environment.authentication { AuthenticationView(session: session) }
             else if selection == "auth" { ContentUnavailableView("ARTEXを起動してください", systemImage: "power", description: Text("実行環境の準備が完了すると認証画面を開きます。")) }
             else if selection == "parity", let catalog { ParityView(catalog: catalog) }
+            else if selection == "dashboard", let session = environment.authentication, session.phase == .authenticated {
+                DashboardView(session: session) { destination in
+                    switch destination {
+                    case .feature(let id): selection = id
+                    case .task(let id): taskDetailID = id
+                    }
+                }.id(ObjectIdentifier(session))
+            }
+            else if selection == "dashboard" {
+                ContentUnavailableView("ログインが必要です", systemImage: "person.crop.circle", description: Text("アカウント画面でログインしてからダッシュボードを開いてください。"))
+            }
             else if selection == "llm", let session = environment.authentication, session.phase == .authenticated {
                 LLMSettingsView(session: session).id(ObjectIdentifier(session))
             }
@@ -46,6 +58,14 @@ struct RootView: View {
                 }
                 .navigationTitle(feature.title)
             }
+        }
+        .sheet(isPresented: Binding(get: { taskDetailID != nil }, set: { if !$0 { taskDetailID = nil } })) {
+            VStack(alignment: .leading, spacing: 16) {
+                Label("タスク詳細は移植中です", systemImage: "hammer").font(.title2.bold())
+                Text("選択したタスク：" + (taskDetailID ?? "")).textSelection(.enabled)
+                Text("ブラウザ版の詳細画面と比較して実装する予定です。")
+                Button("閉じる") { taskDetailID = nil }.keyboardShortcut(.cancelAction)
+            }.padding(28).frame(minWidth: 440)
         }
         .task {
             do { catalog = try FeatureCatalog.load() } catch { catalogError = error.localizedDescription }
