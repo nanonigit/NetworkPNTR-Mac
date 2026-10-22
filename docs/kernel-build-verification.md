@@ -16,6 +16,10 @@ The source archive, configuration, COPYING, configuration license and LICENSES a
 - The signed .app completed fresh setup, actual Keychain restoration after restart, login/validation, logout cleanup and cooperative stop during startup. Its actual guest LLM CRUD/key preservation/pool/retry checks and populated dashboard diagnostics pass. Eleven LLM contract groups and twelve dashboard scenarios match disposable pinned reference instances and independent browser calculations. User browser data is untouched.
 - Previous LinuxKit diagnostic kernel/system hashes still match. The new candidate is assembled separately under .build-cache/backend-source; the standard backend source recipe is not promoted. A retired failed 6.18 cache was removed after preserving its manifest/hash inventory locally; no user data or unrelated Docker storage was pruned.
 
+## Repeated native verification
+
+Three consecutive fresh-disk signed-app diagnostics pass on this source-kernel candidate (nine native boot attempts). Normalized LLM and populated dashboard results agree across all three. Runs 2 and 3 used PATH=/usr/bin:/bin and an unusable DOCKER_HOST Unix socket; they did not require a Docker CLI or that endpoint. Docker Desktop remained running for the preserved browser baseline, so this is not a clean-Mac or Docker-Desktop-stopped installation test. The app was rebuilt/ad-hoc signed after the chat model foundation, and current Swift tests total 49; all 24 Python tests still pass. See repeated-native-summary.json and native2/native3 normalized results in evidence/source-kernel.
+
 ## Limits and next gates
 
 The second compilation starts from the same verified source in a new private container, reusing dependency-image layers but no compilation output. Its Image/config hashes have not yet been compared. Repeat fresh native/lifecycle workload tests after a final selected recipe; intermittent earlier two-vCPU faults remain unexplained. These tests establish functionality on successful runs, not long-run reliability.

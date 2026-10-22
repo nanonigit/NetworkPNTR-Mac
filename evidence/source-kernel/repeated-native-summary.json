@@ -1,0 +1,12 @@
+{
+  "fresh_native_runs": 3,
+  "native_boot_attempts": 9,
+  "all_native_diagnostics_passed": true,
+  "normalized_llm_and_dashboard_results_equal_across_runs": true,
+  "runs_2_3_path": "/usr/bin:/bin",
+  "runs_2_3_docker_host": "unusable Unix socket",
+  "docker_desktop_stopped": false,
+  "clean_mac_installation_verified": false,
+  "long_run_reliability_accepted": false,
+  "ui_click_parity_accepted": false
+}
