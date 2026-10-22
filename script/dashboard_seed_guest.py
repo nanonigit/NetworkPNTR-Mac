@@ -52,15 +52,18 @@ COMMIT;
 
 def main():
     # Do not permit this script to seed a host database accidentally.
-    assert platform.system() == 'Linux' and platform.machine() == 'aarch64' and os.getuid() == 1000
+    if platform.system() != 'Linux' or platform.machine() != 'aarch64' or os.getuid() != 1000:
+        raise RuntimeError('Fixture requires an isolated Linux guest')
     parsed = urlparse(os.environ['ARTEX_PG_DSN'])
-    assert parsed.hostname == '127.0.0.1' and parsed.path == '/artex'
+    if parsed.hostname != '127.0.0.1' or parsed.path != '/artex':
+        raise RuntimeError('Fixture requires the guest loopback artex database')
     child_env = dict(os.environ, PGHOST=parsed.hostname, PGPORT=str(parsed.port or 5432),
                      PGDATABASE='artex', PGUSER=unquote(parsed.username or ''),
                      PGPASSWORD=unquote(parsed.password or ''))
     result = subprocess.run(['psql', '-X', '-q', '-v', 'ON_ERROR_STOP=1'], input=SQL.encode(),
                             env=child_env, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, timeout=15)
-    assert result.returncode == 0, 'Fixture transaction failed'
+    if result.returncode != 0:
+        raise RuntimeError('Fixture transaction failed')
     print(json.dumps({'fixture_seeded': True, 'linux_guest': True, 'aarch64': True, 'uid': os.getuid()}))
 
 

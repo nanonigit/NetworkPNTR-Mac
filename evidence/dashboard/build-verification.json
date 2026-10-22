@@ -1,6 +1,6 @@
 {
   "swift_tests": 42,
-  "python_tests": 14,
+  "python_tests": 15,
   "debug_app_ad_hoc_signed": true,
   "release_build_passed": true,
   "release_diagnostic_symbols_absent": true,
@@ -9,6 +9,10 @@
     "run1": "normal cleanup passed",
     "run2": "normal cleanup passed",
     "run3": "15 minute review hold timed out; not a full pass",
-    "run4": "noninteractive current build passed; normal cleanup"
-  }
+    "run4": "noninteractive current build passed; normal cleanup",
+    "run5": "seed JSON format failure before dashboard readiness; not a pass; raw output not captured",
+    "run6": "unconditional guest guard, seed proof shape, nonempty metrics and normal cleanup passed"
+  },
+  "optimized_seed_host_guard_verified": true,
+  "initial_ci": "39829638260 failed asset sort type-check complexity; expression split; rerun required"
 }

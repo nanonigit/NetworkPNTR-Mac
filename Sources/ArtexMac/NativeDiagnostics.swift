@@ -31,7 +31,7 @@ import Foundation
             result["native_setup_authenticated"] = true
             let llm = try await NativeLLMDiagnostics.run(session: authentication, directory: directory)
             result["native_llm_three_formats_crud_key_preservation_pool_retry"] = true
-            if CommandLine.arguments.contains("--dashboard-diagnostics") { try await NativeDashboardDiagnostics.seed(session: authentication) }
+            if CommandLine.arguments.contains("--dashboard-diagnostics") { try await NativeDashboardDiagnostics.seed(session: authentication, directory: directory) }
             try await environment.stop()
             await environment.start()
             guard environment.authentication?.phase == .authenticated else { throw RuntimeError.integrity(environment.authentication?.error ?? environment.error ?? "Keychain session restore") }

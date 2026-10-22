@@ -3,7 +3,7 @@ import ArtexCore
 import Foundation
 
 @MainActor enum NativeDashboardDiagnostics {
-    static func seed(session: AuthenticationSession) async throws {
+    static func seed(session: AuthenticationSession, directory: URL) async throws {
         let service = DashboardService(client: AuthenticatedBackendClient(session: session))
         guard try await service.tasks().isEmpty else { throw RuntimeError.integrity("fresh dashboard fixture") }
         // Developer-only fixed source, never accepted from product UI or a guest host RPC.
@@ -12,11 +12,18 @@ import Foundation
         let body = try JSONSerialization.data(withJSONObject: ["kind": "script", "exec": ["code": code, "timeout_ms": 20_000], "params": [:]])
         let response = try await session.authenticatedRequest(method: "POST", path: "/api/tools/custom/test", body: body)
         guard response.status == 200,
-              let result = try JSONSerialization.jsonObject(with: response.body) as? [String: Any],
-              result["is_error"] as? Bool == false, let output = result["output"] as? String,
-              let data = output.data(using: .utf8), let proof = try JSONSerialization.jsonObject(with: data) as? [String: Any],
+              let result = (try? JSONSerialization.jsonObject(with: response.body)) as? [String: Any] else {
+            throw RuntimeError.integrity("dashboard seed response envelope")
+        }
+        guard result["is_error"] as? Bool == false, let output = result["output"] as? String else {
+            throw RuntimeError.integrity("dashboard seed tool execution")
+        }
+        let metadata: [String: Any] = ["output_bytes": output.utf8.count, "output_lines": output.split(separator: "\n").count,
+                                       "has_proof_marker": output.contains("fixture_seeded"), "has_traceback": output.contains("Traceback")]
+        try JSONSerialization.data(withJSONObject: metadata, options: [.sortedKeys]).write(to: directory.appendingPathComponent("dashboard-seed-output-shape.json"))
+        guard let data = output.data(using: .utf8), let proof = (try? JSONSerialization.jsonObject(with: data)) as? [String: Any],
               proof["fixture_seeded"] as? Bool == true, proof["linux_guest"] as? Bool == true, proof["uid"] as? Int == 1000 else {
-            throw RuntimeError.integrity("isolated dashboard fixture transaction")
+            throw RuntimeError.integrity("dashboard seed proof format")
         }
     }
     static func collect(session: AuthenticationSession, directory: URL) async throws {

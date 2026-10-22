@@ -114,9 +114,15 @@ public struct DashboardMetrics: Sendable {
         activityCounts = Dictionary(grouping: activity, by: \.kind).mapValues(\.count)
         // Snapshot validation has already proved that this sum cannot overflow.
         assetTotal = snapshot.slow.assetCounts.values.reduce(0, +)
-        assetTypes = Array(snapshot.slow.assetCounts.filter { $0.value > 0 }
-            .map { DashboardCount(name: $0.key, count: $0.value) }
-            .sorted { $0.count == $1.count ? $0.name < $1.name : $0.count > $1.count }.prefix(8))
+        var types: [DashboardCount] = []
+        for (name, count) in snapshot.slow.assetCounts where count > 0 {
+            types.append(DashboardCount(name: name, count: count))
+        }
+        types.sort { left, right in
+            if left.count == right.count { return left.name < right.name }
+            return left.count > right.count
+        }
+        assetTypes = Array(types.prefix(8))
         trafficBuckets = Dictionary(grouping: snapshot.slow.traffic, by: { $0.status / 100 * 100 })
             .map { DashboardTrafficBucket(status: $0.key, count: $0.value.count) }.sorted { $0.status < $1.status }
         recentTraffic = Array(snapshot.slow.traffic.sorted { timestamp($0.ts) > timestamp($1.ts) }.prefix(5))
