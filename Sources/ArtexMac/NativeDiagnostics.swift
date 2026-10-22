@@ -31,6 +31,10 @@ import Foundation
             result["native_setup_authenticated"] = true
             let llm = try await NativeLLMDiagnostics.run(session: authentication, directory: directory)
             result["native_llm_three_formats_crud_key_preservation_pool_retry"] = true
+            if CommandLine.arguments.contains("--chat-diagnostics") {
+                try await NativeChatDiagnostics.run(session: authentication, directory: directory)
+                result["native_chat_finite_crud"] = true
+            }
             if CommandLine.arguments.contains("--dashboard-diagnostics") { try await NativeDashboardDiagnostics.seed(session: authentication, directory: directory) }
             try await environment.stop()
             await environment.start()
