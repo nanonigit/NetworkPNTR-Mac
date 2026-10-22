@@ -32,3 +32,11 @@ Fishbone axes: guest kernel/configuration, initramfs/module/switch-root lifecycl
 - Repeat CLI persistence/invalid-disk/reference-contract tests against that same profile.
 - Preserve negative outcomes and explicit native-click/visual gates; a passing developer snapshot/service harness is insufficient for complete browser UI parity.
 - Keep all state/secrets local and ignored. Publish only normalized non-secret results. Do not weaken host isolation or silently reformat existing disks to get a passing run.
+
+## Portable source-kernel experiment (2026-10-23, in progress)
+
+The Docker.app diagnostic kernel remains unchanged. A separate recipe pins upstream Linux 6.12.114, LinuxKit configuration commit f935f6b18cad69f08c1830b432d7dab90bf67614, an Alpine builder digest, an exact package inventory and explicit built-in driver overrides. Source unpacking/compilation occurs in a private Linux ARM64 container with network=none, zero host mounts, dropped capabilities and bounded resources. Download acquisition is separate from offline compilation. See kernel-build-design.md.
+
+The first actual compilation failed while building the stackleak GCC plugin because gmp.h was absent. Why: runtime GMP was installed transitively, but compiler plugin headers require gmp-dev. Why was it missed: the previous dependency inventory covered normal kernel tools but not this preserved hardening plugin. Repair: add exact gmp-dev=6.3.0-r3 and lock the resulting 73-package inventory (including mpc1-dev=1.3.1-r1 and mpfr-dev=4.2.1_p1-r0 after the next compilation exposed mpc.h); do not disable stackleak. This build dependency error does not explain the earlier VM faults.
+
+Read-only review found that incomplete exported artifacts and a mutable retained-source cache could undermine provenance. Require all seven output files, verify retained source/license against pinned digests and retain from the verified staged build input. Regression tests reject each missing output and source substitution. Explicit Buildx selection rejects remote/ambiguous builders. The reviewed Python suite has 24 passing tests; Swift core has 42 passing tests. Actual new-kernel boot and an independent reproducibility build remain separate, pending gates.

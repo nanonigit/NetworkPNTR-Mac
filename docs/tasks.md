@@ -14,3 +14,5 @@ Backend checkpoint: see docs/phase2-verification.md. Guest boot, authenticated v
 P3 LLM checkpoint: typed profile/pool/retry services and native screens implemented; 11 normalized contract groups match the pinned reference. External create/edit/validation/keyboard-save/activation checks pass. Full LLM interaction/cloud/visual gates remain open; see docs/llm-settings-verification.md.
 
 P3 dashboard checkpoint: all visible sections and 11 authenticated read routes are connected. 12 nonempty token scenarios match an independent browser calculation and disposable pinned reference. Partial external UI interactions passed; populated visual pairs, traffic capture and remaining error/accessibility/runtime gates stay open. See docs/dashboard-verification.md.
+
+Portable-kernel work: pinned source/config/compiler package inventory and offline build/profile tools are implemented with 24 Python regression tests. Actual source-kernel compilation, VM lifecycle tests and independent rebuild comparison are in progress; no runtime promotion follows from the tooling tests. See docs/kernel-build-design.md and docs/bugs/guest-boot-investigation.md.

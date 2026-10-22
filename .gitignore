@@ -9,3 +9,5 @@ evidence/local/
 *.pyc
 
 guest/backend-artifacts/
+
+guest/source-kernel-artifacts/

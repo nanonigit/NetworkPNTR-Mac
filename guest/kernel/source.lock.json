@@ -1,0 +1,27 @@
+{
+  "version": "6.12.114",
+  "source": {
+    "url": "https://cdn.kernel.org/pub/linux/kernel/v6.x/linux-6.12.114.tar.xz",
+    "sha256": "7a8589912bd7a8adb07fed074283652cf482a35facef8954554654f0154b4af3",
+    "maximum_bytes": 268435456
+  },
+  "config": {
+    "url": "https://raw.githubusercontent.com/linuxkit/linuxkit/f935f6b18cad69f08c1830b432d7dab90bf67614/kernel/6.12.x/config-aarch64",
+    "sha256": "53280e08ae286156a31049c90ab8b2077db93c0366a8a9e6bb4b3fa7c02f65fe",
+    "maximum_bytes": 1048576
+  },
+  "config_license": {
+    "url": "https://raw.githubusercontent.com/linuxkit/linuxkit/f935f6b18cad69f08c1830b432d7dab90bf67614/LICENSE",
+    "sha256": "9361b05d8049b26dbef821a13bba0f275e3ca569e1dfcd3220952daf452202c1",
+    "maximum_bytes": 1048576
+  },
+  "config_source_commit": "f935f6b18cad69f08c1830b432d7dab90bf67614",
+  "builder_image": "alpine:3.22.7@sha256:e9f2de928efcc1b53d0948e684b4f490315f280de6044844ec0ff26c0b44d3cf",
+  "build_timestamp": "2026-10-22T00:00:00Z",
+  "build_user": "artex",
+  "build_host": "isolated-builder",
+  "jobs": 2,
+  "cpu_count": 1,
+  "builder_packages_sha256": "c11a5bded2130d7947ef844840b0b125c28eceb93cdd375c12a14de9426417ed",
+  "overrides_sha256": "dd5ab6bc4a26dda44ca8315343d3682d3efb112f356b456cf9dcba204e0bed1e"
+}
