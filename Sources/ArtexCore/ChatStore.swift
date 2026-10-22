@@ -146,7 +146,7 @@ import Observation
             if selectedID == id { requireTailReconciliation(newTurn: true); stopStatus = nil }
             // Confirmation stays successful even if a subsequent refresh fails.
             await refreshList()
-            if selectedID == id { await refreshDelta() }
+            if ticket == lifetime, !Task.isCancelled, selectedID == id { await refreshDelta() }
             return true
         } catch {
             if ticket == lifetime, !Task.isCancelled, !(error is CancellationError) { mutationErrors[id] = safeMessage(error) }
