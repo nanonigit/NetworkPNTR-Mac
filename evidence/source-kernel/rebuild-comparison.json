@@ -1,0 +1,48 @@
+{
+  "same_host": true,
+  "fresh_private_compile_containers": true,
+  "compilation_cache_used": false,
+  "dependency_image_layers_cached": true,
+  "network_mode": "none",
+  "host_mounts": 0,
+  "recipe_sha256": "43bb1338577b1a68723ac9ca750abed1df5e93e1598b588f72cf6e6d5f69dcca",
+  "builder_manifest_ids": [
+    "sha256:0354242e324c014d6a64ece6ef80052f0263be00a82f0c18973fa9616d7a87c6",
+    "sha256:fda967e81445aee0e9a4d8051d6e62aad8f3025389b3d6df265ce8925a1ba02d"
+  ],
+  "builder_manifest_ids_equal": false,
+  "builder_image_byte_identity_claimed": false,
+  "kernel_equal": true,
+  "config_equal": true,
+  "build_report_equal": true,
+  "kernel_sha256": "8e57308787c420cb42e4c4ea80e6def6438a52232692c010dc4609bb9bf21879",
+  "config_sha256": "f270a97fe4830adda7bf66b2f98c12b5e1c7be36fb8a323a9c36f3b4867d2b49",
+  "all_retained_file_hashes_equal": false,
+  "differing_retained_files": [
+    "LICENSES.tar.gz"
+  ],
+  "license_members_content_and_file_metadata_equal": true,
+  "license_directory_timestamps_differ": true,
+  "retained_files": [
+    {
+      "COPYING": "fb5a425bd3b3cd6071a3a9aff9909a859e7c1158d54d32e07658398cd67eb6a0",
+      "Image": "8e57308787c420cb42e4c4ea80e6def6438a52232692c010dc4609bb9bf21879",
+      "LICENSES.tar.gz": "58538d2098828d0938e316638cb182ccdf47164361ea9b7dbb4317f0143de381",
+      "build-report.json": "e9be20bc644e0d9b785844bb1779dcc46c3b797e80ee7d549b46e682748b48c0",
+      "config-LICENSE": "9361b05d8049b26dbef821a13bba0f275e3ca569e1dfcd3220952daf452202c1",
+      "kernel.config": "f270a97fe4830adda7bf66b2f98c12b5e1c7be36fb8a323a9c36f3b4867d2b49",
+      "linux-source.tar.xz": "7a8589912bd7a8adb07fed074283652cf482a35facef8954554654f0154b4af3"
+    },
+    {
+      "COPYING": "fb5a425bd3b3cd6071a3a9aff9909a859e7c1158d54d32e07658398cd67eb6a0",
+      "Image": "8e57308787c420cb42e4c4ea80e6def6438a52232692c010dc4609bb9bf21879",
+      "LICENSES.tar.gz": "062c115fabe5666716cc5c78427d2f9b91992615facf4d0327c87ef998ad4ce1",
+      "build-report.json": "e9be20bc644e0d9b785844bb1779dcc46c3b797e80ee7d549b46e682748b48c0",
+      "config-LICENSE": "9361b05d8049b26dbef821a13bba0f275e3ca569e1dfcd3220952daf452202c1",
+      "kernel.config": "f270a97fe4830adda7bf66b2f98c12b5e1c7be36fb8a323a9c36f3b4867d2b49",
+      "linux-source.tar.xz": "7a8589912bd7a8adb07fed074283652cf482a35facef8954554654f0154b4af3"
+    }
+  ],
+  "cross_host_reproducibility_verified": false,
+  "release_qualification": false
+}

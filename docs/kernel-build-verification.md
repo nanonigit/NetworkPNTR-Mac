@@ -1,6 +1,6 @@
 # Source-built kernel verification (2026-10-23)
 
-Status: functional candidate, not release qualification. Independent rebuild comparison is in progress.
+Status: functional candidate, not release qualification. Two independent same-host builds produce identical kernel/config bytes.
 
 ## Inputs and construction
 
@@ -22,6 +22,6 @@ Three consecutive fresh-disk signed-app diagnostics pass on this source-kernel c
 
 ## Limits and next gates
 
-The second compilation starts from the same verified source in a new private container, reusing dependency-image layers but no compilation output. Its Image/config hashes have not yet been compared. Repeat fresh native/lifecycle workload tests after a final selected recipe; intermittent earlier two-vCPU faults remain unexplained. These tests establish functionality on successful runs, not long-run reliability.
+The second compilation completed from the same verified source in a new private container, reusing dependency-image layers but no compilation output. Image, resolved configuration and build-report hashes agree. All retained hashes agree except LICENSES.tar.gz: license members/content/file metadata agree, while directory timestamps differ. Builder manifest identities also differ; no byte identity of whole builder images is asserted. The second build log marks all dependency-image instructions cached. Evidence/source-kernel/rebuild-comparison.json records both sets of hashes and limits. This proves same-host kernel/config reproducibility for these two builds, not cross-host or complete-package reproducibility. Repeat fresh native/lifecycle workload tests after a final selected recipe; intermittent earlier two-vCPU faults remain unexplained. These tests establish functionality on successful runs, not long-run reliability.
 
 Internal .app/service diagnostics and diagnostic content snapshots do not replace external click/visual acceptance. Cloud API egress, streaming, interception/capture, remaining features, migration, clean-Mac installation, signing/notarization and whole-product browser parity remain open.
