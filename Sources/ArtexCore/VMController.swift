@@ -32,7 +32,7 @@ import Virtualization
             try configuration.validate()
             let vm = VZVirtualMachine(configuration: configuration)
             vm.delegate = self; machine = vm
-            try await vm.start()
+            try await startMachine(vm)
             try state.transition(to: .running)
             poller = Task { [weak self] in
                 let deadline = ContinuousClock.now.advanced(by: readinessTimeout)
@@ -46,7 +46,7 @@ import Virtualization
                 self.fail(RuntimeError.timeout("guest readiness"))
             }
         } catch {
-            if let vm = machine, vm.canStop { try? await vm.stop() }
+            if let vm = machine, vm.canStop { try? await stopMachine(vm) }
             releaseResources()
             fail(error)
             throw error
@@ -69,7 +69,7 @@ import Virtualization
     public func forceStop() async throws {
         guard let vm = machine else { return }
         do {
-            try await vm.stop()
+            try await stopMachine(vm)
             refreshLog(); releaseResources()
             if state != .stopped { try state.transition(to: .stopped) }
             guestReady = false
@@ -98,6 +98,21 @@ import Virtualization
         guestReady = guestLog.contains("ARTEX_MAC_GUEST_READY")
     }
     private func fail(_ error: Error) { lastError = error.localizedDescription; if state != .failed { try? state.transition(to: .failed) } }
+    // Completion-handler calls stay on our MainActor. Older SDK async overlays treat
+    // VZVirtualMachine as a non-Sendable value crossing isolation during `await`.
+    private func startMachine(_ vm: VZVirtualMachine) async throws {
+        try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<Void, Error>) in
+            vm.start { result in continuation.resume(with: result) }
+        }
+    }
+    private func stopMachine(_ vm: VZVirtualMachine) async throws {
+        try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<Void, Error>) in
+            vm.stop { error in
+                if let error { continuation.resume(throwing: error) }
+                else { continuation.resume() }
+            }
+        }
+    }
     private func releaseResources() {
         poller?.cancel(); poller = nil; machine = nil
         try? output?.close(); output = nil

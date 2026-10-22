@@ -7,3 +7,5 @@
 MUSUBI Bug Hunter記録: 収集 — 固定したAlpineカーネルがARM64ヘッダー検証で拒否。調査 — EFI_ZBOOTが有効で、vmlinuzはgzip圧縮したImageを格納するPE形式だった。5 Whys: ヘッダー相違→ラッパーだった→raw Imageと仮定→配布形式を未確認→形式検証が不足。Fishbone: 配布形式、Appleローダーの要件、テスト範囲。Timeline: APKハッシュ確認→raw検証拒否→設定/ヘッダー調査→サイズ制限付き展開→内部Image検証→実起動成功。修正 — zbootの固定オフセット/長さを解析し展開上限とImageヘッダー/実行時ハッシュを検証。再発防止 — 未知形式を拒否し、固定パッケージと実VM起動テストを残す。画面内部診断はウィンドウ名を仮定して失敗したため、アプリ自身の表示中の主ウィンドウを一意に特定する方式に変更しました。
 
 現ゲストには永続ディスク・ARTEX・DB・キー・ネットワーク・ホスト共有がありません。全体の完成条件はdocs/tasks.mdに残しており、この段階を製品完成とは扱いません。
+
+CI互換性の回帰: macOS 15ランナーのSDKでは、非SendableなVZVirtualMachineを非同期APIへ渡す処理がSwift 6で拒否されました。MainActor上で完了ハンドラーAPIを呼び、checked continuationで待つ方式に変更。Swift 6検査を無効化したりunchecked Sendableを付けたりせず、ローカル実VMと古いSDKのCI両方を再検証します。
