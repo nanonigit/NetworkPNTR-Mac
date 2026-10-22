@@ -155,6 +155,26 @@ final class ChatStoreTests: XCTestCase {
         XCTAssertEqual(store.messages.map(\.seq), [1, 2, 3]); XCTAssertEqual(store.cursor, 3)
         XCTAssertFalse(store.running); XCTAssertFalse(store.needsTailReconciliation)
     }
+    @MainActor func testStoppedAcceptedSendCannotRestartTailAfterItsListRefreshCompletes() async throws {
+        let api = ChatTestTransport(); let store = ChatStore(service: ChatService(client: api))
+        try api.enqueue(ChatFixture.page([1], cursor: 1)); await store.select(id: 7)
+        var pending: CheckedContinuation<BackendHTTPResponse, any Error>?
+        var deltaRequests = 0
+        api.handler = { call in
+            if call.method == "POST" { return try ChatTestTransport.response(["status": "accepted"], status: 202) }
+            if call.path == "/api/conversations" { return try await withCheckedThrowingContinuation { pending = $0 } }
+            deltaRequests += 1
+            return try ChatTestTransport.response(ChatFixture.page([2], cursor: 2))
+        }
+        store.draft = "next turn"
+        let sending = Task { await store.sendCurrentDraft() }; await waitFor { pending != nil }
+        store.stop()
+        pending?.resume(returning: try ChatTestTransport.response(["conversations": []]))
+        let accepted = await sending.value
+        XCTAssertTrue(accepted)
+        XCTAssertEqual(deltaRequests, 0); XCTAssertEqual(store.messages.map(\.seq), [1])
+        XCTAssertTrue(store.needsTailReconciliation)
+    }
     @MainActor func testStopAcknowledgementStillReadsFinalTailAndUnchangedSubmittedDraftClears() async throws {
         let api = ChatTestTransport(); let store = ChatStore(service: ChatService(client: api))
         try api.enqueue(ChatFixture.page([], cursor: 0)); await store.select(id: 7); store.draft = "send"
