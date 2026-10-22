@@ -131,6 +131,30 @@ final class ChatStoreTests: XCTestCase {
         XCTAssertEqual(store.messages.map(\.seq), [1, 2])
         XCTAssertEqual(store.cursor, 2); XCTAssertFalse(store.running)
     }
+    @MainActor func testAcceptedSendReconcilesAfterPreSendDeltaReturnsStaleIdleSnapshot() async throws {
+        let api = ChatTestTransport(); let store = ChatStore(service: ChatService(client: api))
+        try api.enqueue(ChatFixture.page([1], cursor: 1, running: true)); await store.select(id: 7)
+        var pending: CheckedContinuation<BackendHTTPResponse, any Error>?
+        var deltaRequests = 0
+        api.handler = { call in
+            if call.method == "POST" { return try ChatTestTransport.response(["status": "accepted"], status: 202) }
+            if call.path == "/api/conversations" {
+                return try ChatTestTransport.response(["conversations": [ChatFixture.conversation(running: false)]])
+            }
+            deltaRequests += 1
+            if deltaRequests == 1 { return try await withCheckedThrowingContinuation { pending = $0 } }
+            return try ChatTestTransport.response(ChatFixture.page([2, 3], cursor: 3))
+        }
+        let oldDelta = Task { await store.refreshDelta() }; await waitFor { pending != nil }
+        store.draft = "next turn"
+        let accepted = await store.sendCurrentDraft()
+        XCTAssertTrue(accepted); XCTAssertEqual(store.draft, "")
+        pending?.resume(returning: try ChatTestTransport.response(ChatFixture.page([], cursor: 1)))
+        await oldDelta.value
+        XCTAssertEqual(deltaRequests, 2)
+        XCTAssertEqual(store.messages.map(\.seq), [1, 2, 3]); XCTAssertEqual(store.cursor, 3)
+        XCTAssertFalse(store.running); XCTAssertFalse(store.needsTailReconciliation)
+    }
     @MainActor func testStopAcknowledgementStillReadsFinalTailAndUnchangedSubmittedDraftClears() async throws {
         let api = ChatTestTransport(); let store = ChatStore(service: ChatService(client: api))
         try api.enqueue(ChatFixture.page([], cursor: 0)); await store.select(id: 7); store.draft = "send"
