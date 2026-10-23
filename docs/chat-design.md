@@ -1,6 +1,6 @@
 # Native chat: requirements, design and acceptance plan
 
-Status: C1 finite service/store implemented; C2 finite CRUD, populated history/delta and native restart persistence verified. Native chat UI and full chat acceptance remain pending. Browser source is pinned at e75ae371ad777ffd1eecdd28d2781a6519b05591.
+Status: C1 finite service/store implemented; C2 finite CRUD, populated history/delta and native restart persistence verified. Native core chat UI is implemented with partial external comparison; full chat acceptance remains pending. Browser source is pinned at e75ae371ad777ffd1eecdd28d2781a6519b05591.
 
 ## Evidence before design
 
