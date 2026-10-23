@@ -19,6 +19,11 @@ final class BackendUploadSocket: @unchecked Sendable {
         lock.lock(); defer { lock.unlock() }
         if let descriptor { Darwin.close(descriptor); self.descriptor = nil }
     }
+    func validateCompletion() throws {
+        lock.lock(); defer { lock.unlock() }
+        guard !cancelled else { throw CancellationError() }
+        guard descriptor == nil else { throw RuntimeError.integrity("unfinished upload worker") }
+    }
     func checkedDescriptor() throws -> Int32 {
         lock.lock(); defer { lock.unlock() }
         guard !cancelled else { throw CancellationError() }

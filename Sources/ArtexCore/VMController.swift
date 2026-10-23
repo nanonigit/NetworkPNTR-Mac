@@ -182,9 +182,13 @@ import Virtualization
         let preamble = Data(("ARTEX_VSOCK_1 " + provisioning.transportToken + "\n").utf8)
         return try await withTaskCancellationHandler {
             try Task.checkCancellation()
-            return try await Task.detached {
+            let response = try await Task.detached {
                 try BackendUploadExchange.exchange(socket: socket, preamble: preamble, header: header, plan: plan)
             }.value
+            try Task.checkCancellation()
+            try socket.validateCompletion()
+            guard guestReady, state == .running, backendUploads[identifier] === socket else { throw CancellationError() }
+            return response
         } onCancel: { socket.cancel() }
     }
     private func cancelBackendUploads() {
