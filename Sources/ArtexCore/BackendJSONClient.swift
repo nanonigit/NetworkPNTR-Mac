@@ -10,7 +10,7 @@ import Foundation
     public init(runtime: VMController, provisioning: GuestProvisioning) {
         self.runtime = runtime; self.provisioning = provisioning
     }
-    public func upload(conversationID: Int64, files: [URL], bearer: String) async throws -> BackendHTTPResponse {
+    public func upload(conversationID: Int64, files: [URL], bearer: String, progress: BackendUploadProgressHandler?) async throws -> BackendHTTPResponse {
         try Task.checkCancellation()
         guard conversationID > 0 else { throw ChatUploadBodyError.invalidFile }
         let preflight = Task.detached { try ChatMultipartPlan(files: files) }
@@ -19,7 +19,7 @@ import Foundation
         } onCancel: { preflight.cancel() }
         try Task.checkCancellation()
         let header = try BackendMultipartRequest.header(conversationID: conversationID, plan: plan, bearer: bearer)
-        return try await runtime.uploadBackend(plan: plan, header: header, provisioning: provisioning)
+        return try await runtime.uploadBackend(plan: plan, header: header, provisioning: provisioning, progress: progress)
     }
     public func downloadDigest(_ attachment: ChatAttachmentDownload, bearer: String) async throws -> BackendDownloadResult {
         try Task.checkCancellation()

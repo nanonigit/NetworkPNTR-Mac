@@ -12,6 +12,7 @@ public enum AuthenticationPhase: String, Sendable { case checking, needsSetup, n
     @ObservationIgnored private let setupToken: String
     @ObservationIgnored private var token: String?
     @ObservationIgnored private var revision = UUID()
+    @ObservationIgnored private var uploadProgress: [UUID: BackendUploadProgressGate] = [:]
     private struct Status: Decodable { let initialized: Bool; let setup_token_required: Bool }
     private struct Session: Decodable { let token: String }
     public init(client: any BackendJSONTransport, vault: any SessionVault, setupToken: String) {
@@ -19,7 +20,7 @@ public enum AuthenticationPhase: String, Sendable { case checking, needsSetup, n
     }
     public func refresh() async {
         guard !isBusy else { return }
-        isBusy = true; error = nil; token = nil; revision = UUID(); phase = .checking
+        isBusy = true; error = nil; token = nil; advanceRevision(); phase = .checking
         defer { isBusy = false }
         do {
             let status: Status = try await request(method: "GET", path: "/api/auth/status")
@@ -64,7 +65,7 @@ public enum AuthenticationPhase: String, Sendable { case checking, needsSetup, n
     }
     public func logout() {
         guard !isBusy else { return }
-        do { try vault.remove(); token = nil; revision = UUID(); phase = .needsLogin; error = nil }
+        do { try vault.remove(); token = nil; advanceRevision(); phase = .needsLogin; error = nil }
         catch { self.error = error.localizedDescription }
     }
     public func authenticatedRequest(method: String, path: String, body: Data? = nil) async throws -> BackendHTTPResponse {
@@ -74,14 +75,26 @@ public enum AuthenticationPhase: String, Sendable { case checking, needsSetup, n
         try validateReply(response, ticket: ticket)
         return response
     }
-    public func authenticatedUpload(conversationID: Int64, files: [URL]) async throws -> BackendHTTPResponse {
+    public func authenticatedUpload(conversationID: Int64, files: [URL], progress: BackendUploadProgressHandler? = nil) async throws -> BackendHTTPResponse {
+        try Task.checkCancellation()
         guard phase == .authenticated, let token else { throw BackendAPIError.status(401) }
         guard conversationID > 0, !files.isEmpty else { throw ChatUploadBodyError.invalidFile }
         guard let uploader = client as? any BackendMultipartTransport else { throw BackendAPIError.invalidResponse }
         let ticket = revision
-        let response = try await uploader.upload(conversationID: conversationID, files: files, bearer: token)
-        try validateReply(response, ticket: ticket)
-        return response
+        let identifier = UUID()
+        let gate = progress.map { BackendUploadProgressGate($0) }
+        if let gate { uploadProgress[identifier] = gate }
+        defer { uploadProgress.removeValue(forKey: identifier)?.close(); gate?.close() }
+        let forwarded: BackendUploadProgressHandler?
+        if let gate { forwarded = { @Sendable value in gate.receive(value) } }
+        else { forwarded = nil }
+        return try await withTaskCancellationHandler {
+            try Task.checkCancellation()
+            let response = try await uploader.upload(conversationID: conversationID, files: files, bearer: token, progress: forwarded)
+            try Task.checkCancellation()
+            try validateReply(response, ticket: ticket)
+            return response
+        } onCancel: { gate?.close() }
     }
     public func authenticatedDownloadDigest(conversationID: Int64, name: String, expectedSize: Int64) async throws -> BackendDownloadResult {
         try Task.checkCancellation()
@@ -97,15 +110,20 @@ public enum AuthenticationPhase: String, Sendable { case checking, needsSetup, n
     private func validateReply(_ response: BackendHTTPResponse, ticket: UUID) throws {
         guard revision == ticket, phase == .authenticated else { throw CancellationError() }
         if response.status == 401 {
-            token = nil; revision = UUID(); phase = .needsLogin
+            token = nil; advanceRevision(); phase = .needsLogin
             // In-memory authentication must expire even if Keychain removal fails.
             try vault.remove()
         }
     }
+    private func advanceRevision() {
+        for gate in uploadProgress.values { gate.close() }
+        uploadProgress.removeAll()
+        revision = UUID()
+    }
     private func accept(_ value: String) throws {
         _ = try BackendHTTPRequest.make(method: "GET", path: "/api/auth/status", body: nil, bearer: value)
         try vault.save(value)
-        token = value; revision = UUID(); phase = .authenticated; error = nil
+        token = value; advanceRevision(); phase = .authenticated; error = nil
     }
     private func request<T: Decodable>(method: String, path: String, body: Data? = nil) async throws -> T {
         let response = try await client.send(method: method, path: path, body: body, bearer: nil)

@@ -51,7 +51,7 @@ import XCTest
         let digest = hash.finalize().map { String(format: "%02x", $0) }.joined()
         return BackendDownloadResult(status: 200, byteCount: attachment.expectedSize, sha256: failLargeDigest ? "wrong" : digest)
     }
-    func upload(conversationID: Int64, files: [URL], bearer: String) async throws -> BackendHTTPResponse {
+    func upload(conversationID: Int64, files: [URL], bearer: String, progress: BackendUploadProgressHandler? = nil) async throws -> BackendHTTPResponse {
         if files.count == 1, files[0].lastPathComponent == "limit.bin" {
             _ = try ChatMultipartPlan(files: files)
             let size = (try FileManager.default.attributesOfItem(atPath: files[0].path)[.size] as! NSNumber).int64Value

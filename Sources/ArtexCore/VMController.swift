@@ -163,7 +163,7 @@ import Virtualization
         }.value
     }
     /// Dedicated multipart exchange; payload files never become a shared VM directory.
-    func uploadBackend(plan: ChatMultipartPlan, header: Data, provisioning: GuestProvisioning) async throws -> BackendHTTPResponse {
+    func uploadBackend(plan: ChatMultipartPlan, header: Data, provisioning: GuestProvisioning, progress: BackendUploadProgressHandler? = nil) async throws -> BackendHTTPResponse {
         try Task.checkCancellation()
         guard guestReady, state == .running else { throw RuntimeError.integrity("backend not ready") }
         let identifier = try await connectBackend()
@@ -183,7 +183,7 @@ import Virtualization
         return try await withTaskCancellationHandler {
             try Task.checkCancellation()
             let response = try await Task.detached {
-                try BackendUploadExchange.exchange(socket: socket, preamble: preamble, header: header, plan: plan)
+                try BackendUploadExchange.exchange(socket: socket, preamble: preamble, header: header, plan: plan, progress: progress)
             }.value
             try Task.checkCancellation()
             try socket.validateCompletion()
