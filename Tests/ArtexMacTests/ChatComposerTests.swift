@@ -23,4 +23,28 @@ final class ChatComposerTests: XCTestCase {
         XCTAssertEqual(store.draft, "conversation B")
         XCTAssertEqual(store.draft(for: 7), "変換中")
     }
+    @MainActor func testMentionReturnIsConsumedBeforeSendAndCompositionSkipsHandler() throws {
+        let editor = ChatComposer.Editor(frame: NSRect(x: 0, y: 0, width: 200, height: 80))
+        var handled = 0; var sent = 0
+        editor.isEditable = true; editor.submit = { sent += 1 }
+        editor.handleMentionKey = { _ in handled += 1; return true }
+        let event = try XCTUnwrap(NSEvent.keyEvent(with: .keyDown, location: .zero, modifierFlags: [], timestamp: 0, windowNumber: 0, context: nil, characters: "\r", charactersIgnoringModifiers: "\r", isARepeat: false, keyCode: 36))
+        editor.keyDown(with: event)
+        XCTAssertEqual(handled, 1); XCTAssertEqual(sent, 0)
+        editor.setMarkedText("変換中", selectedRange: NSRange(location: 3, length: 0), replacementRange: NSRange(location: NSNotFound, length: 0))
+        XCTAssertFalse(editor.consumeMentionKey(event)); XCTAssertEqual(handled, 1)
+    }
+    @MainActor func testEditingCallbackReportsCaretAndCompositionUsingOriginalBinding() {
+        var text = ""; var observations: [(String, Int, Bool)] = []
+        let composer = ChatComposer(text: Binding(get: { text }, set: { text = $0 }), mode: "enter", disabled: false, send: {}, onEditing: { value, range, composing in observations.append((value, range.location, composing)) })
+        let coordinator = ChatComposer.Coordinator(composer)
+        let editor = ChatComposer.Editor(frame: NSRect(x: 0, y: 0, width: 200, height: 80))
+        editor.string = "😀 @finding"; editor.setSelectedRange(NSRange(location: editor.string.utf16.count, length: 0))
+        coordinator.textDidChange(Notification(name: NSText.didChangeNotification, object: editor))
+        XCTAssertEqual(text, "😀 @finding"); XCTAssertEqual(observations.last?.1, text.utf16.count)
+        editor.setMarkedText("変換中", selectedRange: NSRange(location: 3, length: 0), replacementRange: NSRange(location: NSNotFound, length: 0))
+        coordinator.textDidChange(Notification(name: NSText.didChangeNotification, object: editor))
+        XCTAssertEqual(observations.last?.2, true)
+    }
+
 }
