@@ -4,6 +4,8 @@ import SwiftUI
 struct ChatTranscriptView: View {
     let workspace: ChatWorkspace
     @State private var atBottom = true
+    @State private var visibleAnchor: Int64?
+    @State private var olderAnchor: Int64?
     @State private var detail: ChatActivity?
     private var store: ChatStore { workspace.transcript }
     var body: some View {
@@ -18,8 +20,8 @@ struct ChatTranscriptView: View {
                     LazyVStack(alignment: .leading, spacing: 14) {
                         if store.hasMore {
                             Button(store.isLoadingOlder ? "読み込み中…" : "以前のメッセージを読み込む") {
-                                let anchor = store.messages.first?.seq
-                                Task { await store.loadOlder(); if let anchor { proxy.scrollTo(anchor, anchor: .top) } }
+                                olderAnchor = store.messages.first?.seq
+                                Task { await store.loadOlder(); if store.transcriptError != nil { olderAnchor = nil } }
                             }.disabled(store.isLoadingOlder).frame(maxWidth: .infinity)
                         }
                         if store.messages.isEmpty, !store.isLoadingHistory {
@@ -29,13 +31,17 @@ struct ChatTranscriptView: View {
                         }
                         ForEach(store.messages) { event in eventRow(event).id(event.seq) }
                         Color.clear.frame(height: 1).id("chat-bottom")
-                    }.padding(20)
+                    }.scrollTargetLayout().padding(20)
+                }
+                .scrollPosition(id: $visibleAnchor, anchor: .top)
+                .onChange(of: store.messages.first?.seq) { _, _ in
+                    if let anchor = olderAnchor { proxy.scrollTo(anchor, anchor: .top); visibleAnchor = anchor; olderAnchor = nil }
                 }
                 .onScrollGeometryChange(for: Bool.self) { geometry in
                     geometry.contentOffset.y + geometry.containerSize.height >= geometry.contentSize.height - 72
                 } action: { _, value in atBottom = value }
                 .onChange(of: store.messages.last?.seq) { _, _ in if atBottom { proxy.scrollTo("chat-bottom", anchor: .bottom) } }
-                .onChange(of: store.selectedID) { _, _ in atBottom = true }
+                .onChange(of: store.selectedID) { _, _ in atBottom = true; olderAnchor = nil; visibleAnchor = nil }
                 if !atBottom { Button("最新のメッセージへ") { proxy.scrollTo("chat-bottom", anchor: .bottom) }.padding(6) }
             }
         }
@@ -50,6 +56,7 @@ struct ChatTranscriptView: View {
                 Text(event.kind).font(.caption.monospaced()).foregroundStyle(event.isError == true ? .red : .secondary)
                 if let tool = event.tool { Text(tool).font(.caption).foregroundStyle(.secondary) }
                 Spacer()
+                if let date = ISO8601DateFormatter().date(from: event.ts) { Text(date, format: .dateTime.month().day().hour().minute()).font(.caption2).foregroundStyle(.secondary) }
                 Button("詳細") { detail = event }.font(.caption).help("イベントの詳細を取得")
             }
             Text((try? AttributedString(markdown: event.summary, options: .init(interpretedSyntax: .inlineOnlyPreservingWhitespace))) ?? AttributedString(event.summary))

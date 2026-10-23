@@ -152,5 +152,6 @@ struct ChatView: View {
                 .accessibilityLabel("会話の操作：" + conversation.title)
         }.padding(.vertical, 5).padding(.horizontal, 4)
             .background(store.selectedID == conversation.id ? Color.accentColor.opacity(0.14) : .clear, in: RoundedRectangle(cornerRadius: 5))
+            .accessibilityElement(children: .contain)
     }
 }

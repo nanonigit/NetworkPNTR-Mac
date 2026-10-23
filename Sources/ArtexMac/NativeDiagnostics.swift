@@ -70,6 +70,10 @@ import Foundation
             await login.login(password: password, agreed: true)
             guard login.phase == .authenticated else { throw RuntimeError.integrity(login.error ?? "native login") }
             result["native_login_validation_and_real_auth"] = true
+            if CommandLine.arguments.contains("--chat-review") {
+                _ = try await NativeChatHistoryDiagnostics.run(session: login, directory: directory)
+                result["chat_review_fixture_seeded"] = true
+            }
             try await Task.sleep(for: .milliseconds(300))
             result["authenticated_content_snapshot"] = try capture(to: directory.appendingPathComponent("native-authenticated.png"))
             if CommandLine.arguments.contains("--native-review") {
