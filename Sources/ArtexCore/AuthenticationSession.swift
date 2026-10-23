@@ -83,6 +83,17 @@ public enum AuthenticationPhase: String, Sendable { case checking, needsSetup, n
         try validateReply(response, ticket: ticket)
         return response
     }
+    public func authenticatedDownloadDigest(conversationID: Int64, name: String, expectedSize: Int64) async throws -> BackendDownloadResult {
+        try Task.checkCancellation()
+        guard phase == .authenticated, let token else { throw BackendAPIError.status(401) }
+        let attachment = try ChatAttachmentDownload(conversationID: conversationID, name: name, expectedSize: expectedSize)
+        guard let downloader = client as? any BackendAttachmentDownloadTransport else { throw BackendAPIError.invalidResponse }
+        let ticket = revision
+        let response = try await downloader.downloadDigest(attachment, bearer: token)
+        try Task.checkCancellation()
+        try validateReply(BackendHTTPResponse(status: response.status, body: Data()), ticket: ticket)
+        return response
+    }
     private func validateReply(_ response: BackendHTTPResponse, ticket: UUID) throws {
         guard revision == ticket, phase == .authenticated else { throw CancellationError() }
         if response.status == 401 {

@@ -33,7 +33,9 @@ final class AuthenticatedDownloadTests: XCTestCase {
         let attachment = try ChatAttachmentDownload(conversationID: 42, name: "日本語 #?.bin", expectedSize: 7)
         let header = String(decoding: try attachment.request(bearer: "fixture.jwt"), as: UTF8.self)
         XCTAssertTrue(header.hasPrefix("GET /api/workspace/download?path=sessions/conv-42/uploads/"))
-        XCTAssertTrue(header.contains("%23%3F.bin HTTP/1.1\r\n"))
+        let target = try XCTUnwrap(header.split(separator: " ").dropFirst().first)
+        let query = URLComponents(string: "http://localhost" + target)
+        XCTAssertEqual(query?.queryItems?.first?.value, "sessions/conv-42/uploads/日本語 #?.bin")
         XCTAssertTrue(header.contains("Accept: application/octet-stream\r\n"))
         XCTAssertTrue(header.contains("Accept-Encoding: identity\r\n"))
         for name in ["", ".", "..", "../file", "a/b", "a\\b", "bad\r\n", "bad\0", String(repeating: "a", count: 256)] {

@@ -4,7 +4,7 @@ import Foundation
     func send(method: String, path: String, body: Data?, bearer: String?) async throws -> BackendHTTPResponse
 }
 
-@MainActor public final class BackendJSONClient: BackendJSONTransport, BackendMultipartTransport {
+@MainActor public final class BackendJSONClient: BackendJSONTransport, BackendMultipartTransport, BackendAttachmentDownloadTransport {
     private let runtime: VMController
     private let provisioning: GuestProvisioning
     public init(runtime: VMController, provisioning: GuestProvisioning) {
@@ -20,6 +20,11 @@ import Foundation
         try Task.checkCancellation()
         let header = try BackendMultipartRequest.header(conversationID: conversationID, plan: plan, bearer: bearer)
         return try await runtime.uploadBackend(plan: plan, header: header, provisioning: provisioning)
+    }
+    public func downloadDigest(_ attachment: ChatAttachmentDownload, bearer: String) async throws -> BackendDownloadResult {
+        try Task.checkCancellation()
+        let request = try attachment.request(bearer: bearer)
+        return try await runtime.downloadBackendDigest(request: request, expectedSize: attachment.expectedSize, provisioning: provisioning)
     }
     public func send(method: String, path: String, body: Data?, bearer: String?) async throws -> BackendHTTPResponse {
         let request = try BackendHTTPRequest.make(method: method, path: path, body: body, bearer: bearer)

@@ -191,6 +191,35 @@ import Virtualization
             return response
         } onCancel: { socket.cancel() }
     }
+    /// A bounded digest stream on an owned transfer socket, with the same stop lease as uploads.
+    func downloadBackendDigest(request: Data, expectedSize: Int64, provisioning: GuestProvisioning) async throws -> BackendDownloadResult {
+        try Task.checkCancellation()
+        guard guestReady, state == .running else { throw RuntimeError.integrity("backend not ready") }
+        let identifier = try await connectBackend()
+        defer {
+            backendUploads.removeValue(forKey: identifier)?.finish()
+            backendConnections.removeValue(forKey: identifier)?.close()
+        }
+        try Task.checkCancellation()
+        guard guestReady, state == .running,
+              let connection = backendConnections[identifier] else { throw RuntimeError.integrity("closed download connection") }
+        let descriptor = dup(connection.fileDescriptor)
+        guard descriptor >= 0 else { throw POSIXError(.EIO) }
+        let socket = BackendUploadSocket(owning: descriptor)
+        backendUploads[identifier] = socket
+        guard fcntl(descriptor, F_SETFD, FD_CLOEXEC) == 0 else { throw POSIXError(.EIO) }
+        let preamble = Data(("ARTEX_VSOCK_1 " + provisioning.transportToken + "\n").utf8)
+        return try await withTaskCancellationHandler {
+            try Task.checkCancellation()
+            let response = try await Task.detached {
+                try BackendDownloadExchange.exchange(socket: socket, preamble: preamble, request: request, expectedSize: expectedSize)
+            }.value
+            try Task.checkCancellation()
+            try socket.validateCompletion()
+            guard guestReady, state == .running, backendUploads[identifier] === socket else { throw CancellationError() }
+            return response
+        } onCancel: { socket.cancel() }
+    }
     private func cancelBackendUploads() {
         for socket in backendUploads.values { socket.cancel() }
     }
