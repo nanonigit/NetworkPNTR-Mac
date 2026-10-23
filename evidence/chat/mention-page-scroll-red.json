@@ -1,0 +1,11 @@
+{
+  "case": "Pointer load-more preserves current citation candidate viewport",
+  "fixture_records": 23,
+  "initial_page": 20,
+  "action": "Scroll candidates to record04; click load more",
+  "expected": "Keep existing bottom rows in view while appending03/02/01",
+  "observed": "Candidate scroll bar reset from0.975 to0; visible rows reset to23/22/21",
+  "passed": false,
+  "evidence": "External CUA AX change after clicking native button102; browser counterpart appends3 with All23 shown",
+  "full_visual_acceptance": false
+}
