@@ -26,6 +26,11 @@ final class ChatMentionInteractionTests: XCTestCase {
         XCTAssertNil(ChatMentionEditing.search("acme.com").kind)
         XCTAssertTrue(ChatMentionEditing.search("acme.com").categories.isEmpty)
     }
+    func testAliasPrefixPreservesCombiningMarkAfterChineseWireLabel() {
+        let input = ChatMentionEditing.search("漏洞\u{0301}SQL")
+        XCTAssertEqual(input.kind, .finding)
+        XCTAssertEqual(input.query, "\u{0301}SQL")
+    }
     func testInsertionPreservesSuffixAndRejectsStaleActiveQuery() throws {
         let text = "😀 @finding untouched"
         let active = try XCTUnwrap(ChatMentionEditing.active(in: text, caret: "😀 @finding".utf16.count))
