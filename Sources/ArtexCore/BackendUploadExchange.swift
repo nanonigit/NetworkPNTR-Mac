@@ -34,7 +34,7 @@ final class BackendUploadSocket: @unchecked Sendable {
 
 enum BackendUploadExchange {
     /// Finite full-duplex exchange. Reader buffers are bounded independently of file size.
-    static func exchange(socket: BackendUploadSocket, preamble: Data, header: Data, plan: ChatMultipartPlan, timeout: Duration = .seconds(300)) throws -> BackendHTTPResponse {
+    static func exchange(socket: BackendUploadSocket, preamble: Data, header: Data, plan: ChatMultipartPlan, timeout: Duration = .seconds(300), progress: BackendUploadProgressHandler? = nil) throws -> BackendHTTPResponse {
         defer { socket.finish() }
         let descriptor = try socket.checkedDescriptor()
         let flags = fcntl(descriptor, F_GETFL)
@@ -42,6 +42,7 @@ enum BackendUploadExchange {
         guard flags >= 0, fcntl(descriptor, F_SETFL, flags | O_NONBLOCK) == 0,
               setsockopt(descriptor, SOL_SOCKET, SO_NOSIGPIPE, &noSignal, socklen_t(MemoryLayout<Int32>.size)) == 0 else { throw POSIXError(.EIO) }
         guard preamble.count <= 256, header.count <= 32768, timeout > .zero else { throw RuntimeError.integrity("upload exchange bounds") }
+        let reporter = try BackendUploadProgressReporter(totalBodyBytes: plan.contentLength, progress: progress)
         let body = ChatMultipartBody(plan: plan)
         defer { body.close() }
         let deadline = ContinuousClock.now.advanced(by: timeout)
@@ -100,6 +101,8 @@ enum BackendUploadExchange {
                 }
                 guard sent > 0 else { throw POSIXError(.EIO) }
                 offset += sent; written += Int64(sent)
+                let bodyWritten = max(0, written - Int64(preamble.count + header.count))
+                try reporter.record(sentBodyBytes: bodyWritten)
             }
         }
     }
