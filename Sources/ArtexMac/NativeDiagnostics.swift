@@ -74,6 +74,11 @@ import Foundation
                 _ = try await NativeChatHistoryDiagnostics.run(session: login, directory: directory)
                 result["chat_review_fixture_seeded"] = true
             }
+            let mentionIDs: [Int64]
+            if CommandLine.arguments.contains("--mention-review") {
+                mentionIDs = try await NativeMentionDiagnostics.run(session: login, directory: directory)
+                result["native_citation_populated_pages"] = true
+            } else { mentionIDs = [] }
             try await Task.sleep(for: .milliseconds(300))
             result["authenticated_content_snapshot"] = try capture(to: directory.appendingPathComponent("native-authenticated.png"))
             if CommandLine.arguments.contains("--native-review") {
@@ -86,6 +91,10 @@ import Foundation
                     try await Task.sleep(for: .seconds(1))
                 }
                 guard FileManager.default.fileExists(atPath: finish.path) else { throw RuntimeError.timeout("external native fixture review") }
+            }
+            if !mentionIDs.isEmpty {
+                try await NativeMentionDiagnostics.cleanup(mentionIDs, session: login)
+                result["native_citation_fixture_cleaned"] = true
             }
             login.logout()
             guard login.phase == .needsLogin, login.error == nil else { throw RuntimeError.integrity("Keychain fixture cleanup") }

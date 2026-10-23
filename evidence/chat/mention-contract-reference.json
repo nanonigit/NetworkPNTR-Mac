@@ -1,0 +1,147 @@
+{
+  "records": [
+    {
+      "kind": "company",
+      "id": 23,
+      "label": "Native citation fixture 23",
+      "description": "native citation fixture 23"
+    },
+    {
+      "kind": "company",
+      "id": 22,
+      "label": "Native citation fixture 22",
+      "description": "native citation fixture 22"
+    },
+    {
+      "kind": "company",
+      "id": 21,
+      "label": "Native citation fixture 21",
+      "description": "native citation fixture 21"
+    },
+    {
+      "kind": "company",
+      "id": 20,
+      "label": "Native citation fixture 20",
+      "description": "native citation fixture 20"
+    },
+    {
+      "kind": "company",
+      "id": 19,
+      "label": "Native citation fixture 19",
+      "description": "native citation fixture 19"
+    },
+    {
+      "kind": "company",
+      "id": 18,
+      "label": "Native citation fixture 18",
+      "description": "native citation fixture 18"
+    },
+    {
+      "kind": "company",
+      "id": 17,
+      "label": "Native citation fixture 17",
+      "description": "native citation fixture 17"
+    },
+    {
+      "kind": "company",
+      "id": 16,
+      "label": "Native citation fixture 16",
+      "description": "native citation fixture 16"
+    },
+    {
+      "kind": "company",
+      "id": 15,
+      "label": "Native citation fixture 15",
+      "description": "native citation fixture 15"
+    },
+    {
+      "kind": "company",
+      "id": 14,
+      "label": "Native citation fixture 14",
+      "description": "native citation fixture 14"
+    },
+    {
+      "kind": "company",
+      "id": 13,
+      "label": "Native citation fixture 13",
+      "description": "native citation fixture 13"
+    },
+    {
+      "kind": "company",
+      "id": 12,
+      "label": "Native citation fixture 12",
+      "description": "native citation fixture 12"
+    },
+    {
+      "kind": "company",
+      "id": 11,
+      "label": "Native citation fixture 11",
+      "description": "native citation fixture 11"
+    },
+    {
+      "kind": "company",
+      "id": 10,
+      "label": "Native citation fixture 10",
+      "description": "native citation fixture 10"
+    },
+    {
+      "kind": "company",
+      "id": 9,
+      "label": "Native citation fixture 09",
+      "description": "native citation fixture 09"
+    },
+    {
+      "kind": "company",
+      "id": 8,
+      "label": "Native citation fixture 08",
+      "description": "native citation fixture 08"
+    },
+    {
+      "kind": "company",
+      "id": 7,
+      "label": "Native citation fixture 07",
+      "description": "native citation fixture 07"
+    },
+    {
+      "kind": "company",
+      "id": 6,
+      "label": "Native citation fixture 06",
+      "description": "native citation fixture 06"
+    },
+    {
+      "kind": "company",
+      "id": 5,
+      "label": "Native citation fixture 05",
+      "description": "native citation fixture 05"
+    },
+    {
+      "kind": "company",
+      "id": 4,
+      "label": "Native citation fixture 04",
+      "description": "native citation fixture 04"
+    },
+    {
+      "kind": "company",
+      "id": 3,
+      "label": "Native citation fixture 03",
+      "description": "native citation fixture 03"
+    },
+    {
+      "kind": "company",
+      "id": 2,
+      "label": "Native citation fixture 02",
+      "description": "native citation fixture 02"
+    },
+    {
+      "kind": "company",
+      "id": 1,
+      "label": "Native citation fixture 01",
+      "description": "native citation fixture 01"
+    }
+  ],
+  "first_page": 20,
+  "second_page": 3,
+  "next_cursor_exhausted": true,
+  "exact_id_first": true,
+  "empty_search": true
+}

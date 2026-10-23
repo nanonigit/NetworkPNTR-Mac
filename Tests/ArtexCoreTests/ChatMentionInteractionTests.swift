@@ -48,6 +48,29 @@ final class ChatMentionInteractionTests: XCTestCase {
         XCTAssertEqual(ChatMentionEditing.selected(in: edit.text).map(\.id), ["4"])
         XCTAssertNil(ChatMentionEditing.remove(tokens[0], from: "changed"))
     }
+    func testEditingAndCategoriesMatchExecutedBrowserHelper() throws {
+        struct Active: Decodable { let start: Int; let end: Int; let query: String }
+        struct Category: Decodable { let kind: String }
+        struct Search: Decodable { let kind: String; let query: String; let categories: [Category] }
+        struct Case: Decodable { let value: String; let caret: Int; let active: Active?; let search: Search? }
+        struct Reference: Decodable { let cases: [Case] }
+        let root = URL(fileURLWithPath: #filePath).deletingLastPathComponent().deletingLastPathComponent().deletingLastPathComponent()
+        let data = try Data(contentsOf: root.appendingPathComponent("evidence/chat/mention-editing-reference.json"))
+        let reference = try JSONDecoder().decode(Reference.self, from: data)
+        XCTAssertEqual(reference.cases.count, 9)
+        for item in reference.cases {
+            let actual = ChatMentionEditing.active(in: item.value, caret: item.caret)
+            XCTAssertEqual(actual?.query, item.active?.query, item.value)
+            XCTAssertEqual(actual?.range.location, item.active?.start, item.value)
+            if let expected = item.active { XCTAssertEqual(actual?.range.length, expected.end - expected.start, item.value) }
+            if let expected = item.search, let actual {
+                let search = ChatMentionEditing.search(actual.query)
+                XCTAssertEqual(search.kind?.rawValue ?? "", expected.kind, item.value)
+                XCTAssertEqual(search.query, expected.query, item.value)
+                XCTAssertEqual(search.categories.map(\.rawValue), expected.categories.map(\.kind), item.value)
+            }
+        }
+    }
     @MainActor func testObsoleteSearchAndCancelCannotRestoreOldResults() async throws {
         let api = ChatTestTransport(); let store = ChatMentionSearchStore(service: ChatMentionService(client: api))
         var held: CheckedContinuation<BackendHTTPResponse, any Error>?

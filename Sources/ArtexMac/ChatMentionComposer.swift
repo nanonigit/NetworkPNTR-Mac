@@ -13,6 +13,7 @@ struct ChatMentionComposer: View {
     @State private var composing = false
     @State private var dismissed = false
     @State private var activeIndex = 0
+    @State private var pendingKeyboardIndex: Int?
     @State private var selection: ChatMentionSelection?
     @State private var lastEditedText: String
     @State private var shownKey: Data?
@@ -46,7 +47,7 @@ struct ChatMentionComposer: View {
         VStack(alignment: .leading, spacing: 5) {
             if active != nil { candidates }
             ChatComposer(text: $text, mode: mode, disabled: disabled, send: send, onEditing: { value, range, marked in
-                if Array(value.utf16) != Array(lastEditedText.utf16) { dismissed = false; activeIndex = 0; selection = nil }
+                if Array(value.utf16) != Array(lastEditedText.utf16) { dismissed = false; activeIndex = 0; selection = nil; pendingKeyboardIndex = nil }
                 lastEditedText = value; caret = range.location; composing = marked
             }, onMentionKey: handleKey, selectionRequest: selection)
                 .frame(height: 90).overlay(RoundedRectangle(cornerRadius: 7).stroke(.quaternary))
@@ -65,7 +66,7 @@ struct ChatMentionComposer: View {
             }
         }
         .task(id: TaskKey(query: key, retry: retry)) {
-            let ticket = UUID(); epoch = ticket; activeIndex = 0; results.cancel(); shownKey = key
+            let ticket = UUID(); epoch = ticket; activeIndex = 0; pendingKeyboardIndex = nil; results.cancel(); shownKey = key
             guard key != nil else { debouncing = false; return }
             debouncing = true
             defer { if epoch == ticket { debouncing = false } }
@@ -102,7 +103,11 @@ struct ChatMentionComposer: View {
                     }.padding(6)
                 }.frame(maxHeight: 220)
                 .onChange(of: activeIndex) { _, value in proxy.scrollTo(value, anchor: .bottom) }
-                .onChange(of: items.count) { _, _ in proxy.scrollTo(activeIndex, anchor: .bottom) }
+                .onChange(of: items.count) { _, newCount in
+                    if let pending = pendingKeyboardIndex, pending < newCount {
+                        proxy.scrollTo(pending, anchor: .bottom); pendingKeyboardIndex = nil
+                    }
+                }
             }
         }.padding(8).background(.regularMaterial, in: RoundedRectangle(cornerRadius: 8))
         .accessibilityElement(children: .contain).accessibilityLabel("引用候補")
@@ -130,7 +135,7 @@ struct ChatMentionComposer: View {
         if event.keyCode == 53 { dismissed = true; return true }
         if [125,126].contains(event.keyCode) {
             if event.keyCode == 125, input.categories.isEmpty, !loading, count > 0, activeIndex >= count - 1, results.nextCursor != nil {
-                activeIndex = count; Task { await results.loadMore() }
+                pendingKeyboardIndex = count; activeIndex = count; Task { await results.loadMore() }
             } else if count > 0 { activeIndex = (activeIndex + (event.keyCode == 125 ? 1 : count - 1)) % count }
             return true
         }

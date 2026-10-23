@@ -1,0 +1,139 @@
+{
+  "baseline": "e75ae371ad777ffd1eecdd28d2781a6519b05591",
+  "source": "web/src/lib/chat-mentions.ts",
+  "cases": [
+    {
+      "value": "😀 inspect @finding tail",
+      "caret": 19,
+      "active": {
+        "start": 11,
+        "end": 19,
+        "query": "finding"
+      },
+      "search": {
+        "kind": "finding",
+        "query": "",
+        "categories": []
+      },
+      "selected": []
+    },
+    {
+      "value": "查看@漏洞",
+      "caret": 5,
+      "active": {
+        "start": 2,
+        "end": 5,
+        "query": "漏洞"
+      },
+      "search": {
+        "kind": "finding",
+        "query": "",
+        "categories": []
+      },
+      "selected": []
+    },
+    {
+      "value": "user@example.com",
+      "caret": 16,
+      "active": null,
+      "search": null,
+      "selected": []
+    },
+    {
+      "value": "@漏洞́SQL",
+      "caret": 7,
+      "active": {
+        "start": 0,
+        "end": 7,
+        "query": "漏洞́SQL"
+      },
+      "search": {
+        "kind": "finding",
+        "query": "́SQL",
+        "categories": []
+      },
+      "selected": []
+    },
+    {
+      "value": "@﻿company test",
+      "caret": 14,
+      "active": {
+        "start": 0,
+        "end": 14,
+        "query": "﻿company test"
+      },
+      "search": {
+        "kind": "company",
+        "query": "test",
+        "categories": []
+      },
+      "selected": []
+    },
+    {
+      "value": "@IP 192.0.2.1",
+      "caret": 13,
+      "active": {
+        "start": 0,
+        "end": 13,
+        "query": "IP 192.0.2.1"
+      },
+      "search": {
+        "kind": "ip",
+        "query": "192.0.2.1",
+        "categories": []
+      },
+      "selected": []
+    },
+    {
+      "value": "@[IP#4 two] suffix",
+      "caret": 18,
+      "active": null,
+      "search": null,
+      "selected": [
+        {
+          "token": "@[IP#4 two]",
+          "kind": "ip",
+          "id": "4",
+          "text": "two",
+          "start": 0
+        }
+      ]
+    },
+    {
+      "value": "@fi",
+      "caret": 3,
+      "active": {
+        "start": 0,
+        "end": 3,
+        "query": "fi"
+      },
+      "search": {
+        "kind": "",
+        "query": "fi",
+        "categories": [
+          {
+            "kind": "finding",
+            "label": "漏洞",
+            "alias": "finding"
+          }
+        ]
+      },
+      "selected": []
+    },
+    {
+      "value": "@domain example.invalid",
+      "caret": 23,
+      "active": {
+        "start": 0,
+        "end": 23,
+        "query": "domain example.invalid"
+      },
+      "search": {
+        "kind": "root_domain",
+        "query": "example.invalid",
+        "categories": []
+      },
+      "selected": []
+    }
+  ]
+}

@@ -24,3 +24,6 @@ P3チャット履歴：固定205件の最新200件＋過去5件、重複差分�
 P3 C3：会話一覧・履歴・入力欄を実装し、ブラウザ/Macの一部比較、表示位置・下書き・変換中入力の回帰を確認。Swift75件（Core74＋AppKit1）/Python34件成功。Chatはin_progress。実行中停止、複数削除確認、クラウド応答、高度機能、全面的な外観/アクセシビリティは未完了。chat-verification.ja.md参照。
 
 C4引用の有限API/モデル：7件とブラウザ関数11ケースが成功、Swift全82件。候補/挿入UI、実VM検索/ページ比較、128MiBストリーミング添付、サイド質問SSEは未完了。chat-advanced-design.ja.mdとchat-verification.ja.md参照。
+
+
+C4操作段階: 引用コントロール、実ブラウザ編集9ケース、実VM・固定ブラウザの23件ページ分割比較を実装し、一部の実画面比較を確認。現在Swift95件（Core90＋AppKit5）、Python34件が成功し、再ビルドしたアドホックアプリの署名も検証済み。連続挿入・Undoはコンポーネント回帰が成功。追加取得時の一覧位置修正はMacロック解除後の実画面再確認待ち。再開時は新規VMと比較環境のマーカーを使い、一覧位置、連続挿入・Undo、全カテゴリ、実IME、VoiceOverを検証する。128MiB添付、サイド質問SSE、承認・詳細表示、クラウド応答と全21機能の受け入れは未完了。chat-verification.mdとbugs/chat-state-investigation.mdを参照。

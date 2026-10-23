@@ -1,0 +1,98 @@
+{
+  "baseline": "e75ae371ad777ffd1eecdd28d2781a6519b05591",
+  "status": "native citation UI implemented; partial external comparison; acceptance open",
+  "swift_tests": 95,
+  "core_tests": 90,
+  "appkit_tests": 5,
+  "swift_failures": 0,
+  "python_tests": 34,
+  "python_failures": 0,
+  "scoped_coverage": {
+    "ChatMentionEditing.swift": {
+      "lines": {
+        "count": 90,
+        "covered": 90,
+        "percent": 100
+      },
+      "regions": {
+        "count": 67,
+        "covered": 62,
+        "notcovered": 5,
+        "percent": 92.53731343283582
+      }
+    },
+    "ChatMentionSearchStore.swift": {
+      "lines": {
+        "count": 45,
+        "covered": 43,
+        "percent": 95.55555555555556
+      },
+      "regions": {
+        "count": 35,
+        "covered": 31,
+        "notcovered": 4,
+        "percent": 88.57142857142857
+      }
+    },
+    "ChatMentions.swift": {
+      "lines": {
+        "count": 85,
+        "covered": 85,
+        "percent": 100
+      },
+      "regions": {
+        "count": 51,
+        "covered": 50,
+        "notcovered": 1,
+        "percent": 98.0392156862745
+      }
+    }
+  },
+  "branch_or_whole_product_coverage_claimed": false,
+  "executed_browser_editing_cases": 9,
+  "reference_http_records": 23,
+  "reference_first_page": 20,
+  "reference_second_page": 3,
+  "exact_vm_reference_contract_equality": true,
+  "native_external_passed": [
+    "query actual23company records",
+    "pointerloadmore fetches3additionalrecords",
+    "Enter inserts record23 without sending",
+    "removechip removes onlydrafttoken",
+    "Down/Down/Enter choosescompanycategory"
+  ],
+  "browser_external_passed": [
+    "same23company records",
+    "20+3 pages",
+    "Enter inserts samewiretoken23 without sending",
+    "removechip removes onlydrafttoken"
+  ],
+  "native_external_pending": [
+    "pointerloadmore viewport fix retest",
+    "Undo/repeated identical insertion external retest",
+    "allninecategories external",
+    "IMEphysicalconversion",
+    "VoiceOverfocus",
+    "stale-response conversation-switch external"
+  ],
+  "pointerloadmore_red": "6d37916",
+  "pointerloadmore_fix": "implemented; no external GREEN because OSlocked",
+  "screen_lock": "CUA reported Mac locked; user asked to unlock, no bypass attempted",
+  "test_only_data_cleanup": {
+    "owned_companies_removed": true,
+    "temporary_keychain_removed": true,
+    "vm_stopped": true,
+    "owned_reference_containers_removed": true
+  },
+  "source_kernel": "6.12.114-artex developer candidate; not promoted",
+  "native_runtime_nics": 0,
+  "native_host_shares": 0,
+  "advanced_chat_remaining": [
+    "128MiB upload streaming",
+    "sidequestion SSE",
+    "approval/toolrichrendering",
+    "realcloudresponse",
+    "fullfeatureUIUXacceptance"
+  ],
+  "lazyweb_reference": "https://www.lazyweb.com/agentic-search/4f3afa9b-e394-453b-a6da-171ce7617832"
+}
