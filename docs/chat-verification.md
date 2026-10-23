@@ -1,6 +1,6 @@
 # Chat foundation verification
 
-Status: C1 finite service/store implemented; C2 finite CRUD/empty transcript subset verified on the signed app VM and disposable pinned backend. Native chat UI, populated guest history, successful AI send/stop, upload/SSE and external UI acceptance remain pending. feature-map remains pending. See chat-design.md.
+Status: C1 finite service/store implemented; C2 finite CRUD and populated history/delta verified on the signed app VM and disposable pinned backend, with exact native restart persistence. Native chat UI, successful AI send/stop, upload/SSE and external UI acceptance remain pending. feature-map remains pending. See chat-design.md.
 
 ## Evidence and chronology
 
@@ -16,7 +16,7 @@ No live browser records were created or changed. The earlier read-only empty bro
 
 ## C1 and finite C2 checkpoint
 
-All 66 Swift tests and 28 Python tests pass. Of these, 24 Swift chat tests cover 7 model, 6 service and 11 store scenarios. Service tests exercise exact route/body/null encoding, Unicode scalar bounds, negative/malformed responses, partial batch deletion and sanitized errors. Store tests suspend requests to check nonoverlap, selection/stop/reset invalidation, older/tail merging, submitted versus edited drafts, confirmed mutation versus refresh failure, final 1000-event draining and resumption. The 49-test model artifact above is a historical checkpoint, not the current total.
+At the finite CRUD checkpoint, all 66 Swift tests and 28 Python tests passed. Of these, 24 Swift chat tests cover 7 model, 6 service and 11 store scenarios. Service tests exercise exact route/body/null encoding, Unicode scalar bounds, negative/malformed responses, partial batch deletion and sanitized errors. Store tests suspend requests to check nonoverlap, selection/stop/reset invalidation, older/tail merging, submitted versus edited drafts, confirmed mutation versus refresh failure, final 1000-event draining and resumption. The 49-test model artifact above is a historical checkpoint, not the current total.
 
 Measured coverage in core-verification.json: ChatModels 37/37 lines (100%), ChatService 106/110 (96.36%), ChatStore 197/209 (94.26%). Regions are respectively 100%, 93.69%, 82.66%. Branch coverage and whole-product coverage are not measured/inferred.
 
@@ -24,8 +24,20 @@ The signed debug app using source kernel 6.12.114-artex, one vCPU, zero NICs and
 
 The same ten finite contract groups match a separate pinned reference backend/PostgreSQL on a private internal Docker network with no host mounts/ports, unprivileged app, dropped capabilities and disposable tmpfs data. Only the newly created containers/network are removed. The user's existing browser server/data are untouched. Docker Desktop remained running for reference testing; this does not prove a clean Mac installation without Docker Desktop. Reference fixture imports have no network effects, and host/unmarked-Linux execution is rejected before HTTP.
 
-Artifacts: evidence/chat/finite-contract-vm.json, finite-contract-reference.json, finite-comparison.json, finite-native-results.json and core-verification.json. Raw logs/state/session material remain ignored. This finite C2 subset does not satisfy populated history/delta, running cancellation or native UI gates.
+Artifacts: evidence/chat/finite-contract-vm.json, finite-contract-reference.json, finite-comparison.json, finite-native-results.json and core-verification.json. Raw logs/state/session material remain ignored. At that checkpoint, populated history/delta, running cancellation and native UI remained open; populated history evidence follows below.
 
 ## Review-driven regressions
 
 Runtime RED da2b6c7 reproduced three assertions when an old idle delta suppressed an accepted turn. GREEN 28d8e6d adds a mutation revision and a sequential follow-up inside the same delta slot. RED 6a46acb reproduced three assertions when a send resumed transcript work after stop; GREEN 539a5ab checks lifetime/cancellation after the list await. Reference boundary RED f7d3827 had two failures and one error with mocked HTTP only; GREEN bdd01e5 enforces Linux/UID/explicit disposable marker and main-only execution. Details and recurrence controls are in bugs/chat-state-investigation.md. Read-only review is separate from the locally executed tests.
+
+## C2 populated history, final delta and persistence
+
+The latest run passes 66 Swift and 34 Python tests. Added seed tests cover host/architecture/UID/DSN/phase rejection, sanitized transaction failures, credential placement and hostile inherited libpq settings in both chat and dashboard fixtures. These unit tests mock psql; actual fixed SQL executes only in the VM and the dedicated reference PostgreSQL container. See bugs/chat-state-investigation.md for the review-driven RED/GREEN repair.
+
+Two fresh signed app runs passed the 205-event fixture: latest 200 events, older five, stable cursor, all seven fixture kinds including an unknown value, matching tool call IDs, result token fields, summary-only pages with separately fetched 10,752-byte exact detail, five-event overlapping delta without duplicates and a six-event final idle delta to 211 records. A second conversation cannot fetch the first conversation's detail. Both runs delete the fixture data and then successfully seed/verify the dashboard.
+
+The second run retains all 211 records through a real cooperative VM stop/start and Keychain session restore. It re-fetches latest 200 plus older eleven and compares every decoded event to the pre-restart snapshot, verifies the complete detail, then deletes the fixture and writes cleanup success. It uses the current boot's authenticated session, not the old boot's transport. All persistence and subsequent auth/LLM/dashboard checks pass.
+
+Ten populated-history contract groups match independently retrieved/merged HTTP data from the pinned disposable browser backend, using identical initial/append SQL. The two signed-app normalized contracts are equal to that reference. After the libpq fix, all twelve dashboard metric scenarios also still match the independent browser calculation and separate disposable reference. The user's browser data/source checkout remain unchanged.
+
+Artifacts: history-contract-vm.json, history-contract-reference.json, history-comparison.json, history-native-results.json and history-verification.json under evidence/chat/. Run 2 used host PATH=/usr/bin:/bin and an unusable DOCKER_HOST. Docker Desktop remained running for reference/browser use; a clean Mac without Docker Desktop is still an open gate. The selected source-built one-vCPU kernel is still a developer candidate, not a default runtime/reliability promotion. Full chat UI, actual running/stop races against an AI backend, uploads/SSE/citations/approvals and cloud egress remain pending. No screenshot is presented as chat UI parity.

@@ -1,0 +1,19 @@
+{
+  "api_contract_equal": true,
+  "baseline": "e75ae371ad777ffd1eecdd28d2781a6519b05591",
+  "browser_data_modified": false,
+  "cases": [
+    "latest_200_history",
+    "older_five_merge",
+    "stable_cursor",
+    "lazy_full_detail",
+    "unknown_event_kind",
+    "tool_pair",
+    "result_usage",
+    "overlap_deduplication",
+    "final_six_idle_delta",
+    "detail_scope_cleanup"
+  ],
+  "identical_fixture": true,
+  "ui_workflow_parity": "pending"
+}

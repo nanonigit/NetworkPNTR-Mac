@@ -1,0 +1,37 @@
+{
+  "cleanup": true,
+  "cross_conversation_detail_empty": true,
+  "detail_utf8_bytes": 10752,
+  "event_kinds": [
+    "future_fixture_kind",
+    "result",
+    "text",
+    "tool_result",
+    "tool_use",
+    "usage",
+    "user"
+  ],
+  "final_cursor_offset": 210,
+  "final_running": false,
+  "final_summaries": [
+    "fixture event 206",
+    "fixture event 207",
+    "fixture event 208",
+    "fixture event 209",
+    "fixture event 210",
+    "fixture event 211"
+  ],
+  "final_total": 211,
+  "initial_cursor_offset": 204,
+  "initial_total": 205,
+  "latest_count": 200,
+  "latest_has_more": true,
+  "lazy_details_omitted": true,
+  "older_count": 5,
+  "older_has_more": false,
+  "overlap_count": 5,
+  "overlap_deduplicated": true,
+  "result_input_tokens": 100,
+  "result_output_tokens": 10,
+  "tool_pair_preserved": true
+}

@@ -1,0 +1,52 @@
+{
+  "appended_events": 6,
+  "baseline": "e75ae371ad777ffd1eecdd28d2781a6519b05591",
+  "branch_or_whole_product_coverage_claimed": false,
+  "browser_user_data_modified": false,
+  "dashboard_reference_comparison_after_libpq_fix": true,
+  "detail_utf8_bytes": 10752,
+  "docker_desktop_was_running": true,
+  "failures": 0,
+  "final_total": 211,
+  "fresh_native_runs": 2,
+  "guest_nic_count": 0,
+  "host_share_count": 0,
+  "initial_events": 205,
+  "latest_page": 200,
+  "native_dashboard_after_history_cleanup": true,
+  "native_history_cleanup": true,
+  "native_run2_docker_host_unusable": true,
+  "native_run2_host_PATH": "/usr/bin:/bin",
+  "native_ui_parity": "pending",
+  "no_docker_desktop_installed_acceptance": "pending",
+  "older_first_page": 5,
+  "populated_reference_groups": 10,
+  "python_tests": 34,
+  "read_only_review": "approved; reviewer did not run tests or access runtimes",
+  "restart_exact_211_events_and_full_detail": true,
+  "restart_older_page": 11,
+  "source_kernel": "6.12.114-artex",
+  "successful_ai_turn_and_running_cancellation": "pending",
+  "swift_tests": 66,
+  "tdd_checkpoints": {
+    "history_harness": [
+      "9bdecd6",
+      "221e14a"
+    ],
+    "libpq_boundary": [
+      "0f6e0b4",
+      "ac57d2f"
+    ],
+    "restart_verifier": [
+      "57299a6",
+      "1e4aaf8"
+    ],
+    "seed": [
+      "b470c5f",
+      "cf3b56b"
+    ]
+  },
+  "uploads_sse_citations_approvals_cloud": "pending",
+  "vcpus": 1,
+  "vm_reference_contract_equal": true
+}
