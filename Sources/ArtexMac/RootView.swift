@@ -44,6 +44,12 @@ struct RootView: View {
             else if selection == "dashboard" {
                 ContentUnavailableView("ログインが必要です", systemImage: "person.crop.circle", description: Text("アカウント画面でログインしてからダッシュボードを開いてください。"))
             }
+            else if selection == "chat", let session = environment.authentication, session.phase == .authenticated {
+                ChatView(session: session).id(ObjectIdentifier(session))
+            }
+            else if selection == "chat" {
+                ContentUnavailableView("ログインが必要です", systemImage: "person.crop.circle", description: Text("アカウント画面でログインしてからチャットを開いてください。"))
+            }
             else if selection == "llm", let session = environment.authentication, session.phase == .authenticated {
                 LLMSettingsView(session: session).id(ObjectIdentifier(session))
             }
