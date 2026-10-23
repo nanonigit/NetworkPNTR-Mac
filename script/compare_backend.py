@@ -75,7 +75,7 @@ def main():
             time.sleep(.5)
         else:
             raise RuntimeError('Reference PostgreSQL readiness failed')
-        run('docker', 'run', '-d', '--name', app, '--network', network, '--read-only', '--user', '1000:1000', '--cap-drop', 'ALL', '--security-opt', 'no-new-privileges:true', '--tmpfs', '/state:rw,nosuid,nodev,size=256m,uid=1000,gid=1000,mode=700', '--tmpfs', '/tmp:rw,noexec,nosuid,nodev,size=64m', '--workdir', '/tmp', '-e', 'ARTEX_PG_DSN', '-e', 'ARTEX_SETUP_TOKEN', '--entrypoint', '/bin/sh', BACKEND_IMAGE, '-c', 'mkdir -p /state/home /state/data; exec /opt/artex/artex -addr 127.0.0.1:8787 -data /state/data -proxy ""', env=env, stdout=subprocess.DEVNULL)
+        run('docker', 'run', '-d', '--name', app, '--network', network, '--read-only', '--user', '1000:1000', '--cap-drop', 'ALL', '--security-opt', 'no-new-privileges:true', '--tmpfs', '/state:rw,nosuid,nodev,size=256m,uid=1000,gid=1000,mode=700', '--tmpfs', '/tmp:rw,noexec,nosuid,nodev,size=64m', '--workdir', '/tmp', '-e', 'ARTEX_PG_DSN', '-e', 'ARTEX_SETUP_TOKEN', '-e', 'ARTEX_DISPOSABLE_REFERENCE=1', '--entrypoint', '/bin/sh', BACKEND_IMAGE, '-c', 'mkdir -p /state/home /state/data; exec /opt/artex/artex -addr 127.0.0.1:8787 -data /state/data -proxy ""', env=env, stdout=subprocess.DEVNULL)
         created.append(app)
         fixture = FIXTURE if args.kind == 'backend' else Path(__file__).with_name(args.kind + '_contract_fixture.py').read_text()
         output = subprocess.check_output(['docker', 'exec', '-i', app, 'python3', '-'], input=fixture.encode())
