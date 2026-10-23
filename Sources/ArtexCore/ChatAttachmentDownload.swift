@@ -17,7 +17,7 @@ public struct ChatAttachmentDownload: Sendable {
         var query = URLComponents()
         query.queryItems = [URLQueryItem(name: "path", value: "sessions/conv-\(conversationID)/uploads/" + name)]
         guard let encoded = query.percentEncodedQuery else { throw BackendAPIError.invalidResponse }
-        return Data(("GET /api/workspace/download?" + encoded + " HTTP/1.1\r\nHost: localhost\r\nConnection: close\r\nAccept: application/octet-stream\r\nAccept-Encoding: identity\r\nContent-Length: 0\r\nAuthorization: Bearer \(bearer)\r\n\r\n").utf8)
+        return Data(("GET /api/workspace/download?" + encoded.replacingOccurrences(of: "+", with: "%2B") + " HTTP/1.1\r\nHost: localhost\r\nConnection: close\r\nAccept: application/octet-stream\r\nAccept-Encoding: identity\r\nContent-Length: 0\r\nAuthorization: Bearer \(bearer)\r\n\r\n").utf8)
     }
 }
 
