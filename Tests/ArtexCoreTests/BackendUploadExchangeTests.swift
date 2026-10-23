@@ -1,0 +1,163 @@
+import Darwin
+import Foundation
+import XCTest
+@testable import ArtexCore
+
+private final class UploadPeer: @unchecked Sendable {
+    let done = DispatchSemaphore(value: 0)
+    private let lock = NSLock()
+    private var result: Result<Data, Error>?
+    init(_ fd: Int32, operation: @escaping @Sendable (Int32) throws -> Data) {
+        DispatchQueue.global().async { [self] in
+            defer { Darwin.close(fd); done.signal() }
+            let outcome = Result { try operation(fd) }
+            lock.lock(); result = outcome; lock.unlock()
+        }
+    }
+    func value() throws -> Data {
+        guard done.wait(timeout: .now() + 3) == .success else { throw RuntimeError.timeout("test upload peer") }
+        lock.lock(); defer { lock.unlock() }
+        return try XCTUnwrap(result).get()
+    }
+}
+final class BackendUploadExchangeTests: XCTestCase {
+    private func selectedFile(size: Int = 0) throws -> URL {
+        let path = FileManager.default.temporaryDirectory.appendingPathComponent("artex-upload-exchange-" + UUID().uuidString)
+        XCTAssertTrue(FileManager.default.createFile(atPath: path.path, contents: nil))
+        let writer = try FileHandle(forWritingTo: path)
+        try writer.truncate(atOffset: UInt64(size)); try writer.close()
+        addTeardownBlock { try FileManager.default.removeItem(at: path) }
+        return path
+    }
+    private func pair() throws -> (BackendUploadSocket, Int32) {
+        var fds: [Int32] = [0,0]
+        guard socketpair(AF_UNIX, SOCK_STREAM, 0, &fds) == 0 else { throw POSIXError(.EIO) }
+        var enabled: Int32 = 1
+        XCTAssertEqual(setsockopt(fds[1], SOL_SOCKET, SO_NOSIGPIPE, &enabled, socklen_t(MemoryLayout<Int32>.size)), 0)
+        var buffer: Int32 = 1024
+        XCTAssertEqual(setsockopt(fds[0], SOL_SOCKET, SO_SNDBUF, &buffer, socklen_t(MemoryLayout<Int32>.size)), 0)
+        return (BackendUploadSocket(owning: fds[0]), fds[1])
+    }
+    private static func receive(_ fd: Int32, count: Int) throws -> Data {
+        var output = Data(), chunk = [UInt8](repeating: 0, count: 4096)
+        while output.count < count {
+            let n = Darwin.read(fd, &chunk, min(chunk.count, count - output.count))
+            if n < 0, errno == EINTR { continue }
+            guard n > 0 else { throw RuntimeError.integrity("test peer short read") }
+            output.append(contentsOf: chunk.prefix(n))
+        }
+        return output
+    }
+    @discardableResult private static func write(_ fd: Int32, _ bytes: Data) throws -> Int {
+        try bytes.withUnsafeBytes { buffer in
+            var offset = 0
+            while offset < buffer.count {
+                let n = Darwin.write(fd, buffer.baseAddress!.advanced(by: offset), buffer.count - offset)
+                if n < 0, errno == EINTR { continue }
+                guard n > 0 else { throw POSIXError(POSIXErrorCode(rawValue: errno) ?? .EIO) }
+                offset += n
+            }
+            return offset
+        }
+    }
+    func testImmutablePlanProducesSameFramingAndValidatesRouteAndBearer() throws {
+        let url = try selectedFile(size: 7), plan = try ChatMultipartPlan(files: [url], boundary: "fixture")
+        let body = ChatMultipartBody(plan: plan)
+        XCTAssertEqual(body.contentLength, plan.contentLength)
+        let header = try BackendMultipartRequest.header(conversationID: 42, plan: plan, bearer: "fixture.jwt")
+        let text = String(decoding: header, as: UTF8.self)
+        XCTAssertTrue(text.hasPrefix("POST /api/chat/upload?scope=session&id=conv-42 HTTP/1.1\r\n"))
+        XCTAssertTrue(text.contains("Content-Length: \(plan.contentLength)\r\n"))
+        XCTAssertTrue(text.contains("Content-Type: multipart/form-data; boundary=fixture\r\n"))
+        XCTAssertTrue(text.contains("Authorization: Bearer fixture.jwt\r\n"))
+        for id: Int64 in [0,-1] { XCTAssertThrowsError(try BackendMultipartRequest.header(conversationID: id, plan: plan, bearer: "fixture.jwt")) }
+        for token in ["", "bad\r\nInjected: yes", "bad space", String(repeating: "a", count: 8193)] {
+            XCTAssertThrowsError(try BackendMultipartRequest.header(conversationID: 42, plan: plan, bearer: token))
+        }
+    }
+    func testNonblockingPartialWritesAndDelayedReadTransferEntireBody() throws {
+        let plan = try ChatMultipartPlan(files: [selectedFile(size: 5 * 1024 * 1024)], boundary: "fixture")
+        let header = try BackendMultipartRequest.header(conversationID: 1, plan: plan, bearer: "fixture.jwt")
+        let preamble = Data("fixture-transport\n".utf8), expected = Int(plan.contentLength) + header.count + preamble.count
+        let (socket, server) = try pair()
+        let peer = UploadPeer(server) { fd in
+            Thread.sleep(forTimeInterval: 0.03)
+            let received = try Self.receive(fd, count: expected)
+            try Self.write(fd, Data("HTTP/1.1 200 OK\r\nContent-Length: 2\r\n\r\n{}".utf8))
+            return received
+        }
+        let response = try BackendUploadExchange.exchange(socket: socket, preamble: preamble, header: header, plan: plan, timeout: .seconds(2))
+        XCTAssertEqual(response.status, 200); XCTAssertEqual(response.body, Data("{}".utf8))
+        let wire = try peer.value()
+        XCTAssertEqual(wire.count, expected)
+        XCTAssertTrue(wire.starts(with: preamble + header))
+        XCTAssertTrue(wire.suffix(15).elementsEqual(Data("\r\n--fixture--\r\n".utf8)))
+        XCTAssertTrue(socket.isFinished)
+    }
+    func testEarlyUnauthorizedResponseDoesNotRequireSendingEntireLargeFile() throws {
+        let plan = try ChatMultipartPlan(files: [selectedFile(size: 120 * 1024 * 1024)])
+        let header = try BackendMultipartRequest.header(conversationID: 1, plan: plan, bearer: "expired.jwt")
+        let (socket, server) = try pair()
+        let peer = UploadPeer(server) { fd in
+            _ = try Self.receive(fd, count: header.count)
+            try Self.write(fd, Data("HTTP/1.1 401 Unauthorized\r\nContent-Length: 2\r\n\r\n{}".utf8))
+            return Data()
+        }
+        XCTAssertEqual(try BackendUploadExchange.exchange(socket: socket, preamble: Data(), header: header, plan: plan, timeout: .seconds(1)).status, 401)
+        _ = try peer.value(); XCTAssertTrue(socket.isFinished)
+    }
+    func testCancellationDuringBlockedWriteAndBeforeStartClosesOwnedSocket() throws {
+        for beforeStart in [false, true] {
+            let plan = try ChatMultipartPlan(files: [selectedFile(size: 8 * 1024 * 1024)])
+            let header = try BackendMultipartRequest.header(conversationID: 1, plan: plan, bearer: "fixture.jwt")
+            let (socket, server) = try pair()
+            let peer = UploadPeer(server) { _ in
+                if !beforeStart { Thread.sleep(forTimeInterval: 0.04); socket.cancel() }
+                return Data()
+            }
+            if beforeStart { socket.cancel() }
+            XCTAssertThrowsError(try BackendUploadExchange.exchange(socket: socket, preamble: Data(), header: header, plan: plan, timeout: .seconds(1))) {
+                XCTAssertTrue($0 is CancellationError)
+            }
+            _ = try peer.value(); XCTAssertTrue(socket.isFinished)
+        }
+    }
+    func testCancellationDuringResponseWaitClosesOwnedSocket() throws {
+        let plan = try ChatMultipartPlan(files: [selectedFile()])
+        let header = try BackendMultipartRequest.header(conversationID: 1, plan: plan, bearer: "fixture.jwt")
+        let expected = header.count + Int(plan.contentLength), (socket, server) = try pair()
+        let peer = UploadPeer(server) { fd in
+            _ = try Self.receive(fd, count: expected)
+            socket.cancel()
+            return Data()
+        }
+        XCTAssertThrowsError(try BackendUploadExchange.exchange(socket: socket, preamble: Data(), header: header, plan: plan, timeout: .seconds(1))) { XCTAssertTrue($0 is CancellationError) }
+        _ = try peer.value(); XCTAssertTrue(socket.isFinished)
+    }
+    func testDeadlineExpiresForStalledPeer() throws {
+        let plan = try ChatMultipartPlan(files: [selectedFile(size: 8 * 1024 * 1024)])
+        let header = try BackendMultipartRequest.header(conversationID: 1, plan: plan, bearer: "fixture.jwt")
+        let (socket, server) = try pair(), release = DispatchSemaphore(value: 0)
+        let peer = UploadPeer(server) { _ in _ = release.wait(timeout: .now() + 2); return Data() }
+        defer { release.signal() }
+        XCTAssertThrowsError(try BackendUploadExchange.exchange(socket: socket, preamble: Data(), header: header, plan: plan, timeout: .milliseconds(60))) {
+            guard case RuntimeError.timeout = $0 else { return XCTFail("Expected a transfer deadline") }
+        }
+        release.signal(); _ = try peer.value(); XCTAssertTrue(socket.isFinished)
+    }
+    func testPrematureSuccessMalformedAndOversizedResponsesAreRejected() throws {
+        for reply in [Data("HTTP/1.1 200 OK\r\nContent-Length: 2\r\n\r\n{}".utf8), Data("invalid\r\n\r\n".utf8), Data("HTTP/1.1 401 Unauthorized\r\nContent-Length: 4194305\r\n\r\n".utf8) + Data(repeating: 65, count: 4 * 1024 * 1024 + 1)] {
+            let plan = try ChatMultipartPlan(files: [selectedFile(size: 8 * 1024 * 1024)])
+            let header = try BackendMultipartRequest.header(conversationID: 1, plan: plan, bearer: "fixture.jwt")
+            let (socket, server) = try pair()
+            let peer = UploadPeer(server) { fd in
+                _ = try Self.receive(fd, count: header.count)
+                do { try Self.write(fd, reply) }
+                catch let error as POSIXError where [.EPIPE,.ECONNRESET].contains(error.code) { }
+                return Data()
+            }
+            XCTAssertThrowsError(try BackendUploadExchange.exchange(socket: socket, preamble: Data(), header: header, plan: plan, timeout: .seconds(1)))
+            _ = try peer.value(); XCTAssertTrue(socket.isFinished)
+        }
+    }
+}
