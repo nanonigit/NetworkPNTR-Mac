@@ -13,7 +13,7 @@ struct ChatMentionComposer: View {
     @State private var composing = false
     @State private var dismissed = false
     @State private var activeIndex = 0
-    @State private var selection: ChatMentionEdit?
+    @State private var selection: ChatMentionSelection?
     @State private var lastEditedText: String
     @State private var shownKey: Data?
     @State private var debouncing = false
@@ -46,7 +46,7 @@ struct ChatMentionComposer: View {
         VStack(alignment: .leading, spacing: 5) {
             if active != nil { candidates }
             ChatComposer(text: $text, mode: mode, disabled: disabled, send: send, onEditing: { value, range, marked in
-                if Array(value.utf16) != Array(lastEditedText.utf16) { dismissed = false; activeIndex = 0 }
+                if Array(value.utf16) != Array(lastEditedText.utf16) { dismissed = false; activeIndex = 0; selection = nil }
                 lastEditedText = value; caret = range.location; composing = marked
             }, onMentionKey: handleKey, selectionRequest: selection)
                 .frame(height: 90).overlay(RoundedRectangle(cornerRadius: 7).stroke(.quaternary))
@@ -115,7 +115,7 @@ struct ChatMentionComposer: View {
         }.buttonStyle(.plain).id(index).accessibilityLabel(label + " " + detail)
     }
     private func apply(_ edit: ChatMentionEdit, close: Bool) {
-        text = edit.text; lastEditedText = edit.text; caret = edit.caret; selection = edit; dismissed = close; activeIndex = 0
+        text = edit.text; lastEditedText = edit.text; caret = edit.caret; selection = ChatMentionSelection(edit: edit); dismissed = close; activeIndex = 0
     }
     private func choose(_ index: Int) {
         guard let active else { return }

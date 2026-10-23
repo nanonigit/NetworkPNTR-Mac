@@ -2,6 +2,11 @@ import AppKit
 import ArtexCore
 import SwiftUI
 
+struct ChatMentionSelection: Equatable {
+    let id = UUID()
+    let edit: ChatMentionEdit
+}
+
 /// SwiftUI owns the draft; AppKit supplies marked-text and native editing semantics.
 struct ChatComposer: NSViewRepresentable {
     @Binding var text: String
@@ -10,7 +15,7 @@ struct ChatComposer: NSViewRepresentable {
     let send: () -> Void
     var onEditing: ((String, NSRange, Bool) -> Void)? = nil
     var onMentionKey: ((NSEvent) -> Bool)? = nil
-    var selectionRequest: ChatMentionEdit? = nil
+    var selectionRequest: ChatMentionSelection? = nil
     static func draftBinding(store: ChatStore, conversationID: Int64?) -> Binding<String> {
         Binding(get: { store.draft(for: conversationID) }, set: { store.setDraft($0, for: conversationID) })
     }
@@ -38,19 +43,18 @@ struct ChatComposer: NSViewRepresentable {
     final class Coordinator: NSObject, NSTextViewDelegate {
         var parent: ChatComposer
         var updating = false
-        var appliedSelection: ChatMentionEdit?
+        var appliedSelection: UUID?
         init(_ parent: ChatComposer) { self.parent = parent }
-        func applySelection(_ request: ChatMentionEdit?, to editor: Editor, text: String) {
-            if let request, request != appliedSelection,
-               request.text == text, !editor.hasMarkedText(), request.caret >= 0, request.caret <= text.utf16.count {
-                editor.setSelectedRange(NSRange(location: request.caret, length: 0))
+        @MainActor func applySelection(_ request: ChatMentionSelection?, to editor: Editor, text: String) {
+            if let request, request.id != appliedSelection,
+               request.edit.text == text, !editor.hasMarkedText(), request.edit.caret >= 0, request.edit.caret <= text.utf16.count {
+                editor.setSelectedRange(NSRange(location: request.edit.caret, length: 0))
                 editor.window?.makeFirstResponder(editor)
-                appliedSelection = request
+                appliedSelection = request.id
             }
         }
         func textDidChange(_ notification: Notification) {
             guard !updating, let editor = notification.object as? NSTextView else { return }
-            if let appliedSelection, Array(editor.string.utf16) != Array(appliedSelection.text.utf16) { self.appliedSelection = nil }
             parent.text = editor.string
             parent.onEditing?(editor.string, editor.selectedRange(), editor.hasMarkedText())
         }

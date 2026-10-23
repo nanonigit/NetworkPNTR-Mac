@@ -55,12 +55,12 @@ final class ChatComposerTests: XCTestCase {
         let query = "@finding"
         let active = try XCTUnwrap(ChatMentionEditing.active(in: query, caret: query.utf16.count))
         let edit = try XCTUnwrap(ChatMentionEditing.replace(in: query, active: active, with: "@[漏洞#9 record] "))
-        editor.string = edit.text; coordinator.applySelection(edit, to: editor, text: edit.text)
+        editor.string = edit.text; coordinator.applySelection(ChatMentionSelection(edit: edit), to: editor, text: edit.text)
         XCTAssertEqual(editor.selectedRange().location, edit.caret)
         editor.string = query
         coordinator.textDidChange(Notification(name: NSText.didChangeNotification, object: editor))
         editor.string = edit.text; editor.setSelectedRange(NSRange(location: 0, length: 0))
-        coordinator.applySelection(edit, to: editor, text: edit.text)
+        coordinator.applySelection(ChatMentionSelection(edit: edit), to: editor, text: edit.text)
         XCTAssertEqual(editor.selectedRange().location, edit.caret)
     }
 
@@ -72,11 +72,12 @@ final class ChatComposerTests: XCTestCase {
         let query = "@finding suffix"
         let active = try XCTUnwrap(ChatMentionEditing.active(in: query, caret: 8))
         let edit = try XCTUnwrap(ChatMentionEditing.replace(in: query, active: active, with: "@[漏洞#9 record] "))
-        editor.string = edit.text; coordinator.applySelection(edit, to: editor, text: edit.text)
+        let request = ChatMentionSelection(edit: edit)
+        editor.string = edit.text; coordinator.applySelection(request, to: editor, text: edit.text)
         editor.string = edit.text + "x"
         coordinator.textDidChange(Notification(name: NSText.didChangeNotification, object: editor))
         editor.string = edit.text; editor.setSelectedRange(NSRange(location: edit.text.utf16.count, length: 0))
-        coordinator.applySelection(edit, to: editor, text: edit.text)
+        coordinator.applySelection(request, to: editor, text: edit.text)
         XCTAssertEqual(editor.selectedRange().location, edit.text.utf16.count)
     }
 
