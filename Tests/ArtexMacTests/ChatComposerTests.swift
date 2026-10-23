@@ -64,4 +64,20 @@ final class ChatComposerTests: XCTestCase {
         XCTAssertEqual(editor.selectedRange().location, edit.caret)
     }
 
+    @MainActor func testConsumedCitationSelectionDoesNotReplayAfterUndoRestoresText() throws {
+        var text = ""
+        let parent = ChatComposer(text: Binding(get: { text }, set: { text = $0 }), mode: "enter", disabled: false, send: {})
+        let coordinator = ChatComposer.Coordinator(parent)
+        let editor = ChatComposer.Editor(frame: NSRect(x: 0, y: 0, width: 200, height: 80))
+        let query = "@finding suffix"
+        let active = try XCTUnwrap(ChatMentionEditing.active(in: query, caret: 8))
+        let edit = try XCTUnwrap(ChatMentionEditing.replace(in: query, active: active, with: "@[漏洞#9 record] "))
+        editor.string = edit.text; coordinator.applySelection(edit, to: editor, text: edit.text)
+        editor.string = edit.text + "x"
+        coordinator.textDidChange(Notification(name: NSText.didChangeNotification, object: editor))
+        editor.string = edit.text; editor.setSelectedRange(NSRange(location: edit.text.utf16.count, length: 0))
+        coordinator.applySelection(edit, to: editor, text: edit.text)
+        XCTAssertEqual(editor.selectedRange().location, edit.text.utf16.count)
+    }
+
 }

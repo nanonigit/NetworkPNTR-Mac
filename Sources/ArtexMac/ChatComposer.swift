@@ -41,15 +41,16 @@ struct ChatComposer: NSViewRepresentable {
         var appliedSelection: ChatMentionEdit?
         init(_ parent: ChatComposer) { self.parent = parent }
         func applySelection(_ request: ChatMentionEdit?, to editor: Editor, text: String) {
-        if let request, request != appliedSelection,
-           request.text == text, !editor.hasMarkedText(), request.caret >= 0, request.caret <= text.utf16.count {
-            editor.setSelectedRange(NSRange(location: request.caret, length: 0))
-            editor.window?.makeFirstResponder(editor)
-            appliedSelection = request
-        }
+            if let request, request != appliedSelection,
+               request.text == text, !editor.hasMarkedText(), request.caret >= 0, request.caret <= text.utf16.count {
+                editor.setSelectedRange(NSRange(location: request.caret, length: 0))
+                editor.window?.makeFirstResponder(editor)
+                appliedSelection = request
+            }
         }
         func textDidChange(_ notification: Notification) {
             guard !updating, let editor = notification.object as? NSTextView else { return }
+            if let appliedSelection, Array(editor.string.utf16) != Array(appliedSelection.text.utf16) { self.appliedSelection = nil }
             parent.text = editor.string
             parent.onEditing?(editor.string, editor.selectedRange(), editor.hasMarkedText())
         }

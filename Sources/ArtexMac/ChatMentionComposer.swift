@@ -79,7 +79,7 @@ struct ChatMentionComposer: View {
     private struct TaskKey: Hashable { let query: Data?; let retry: UUID }
     private var candidates: some View {
         VStack(alignment: .leading, spacing: 5) {
-            HStack { Text("レコードを引用").font(.caption.bold()); Spacer(); Button("閉じる") { dismissed = true }.keyboardShortcut(.escape, modifiers: []) }
+            HStack { Text("レコードを引用").font(.caption.bold()); Spacer(); Button("閉じる") { dismissed = true } }
             ScrollViewReader { proxy in
                 ScrollView {
                     LazyVStack(alignment: .leading, spacing: 2) {
@@ -129,7 +129,7 @@ struct ChatMentionComposer: View {
         guard active != nil else { return false }
         if event.keyCode == 53 { dismissed = true; return true }
         if [125,126].contains(event.keyCode) {
-            if event.keyCode == 125, count > 0, activeIndex >= count - 1, results.nextCursor != nil {
+            if event.keyCode == 125, input.categories.isEmpty, !loading, count > 0, activeIndex >= count - 1, results.nextCursor != nil {
                 activeIndex = count; Task { await results.loadMore() }
             } else if count > 0 { activeIndex = (activeIndex + (event.keyCode == 125 ? 1 : count - 1)) % count }
             return true
