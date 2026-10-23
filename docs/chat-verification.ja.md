@@ -53,3 +53,13 @@ RED da2b6c7で古い停止済み差分が新規送信を見失う3つの失敗�
 比較用VMの1回目は正常停止と一時Keychain削除に成功。2回目は画面操作後に外部レビュー待ちの明示的タイムアウトで終了しました。検証ハーネスのタイムアウトであり、全診断成功にも製品のVM障害にも数えません。該当プロセスは残っていません。MacキャプチャにはシステムのPasswordsオーバーレイが写っており、外観合格の証拠にはしません。
 
 evidence/chat/ui-verification.json、ui-scroll-red.json、ui-scroll-green.jsonとMac/ブラウザの画像を参照。すべて合成データで、実ユーザー情報やAPI秘密を含みません。画面構成は実際に閲覧した[Lazyweb参照](https://www.lazyweb.com/agentic-search/5c99e8ec-0f3a-4e76-a173-994b1b86da0a)を参考にし、挙動は固定ARTEXを正とします。組み込みエージェントの名称/説明の言語差、添付・引用・サイド質問・承認・SSE・高度表示・todo・クラウド通信・配布/VM安定性は引き続き未完了です。
+
+## C4 引用の有限API・モデル
+
+chat-advanced-design.ja.mdに根拠と設計を記録。RED395c5a0では型未実装で失敗し、GREEN46ceb2dで6件成功。9分類、正確なInt64、Unicode/プラス記号の検索とカーソル、入力上限、不正応答/エラー秘匿、ブラウザと同じトークンを確認しました。固定TypeScript関数をNode26で実行した11ケースとSwiftの結果が一致。括弧/BOM空白/UTF-16サロゲート境界も含みます。この基準データはクラウド/UIの成功証拠ではありません。
+
+全Swift82件（Core81＋AppKit1）が失敗0。引用ファイルは85/85行・50/51領域を実行し、分岐/製品全体の網羅性は主張しません。Pythonコードは変更しておらず前回の34件がチェックポイントです。署名付き開発アプリの再ビルド/検証は別途実施。画面への挿入、実VM検索/データ入りブラウザのページ送り比較、C3未完了条件は引き続き保留。ブラウザのJavaScript数値精度制限を移植せず、ネイティブIDは正のInt64を正確に保持します。
+
+途中の実行ではnext_cursor消失と不正カーソル検証漏れの2失敗を検出。共通デコーダーがsnake_case変換する一方、型にも生のsnake_caseを指定していたことが原因でした。CodingKeysをnextCursorに修正し、継続と拒否の両方を回帰に保持。5 Whys：重複したキー指定→デコーダー変換と不一致→optionalがnil→ページ送りが黙って終了→以前に引用応答テストなし。Fishbone：共通復号、optional、通信キー、ページ送りテスト。Timeline：型なしRED→実装→実行2失敗→キー修正→対象6件/全81件GREEN。evidence/chat/mention-token-reference.jsonとmention-verification.jsonを参照。この単体/関数比較では実ユーザー/VMデータを変更していません。
+
+追加の検索境界回帰c78069cで、FoundationがU+200Bを削除しGoは保持する差を検出しました。[Go White_Space](https://pkg.go.dev/unicode#IsSpace)を明示しスカラー単位で除去して送信値を修正。NELは除去し、U+200B/BOMは符号化した要求に保持します。別の調査でFoundationのquery値復号自身が先頭BOMを落とすと分かったため、その検証は同じ復号器でなく送信percent符号化値を比較するよう修正しました。これは検証ハーネスの問題で、2個目の製品欠陥ではありません。最新はSwift82件（Core81＋AppKit1）、引用7件。5 Whys：プラットフォームの文字集合差→名前で標準trimを選択→検索バイト変更→不透明カーソルの検索条件不一致→非ASCII書式文字の境界未検証。再発防止：ソース規定の空白と送信バイトの回帰。

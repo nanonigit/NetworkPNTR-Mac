@@ -1,0 +1,42 @@
+{
+  "baseline": "e75ae371ad777ffd1eecdd28d2781a6519b05591",
+  "status": "C4 finite citation core; UI and real VM/reference search remain pending",
+  "scoped_tests": 7,
+  "swift_tests": 82,
+  "core_tests": 81,
+  "appkit_tests": 1,
+  "swift_failures": 0,
+  "reference_token_cases": 11,
+  "reference_source": "web/src/lib/chat-mentions.ts (executed with Node26 TypeScript support)",
+  "comparison": "Swift token assertions match executed browser function output after UTF-8 replacement of isolated surrogates",
+  "coverage": {
+    "lines": {
+      "count": 85,
+      "covered": 85,
+      "percent": 100
+    },
+    "regions": {
+      "count": 51,
+      "covered": 50,
+      "notcovered": 1,
+      "percent": 98.0392156862745
+    }
+  },
+  "branch_coverage_claimed": false,
+  "whole_product_coverage_claimed": false,
+  "tdd_red": "395c5a0",
+  "tdd_green": "46ceb2d",
+  "intermediate_runtime_red": {
+    "assertion_failures": 2,
+    "cause": "Redundant snake_case CodingKeys with convertFromSnakeCase lost next_cursor, including malformed-cursor rejection"
+  },
+  "real_guest_search": "pending",
+  "native_citation_ui": "pending",
+  "large_upload_transport": "pending; JSON4MiB vs multipart128MiB",
+  "side_question_sse": "pending",
+  "cloud_response": "pending",
+  "whitespace_red": "c78069c",
+  "whitespace_green": "a5cdf84",
+  "whitespace_product_defect": "Foundation trimmed U+200B; explicit Go scalar set preserves it",
+  "whitespace_probe_correction": "Inspect outgoing percent-encoded bytes; Foundation query decoding drops leading BOM"
+}
