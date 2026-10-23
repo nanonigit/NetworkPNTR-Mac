@@ -1,0 +1,104 @@
+import Darwin
+import Foundation
+
+/// Owns one duplicate descriptor. Cancel only shuts it down; finish closes under
+/// the same lock, so cancel can never act on a recycled descriptor number.
+final class BackendUploadSocket: @unchecked Sendable {
+    private let lock = NSLock()
+    private var descriptor: Int32?
+    private var cancelled = false
+    init(owning descriptor: Int32) { self.descriptor = descriptor }
+    deinit { finish() }
+    var isFinished: Bool { lock.lock(); defer { lock.unlock() }; return descriptor == nil }
+    func cancel() {
+        lock.lock(); defer { lock.unlock() }
+        cancelled = true
+        if let descriptor { _ = shutdown(descriptor, SHUT_RDWR) }
+    }
+    func finish() {
+        lock.lock(); defer { lock.unlock() }
+        if let descriptor { Darwin.close(descriptor); self.descriptor = nil }
+    }
+    func checkedDescriptor() throws -> Int32 {
+        lock.lock(); defer { lock.unlock() }
+        guard !cancelled else { throw CancellationError() }
+        guard let descriptor else { throw RuntimeError.integrity("closed upload connection") }
+        return descriptor
+    }
+}
+
+enum BackendUploadExchange {
+    /// Finite full-duplex exchange. Reader buffers are bounded independently of file size.
+    static func exchange(socket: BackendUploadSocket, preamble: Data, header: Data, plan: ChatMultipartPlan, timeout: Duration = .seconds(300)) throws -> BackendHTTPResponse {
+        defer { socket.finish() }
+        let descriptor = try socket.checkedDescriptor()
+        let flags = fcntl(descriptor, F_GETFL)
+        var noSignal: Int32 = 1
+        guard flags >= 0, fcntl(descriptor, F_SETFL, flags | O_NONBLOCK) == 0,
+              setsockopt(descriptor, SOL_SOCKET, SO_NOSIGPIPE, &noSignal, socklen_t(MemoryLayout<Int32>.size)) == 0 else { throw POSIXError(.EIO) }
+        guard preamble.count <= 256, header.count <= 32768, timeout > .zero else { throw RuntimeError.integrity("upload exchange bounds") }
+        let body = ChatMultipartBody(plan: plan)
+        defer { body.close() }
+        let deadline = ContinuousClock.now.advanced(by: timeout)
+        let expected = Int64(preamble.count + header.count) + plan.contentLength
+        var outbound = preamble + header, offset = 0, written: Int64 = 0
+        var response = Data(), responseStatus: Int?, responseStarted = false
+        var buffer = [UInt8](repeating: 0, count: 16384)
+        while true {
+            _ = try socket.checkedDescriptor()
+            try Task.checkCancellation()
+            guard ContinuousClock.now < deadline else { throw RuntimeError.timeout("attachment transfer") }
+            if !responseStarted, offset == outbound.count, written < expected {
+                guard let bytes = try body.read() else { throw RuntimeError.integrity("attachment body length") }
+                outbound = bytes; offset = 0
+            }
+            let canWrite = !responseStarted && offset < outbound.count
+            var state = pollfd(fd: descriptor, events: Int16(POLLIN) | (canWrite ? Int16(POLLOUT) : 0), revents: 0)
+            let ready = poll(&state, 1, 50)
+            if ready < 0, errno == EINTR { continue }
+            _ = try socket.checkedDescriptor()
+            guard ready >= 0, state.revents & Int16(POLLNVAL) == 0 else { throw POSIXError(.EIO) }
+            if state.revents & Int16(POLLIN | POLLHUP | POLLERR) != 0 {
+                let count = Darwin.read(descriptor, &buffer, buffer.count)
+                if count < 0, [EINTR,EAGAIN,EWOULDBLOCK].contains(errno) { continue }
+                guard count >= 0 else { throw POSIXError(POSIXErrorCode(rawValue: errno) ?? .EIO) }
+                if count == 0 {
+                    guard responseStatus != nil, written == expected || responseStatus! >= 300 else { throw BackendAPIError.invalidResponse }
+                    return try BackendHTTPResponse.parse(response)
+                }
+                guard count <= 4 * 1024 * 1024 - response.count else { throw RuntimeError.integrity("attachment response size") }
+                response.append(contentsOf: buffer.prefix(count))
+                if responseStatus == nil {
+                    responseStatus = try statusIfComplete(response)
+                    if let status = responseStatus {
+                        guard status >= 300 || written == expected else { throw RuntimeError.integrity("premature attachment success") }
+                        responseStarted = true
+                        _ = shutdown(descriptor, SHUT_WR)
+                    }
+                }
+            }
+            if !responseStarted, canWrite, state.revents & Int16(POLLOUT) != 0 {
+                let sent = outbound.withUnsafeBytes { bytes in
+                    Darwin.write(descriptor, bytes.baseAddress!.advanced(by: offset), bytes.count - offset)
+                }
+                if sent < 0, [EINTR,EAGAIN,EWOULDBLOCK].contains(errno) { continue }
+                _ = try socket.checkedDescriptor()
+                guard sent > 0 else { throw POSIXError(POSIXErrorCode(rawValue: errno) ?? .EIO) }
+                offset += sent; written += Int64(sent)
+            }
+        }
+    }
+    private static func statusIfComplete(_ wire: Data) throws -> Int? {
+        guard let end = wire.range(of: Data("\r\n\r\n".utf8)) else {
+            guard wire.count <= 65536 else { throw BackendAPIError.invalidResponse }
+            return nil
+        }
+        guard end.lowerBound <= 65536,
+              let header = String(data: wire[..<end.lowerBound], encoding: .isoLatin1),
+              let line = header.components(separatedBy: "\r\n").first else { throw BackendAPIError.invalidResponse }
+        let fields = line.split(separator: " ", omittingEmptySubsequences: true)
+        guard fields.count >= 2, ["HTTP/1.0","HTTP/1.1"].contains(fields[0]), fields[1].count == 3,
+              let status = Int(fields[1]), (200...599).contains(status) else { throw BackendAPIError.invalidResponse }
+        return status
+    }
+}

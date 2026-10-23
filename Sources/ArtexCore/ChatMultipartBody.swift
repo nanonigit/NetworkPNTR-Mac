@@ -14,15 +14,12 @@ public enum ChatUploadBodyError: LocalizedError {
     }
 }
 
-/// A single-consumer multipart body; construct and read on the transfer worker.
-/// Does not open sockets, retain content buffers, or own security-scoped bookmarks.
-public final class ChatMultipartBody {
+/// Immutable file/framing preflight that may cross to a dedicated transfer worker.
+public struct ChatMultipartPlan: Sendable {
     public static let maximumBytes: Int64 = 128 * 1024 * 1024
-    public static let chunkBytes = 65536
     public let contentType: String
     public let contentLength: Int64
-
-    private struct Stamp: Equatable {
+    fileprivate struct Stamp: Equatable, Sendable {
         let device: dev_t
         let inode: ino_t
         let size: Int64
@@ -36,18 +33,9 @@ public final class ChatMultipartBody {
             changedSeconds = info.st_ctimespec.tv_sec; changedNanos = info.st_ctimespec.tv_nsec
         }
     }
-    private struct Source { let url: URL; let stamp: Stamp; let header: Data }
-    private enum Stage { case header, file, separator, closing }
-    private enum State { case active, finished, cancelled, failed }
-    private let sources: [Source]
-    private let ending: Data
-    private var stage = Stage.header
-    private var state = State.active
-    private var index = 0
-    private var offset = 0
-    private var fileOffset: Int64 = 0
-    private var descriptor: Int32 = -1
-
+    fileprivate struct Source: Sendable { let url: URL; let stamp: Stamp; let header: Data }
+    fileprivate let sources: [Source]
+    fileprivate let ending: Data
     public init(files: [URL], boundary: String = "ArtexMac-" + UUID().uuidString) throws {
         guard !files.isEmpty else { throw ChatUploadBodyError.invalidFile }
         guard (1...70).contains(boundary.utf8.count), boundary.utf8.allSatisfy({
@@ -79,6 +67,44 @@ public final class ChatMultipartBody {
         sources = prepared; contentLength = total
         contentType = "multipart/form-data; boundary=" + boundary
     }
+    fileprivate static func open(_ url: URL) throws -> Int32 {
+        // O_NONBLOCK prevents a selected FIFO/device from blocking preflight before fstat.
+        let fd = Darwin.open(url.path, O_RDONLY | O_NONBLOCK | O_CLOEXEC)
+        guard fd >= 0 else { throw ChatUploadBodyError.invalidFile }
+        return fd
+    }
+    fileprivate static func stamp(_ fd: Int32) throws -> Stamp {
+        var info = stat()
+        guard fstat(fd, &info) == 0, info.st_mode & S_IFMT == S_IFREG, info.st_size >= 0 else {
+            throw ChatUploadBodyError.invalidFile
+        }
+        return Stamp(info)
+    }
+}
+
+/// A single-consumer multipart body; construct and read on the transfer worker.
+/// Does not open sockets, retain content buffers, or own security-scoped bookmarks.
+public final class ChatMultipartBody {
+    public static let maximumBytes = ChatMultipartPlan.maximumBytes
+    public static let chunkBytes = 65536
+    public var contentType: String { plan.contentType }
+    public var contentLength: Int64 { plan.contentLength }
+    private let plan: ChatMultipartPlan
+    private var sources: [ChatMultipartPlan.Source] { plan.sources }
+    private var ending: Data { plan.ending }
+    private enum Stage { case header, file, separator, closing }
+    private enum State { case active, finished, cancelled, failed }
+    private var stage = Stage.header
+    private var state = State.active
+    private var index = 0
+    private var offset = 0
+    private var fileOffset: Int64 = 0
+    private var descriptor: Int32 = -1
+
+    public init(plan: ChatMultipartPlan) { self.plan = plan }
+    public convenience init(files: [URL], boundary: String = "ArtexMac-" + UUID().uuidString) throws {
+        self.init(plan: try ChatMultipartPlan(files: files, boundary: boundary))
+    }
     deinit { releaseDescriptor() }
 
     /// Cancels this reader permanently. The owner must not call concurrently with read.
@@ -104,14 +130,14 @@ public final class ChatMultipartBody {
                 case .file:
                     let source = sources[index]
                     if descriptor < 0 {
-                        do { descriptor = try Self.open(source.url) }
+                        do { descriptor = try ChatMultipartPlan.open(source.url) }
                         catch { throw ChatUploadBodyError.changedFile }
                     }
-                    guard try Self.stamp(descriptor) == source.stamp else { throw ChatUploadBodyError.changedFile }
+                    guard try ChatMultipartPlan.stamp(descriptor) == source.stamp else { throw ChatUploadBodyError.changedFile }
                     if fileOffset == source.stamp.size {
                         var extra: UInt8 = 0
                         let count = try readBytes(&extra, count: 1)
-                        guard count == 0, try Self.stamp(descriptor) == source.stamp else { throw ChatUploadBodyError.changedFile }
+                        guard count == 0, try ChatMultipartPlan.stamp(descriptor) == source.stamp else { throw ChatUploadBodyError.changedFile }
                         releaseDescriptor(); fileOffset = 0; stage = .separator
                         continue
                     }
@@ -120,7 +146,7 @@ public final class ChatMultipartBody {
                     let count = try bytes.withUnsafeMutableBytes { buffer in
                         try readBytes(buffer.baseAddress!, count: size)
                     }
-                    guard count > 0, try Self.stamp(descriptor) == source.stamp else { throw ChatUploadBodyError.changedFile }
+                    guard count > 0, try ChatMultipartPlan.stamp(descriptor) == source.stamp else { throw ChatUploadBodyError.changedFile }
                     fileOffset += Int64(count); bytes.count = count
                     return bytes
                 case .separator:
@@ -153,19 +179,6 @@ public final class ChatMultipartBody {
             guard result >= 0 else { throw ChatUploadBodyError.readFailure }
             return result
         }
-    }
-    private static func open(_ url: URL) throws -> Int32 {
-        // O_NONBLOCK prevents a selected FIFO/device from blocking preflight before fstat.
-        let fd = Darwin.open(url.path, O_RDONLY | O_NONBLOCK | O_CLOEXEC)
-        guard fd >= 0 else { throw ChatUploadBodyError.invalidFile }
-        return fd
-    }
-    private static func stamp(_ fd: Int32) throws -> Stamp {
-        var info = stat()
-        guard fstat(fd, &info) == 0, info.st_mode & S_IFMT == S_IFREG, info.st_size >= 0 else {
-            throw ChatUploadBodyError.invalidFile
-        }
-        return Stamp(info)
     }
     private func releaseDescriptor() {
         if descriptor >= 0 { Darwin.close(descriptor); descriptor = -1 }
