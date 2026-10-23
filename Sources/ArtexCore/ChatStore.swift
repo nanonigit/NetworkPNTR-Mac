@@ -33,9 +33,11 @@ import Observation
         self.service = service; pause = sleep
     }
     public var draft: String {
-        get { drafts[selectedID ?? 0] ?? "" }
-        set { drafts[selectedID ?? 0] = newValue }
+        get { draft(for: selectedID) }
+        set { setDraft(newValue, for: selectedID) }
     }
+    public func draft(for id: Int64?) -> String { drafts[id ?? 0] ?? "" }
+    public func setDraft(_ value: String, for id: Int64?) { drafts[id ?? 0] = value }
     public var isSending: Bool { selectedID.map(sendingIDs.contains) ?? false }
     public var isStopping: Bool { selectedID.map(stoppingIDs.contains) ?? false }
     public var mutationError: String? { selectedID.flatMap { mutationErrors[$0] } }
@@ -68,7 +70,7 @@ import Observation
             if ticket == lifetime, !Task.isCancelled, !(error is CancellationError) { listError = safeMessage(error) }
         }
     }
-    public func select(id: Int64?) async {
+    public func select(id: Int64?, draft: String? = nil) async {
         if let id, id <= 0 { return }
         if id == selectedID {
             if id != nil, !hasLoadedHistory, !isLoadingHistory { await loadLatest() }
@@ -79,6 +81,7 @@ import Observation
         running = id.flatMap { selected in conversations.first(where: { $0.id == selected })?.isRunning } ?? false
         needsTailReconciliation = false; stopStatus = nil; transcriptError = nil
         isLoadingHistory = false; isLoadingOlder = false; isLoadingDelta = false
+        if let draft { drafts[id ?? 0] = draft }
         if id != nil { await loadLatest() }
     }
     private func loadLatest() async {

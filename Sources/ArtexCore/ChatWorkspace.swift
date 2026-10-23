@@ -70,9 +70,8 @@ public enum ChatSendPolicy {
             guard life == lifetime, ticket == selection, !Task.isCancelled else { return false }
             let latestDraft = transcript.draft
             transcript.draft = ""
-            await transcript.select(id: created.id)
+            await transcript.select(id: created.id, draft: latestDraft)
             guard life == lifetime, ticket == selection, !Task.isCancelled else { return false }
-            transcript.draft = latestDraft
             let result = await transcript.sendCurrentDraft(submittedMessage: submitted)
             if life == lifetime, !Task.isCancelled { await transcript.refreshList() }
             return result

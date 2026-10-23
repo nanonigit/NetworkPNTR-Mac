@@ -8,6 +8,9 @@ struct ChatComposer: NSViewRepresentable {
     let mode: String
     let disabled: Bool
     let send: () -> Void
+    static func draftBinding(store: ChatStore, conversationID: Int64?) -> Binding<String> {
+        Binding(get: { store.draft(for: conversationID) }, set: { store.setDraft($0, for: conversationID) })
+    }
     func makeCoordinator() -> Coordinator { Coordinator(self) }
     func makeNSView(context: Context) -> NSScrollView {
         let scroll = NSScrollView(); scroll.hasVerticalScroller = true; scroll.drawsBackground = false
