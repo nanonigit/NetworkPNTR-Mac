@@ -78,3 +78,12 @@ Mac実画面で、一覧を下へスクロールして「さらに読み込む�
 診断処理は所有する企業IDだけを削除し、一時Keychain項目の削除とVM停止まで成功した。比較用プロセスも正常終了し、所有するコンテナとネットワークを削除済み。既存8787環境は維持した。次の実画面検証では、新しいVM状態と比較環境のready/終了マーカーを使い、古いready情報を稼働中の証拠にしない。
 
 証拠はevidence/chat/mention-interaction-verification.json、mention-contract-vm.json、mention-contract-reference.json、mention-native-results.json、mention-page-scroll-red.json、mention-native/browser-candidates/insertedのPNGペア。今回のC4画像には旧C3画像のPasswords浮動表示がない。レイアウトには目視確認した[Lazyweb資料](https://www.lazyweb.com/agentic-search/4f3afa9b-e394-453b-a6da-171ce7617832)を使用し、動作の基準は固定ARTEXとする。128MiB添付、サイド質問SSE、承認・ツール表示、クラウド応答、機能全体の合格条件は引き続き未完了。
+
+
+## A1 添付本文の上限付きreader
+
+RED42e642aでは未実装ChatMultipartBodyを参照するテストのコンパイル失敗を確認してから実装した。GREEN2d72026で最初の8件が成功。さらにNode標準FormData/Requestの実行結果との正確なバイト比較、同サイズでメタデータが変わる変更、タスク取消後の再利用拒否を加えた。現在ローカルSwift106件（Core101＋AppKit5）が全件成功し、変更のないPythonは従来34件を検証段階とする。開発用アプリの再ビルドとstrictアドホック署名検証も成功した。ソースレビューとテスト実行は別々に行った。
+
+readerはmultipart構造全体を含む長さを事前計算して128MiB以内に制限し、1回最大64KiBで読み取る。本文全体をメモリへ結合しない。上限ちょうどと1バイト超過は架空のスパースファイルで確認し、128MiBの送信・メモリ確保はしていない。5MiBのテストは分割読み取りとバイト数を確認するもので、プロセスメモリ測定やsocket逆圧テストではない。device/inode/size/mtime/ctimeで観測できる置換・内容／サイズ変更を途中読み取り後も検出するが、ファイルシステムのスナップショット保証ではない。不正選択、通常ファイル以外のFIFO、名前によるヘッダー注入、不正boundary、close、タスク取消をテストした。汎用JSONの4MiB制限は維持している。
+
+対象readerのカバレッジは行150/154（97.40%）、領域105/121（86.78%）、関数24/26（92.31%）。分岐・製品全体の割合とはしない。証拠はevidence/chat/upload-a1-verification.jsonとupload-formdata-reference.json。後者はネットワーク送信なしの補助エンコーダであり、実ブラウザやARTEXへの添付成功ではない。認証付きmultipart通信、socket取消・逆圧、実VMと固定ブラウザの128MiB比較、ネイティブ添付状態・選択UIはA2〜A5として残る。引用候補位置・Undoの実画面再確認と機能全体の受け入れも未完了。

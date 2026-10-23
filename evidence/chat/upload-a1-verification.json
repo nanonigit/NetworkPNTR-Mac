@@ -1,0 +1,63 @@
+{
+  "baseline": "e75ae371ad777ffd1eecdd28d2781a6519b05591",
+  "phase": "A1 bounded multipart body reader; transport/UI acceptance pending",
+  "red_commit": "42e642a",
+  "red": "targeted compile-time failure: ChatMultipartBody missing",
+  "green_commit": "2d72026",
+  "initial_targeted_tests": 8,
+  "latest_targeted_tests": 11,
+  "swift_tests": 106,
+  "core_tests": 101,
+  "appkit_tests": 5,
+  "swift_failures": 0,
+  "python": "unchanged; prior34-test checkpoint and CI ce254d4 succeeded",
+  "body_limit_bytes": 134217728,
+  "maximum_read_bytes": 65536,
+  "tests": [
+    "ordered repeated filename/binary/empty content and exact wire",
+    "quote/CR/LF header escaping",
+    "exact128MiB body and one-byte-over using sparse file",
+    "generic JSON4MiB cap unchanged",
+    "invalid selection/boundary/nonregular FIFO/directory",
+    "atomic replacement before content read",
+    "growth/truncation after partial read",
+    "same-size content change with changed observed metadata",
+    "5MiB content in bounded chunks",
+    "explicit close and task cancellation are terminal",
+    "three executed secondary Node FormData wire cases"
+  ],
+  "scoped_coverage": {
+    "lines": {
+      "count": 154,
+      "covered": 150,
+      "percent": 97.40259740259741
+    },
+    "regions": {
+      "count": 121,
+      "covered": 105,
+      "notcovered": 16,
+      "percent": 86.77685950413223
+    },
+    "functions": {
+      "count": 26,
+      "covered": 24,
+      "percent": 92.3076923076923
+    }
+  },
+  "branch_or_whole_product_coverage_claimed": false,
+  "secondary_oracle": "upload-formdata-reference.json; Node built-in FormData/Request, no network, not actual browser ARTEX upload evidence",
+  "runtime_upload_verified": false,
+  "native_upload_ui_implemented": false,
+  "remaining": [
+    "authenticated multipart path",
+    "socket backpressure/partial-write/early-response/cancel/timeout",
+    "real signed app VM upload and128MiB comparison",
+    "draft attachment ownership and send restoration",
+    "native picker/cards/accessibility/UIUX browser comparison"
+  ],
+  "file_consistency": "device/inode/size/mtime/ctime checks on reopen and around reads; not an atomic filesystem snapshot",
+  "host_shares_added": false,
+  "vm_nics_added": false,
+  "generic_json_cap_changed": false,
+  "review": "separate read-only reviewer approved A1 source; local tests separately executed"
+}

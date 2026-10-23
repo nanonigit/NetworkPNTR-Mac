@@ -125,4 +125,47 @@ final class ChatMultipartBodyTests: XCTestCase {
             XCTAssertThrowsError(try body.read(maximum: maximum))
         }
     }
+    func testWireMatchesExecutedSecondaryFormDataEncoder() throws {
+        struct Reference: Decodable {
+            struct Entry: Decodable {
+                struct File: Decodable { let name: String; let base64: String }
+                let files: [File]; let boundary: String; let wire_base64: String
+            }
+            let cases: [Entry]
+        }
+        let root = URL(fileURLWithPath: #filePath).deletingLastPathComponent().deletingLastPathComponent().deletingLastPathComponent()
+        let reference = try JSONDecoder().decode(Reference.self, from: Data(contentsOf: root.appendingPathComponent("evidence/chat/upload-formdata-reference.json")))
+        XCTAssertEqual(reference.cases.count, 3)
+        for item in reference.cases {
+            let selected = try item.files.map { entry in
+                try file(directory(), entry.name, XCTUnwrap(Data(base64Encoded: entry.base64)))
+            }
+            let body = try ChatMultipartBody(files: selected, boundary: item.boundary)
+            XCTAssertEqual(try drain(body, chunk: 17), try XCTUnwrap(Data(base64Encoded: item.wire_base64)))
+        }
+    }
+    func testSameSizeContentChangeWithChangedMetadataFails() throws {
+        let url = try file(directory(), "modified.txt", Data("old".utf8))
+        let body = try ChatMultipartBody(files: [url])
+        let writer = try FileHandle(forWritingTo: url)
+        try writer.write(contentsOf: Data("new".utf8)); try writer.close()
+        try FileManager.default.setAttributes([.modificationDate: Date(timeIntervalSince1970: 1)], ofItemAtPath: url.path)
+        XCTAssertThrowsError(try drain(body))
+    }
+    func testCancelledTaskCannotStartOrResumeReader() async throws {
+        let url = try file(directory(), "cancelled.txt", Data("test".utf8))
+        let task = Task { () throws -> Bool in
+            let body = try ChatMultipartBody(files: [url])
+            _ = try body.read(maximum: 1)
+            withUnsafeCurrentTask { $0?.cancel() }
+            do { _ = try body.read(); return false }
+            catch is CancellationError {
+                do { _ = try body.read(); return false }
+                catch is CancellationError { return true }
+            }
+        }
+        let cancelled = try await task.value
+        XCTAssertTrue(cancelled)
+    }
+
 }

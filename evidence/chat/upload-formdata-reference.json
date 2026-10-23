@@ -1,0 +1,44 @@
+{
+  "runtime": "v26.12.1",
+  "encoder": "Node built-in WHATWG FormData/Request; secondary wire oracle, not a browser UI or ARTEX backend test",
+  "network_requests": 0,
+  "cases": [
+    {
+      "name": "binary and empty duplicate",
+      "files": [
+        {
+          "name": "資料.txt",
+          "base64": "AP8NCkE="
+        },
+        {
+          "name": "資料.txt",
+          "base64": ""
+        }
+      ],
+      "boundary": "fixture-boundary",
+      "wire_base64": "LS1maXh0dXJlLWJvdW5kYXJ5DQpDb250ZW50LURpc3Bvc2l0aW9uOiBmb3JtLWRhdGE7IG5hbWU9ImZpbGUiOyBmaWxlbmFtZT0i6LOH5paZLnR4dCINCkNvbnRlbnQtVHlwZTogYXBwbGljYXRpb24vb2N0ZXQtc3RyZWFtDQoNCgD/DQpBDQotLWZpeHR1cmUtYm91bmRhcnkNCkNvbnRlbnQtRGlzcG9zaXRpb246IGZvcm0tZGF0YTsgbmFtZT0iZmlsZSI7IGZpbGVuYW1lPSLos4fmlpkudHh0Ig0KQ29udGVudC1UeXBlOiBhcHBsaWNhdGlvbi9vY3RldC1zdHJlYW0NCg0KDQotLWZpeHR1cmUtYm91bmRhcnktLQ0K"
+    },
+    {
+      "name": "quote CR LF filename",
+      "files": [
+        {
+          "name": "quote\"\r\nname.txt",
+          "base64": "dGVzdA=="
+        }
+      ],
+      "boundary": "fixture-boundary",
+      "wire_base64": "LS1maXh0dXJlLWJvdW5kYXJ5DQpDb250ZW50LURpc3Bvc2l0aW9uOiBmb3JtLWRhdGE7IG5hbWU9ImZpbGUiOyBmaWxlbmFtZT0icXVvdGUlMjIlMEQlMEFuYW1lLnR4dCINCkNvbnRlbnQtVHlwZTogYXBwbGljYXRpb24vb2N0ZXQtc3RyZWFtDQoNCnRlc3QNCi0tZml4dHVyZS1ib3VuZGFyeS0tDQo="
+    },
+    {
+      "name": "backslash percent unicode",
+      "files": [
+        {
+          "name": "space % \\ 😀.bin",
+          "base64": "AAECAwQ="
+        }
+      ],
+      "boundary": "fixture-boundary",
+      "wire_base64": "LS1maXh0dXJlLWJvdW5kYXJ5DQpDb250ZW50LURpc3Bvc2l0aW9uOiBmb3JtLWRhdGE7IG5hbWU9ImZpbGUiOyBmaWxlbmFtZT0ic3BhY2UgJSBcIPCfmIAuYmluIg0KQ29udGVudC1UeXBlOiBhcHBsaWNhdGlvbi9vY3RldC1zdHJlYW0NCg0KAAECAwQNCi0tZml4dHVyZS1ib3VuZGFyeS0tDQo="
+    }
+  ]
+}
