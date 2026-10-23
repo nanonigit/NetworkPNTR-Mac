@@ -98,3 +98,14 @@ BackendJSONClientは不変Sendableのmultipart計画をMainActor外で事前検�
 署名アプリの新規実行upload-a2-v1は、1vCPUソース候補でbootstrap／転送前にpanicした。upload-a2-boot-red.jsonに記録する。終了と後片付けを確認後、同じ条件の新規実行upload-a2-v2は完走した。productionの認証付きvsockで、架空の70,001バイトのバイナリ、空ファイル、28バイトの同名ファイルをアップロード。固定本体は後者をfixture-1.binへ変更した。既存ゲストworkspace APIでダウンロードし、全バイトとSHA256が一致。所有するゲストuploads・会話・選択用ローカルファイルを削除し、一時Keychain削除、認証を保持する停止／再起動、最後のプロセス終了も成功した。証拠はupload-contract-vm.json、upload-native-results.json、upload-native-failed-results.json。
 
 再試行の成功で最初のカーネル障害を取り消したり、実行安定性を合格にしたりしない。今回128MiBの実データは送っていない。実上限転送、メモリ測定、停止／取消の実機統合、固定ブラウザ添付契約、ネイティブ添付状態とUI/UX比較は未完了。引用の実画面再確認と全機能の受け入れも残っている。
+
+
+## A3 添付APIの正式比較と実128MiB境界
+
+現在ローカルSwift125件（Core118、実AppKit5、診断fixture2）とPython39件が全件成功。REDab3c169では比較用fixture／modeの未実装を確認し、GREEN6471933で新規5テストが成功した。REDf94bb95では任意のネイティブ上限検証を要求し、GREENb84ebd7で診断fixture2テストが成功。全体テスト、開発アプリ再ビルド、strictアドホック署名も成功した。Python比較fixtureはホスト／不正UID／非マークLinuxでHTTP前に拒否し、importだけでは通信しない。本文生成は最大64KiBずつで長さを検証するが、プロセスメモリ測定ではない。
+
+ソース候補カーネルを使った新規署名アプリ／VMのupload-a3-v1は完走した。スパース選択ファイルlimit.binの134,217,517バイトとmultipart構造211バイトにより、本文全体を134,217,728バイトちょうどにした。ARTEXは受理し、workspaceの保存サイズも一致。選択ファイルを1バイト増やすとMac側の事前検証でtooLargeとなり、元のゲストファイルは維持されlimit-1.binは作られなかった。小さい3ファイルも全内容とハッシュが一致し、所有するゲストファイル／会話／選択用ローカル、一時Keychain、VMの後片付け・停止も成功した。
+
+別の固定ブラウザ本体とPostgreSQLをDocker内部ネットワークで動かすと、小ファイルのハッシュ・名前・順序、本文上限、保存サイズ、超過拒否と元ファイル維持の正規化結果が完全一致した。内部loopback APIを使い、入口・公開ポート・ホスト共有はない。使い捨てstate512MiB／tmp256MiBにより実際のmultipart退避を許し、既存入口の64MiB制限と取り違えない。比較用本体は超過本文をHTTP400で拒否し、Macは事前検証で拒否する。検証層が異なるためUI同等性とはしない。比較処理は正常終了し、比較用コンテナ／ネットワークも削除済み。元の8787環境と固定ソースは変更しなかった。
+
+証拠はevidence/chat/upload-limit-contract-vm.json、upload-limit-contract-reference.json、upload-limit-comparison.json、upload-limit-native-results.json、upload-a3-verification.json。共通の正規化項目だけを比較し、診断実装のメタデータを本体互換性に含めない。大きいファイルの全ハッシュ、メモリ・逆圧の測定、実VZの取消／停止、ネイティブ添付状態・UI、引用の実画面再確認は未完了。以前のカーネルpanicは実行安定性の反証として残し、今回の成功で正式採用や機能全体の受け入れを完了とはしない。

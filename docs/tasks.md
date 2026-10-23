@@ -33,3 +33,6 @@ A1 attachment body reader implemented and scoped-tested: whole multipart128MiB b
 
 
 A2 checkpoint: authenticated multipart client/runtime, cancellable owned descriptors and post-await leases implemented;11 socket/6 auth-client/1 fixture tests,124 Swift total pass. Signed fresh VM retry uploads/downloads3synthetic files with exact bytes/SHA256 and cleanup; the first source-candidate attempt panicked beforebootstrap and remains counter-evidence for runtime reliability. A2 live stop/cancel and A3 actual128MiB/reference comparison remain open; next formalize disposable pinned upload contracts, exercise upper bound/stop and then A4/A5 state/UI gates. No source-kernel promotion. See chat-verification.md and bugs/guest-boot-investigation.md.
+
+
+A3 API boundary checkpoint: signed fresh VM and disposable pinned browser backend agree on3small-file hashes/order/names, actual exact128MiB multipart acceptance/persisted size and one-byte-over rejection/original preservation.125 Swift and39 Python tests pass. Native preflight and backendHTTP400 are distinct validation layers; no UI gate closes. Next add bounded native large-content download/hash and real VZ transfer cancellation/progress, then A4 attachment state and A5 picker/cards comparisons. Kernel reliability and all21 full feature gates remain open. See chat-verification.md and upload-a3-verification.json.

@@ -1,0 +1,16 @@
+{
+  "baseline": "e75ae371ad777ffd1eecdd28d2781a6519b05591",
+  "identical_fixture": true,
+  "api_contract_equal": true,
+  "cases": [
+    "binary_empty_duplicate_upload",
+    "exact_small_file_content",
+    "exact128MiB_body_accepted",
+    "persisted_large_file_size",
+    "one_byte_over_rejected",
+    "original_preserved",
+    "owned_fixture_cleanup"
+  ],
+  "browser_data_modified": false,
+  "ui_workflow_parity": "pending"
+}

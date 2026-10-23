@@ -33,3 +33,6 @@ A1添付本文readerを実装・対象テスト済み。本文全体128MiB、64K
 
 
 A2段階: 認証付きmultipart client／runtime、取り消せるdescriptor所有、await後の有効性確認を実装。socket11／認証client6／診断fixture1を含むSwift124件成功。新規の署名アプリ／VM再試行では3つの架空ファイルを転送・再取得し、全バイトとSHA256、後片付けを確認した。最初のソース候補実行はbootstrap前にpanicしたため、安定性の反証として保持する。A2の実停止／取消、A3の実128MiB／固定ブラウザ契約は未完了。次は使い捨ての固定ブラウザ添付比較を正式化し、上限・停止、A4／A5の状態とUI条件へ進む。カーネル候補は正式採用しない。chat-verification.mdとbugs/guest-boot-investigation.mdを参照。
+
+
+A3 API境界段階: 新規の署名アプリ／VMと使い捨ての固定ブラウザ本体で、小さい3ファイルのハッシュ・順序・名前、本文128MiBちょうどの実受理／保存サイズ、1バイト超過拒否／元ファイル維持が一致した。Swift125件、Python39件が成功。Macの事前検証と本体HTTP400は異なる検証層であり、UI条件は合格にしない。次は大ファイルの上限付きダウンロード／ハッシュと実VZの転送取消・進捗を追加し、A4添付状態、A5選択UI／カード比較へ進む。カーネル安定性と全21機能の受け入れは未完了。chat-verification.mdとupload-a3-verification.jsonを参照。

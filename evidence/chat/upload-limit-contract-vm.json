@@ -1,0 +1,33 @@
+{
+  "actual_authenticated_vsock_upload" : true,
+  "downloaded_bytes_equal" : true,
+  "large_body_limit_and_vm_stop_acceptance" : "pending",
+  "limit" : {
+    "body_bytes" : 134217728,
+    "duplicate_after_rejection" : false,
+    "file_size" : 134217517,
+    "over_limit_rejected" : true,
+    "persisted_size" : 134217517
+  },
+  "owned_files_and_conversation_cleaned" : true,
+  "records" : [
+    {
+      "name" : "fixture.bin",
+      "path" : "uploads\/fixture.bin",
+      "sha256" : "d6dd068e2d9d6f42dd20ea6b45a1740dd0d5ceae7b840b3bbd77322d8d627113",
+      "size" : 70001
+    },
+    {
+      "name" : "empty.txt",
+      "path" : "uploads\/empty.txt",
+      "sha256" : "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size" : 0
+    },
+    {
+      "name" : "fixture-1.bin",
+      "path" : "uploads\/fixture-1.bin",
+      "sha256" : "72e8ded6417188a85eb01392760cc7fecd3545df770a40b4d3229c82cbd06372",
+      "size" : 28
+    }
+  ]
+}

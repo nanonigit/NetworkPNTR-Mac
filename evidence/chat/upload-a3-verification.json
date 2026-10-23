@@ -1,0 +1,60 @@
+{
+  "baseline": "e75ae371ad777ffd1eecdd28d2781a6519b05591",
+  "status": "A3 API limit and small-content contract passes; full attachment acceptance open",
+  "swift_tests": 125,
+  "core_tests": 118,
+  "appkit_component_tests": 5,
+  "diagnostic_fixture_tests": 2,
+  "swift_failures": 0,
+  "python_tests": 39,
+  "python_failures": 0,
+  "new_python_reference_tests": 5,
+  "red_green": [
+    {
+      "red": "ab3c169",
+      "green": "6471933",
+      "case": "isolated reference mode and bounded synthetic body"
+    },
+    {
+      "red": "f94bb95",
+      "green": "b84ebd7",
+      "case": "optional native limit fixture"
+    }
+  ],
+  "actual_vm_and_reference_equal": true,
+  "small_file_hashes_equal": true,
+  "small_files": 3,
+  "multipart_body_bytes": 134217728,
+  "large_file_bytes": 134217517,
+  "persisted_large_file_size_matches": true,
+  "one_byte_over_rejected": true,
+  "rejection_layers": {
+    "native": "ChatUploadBodyError.tooLarge before connection",
+    "reference_backend": "HTTP400"
+  },
+  "rejected_upload_duplicate_created": false,
+  "original_preserved": true,
+  "large_full_content_hash_verified": false,
+  "process_memory_measured": false,
+  "live_vz_stop_mid_transfer_verified": false,
+  "native_vm_stopped": true,
+  "temporary_keychain_removed": true,
+  "owned_guest_files_conversation_and_local_selected_files_cleaned": true,
+  "disposable_reference_completed": true,
+  "reference_route": "fixed internal loopback API, no ingress or host port",
+  "disposable_reference_state_mib": 512,
+  "disposable_reference_tmp_mib": 256,
+  "existing_browser_deployment_modified": false,
+  "ui_parity": "pending",
+  "runtime_reliability": "not accepted; prior one-vCPU source-candidate panic retained in upload-a2-boot-red.json",
+  "kernel_promoted": false,
+  "remaining": [
+    "large content hash through bounded native download",
+    "memory/backpressure measurement",
+    "real VZ stop/cancel during transfer",
+    "native attachment state/send restoration",
+    "picker/cards/progress/error UIUX browser comparison",
+    "citation external retests",
+    "kernel reliability and all full feature gates"
+  ]
+}
