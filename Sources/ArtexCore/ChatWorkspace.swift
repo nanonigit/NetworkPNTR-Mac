@@ -19,6 +19,7 @@ public enum ChatSendPolicy {
 
 @MainActor @Observable public final class ChatWorkspace {
     public let transcript: ChatStore
+    public let mentionService: ChatMentionService
     public private(set) var agents: [ChatAgent] = []
     public private(set) var profiles: [LLMProfile] = []
     public var agentKey = ""
@@ -32,6 +33,7 @@ public enum ChatSendPolicy {
     @ObservationIgnored private var selection = UUID()
     public init(client: any BackendJSONTransport) {
         self.client = client; service = ChatService(client: client); transcript = ChatStore(service: service)
+        mentionService = ChatMentionService(client: client)
     }
     public var selected: ChatConversation? { transcript.conversations.first { $0.id == transcript.selectedID } }
     public func name(for key: String) -> String { agents.first { $0.key == key }?.name ?? key }

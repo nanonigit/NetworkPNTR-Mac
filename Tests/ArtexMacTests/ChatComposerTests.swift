@@ -47,4 +47,21 @@ final class ChatComposerTests: XCTestCase {
         XCTAssertEqual(observations.last?.2, true)
     }
 
+    @MainActor func testRepeatedIdenticalCitationRestoresCaretAfterInterveningTyping() throws {
+        var text = ""
+        let parent = ChatComposer(text: Binding(get: { text }, set: { text = $0 }), mode: "enter", disabled: false, send: {})
+        let coordinator = ChatComposer.Coordinator(parent)
+        let editor = ChatComposer.Editor(frame: NSRect(x: 0, y: 0, width: 200, height: 80))
+        let query = "@finding"
+        let active = try XCTUnwrap(ChatMentionEditing.active(in: query, caret: query.utf16.count))
+        let edit = try XCTUnwrap(ChatMentionEditing.replace(in: query, active: active, with: "@[漏洞#9 record] "))
+        editor.string = edit.text; coordinator.applySelection(edit, to: editor, text: edit.text)
+        XCTAssertEqual(editor.selectedRange().location, edit.caret)
+        editor.string = query
+        coordinator.textDidChange(Notification(name: NSText.didChangeNotification, object: editor))
+        editor.string = edit.text; editor.setSelectedRange(NSRange(location: 0, length: 0))
+        coordinator.applySelection(edit, to: editor, text: edit.text)
+        XCTAssertEqual(editor.selectedRange().location, edit.caret)
+    }
+
 }

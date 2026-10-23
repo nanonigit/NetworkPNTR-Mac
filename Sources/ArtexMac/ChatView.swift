@@ -106,9 +106,8 @@ struct ChatView: View {
             if let agent = workspace.agents.first(where: { $0.key == workspace.agentKey }), store.selectedID == nil {
                 Text(agent.description).font(.caption).foregroundStyle(.secondary).lineLimit(2)
             }
-            ChatComposer(text: ChatComposer.draftBinding(store: store, conversationID: store.selectedID), mode: sendMode, disabled: false, send: send)
+            ChatMentionComposer(text: ChatComposer.draftBinding(store: store, conversationID: store.selectedID), service: workspace.mentionService, mode: sendMode, disabled: store.isSending || workspace.busy, send: send)
                 .id(store.selectedID ?? 0)
-                .frame(height: 90).overlay(RoundedRectangle(cornerRadius: 7).stroke(.quaternary))
             HStack {
                 Picker("送信キー", selection: $sendMode) { Text("Enterで送信").tag("enter"); Text("Ctrl / ⌘ + Enterで送信").tag("ctrl-enter") }
                     .labelsHidden().frame(maxWidth: 220).accessibilityLabel("送信キー")
