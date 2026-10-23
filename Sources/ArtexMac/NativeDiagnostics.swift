@@ -35,6 +35,10 @@ import Foundation
                 try await NativeChatDiagnostics.run(session: authentication, directory: directory)
                 result["native_chat_finite_crud"] = true
             }
+            if CommandLine.arguments.contains("--chat-history-diagnostics") {
+                try await NativeChatHistoryDiagnostics.run(session: authentication, directory: directory)
+                result["native_chat_populated_history_and_final_delta"] = true
+            }
             if CommandLine.arguments.contains("--dashboard-diagnostics") { try await NativeDashboardDiagnostics.seed(session: authentication, directory: directory) }
             try await environment.stop()
             await environment.start()

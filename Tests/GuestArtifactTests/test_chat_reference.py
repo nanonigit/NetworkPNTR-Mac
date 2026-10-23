@@ -10,8 +10,9 @@ class ChatReferenceTests(unittest.TestCase):
         root = Path(__file__).resolve().parents[2]
         result = subprocess.run([sys.executable, str(root / 'script/compare_backend.py'), '--help'],
                                 check=True, capture_output=True, text=True)
-        self.assertIn('{backend,llm,chat}', result.stdout)
+        self.assertIn('{backend,llm,chat,chat-history}', result.stdout)
         self.assertTrue((root / 'script/chat_contract_fixture.py').is_file())
+        self.assertTrue((root / 'script/chat_history_contract_fixture.py').is_file())
 
     def test_host_execution_rejected_before_network(self):
         import runpy
