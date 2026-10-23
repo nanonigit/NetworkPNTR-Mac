@@ -37,6 +37,14 @@ final class ChatMentionTests: XCTestCase {
         }
         XCTAssertEqual(api.calls.count, accepted)
     }
+    @MainActor func testSearchKeepsZeroWidthSpaceLikePinnedGoServer() async throws {
+        let api = ChatTestTransport(); let service = ChatMentionService(client: api)
+        for (input, expected) in [("\u{200B}record\u{200B}", "\u{200B}record\u{200B}"), ("\u{0085}record\u{0085}", "record"), ("\u{FEFF}record\u{FEFF}", "\u{FEFF}record\u{FEFF}")] {
+            try api.enqueue(["items": []]); _ = try await service.search(query: input)
+            let url = try XCTUnwrap(URLComponents(string: api.calls.last!.path))
+            XCTAssertEqual(url.queryItems?.first(where: { $0.name == "q" })?.value, expected)
+        }
+    }
     @MainActor func testMalformedPagesAndErrorsStaySanitized() async throws {
         let api = ChatTestTransport(); let service = ChatMentionService(client: api)
         for object: [String: Any] in [[:], ["items": NSNull()], ["items": [item(id: 0)]], ["items": [item(), item()]], ["items": [], "next_cursor": "bad/+"], ["items": Array(repeating: item(), count: 21)]] {
