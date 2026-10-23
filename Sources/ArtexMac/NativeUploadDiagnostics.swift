@@ -10,6 +10,7 @@ import Foundation
         let files = directory.appendingPathComponent("upload-selected-fixtures", isDirectory: true)
         guard !FileManager.default.fileExists(atPath: files.path) else { throw RuntimeError.integrity("fresh selected upload fixture") }
         try FileManager.default.createDirectory(at: files, withIntermediateDirectories: false, attributes: [.posixPermissions: 0o700])
+        defer { if FileManager.default.fileExists(atPath: files.path) { try? FileManager.default.removeItem(at: files) } }
         let second = files.appendingPathComponent("second", isDirectory: true)
         try FileManager.default.createDirectory(at: second, withIntermediateDirectories: false, attributes: [.posixPermissions: 0o700])
         let firstBytes = Data((0..<70001).map { UInt8($0 % 256) })
@@ -38,19 +39,25 @@ import Foundation
                 guard download.status == 200, download.body == bytes else { throw RuntimeError.integrity("native attachment content") }
                 records.append(["name": attachment.name, "path": attachment.path, "size": attachment.size, "sha256": ArtifactIntegrity.sha256(download.body)])
             }
-            var query = URLComponents()
-            query.queryItems = [URLQueryItem(name: "path", value: "sessions/conv-\(conversation.id)/uploads")]
-            let removed = try await session.authenticatedRequest(method: "DELETE", path: "/api/workspace/delete?" + (query.percentEncodedQuery ?? ""))
-            guard removed.status == 200 else { throw RuntimeError.integrity("native upload file cleanup") }
-            try await service.delete(id: conversation.id); owned = nil
+            try await cleanup(conversation.id, session: session, service: service); owned = nil
             try FileManager.default.removeItem(at: files)
             let result: [String: Any] = ["records": records, "actual_authenticated_vsock_upload": true, "downloaded_bytes_equal": true, "owned_files_and_conversation_cleaned": true, "large_body_limit_and_vm_stop_acceptance": "pending"]
             try JSONSerialization.data(withJSONObject: result, options: [.prettyPrinted, .sortedKeys]).write(to: directory.appendingPathComponent("upload-contract-vm.json"))
         } catch {
-            if let owned { try? await service.delete(id: owned) }
-            try? FileManager.default.removeItem(at: files)
+            if let owned {
+                do { try await cleanup(owned, session: session, service: service) }
+                catch { throw RuntimeError.integrity("native upload fixture cleanup failed") }
+            }
             throw error
         }
     }
+    private static func cleanup(_ id: Int64, session: AuthenticationSession, service: ChatService) async throws {
+        var query = URLComponents()
+        query.queryItems = [URLQueryItem(name: "path", value: "sessions/conv-\(id)/uploads")]
+        let removed = try await session.authenticatedRequest(method: "DELETE", path: "/api/workspace/delete?" + (query.percentEncodedQuery ?? ""))
+        guard [200,404].contains(removed.status) else { throw RuntimeError.integrity("native upload file cleanup") }
+        try await service.delete(id: id)
+    }
+
 }
 #endif
