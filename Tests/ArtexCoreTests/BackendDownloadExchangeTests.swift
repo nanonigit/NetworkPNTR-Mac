@@ -95,6 +95,19 @@ final class BackendDownloadExchangeTests: XCTestCase {
             XCTAssertTrue(socket.isFinished)
         }
     }
+    func testPrematureSuccessBeforeRequestCannotBeAcceptedButEarly401Can() throws {
+        for status in [200,401] {
+            let (socket, fd) = try pair()
+            defer { Darwin.close(fd) }
+            try Self.write(fd, Data("HTTP/1.1 \(status) Fixture\r\nContent-Length: 0\r\n\r\n".utf8))
+            if status == 200 {
+                XCTAssertThrowsError(try BackendDownloadExchange.exchange(socket: socket, preamble: Data("fixture\n".utf8), request: request, expectedSize: 0, timeout: .seconds(1)))
+            } else {
+                XCTAssertEqual(try BackendDownloadExchange.exchange(socket: socket, preamble: Data("fixture\n".utf8), request: request, expectedSize: 0, timeout: .seconds(1)).status, 401)
+            }
+            XCTAssertTrue(socket.isFinished)
+        }
+    }
     func testFiniteDeadlineAndInvalidInputsReleaseConnection() throws {
         let (socket, fd) = try pair(); defer { Darwin.close(fd) }
         XCTAssertThrowsError(try BackendDownloadExchange.exchange(socket: socket, preamble: Data("fixture\n".utf8), request: request, expectedSize: 0, timeout: .milliseconds(80))) {
