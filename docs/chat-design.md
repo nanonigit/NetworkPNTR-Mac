@@ -28,7 +28,7 @@ Routes: GET/POST /api/conversations; PATCH/DELETE /api/conversations/{id}; POST 
 
 ## Build order and phase gates
 
-1. C0 baseline: capture read-only empty browser state (done); construct deterministic populated fixtures and a control/event matrix (pending). Keep feature-map status pending.
+1. C0 baseline: capture read-only empty browser state (done); construct deterministic populated fixtures and a control/event matrix (pending). C3 now advances feature-map status to in_progress; full acceptance remains open.
 2. C1 service/model tests first: nullable profile/pin fields, all event kinds, unknown events, query/body encoding, auth errors without raw response disclosure, merge duplicates/out-of-order/cursor boundaries, batch partial failure and nonoverlapping/stale-response cancellation. Then implement finite services/store.
 3. C2 actual guest/reference: create/rename/pin/profile/change/delete, 201+ event history, overlapping deltas, running-to-final transition and malformed/missing records on identical disposable data. Use the signed app against the selected source kernel. No user browser mutation.
 4. C3 native core UI: implement rail/transcript/composer and externally compare the same fixtures with browser success/empty/loading/error/validation/persistence/restart/keyboard states. Draft creation/send failures and cancel/stop races are mandatory. No feature acceptance from API tests alone.

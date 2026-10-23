@@ -1,12 +1,12 @@
 # ARTEX Mac
 
-Native SwiftUI macOS application with an app-managed isolated Linux VM. **Development milestone: Phase 0, Phase 1 technical proof and Phase 2 backend acceptance checkpoint; not a complete ARTEX client.** LLM settings and the dashboard are implemented and under comparison; the other 19 feature screens remain unimplemented. All 21 workflow acceptance gates are still open. The existing Docker browser instance is preserved independently.
+Native SwiftUI macOS application with an app-managed isolated Linux VM. **Development milestone: Phase 0, Phase 1 technical proof and Phase 2 backend acceptance checkpoint; not a complete ARTEX client.** LLM settings and the dashboard are implemented and under comparison; Chat core UI is also implemented with partial comparison; the other 18 feature screens remain unimplemented. All 21 workflow acceptance gates are still open. The existing Docker browser instance is preserved independently.
 
 ## Current evidence
 
 - Apple Virtualization.framework really boots ARM64 Linux and cooperatively stops it, twice in sequence, without Docker, host shares, NICs or persistent disks.
 - Modified kernel is rejected before VM creation. An actual guest that never emits readiness times out visibly and recovers through force stop.
-- 66 Swift unit tests and 34 Python regression tests cover inventory, lifecycle, integrity, isolation, auth, LLM services and dashboard calculations/polling.
+- 75 Swift tests (74 core and 1 AppKit component) and 34 Python regression tests cover inventory, lifecycle, integrity, isolation, auth, LLM services and dashboard calculations/polling.
 - Native application .app is built, locally ad-hoc signed with the virtualization entitlement and launched. Its developer harness runs the VM service from the real app and records readiness/shutdown. External CUA verified native LLM creation/editing, numeric validation, Return-key save and active-profile protection. The connection later failed; full click/visual acceptance is still pending. Content-view snapshots are diagnostic only and have layer-compositing limitations; they are not signed off as UI parity.
 
 The separate backend acceptance guest now boots pinned ARTEX and PostgreSQL 16 with authenticated vsock and a private persistent disk. Real normal/forced restarts preserve authentication and an LLM fixture. Five normalized API contract cases match a disposable pinned browser backend. See [Phase 2 evidence](docs/phase2-verification.md). The app now bundles this real backend by default and provides native setup/login/logout with a Keychain session. Two-vCPU experiments exposed intermittent kernel faults. A one-vCPU direct-root diagnostic profile passed repeated native auth runs; a separate database recovery readiness race was repaired and three forced recoveries passed. Release reliability is not accepted; see [the investigation](docs/bugs/guest-boot-investigation.md).
@@ -38,4 +38,4 @@ Maintain identical fixtures and expected outcomes before each migrated feature p
 
 Source is under AGPL-3.0; see LICENSE and THIRD_PARTY.md. Large generated guest artifacts and raw logs are excluded from Git. This is a development build, not a notarized release.
 
-Chat finite API/state core, ten basic CRUD groups and ten populated-history groups are verified. The signed app restores all 211 fixture events and their full detail after VM restart. Native chat UI and successful AI send/running-stop acceptance remain pending. See [chat verification](docs/chat-verification.md).
+Chat finite API/state core, ten basic CRUD groups and ten populated-history groups are verified. The signed app restores all 211 fixture events and their full detail after VM restart. Native chat core UI has partial external comparison; successful AI send/running-stop and full acceptance remain pending. See [chat verification](docs/chat-verification.md).

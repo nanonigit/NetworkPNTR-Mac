@@ -1,0 +1,109 @@
+{
+  "baseline": "e75ae371ad777ffd1eecdd28d2781a6519b05591",
+  "status": "partial C3; full feature acceptance pending",
+  "swift_tests": 75,
+  "core_tests": 74,
+  "appkit_component_tests": 1,
+  "python_tests": 34,
+  "failures": 0,
+  "fixture_events": 211,
+  "native_external_checks": [
+    "empty and populated chat",
+    "latest 200 and older 11",
+    "10KB detail sheet",
+    "rename and pin",
+    "profile choice and agent filter",
+    "draft retained across conversation switches",
+    "Shift+Enter and control-send mode newline",
+    "actual Enter send with final model/network error",
+    "multi-select toggle"
+  ],
+  "browser_external_checks": [
+    "same populated fixture",
+    "rename and pin",
+    "profile choice and agent filter",
+    "actual send and running stop"
+  ],
+  "native_running_stop": "pending",
+  "native_multiselect_delete_confirmation": "pending",
+  "actual_cloud_response": "pending",
+  "physical_japanese_ime": "pending; AppKit marked-text component regression passed",
+  "advanced_features": [
+    "uploads",
+    "citations",
+    "side questions",
+    "approvals",
+    "SSE",
+    "rich markdown/tool rendering",
+    "todo"
+  ],
+  "scroll_regression": {
+    "red": "48981f5",
+    "old_top_seq": 12,
+    "red_observed_top_seq": 2,
+    "green_observed_top_seq": 12,
+    "external_native_retest": true
+  },
+  "review_run1": "cooperative stop and temporary Keychain cleanup passed",
+  "review_run2": "terminal external-review harness timeout; partial UI observations only",
+  "full_visual_accessibility_acceptance": false,
+  "screenshot_limitation": "Native captures include a floating Passwords system overlay; not clean visual signoff",
+  "source_kernel_promotion": false,
+  "native_runtime_nics": 0,
+  "native_host_shares": 0,
+  "coverage_scope": "line/region coverage only, not whole product or branch coverage",
+  "scoped_coverage": {
+    "ChatModels.swift": {
+      "lines": {
+        "count": 37,
+        "covered": 37,
+        "percent": 100
+      },
+      "regions": {
+        "count": 36,
+        "covered": 36,
+        "notcovered": 0,
+        "percent": 100
+      }
+    },
+    "ChatService.swift": {
+      "lines": {
+        "count": 110,
+        "covered": 106,
+        "percent": 96.36363636363636
+      },
+      "regions": {
+        "count": 111,
+        "covered": 104,
+        "notcovered": 7,
+        "percent": 93.69369369369369
+      }
+    },
+    "ChatStore.swift": {
+      "lines": {
+        "count": 214,
+        "covered": 204,
+        "percent": 95.32710280373831
+      },
+      "regions": {
+        "count": 178,
+        "covered": 150,
+        "notcovered": 28,
+        "percent": 84.26966292134831
+      }
+    },
+    "ChatWorkspace.swift": {
+      "lines": {
+        "count": 107,
+        "covered": 102,
+        "percent": 95.32710280373831
+      },
+      "regions": {
+        "count": 107,
+        "covered": 89,
+        "notcovered": 18,
+        "percent": 83.17757009345794
+      }
+    }
+  }
+}
