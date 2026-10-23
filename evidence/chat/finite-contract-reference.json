@@ -1,0 +1,16 @@
+{
+  "batch_deduplicated_count": 2,
+  "batch_existing_ok": true,
+  "batch_missing_ok": false,
+  "created_title": "Native chat fixture",
+  "empty_delta": true,
+  "empty_history": true,
+  "empty_send_status": 400,
+  "idle_stop": "idle",
+  "invalid_profile_status": 400,
+  "missing_detail_empty": true,
+  "pin_roundtrip": true,
+  "profile_clear_restore": true,
+  "renamed_title": "Native chat renamed",
+  "single_delete_and_cleanup": true
+}

@@ -6,7 +6,7 @@ Native SwiftUI macOS application with an app-managed isolated Linux VM. **Develo
 
 - Apple Virtualization.framework really boots ARM64 Linux and cooperatively stops it, twice in sequence, without Docker, host shares, NICs or persistent disks.
 - Modified kernel is rejected before VM creation. An actual guest that never emits readiness times out visibly and recovers through force stop.
-- 49 Swift unit tests and 24 Python regression tests cover inventory, lifecycle, integrity, isolation, auth, LLM services and dashboard calculations/polling.
+- 66 Swift unit tests and 28 Python regression tests cover inventory, lifecycle, integrity, isolation, auth, LLM services and dashboard calculations/polling.
 - Native application .app is built, locally ad-hoc signed with the virtualization entitlement and launched. Its developer harness runs the VM service from the real app and records readiness/shutdown. External CUA verified native LLM creation/editing, numeric validation, Return-key save and active-profile protection. The connection later failed; full click/visual acceptance is still pending. Content-view snapshots are diagnostic only and have layer-compositing limitations; they are not signed off as UI parity.
 
 The separate backend acceptance guest now boots pinned ARTEX and PostgreSQL 16 with authenticated vsock and a private persistent disk. Real normal/forced restarts preserve authentication and an LLM fixture. Five normalized API contract cases match a disposable pinned browser backend. See [Phase 2 evidence](docs/phase2-verification.md). The app now bundles this real backend by default and provides native setup/login/logout with a Keychain session. Two-vCPU experiments exposed intermittent kernel faults. A one-vCPU direct-root diagnostic profile passed repeated native auth runs; a separate database recovery readiness race was repaired and three forced recoveries passed. Release reliability is not accepted; see [the investigation](docs/bugs/guest-boot-investigation.md).
@@ -37,3 +37,5 @@ Read docs/requirements.md, docs/design.md, docs/tasks.md. Browser baseline: nano
 Maintain identical fixtures and expected outcomes before each migrated feature passes its phase. Capture browser/native controls, error/empty/progress/cancel and restart behavior separately from API tests. No external real targets or paid AI calls are needed for the first phase. Lazyweb reference search: https://www.lazyweb.com/agentic-search/d85df937-aa86-420d-ad7f-e702652210e7 (finalization was rate-limited).
 
 Source is under AGPL-3.0; see LICENSE and THIRD_PARTY.md. Large generated guest artifacts and raw logs are excluded from Git. This is a development build, not a notarized release.
+
+Chat finite API/state core and ten basic CRUD comparison groups are verified; the native chat UI, populated guest history and AI send/stop acceptance remain pending. See [chat verification](docs/chat-verification.md).

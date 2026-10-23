@@ -1,0 +1,30 @@
+# Chat state and fixture boundary investigation
+
+Scope: the new finite native chat core and developer-only reference harness. No user data loss or host backend mutation was observed. This is backend/state/infrastructure work; additional Lazyweb UI research is out of scope. Uses the MUSUBI Bug Hunter reproduction, causal analysis, repair, verification and recurrence-prevention workflow.
+
+## Timeline and evidence
+
+1. C1 service and store tests went RED before implementation (00c3376/979df8b), then GREEN (90672a8/4ba3665).
+2. Stop/resume lost final events when list running=false: executed RED 0c37634, GREEN ed669bb preserves a reconciliation demand on resume.
+3. Read-only review identified an accepted-send overlap: suspend an old idle delta; accept another send; complete the old delta. RED da2b6c7 executed ten tests and failed three assertions: one request instead of two, old messages and old cursor. GREEN 28d8e6d passes after tracking tail mutation revisions.
+4. Follow-up review found post-stop restart: suspend the accepted send's list refresh; stop; release that list. RED 6a46acb executed eleven tests with three failed assertions (new request, new messages, cleared demand). GREEN 539a5ab rechecks lifetime and cancellation before its follow-up.
+5. Reference fixture review found import/host execution contacted loopback. Tests mock HTTP, so no real host request occurs. RED f7d3827: two failures and one error. GREEN bdd01e5: main-only execution, Linux/UID1000/explicit disposable marker checks before network, and four fixture tests pass.
+6. Full local regression: 66 Swift and 28 Python tests pass; signed VM CRUD and ten disposable-reference contract groups agree. Final read-only reviewer approved source changes and did not rerun tests or access runtime resources.
+
+## 5 Whys
+
+Why missing new messages? An old idle delta cleared the new turn's polling demand. Why did it win? Only conversation/lifetime identity was checked; both requests belonged to the same selected conversation. Why insufficient? A send acknowledgement changes transcript freshness within that selection. Why was ordering untested? Initial cases covered selection changes and send failures separately. Prevention: suspend an old delta across a real accepted-mutation boundary, preserve the newer revision, then fetch sequentially without a second overlapping delta slot.
+
+Why could work resume after stop? Send awaited a list refresh, then started a new delta. Why did invalidation not block it? The list guarded its own response, but its caller did not recheck after await. Why was the selected conversation retained? Stop intentionally permits later foreground reconciliation. Why was that mistaken for authorization to continue? Retained selection was the only follow-up guard. Prevention: validate the originating lifetime and cancellation at every continuation boundary before launching dependent work.
+
+Why could a reference script contact the host? It ran its HTTP workflow at import/top level. Why was the boundary assumed? Its intended caller uses docker exec. Why insufficient? The file is also executable/importable locally and loopback means different machines in those contexts. Why missed? Initial CLI smoke coverage checked dispatch, not executable isolation. Prevention: main-only workflow, explicit container-only preconditions, and mocked host/unmarked/import regression tests.
+
+## Fishbone
+
+Concurrency: awaited request ordering, mutation revisions and nonoverlap. Lifecycle: stop retains selected data but invalidates prior continuations. Wire contract: running is a snapshot, never a guarantee that a later accepted turn is represented. Tool boundary: loopback changes meaning across host/container; documentation is not an executable guard. Testing: use suspended requests and fake HTTP to expose these timing and boundary conditions without touching user data.
+
+## Recurrence controls and limits
+
+The new tests run in existing CI. Mutation generations cannot clear a newer reconciliation demand; post-await work must match its lifetime. A full final 1000-event page demands another delta even if running=false. Confirmed sends remain confirmed when refresh fails, preventing duplicate retries; edited drafts survive. Reference imports are inert and host execution fails before HTTP. Credentials/raw backend errors are not stored in normalized evidence. Python uses only the standard library and the Swift package has no third-party dependencies, so npm/pip dependency audits do not apply.
+
+No product UI, populated guest transcript, successful AI send, running cancellation, upload/SSE, cloud egress or clean-Mac distribution acceptance is inferred. Those gates remain in chat-design.md and tasks.md.

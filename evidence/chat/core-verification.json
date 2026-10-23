@@ -1,0 +1,158 @@
+{
+  "baseline": "e75ae371ad777ffd1eecdd28d2781a6519b05591",
+  "branch_coverage_measured": false,
+  "chat_tests": {
+    "models": 7,
+    "service": 6,
+    "store": 11
+  },
+  "coverage": {
+    "ChatModels.swift": {
+      "branches": {
+        "count": 0,
+        "covered": 0,
+        "notcovered": 0,
+        "percent": 0
+      },
+      "functions": {
+        "count": 10,
+        "covered": 10,
+        "percent": 100
+      },
+      "instantiations": {
+        "count": 10,
+        "covered": 10,
+        "percent": 100
+      },
+      "lines": {
+        "count": 37,
+        "covered": 37,
+        "percent": 100
+      },
+      "mcdc": {
+        "count": 0,
+        "covered": 0,
+        "notcovered": 0,
+        "percent": 0
+      },
+      "regions": {
+        "count": 36,
+        "covered": 36,
+        "notcovered": 0,
+        "percent": 100
+      }
+    },
+    "ChatService.swift": {
+      "branches": {
+        "count": 0,
+        "covered": 0,
+        "notcovered": 0,
+        "percent": 0
+      },
+      "functions": {
+        "count": 38,
+        "covered": 34,
+        "percent": 89.47368421052632
+      },
+      "instantiations": {
+        "count": 38,
+        "covered": 34,
+        "percent": 89.47368421052632
+      },
+      "lines": {
+        "count": 110,
+        "covered": 106,
+        "percent": 96.36363636363636
+      },
+      "mcdc": {
+        "count": 0,
+        "covered": 0,
+        "notcovered": 0,
+        "percent": 0
+      },
+      "regions": {
+        "count": 111,
+        "covered": 104,
+        "notcovered": 7,
+        "percent": 93.69369369369369
+      }
+    },
+    "ChatStore.swift": {
+      "branches": {
+        "count": 0,
+        "covered": 0,
+        "notcovered": 0,
+        "percent": 0
+      },
+      "functions": {
+        "count": 64,
+        "covered": 58,
+        "percent": 90.625
+      },
+      "instantiations": {
+        "count": 66,
+        "covered": 59,
+        "percent": 89.39393939393939
+      },
+      "lines": {
+        "count": 209,
+        "covered": 197,
+        "percent": 94.25837320574163
+      },
+      "mcdc": {
+        "count": 0,
+        "covered": 0,
+        "notcovered": 0,
+        "percent": 0
+      },
+      "regions": {
+        "count": 173,
+        "covered": 143,
+        "notcovered": 30,
+        "percent": 82.65895953757226
+      }
+    }
+  },
+  "docker_desktop_was_running_for_reference": true,
+  "external_ui_parity": "pending",
+  "populated_guest_history": "pending",
+  "python_failures": 0,
+  "python_tests": 28,
+  "real_cloud_turn": "pending",
+  "reference_contract_groups": 10,
+  "runtime_host_share_count": 0,
+  "runtime_nic_count": 0,
+  "signed_native_app_finite_crud": true,
+  "source_kernel": "6.12.114-artex",
+  "swift_failures": 0,
+  "swift_tests": 66,
+  "tdd_checkpoints": {
+    "accepted_send_overlap": [
+      "da2b6c7",
+      "28d8e6d"
+    ],
+    "post_stop_send": [
+      "6a46acb",
+      "539a5ab"
+    ],
+    "reference_boundary": [
+      "f7d3827",
+      "bdd01e5"
+    ],
+    "resume": [
+      "0c37634",
+      "ed669bb"
+    ],
+    "service": [
+      "00c3376",
+      "90672a8"
+    ],
+    "store": [
+      "979df8b",
+      "4ba3665"
+    ]
+  },
+  "uploads_citations_side_questions_approvals": "pending",
+  "vcpus": 1,
+  "whole_product_coverage_claimed": false
+}

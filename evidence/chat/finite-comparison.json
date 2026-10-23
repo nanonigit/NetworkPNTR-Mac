@@ -1,0 +1,19 @@
+{
+  "api_contract_equal": true,
+  "baseline": "e75ae371ad777ffd1eecdd28d2781a6519b05591",
+  "browser_data_modified": false,
+  "cases": [
+    "conversation_create_rename",
+    "pin_unpin",
+    "profile_clear_restore",
+    "empty_history_delta",
+    "missing_detail_empty",
+    "idle_stop",
+    "empty_send_rejected",
+    "missing_profile_rejected",
+    "partial_batch_delete_deduplication",
+    "single_delete_cleanup"
+  ],
+  "identical_fixture": true,
+  "ui_workflow_parity": "pending"
+}
