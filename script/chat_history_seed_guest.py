@@ -56,7 +56,7 @@ def main(phase='initial'):
         raise RuntimeError('Chat fixture requires the guest loopback artex database')
     if phase not in ('initial', 'append'):
         raise RuntimeError('Unknown chat fixture phase')
-    child_env = dict(os.environ, PGHOST='127.0.0.1', PGPORT='5432', PGDATABASE='artex',
+    child_env = dict({key: value for key, value in os.environ.items() if not key.startswith('PG')}, PGHOST='127.0.0.1', PGPORT='5432', PGDATABASE='artex',
                      PGUSER=unquote(parsed.username or ''), PGPASSWORD=unquote(parsed.password or ''))
     result = subprocess.run(['psql', '-X', '-q', '-v', 'ON_ERROR_STOP=1'],
                             input=(SQL if phase == 'initial' else APPEND_SQL).encode(), env=child_env,

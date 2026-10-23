@@ -57,7 +57,7 @@ def main():
     parsed = urlparse(os.environ['ARTEX_PG_DSN'])
     if parsed.hostname != '127.0.0.1' or parsed.path != '/artex':
         raise RuntimeError('Fixture requires the guest loopback artex database')
-    child_env = dict(os.environ, PGHOST=parsed.hostname, PGPORT=str(parsed.port or 5432),
+    child_env = dict({key: value for key, value in os.environ.items() if not key.startswith('PG')}, PGHOST=parsed.hostname, PGPORT=str(parsed.port or 5432),
                      PGDATABASE='artex', PGUSER=unquote(parsed.username or ''),
                      PGPASSWORD=unquote(parsed.password or ''))
     result = subprocess.run(['psql', '-X', '-q', '-v', 'ON_ERROR_STOP=1'], input=SQL.encode(),
