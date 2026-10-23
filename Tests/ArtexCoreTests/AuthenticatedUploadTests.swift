@@ -84,4 +84,31 @@ final class AuthenticatedUploadTests: XCTestCase {
         do { _ = try await pending.value; XCTFail("Stale success accepted") } catch { XCTAssertTrue(error is CancellationError) }
         XCTAssertEqual(session.phase, .needsLogin); XCTAssertNil(vault.value)
     }
+    @MainActor func testNativeClientPreflightsLimitBeforeAttemptingStoppedVMConnection() async throws {
+        let runtime = VMController()
+        let provisioning = try GuestProvisioning(transportToken: String(repeating: "a", count: 64), setupToken: String(repeating: "b", count: 64))
+        let client: any BackendMultipartTransport = BackendJSONClient(runtime: runtime, provisioning: provisioning)
+        let url = FileManager.default.temporaryDirectory.appendingPathComponent("artex-upload-preflight-" + UUID().uuidString)
+        XCTAssertTrue(FileManager.default.createFile(atPath: url.path, contents: nil))
+        defer { try? FileManager.default.removeItem(at: url) }
+        let writer = try FileHandle(forWritingTo: url)
+        try writer.truncate(atOffset: 128 * 1024 * 1024)
+        do { _ = try await client.upload(conversationID: 1, files: [url], bearer: "fixture.jwt"); XCTFail("Oversized file accepted") }
+        catch { guard case ChatUploadBodyError.tooLarge = error else { return XCTFail("Preflight must reject before VM access") } }
+        try writer.truncate(atOffset: 0); try writer.close()
+        do { _ = try await client.upload(conversationID: 1, files: [url], bearer: "fixture.jwt"); XCTFail("Stopped VM accepted") }
+        catch { guard case RuntimeError.integrity("backend not ready") = error else { return XCTFail("Expected stopped VM boundary") } }
+        XCTAssertEqual(runtime.state, .idle); XCTAssertFalse(runtime.hasMachine)
+    }
+    @MainActor func testNativeClientCancelledTaskDoesNotStartPreflightOrConnect() async throws {
+        let provisioning = try GuestProvisioning(transportToken: String(repeating: "a", count: 64), setupToken: String(repeating: "b", count: 64))
+        let client: any BackendMultipartTransport = BackendJSONClient(runtime: VMController(), provisioning: provisioning)
+        let pending = Task { @MainActor in
+            withUnsafeCurrentTask { $0?.cancel() }
+            return try await client.upload(conversationID: 1, files: self.selected, bearer: "fixture.jwt")
+        }
+        do { _ = try await pending.value; XCTFail("Cancelled transfer started") }
+        catch { XCTAssertTrue(error is CancellationError) }
+    }
+
 }
