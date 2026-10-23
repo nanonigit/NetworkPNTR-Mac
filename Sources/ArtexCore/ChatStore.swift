@@ -134,9 +134,9 @@ import Observation
         }
     }
 
-    public func sendCurrentDraft() async -> Bool {
+    public func sendCurrentDraft(submittedMessage: String? = nil) async -> Bool {
         guard let id = selectedID, hasLoadedHistory, !isLoadingHistory, !sendingIDs.contains(id) else { return false }
-        let submitted = drafts[id] ?? ""; let ticket = lifetime
+        let submitted = submittedMessage ?? drafts[id] ?? ""; let ticket = lifetime
         sendingIDs.insert(id); mutationErrors[id] = nil
         defer { if ticket == lifetime { sendingIDs.remove(id) } }
         do {
