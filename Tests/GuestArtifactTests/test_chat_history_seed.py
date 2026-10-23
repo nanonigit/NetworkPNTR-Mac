@@ -24,11 +24,11 @@ class ChatHistorySeedTests(unittest.TestCase):
                     seed.main()
                 run.assert_not_called()
 
-    def execute(self, dsn, phase='initial', returncode=0):
+    def execute(self, dsn, phase='initial', returncode=0, extra_env=None):
         with patch.object(seed.platform, 'system', return_value='Linux'), \
              patch.object(seed.platform, 'machine', return_value='aarch64'), \
              patch.object(seed.os, 'getuid', return_value=1000), \
-             patch.dict(seed.os.environ, {'ARTEX_PG_DSN': dsn}, clear=True), \
+             patch.dict(seed.os.environ, dict({'ARTEX_PG_DSN': dsn}, **(extra_env or {})), clear=True), \
              patch.object(seed.subprocess, 'run', return_value=SimpleNamespace(returncode=returncode)) as run, \
              patch('sys.stdout', new_callable=io.StringIO) as output:
             seed.main(phase)
@@ -54,3 +54,28 @@ class ChatHistorySeedTests(unittest.TestCase):
     def test_transaction_failure_sanitized(self):
         with self.assertRaisesRegex(RuntimeError, '^Chat fixture transaction failed$'):
             self.execute('postgres://artex:private@127.0.0.1/artex', returncode=1)
+
+    def test_inherited_libpq_settings_cannot_override_loopback(self):
+        hostile = {'PGHOSTADDR': '192.0.2.10', 'PGSERVICE': 'remote', 'PGSERVICEFILE': '/tmp/remote',
+                   'PGOPTIONS': '-c search_path=other', 'PGDATABASE': 'other', 'PGPASSWORD': 'other'}
+        call, _ = self.execute('postgres://artex:fixture@127.0.0.1/artex', extra_env=hostile)
+        pg = {key: value for key, value in call.kwargs['env'].items() if key.startswith('PG')}
+        self.assertEqual(pg, {'PGHOST': '127.0.0.1', 'PGPORT': '5432', 'PGDATABASE': 'artex',
+                              'PGUSER': 'artex', 'PGPASSWORD': 'fixture'})
+
+    def test_dashboard_seed_also_discards_inherited_libpq_settings(self):
+        path = PATH.with_name('dashboard_seed_guest.py')
+        spec = importlib.util.spec_from_file_location('dashboard_seed', path)
+        dashboard = importlib.util.module_from_spec(spec); spec.loader.exec_module(dashboard)
+        hostile = {'ARTEX_PG_DSN': 'postgres://artex:fixture@127.0.0.1/artex',
+                   'PGHOSTADDR': '192.0.2.10', 'PGSERVICE': 'remote', 'PGOPTIONS': '-c search_path=other'}
+        with patch.object(dashboard.platform, 'system', return_value='Linux'), \
+             patch.object(dashboard.platform, 'machine', return_value='aarch64'), \
+             patch.object(dashboard.os, 'getuid', return_value=1000), \
+             patch.dict(dashboard.os.environ, hostile, clear=True), \
+             patch.object(dashboard.subprocess, 'run', return_value=SimpleNamespace(returncode=0)) as run, \
+             patch('sys.stdout', new_callable=io.StringIO):
+            dashboard.main()
+        pg = {key: value for key, value in run.call_args.kwargs['env'].items() if key.startswith('PG')}
+        self.assertEqual(pg, {'PGHOST': '127.0.0.1', 'PGPORT': '5432', 'PGDATABASE': 'artex',
+                              'PGUSER': 'artex', 'PGPASSWORD': 'fixture'})
