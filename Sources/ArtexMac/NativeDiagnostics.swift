@@ -36,8 +36,15 @@ import Foundation
                 result["native_chat_finite_crud"] = true
             }
             if CommandLine.arguments.contains("--chat-history-diagnostics") {
-                try await NativeChatHistoryDiagnostics.run(session: authentication, directory: directory)
+                let history = try await NativeChatHistoryDiagnostics.run(session: authentication, directory: directory)
+                try await environment.stop()
+                await environment.start()
+                guard let restored = environment.authentication, restored.phase == .authenticated else {
+                    throw RuntimeError.integrity("chat history restart authentication")
+                }
+                try await NativeChatHistoryDiagnostics.verifyPersistence(history, session: restored, directory: directory)
                 result["native_chat_populated_history_and_final_delta"] = true
+                result["native_chat_history_restart_persistence"] = true
             }
             if CommandLine.arguments.contains("--dashboard-diagnostics") { try await NativeDashboardDiagnostics.seed(session: authentication, directory: directory) }
             try await environment.stop()
