@@ -47,6 +47,15 @@ final class ChatMentionTests: XCTestCase {
         do { _ = try await service.search(query: ""); XCTFail("HTTP error ignored") }
         catch { XCTAssertFalse(error.localizedDescription.contains("private-secret-body")) }
     }
+    func testTokensMatchExecutedPinnedBrowserReference() throws {
+        struct Case: Decodable { let input: ChatMention; let token: String }
+        struct Reference: Decodable { let cases: [Case] }
+        let directory = URL(fileURLWithPath: #filePath).deletingLastPathComponent().deletingLastPathComponent().deletingLastPathComponent()
+        let data = try Data(contentsOf: directory.appendingPathComponent("evidence/chat/mention-token-reference.json"))
+        let reference = try JSONDecoder().decode(Reference.self, from: data)
+        XCTAssertEqual(reference.cases.count, 11)
+        for item in reference.cases { XCTAssertEqual(item.input.token, item.token) }
+    }
     func testWireTokensMatchBrowserLabelsSanitizationAndUTF16Truncation() throws {
         let labels = ["finding": "漏洞", "asset": "资产", "company": "企业", "endpoint": "接口", "ip": "IP", "app": "应用", "root_domain": "域名", "subdomain": "子域名", "service": "服务"]
         for (kind, label) in labels {

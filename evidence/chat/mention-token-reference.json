@@ -1,0 +1,106 @@
+{
+  "baseline": "e75ae371ad777ffd1eecdd28d2781a6519b05591",
+  "source": "web/src/lib/chat-mentions.ts",
+  "normalization": "UTF-8 replacement of isolated surrogate, equivalent to Go JSON string decoding",
+  "cases": [
+    {
+      "input": {
+        "kind": "finding",
+        "id": 9,
+        "label": "a[part]\n\tname﻿end",
+        "description": ""
+      },
+      "token": "@[漏洞#9 a（part） name end]"
+    },
+    {
+      "input": {
+        "kind": "asset",
+        "id": 9,
+        "label": "a[part]\n\tname﻿end",
+        "description": ""
+      },
+      "token": "@[资产#9 a（part） name end]"
+    },
+    {
+      "input": {
+        "kind": "company",
+        "id": 9,
+        "label": "a[part]\n\tname﻿end",
+        "description": ""
+      },
+      "token": "@[企业#9 a（part） name end]"
+    },
+    {
+      "input": {
+        "kind": "endpoint",
+        "id": 9,
+        "label": "a[part]\n\tname﻿end",
+        "description": ""
+      },
+      "token": "@[接口#9 a（part） name end]"
+    },
+    {
+      "input": {
+        "kind": "ip",
+        "id": 9,
+        "label": "a[part]\n\tname﻿end",
+        "description": ""
+      },
+      "token": "@[IP#9 a（part） name end]"
+    },
+    {
+      "input": {
+        "kind": "app",
+        "id": 9,
+        "label": "a[part]\n\tname﻿end",
+        "description": ""
+      },
+      "token": "@[应用#9 a（part） name end]"
+    },
+    {
+      "input": {
+        "kind": "root_domain",
+        "id": 9,
+        "label": "a[part]\n\tname﻿end",
+        "description": ""
+      },
+      "token": "@[域名#9 a（part） name end]"
+    },
+    {
+      "input": {
+        "kind": "subdomain",
+        "id": 9,
+        "label": "a[part]\n\tname﻿end",
+        "description": ""
+      },
+      "token": "@[子域名#9 a（part） name end]"
+    },
+    {
+      "input": {
+        "kind": "service",
+        "id": 9,
+        "label": "a[part]\n\tname﻿end",
+        "description": ""
+      },
+      "token": "@[服务#9 a（part） name end]"
+    },
+    {
+      "input": {
+        "kind": "finding",
+        "id": 9,
+        "label": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa😀",
+        "description": ""
+      },
+      "token": "@[漏洞#9 aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa�]"
+    },
+    {
+      "input": {
+        "kind": "future_record",
+        "id": 9,
+        "label": "fixture",
+        "description": ""
+      },
+      "token": "@[资产#9 fixture]"
+    }
+  ]
+}
