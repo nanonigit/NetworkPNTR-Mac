@@ -15,6 +15,11 @@ enum BackendDownloadExchange {
         let outbound = preamble + request
         var offset = 0
         var buffer = [UInt8](repeating: 0, count: 65536)
+        func finish() throws -> BackendDownloadResult {
+            let result = try decoder.finish()
+            guard result.status != 200 || offset == outbound.count else { throw BackendAPIError.invalidResponse }
+            return result
+        }
         let deadline = ContinuousClock.now.advanced(by: timeout)
         while true {
             _ = try socket.checkedDescriptor(); try Task.checkCancellation()
@@ -28,9 +33,9 @@ enum BackendDownloadExchange {
                 let n = Darwin.read(descriptor, &buffer, buffer.count)
                 if n < 0 && [EINTR,EAGAIN,EWOULDBLOCK].contains(errno) { continue }
                 guard n >= 0 else { throw POSIXError(POSIXErrorCode(rawValue: errno) ?? .EIO) }
-                if n == 0 { return try decoder.finish() }
+                if n == 0 { return try finish() }
                 try decoder.consume(Data(buffer.prefix(n)))
-                if decoder.isComplete { return try decoder.finish() }
+                if decoder.isComplete { return try finish() }
             }
             if offset < outbound.count, state.revents & Int16(POLLOUT) != 0 {
                 let n = outbound.withUnsafeBytes { bytes in
