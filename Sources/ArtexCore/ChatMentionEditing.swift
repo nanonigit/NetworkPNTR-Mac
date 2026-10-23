@@ -55,12 +55,12 @@ public enum ChatMentionEditing {
         for kind in ChatMentionKind.allCases {
             for alias in [kind.wireLabel.lowercased(), alias(kind)] {
                 let nonLatin = alias.unicodeScalars.contains { !(97...122).contains($0.value) }
-                if text == alias || text.hasPrefix(alias + " ") || (nonLatin && text.hasPrefix(alias)) {
-                    return .init(kind: kind, query: trimJS(String(trimmed.dropFirst(alias.count))), categories: [])
+                if text == alias || text.utf16.starts(with: (alias + " ").utf16) || (nonLatin && text.utf16.starts(with: alias.utf16)) {
+                    return .init(kind: kind, query: trimJS(String(decoding: trimmed.utf16.dropFirst(alias.utf16.count), as: UTF16.self)), categories: [])
                 }
             }
         }
-        return .init(kind: nil, query: trimJS(input), categories: ChatMentionKind.allCases.filter { $0.wireLabel.lowercased().hasPrefix(text) || alias($0).hasPrefix(text) })
+        return .init(kind: nil, query: trimJS(input), categories: ChatMentionKind.allCases.filter { $0.wireLabel.lowercased().utf16.starts(with: text.utf16) || alias($0).utf16.starts(with: text.utf16) })
     }
     public static func replace(in value: String, active expected: ChatMentionActive, with text: String) -> ChatMentionEdit? {
         let (end, overflow) = expected.range.location.addingReportingOverflow(expected.range.length)
