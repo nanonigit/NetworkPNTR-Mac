@@ -160,4 +160,83 @@ final class BackendUploadExchangeTests: XCTestCase {
             _ = try peer.value(); XCTAssertTrue(socket.isFinished)
         }
     }
+    private func tcpPair() throws -> (BackendUploadSocket, Int32) {
+        let listener = Darwin.socket(AF_INET, SOCK_STREAM, 0)
+        guard listener >= 0 else { throw POSIXError(.EIO) }
+        defer { Darwin.close(listener) }
+        var address = sockaddr_in()
+        address.sin_len = UInt8(MemoryLayout<sockaddr_in>.size)
+        address.sin_family = sa_family_t(AF_INET)
+        address.sin_addr = in_addr(s_addr: inet_addr("127.0.0.1"))
+        var length = socklen_t(MemoryLayout<sockaddr_in>.size)
+        let bound = withUnsafePointer(to: &address) { pointer in
+            pointer.withMemoryRebound(to: sockaddr.self, capacity: 1) { Darwin.bind(listener, $0, length) }
+        }
+        guard bound == 0, listen(listener, 1) == 0 else { throw POSIXError(.EIO) }
+        let named = withUnsafeMutablePointer(to: &address) { pointer in
+            pointer.withMemoryRebound(to: sockaddr.self, capacity: 1) { getsockname(listener, $0, &length) }
+        }
+        guard named == 0 else { throw POSIXError(.EIO) }
+        let client = Darwin.socket(AF_INET, SOCK_STREAM, 0)
+        guard client >= 0 else { throw POSIXError(.EIO) }
+        let connected = withUnsafePointer(to: &address) { pointer in
+            pointer.withMemoryRebound(to: sockaddr.self, capacity: 1) { Darwin.connect(client, $0, length) }
+        }
+        guard connected == 0 else { Darwin.close(client); throw POSIXError(.EIO) }
+        let server = accept(listener, nil, nil)
+        guard server >= 0 else { Darwin.close(client); throw POSIXError(.EIO) }
+        var enabled: Int32 = 1
+        XCTAssertEqual(setsockopt(server, SOL_SOCKET, SO_NOSIGPIPE, &enabled, socklen_t(MemoryLayout<Int32>.size)), 0)
+        var abortive = linger(l_onoff: 1, l_linger: 0)
+        XCTAssertEqual(setsockopt(server, SOL_SOCKET, SO_LINGER, &abortive, socklen_t(MemoryLayout<linger>.size)), 0)
+        return (BackendUploadSocket(owning: client), server)
+    }
+    func testCompleteEarlyErrorSurvivesResetWithUnreadUploadBytes() throws {
+        for status in [401,413] {
+            let plan = try ChatMultipartPlan(files: [selectedFile(size: 120 * 1024 * 1024)])
+            let header = try BackendMultipartRequest.header(conversationID: 1, plan: plan, bearer: "fixture.jwt")
+            let (socket, server) = try tcpPair()
+            let peer = UploadPeer(server) { fd in
+                _ = try Self.receive(fd, count: header.count)
+                try Self.write(fd, Data("HTTP/1.1 \(status) Rejected\r\nContent-Length: 2\r\n\r\n{}".utf8))
+                return Data() // SO_LINGER=0 resets with the remainder of the upload unread.
+            }
+            let response = try BackendUploadExchange.exchange(socket: socket, preamble: Data(), header: header, plan: plan, timeout: .seconds(1))
+            XCTAssertEqual(response.status, status)
+            _ = try peer.value(); XCTAssertTrue(socket.isFinished)
+        }
+    }
+    func testCompleteFramedEarlyResponseDoesNotWaitForEOF() throws {
+        for chunked in [false,true] {
+            let plan = try ChatMultipartPlan(files: [selectedFile(size: 8 * 1024 * 1024)])
+            let header = try BackendMultipartRequest.header(conversationID: 1, plan: plan, bearer: "fixture.jwt")
+            let (socket, server) = try pair(), release = DispatchSemaphore(value: 0)
+            let peer = UploadPeer(server) { fd in
+                _ = try Self.receive(fd, count: header.count)
+                let framing = chunked ? "Transfer-Encoding: chunked\r\n\r\n2\r\n{}\r\n0\r\n\r\n" : "Content-Length: 2\r\n\r\n{}"
+                try Self.write(fd, Data(("HTTP/1.1 401 Rejected\r\n" + framing).utf8))
+                _ = release.wait(timeout: .now() + 2)
+                return Data()
+            }
+            defer { release.signal() }
+            let response = try BackendUploadExchange.exchange(socket: socket, preamble: Data(), header: header, plan: plan, timeout: .milliseconds(100))
+            XCTAssertEqual(response.status, 401); XCTAssertEqual(response.body, Data("{}".utf8))
+            release.signal(); _ = try peer.value()
+        }
+    }
+    func testTruncatedAndAmbiguousEarlyResponsesCannotBecomeSuccessfulResults() throws {
+        for framing in ["Content-Length: 4\r\n\r\n{}", "Content-Length: 2\r\nContent-Length: 2\r\n\r\n{}", "Transfer-Encoding: chunked\r\n\r\n2\r\n{}\r\n", "Transfer-Encoding: chunked\r\nContent-Length: 2\r\n\r\n{}"] {
+            let plan = try ChatMultipartPlan(files: [selectedFile(size: 8 * 1024 * 1024)])
+            let header = try BackendMultipartRequest.header(conversationID: 1, plan: plan, bearer: "fixture.jwt")
+            let (socket, server) = try pair()
+            let peer = UploadPeer(server) { fd in
+                _ = try Self.receive(fd, count: header.count)
+                try Self.write(fd, Data(("HTTP/1.1 401 Rejected\r\n" + framing).utf8))
+                return Data()
+            }
+            XCTAssertThrowsError(try BackendUploadExchange.exchange(socket: socket, preamble: Data(), header: header, plan: plan, timeout: .seconds(1)))
+            _ = try peer.value()
+        }
+    }
+
 }
