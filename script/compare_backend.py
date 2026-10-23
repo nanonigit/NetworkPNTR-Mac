@@ -54,9 +54,11 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('vm_contract', type=Path)
     parser.add_argument('output_directory', type=Path)
-    parser.add_argument('--kind', choices=['backend', 'llm', 'chat', 'chat-history'], default='backend')
+    parser.add_argument('--kind', choices=['backend', 'llm', 'chat', 'chat-history', 'chat-upload'], default='backend')
     args = parser.parse_args()
     expected = json.loads(args.vm_contract.read_text())
+    if args.kind == 'chat-upload':
+        expected = {key: expected[key] for key in ('records', 'limit', 'owned_files_and_conversation_cleaned')}
     identity = 'artex-mac-parity-' + uuid.uuid4().hex[:12]
     network = identity + '-net'
     postgres = identity + '-db'
@@ -75,7 +77,7 @@ def main():
             time.sleep(.5)
         else:
             raise RuntimeError('Reference PostgreSQL readiness failed')
-        run('docker', 'run', '-d', '--name', app, '--network', network, '--read-only', '--user', '1000:1000', '--cap-drop', 'ALL', '--security-opt', 'no-new-privileges:true', '--tmpfs', '/state:rw,nosuid,nodev,size=256m,uid=1000,gid=1000,mode=700', '--tmpfs', '/tmp:rw,noexec,nosuid,nodev,size=64m', '--workdir', '/tmp', '-e', 'ARTEX_PG_DSN', '-e', 'ARTEX_SETUP_TOKEN', '-e', 'ARTEX_DISPOSABLE_REFERENCE=1', '--entrypoint', '/bin/sh', BACKEND_IMAGE, '-c', 'mkdir -p /state/home /state/data; exec /opt/artex/artex -addr 127.0.0.1:8787 -data /state/data -proxy ""', env=env, stdout=subprocess.DEVNULL)
+        run('docker', 'run', '-d', '--name', app, '--network', network, '--read-only', '--user', '1000:1000', '--cap-drop', 'ALL', '--security-opt', 'no-new-privileges:true', '--tmpfs', ('/state:rw,nosuid,nodev,size=512m,uid=1000,gid=1000,mode=700' if args.kind == 'chat-upload' else '/state:rw,nosuid,nodev,size=256m,uid=1000,gid=1000,mode=700'), '--tmpfs', ('/tmp:rw,noexec,nosuid,nodev,size=256m' if args.kind == 'chat-upload' else '/tmp:rw,noexec,nosuid,nodev,size=64m'), '--workdir', '/tmp', '-e', 'ARTEX_PG_DSN', '-e', 'ARTEX_SETUP_TOKEN', '-e', 'ARTEX_DISPOSABLE_REFERENCE=1', '--entrypoint', '/bin/sh', BACKEND_IMAGE, '-c', 'mkdir -p /state/home /state/data; exec /opt/artex/artex -addr 127.0.0.1:8787 -data /state/data -proxy ""', env=env, stdout=subprocess.DEVNULL)
         created.append(app)
         fixture = FIXTURE if args.kind == 'backend' else Path(__file__).with_name(args.kind.replace('-', '_') + '_contract_fixture.py').read_text()
         if args.kind == 'chat-history':
@@ -100,6 +102,8 @@ def main():
         if args.kind == 'chat-history':
             cases = ['latest_200_history', 'older_five_merge', 'stable_cursor', 'lazy_full_detail', 'unknown_event_kind',
                      'tool_pair', 'result_usage', 'overlap_deduplication', 'final_six_idle_delta', 'detail_scope_cleanup']
+        if args.kind == 'chat-upload':
+            cases = ['binary_empty_duplicate_upload', 'exact_small_file_content', 'exact128MiB_body_accepted', 'persisted_large_file_size', 'one_byte_over_rejected', 'original_preserved', 'owned_fixture_cleanup']
         (args.output_directory / 'api-contract-comparison.json').write_text(json.dumps({'baseline': 'e75ae371ad777ffd1eecdd28d2781a6519b05591', 'identical_fixture': True, 'api_contract_equal': True, 'cases': cases, 'browser_data_modified': False, 'ui_workflow_parity': 'pending'}, indent=2) + '\n')
         print('PASS VM and disposable pinned browser-backend API contracts match; existing browser data untouched.')
     finally:
