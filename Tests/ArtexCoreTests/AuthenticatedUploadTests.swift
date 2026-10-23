@@ -14,6 +14,7 @@ import XCTest
     var selected: [[URL]] = []
     var ids: [Int64] = []
     var nextStatus = 200
+    var progressSink: BackendUploadProgressHandler?
     var handler: (() async throws -> BackendHTTPResponse)?
     func send(method: String, path: String, body: Data?, bearer: String?) async throws -> BackendHTTPResponse {
         let value: [String: Any]
@@ -25,11 +26,19 @@ import XCTest
         }
         return BackendHTTPResponse(status: 200, body: try JSONSerialization.data(withJSONObject: value))
     }
-    func upload(conversationID: Int64, files: [URL], bearer: String) async throws -> BackendHTTPResponse {
+    func upload(conversationID: Int64, files: [URL], bearer: String, progress: BackendUploadProgressHandler? = nil) async throws -> BackendHTTPResponse {
         bearers.append(bearer); selected.append(files); ids.append(conversationID)
+        progressSink = progress
+        progress?(BackendUploadProgress(sentBodyBytes: 1, totalBodyBytes: 100))
         if let handler { return try await handler() }
         return BackendHTTPResponse(status: nextStatus, body: Data("{}".utf8))
     }
+}
+private final class UploadObservedProgress: @unchecked Sendable {
+    private let lock = NSLock()
+    private var count = 0
+    func record(_ value: BackendUploadProgress) { lock.lock(); count += 1; lock.unlock() }
+    var received: Int { lock.lock(); defer { lock.unlock() }; return count }
 }
 final class AuthenticatedUploadTests: XCTestCase {
     private let selected = [URL(fileURLWithPath: "/synthetic/selected.txt")]
@@ -83,6 +92,52 @@ final class AuthenticatedUploadTests: XCTestCase {
         reply?.resume(returning: BackendHTTPResponse(status: 200, body: Data("{}".utf8)))
         do { _ = try await pending.value; XCTFail("Stale success accepted") } catch { XCTAssertTrue(error is CancellationError) }
         XCTAssertEqual(session.phase, .needsLogin); XCTAssertNil(vault.value)
+    }
+    @MainActor func testProgressStopsAfterCompletionOrLogoutAndNewLogin() async throws {
+        let api = UploadAPI(), vault = UploadVault(), session = AuthenticationSession(client: api, vault: vault, setupToken: "fixture")
+        let values = UploadObservedProgress(), event = BackendUploadProgress(sentBodyBytes: 2, totalBodyBytes: 100)
+        await session.refresh()
+        _ = try await session.authenticatedUpload(conversationID: 1, files: selected, progress: { values.record($0) })
+        api.progressSink?(event)
+        XCTAssertEqual(values.received, 1)
+        var reply: CheckedContinuation<BackendHTTPResponse, Error>?
+        api.handler = { try await withCheckedThrowingContinuation { reply = $0 } }
+        let pending = Task { try await session.authenticatedUpload(conversationID: 1, files: self.selected, progress: { values.record($0) }) }
+        while reply == nil { await Task.yield() }
+        XCTAssertEqual(values.received, 2)
+        session.logout(); await session.login(password: "fixture", agreed: true)
+        api.progressSink?(event)
+        XCTAssertEqual(values.received, 2)
+        reply?.resume(returning: BackendHTTPResponse(status: 200, body: Data()))
+        do { _ = try await pending.value; XCTFail("Stale reply") } catch { XCTAssertTrue(error is CancellationError) }
+        api.progressSink?(event)
+        XCTAssertEqual(values.received, 2)
+    }
+    @MainActor func testCancelledUncooperativeUploadCannotReturnSuccessOrFurtherProgress() async throws {
+        let api = UploadAPI(), session = AuthenticationSession(client: api, vault: UploadVault(), setupToken: "fixture")
+        let values = UploadObservedProgress()
+        await session.refresh()
+        var reply: CheckedContinuation<BackendHTTPResponse, Error>?
+        api.handler = { try await withCheckedThrowingContinuation { reply = $0 } }
+        let pending = Task { try await session.authenticatedUpload(conversationID: 1, files: self.selected, progress: { values.record($0) }) }
+        while reply == nil { await Task.yield() }
+        pending.cancel()
+        api.progressSink?(BackendUploadProgress(sentBodyBytes: 2, totalBodyBytes: 100))
+        XCTAssertEqual(values.received, 1)
+        reply?.resume(returning: BackendHTTPResponse(status: 200, body: Data()))
+        do { _ = try await pending.value; XCTFail("Cancelled success") } catch { XCTAssertTrue(error is CancellationError) }
+        XCTAssertEqual(session.phase, .authenticated)
+    }
+    @MainActor func testCancellationFromProgressCallbackDoesNotDeadlockGate() async throws {
+        let api = UploadAPI(), session = AuthenticationSession(client: api, vault: UploadVault(), setupToken: "fixture")
+        await session.refresh()
+        let pending = Task {
+            try await session.authenticatedUpload(conversationID: 1, files: self.selected, progress: { _ in
+                withUnsafeCurrentTask { $0?.cancel() }
+            })
+        }
+        do { _ = try await pending.value; XCTFail("Cancelled callback success") } catch { XCTAssertTrue(error is CancellationError) }
+        XCTAssertEqual(session.phase, .authenticated)
     }
     @MainActor func testNativeClientPreflightsLimitBeforeAttemptingStoppedVMConnection() async throws {
         let runtime = VMController()
