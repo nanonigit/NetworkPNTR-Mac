@@ -13,3 +13,5 @@ R6. Package a locally runnable .app; production signing, notarization, clean-Mac
 R7. No fake task/LLM results or phase-completion claims. Distinguish lifecycle state, guest-ready evidence and API readiness. A new server response does not prove a native workflow works.
 
 The current authorized first milestone is Phase 0 documentation and Phase 1 executable VM proof. Later phases remain required by the full goal, and cannot be marked complete by a mock UI or browser wrapper.
+
+A3 content-verification extension: hash every byte of the actual near128MiB attachment through authenticated vsock using bounded memory. Preserve generic JSON4MiB limits, session revision isolation, cancellation/VM-stop descriptor ownership and the fixed browser. One successful response must have the expected metadata size and exact HTTP framing; incomplete/oversized/encoded/ambiguous responses fail. This proves received bytes, not a filesystem snapshot under concurrent guest writes. Full native attachment UI and download/export workflows remain separate acceptance gates.
