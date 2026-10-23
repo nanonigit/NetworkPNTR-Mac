@@ -37,6 +37,43 @@ final class ChatWorkspaceTests: XCTestCase {
         XCTAssertEqual(results.filter(\.ok).map(\.id), [7]); XCTAssertNil(workspace.transcript.selectedID)
         XCTAssertNotNil(workspace.error); XCTAssertFalse(workspace.error?.contains("private") ?? true)
     }
+    @MainActor func testCreatedConversationRetainsDraftWhenSelectionChangesDuringHistoryLoad() async throws {
+        let api = ChatTestTransport(); let workspace = ChatWorkspace(client: api)
+        workspace.agentKey = "auto"; workspace.transcript.draft = "retain after create"
+        var pending: CheckedContinuation<BackendHTTPResponse, any Error>?
+        api.handler = { call in
+            if call.method == "POST" { return try ChatTestTransport.response(ChatFixture.conversation()) }
+            return try await withCheckedThrowingContinuation { pending = $0 }
+        }
+        let creating = Task { await workspace.send() }
+        for _ in 0..<2000 { if pending != nil { break }; await Task.yield() }
+        XCTAssertNotNil(pending)
+        await workspace.select(nil)
+        pending?.resume(returning: try ChatTestTransport.response(ChatFixture.page([], cursor: 0)))
+        let result = await creating.value; XCTAssertFalse(result)
+        api.handler = nil; try api.enqueue(ChatFixture.page([], cursor: 0))
+        await workspace.select(7)
+        XCTAssertEqual(workspace.transcript.draft, "retain after create")
+    }
+    @MainActor func testEditsDuringCreatedHistoryLoadSurviveAndOnlyOriginalMessageIsSubmitted() async throws {
+        let api = ChatTestTransport(); let workspace = ChatWorkspace(client: api)
+        workspace.agentKey = "auto"; workspace.transcript.draft = "submitted"
+        var pending: CheckedContinuation<BackendHTTPResponse, any Error>?
+        api.handler = { call in
+            if call.path == "/api/conversations", call.method == "POST" { return try ChatTestTransport.response(ChatFixture.conversation()) }
+            if call.method == "POST" { return try ChatTestTransport.response(["error":"private"], status: 409) }
+            if call.path == "/api/conversations" { return try ChatTestTransport.response(["conversations":[ChatFixture.conversation()]]) }
+            return try await withCheckedThrowingContinuation { pending = $0 }
+        }
+        let sending = Task { await workspace.send() }
+        for _ in 0..<2000 { if pending != nil { break }; await Task.yield() }
+        workspace.transcript.draft = "newer edit"
+        pending?.resume(returning: try ChatTestTransport.response(ChatFixture.page([], cursor: 0)))
+        let result = await sending.value; XCTAssertFalse(result)
+        XCTAssertEqual(workspace.transcript.draft, "newer edit")
+        let sent = try XCTUnwrap(api.calls.first { $0.path.hasSuffix("/messages") && $0.method == "POST" }?.body)
+        XCTAssertEqual((try JSONSerialization.jsonObject(with: sent) as? [String:String])?["message"], "submitted")
+    }
     func testSendKeyPolicyPreservesIMEAndBothModes() {
         XCTAssertTrue(ChatSendPolicy.shouldSend(mode: "enter", shift: false, control: false, command: false, composing: false))
         XCTAssertFalse(ChatSendPolicy.shouldSend(mode: "enter", shift: true, control: false, command: false, composing: false))
