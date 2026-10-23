@@ -30,3 +30,6 @@ C4 interaction checkpoint: native citation controls, nine executed browser editi
 
 
 A1 attachment body reader implemented and scoped-tested: whole multipart128MiB bound,64KiB chunks, observed file-change rejection, terminal cancel and three secondary FormData wire cases.106 Swift tests pass; app rebuilt/signature verified. A1 core only, not upload transport or parity acceptance. Next A2 adds authenticated multipart session/runtime capability with real socket backpressure/cancel/early-response/failure tests; A3-A5 and citation external retests remain open. See chat-advanced-design.md and chat-verification.md.
+
+
+A2 checkpoint: authenticated multipart client/runtime, cancellable owned descriptors and post-await leases implemented;11 socket/6 auth-client/1 fixture tests,124 Swift total pass. Signed fresh VM retry uploads/downloads3synthetic files with exact bytes/SHA256 and cleanup; the first source-candidate attempt panicked beforebootstrap and remains counter-evidence for runtime reliability. A2 live stop/cancel and A3 actual128MiB/reference comparison remain open; next formalize disposable pinned upload contracts, exercise upper bound/stop and then A4/A5 state/UI gates. No source-kernel promotion. See chat-verification.md and bugs/guest-boot-investigation.md.

@@ -1,0 +1,143 @@
+{
+  "baseline": "e75ae371ad777ffd1eecdd28d2781a6519b05591",
+  "status": "A2 transport/session/runtime implemented; initial VM roundtrip passed, acceptance open",
+  "swift_tests": 124,
+  "core_tests": 118,
+  "appkit_component_tests": 5,
+  "diagnostic_fixture_tests": 1,
+  "swift_failures": 0,
+  "python": "unchanged prior34-test checkpoint; remote current CI required",
+  "socket_tests": 11,
+  "authenticated_upload_tests": 6,
+  "fixture_tests": 1,
+  "red_green": [
+    {
+      "red": "df40bf3",
+      "green": "14dbeb9",
+      "case": "missing upload transport then seven socketpair tests"
+    },
+    {
+      "red": "11c7fdc",
+      "green": "801e5bc",
+      "case": "authenticated capability and stale replies"
+    },
+    {
+      "red": "50bbf0e",
+      "green": "690dab6",
+      "case": "TCPreset54 and complete response withoutEOF; two runtime failures"
+    },
+    {
+      "red": "535aed6",
+      "green": "5725800",
+      "case": "native client upload capability and stoppedVM/preflight guards"
+    },
+    {
+      "red": "f16763c",
+      "green": "3dbf827",
+      "case": "post-worker completion lease"
+    },
+    {
+      "red": "c129319",
+      "green": "78521b7",
+      "case": "owned guest files remain after injected failure; two runtime assertions"
+    }
+  ],
+  "scoped_coverage": {
+    "BackendMultipartRequest.swift": {
+      "lines": {
+        "count": 11,
+        "covered": 11,
+        "percent": 100
+      },
+      "regions": {
+        "count": 7,
+        "covered": 7,
+        "notcovered": 0,
+        "percent": 100
+      },
+      "functions": {
+        "count": 5,
+        "covered": 5,
+        "percent": 100
+      }
+    },
+    "BackendUploadExchange.swift": {
+      "lines": {
+        "count": 179,
+        "covered": 170,
+        "percent": 94.97206703910615
+      },
+      "regions": {
+        "count": 168,
+        "covered": 131,
+        "notcovered": 37,
+        "percent": 77.97619047619048
+      },
+      "functions": {
+        "count": 25,
+        "covered": 21,
+        "percent": 84
+      }
+    },
+    "ChatMultipartBody.swift": {
+      "lines": {
+        "count": 163,
+        "covered": 159,
+        "percent": 97.54601226993866
+      },
+      "regions": {
+        "count": 129,
+        "covered": 113,
+        "notcovered": 16,
+        "percent": 87.59689922480621
+      },
+      "functions": {
+        "count": 32,
+        "covered": 30,
+        "percent": 93.75
+      }
+    }
+  },
+  "branch_or_whole_product_coverage_claimed": false,
+  "signed_app_build_and_strict_signature_verified": true,
+  "real_vm_upload": {
+    "files": 3,
+    "sizes": [
+      70001,
+      0,
+      28
+    ],
+    "exact_download_bytes_and_sha256": true,
+    "duplicate_rename": "fixture-1.bin",
+    "owned_guest_and_local_files_and_conversation_cleaned": true,
+    "temporary_keychain_removed": true,
+    "vm_stopped": true
+  },
+  "native_attempts": [
+    {
+      "attempt": 1,
+      "terminal": true,
+      "outcome": "kernel panic beforebootstrap; upload not reached",
+      "evidence": "upload-a2-boot-red.json"
+    },
+    {
+      "attempt": 2,
+      "terminal": true,
+      "outcome": "fresh sameprofile complete diagnostics and upload roundtrip pass",
+      "evidence": "upload-native-results.json"
+    }
+  ],
+  "kernel_candidate_promoted": false,
+  "runtime_reliability_accepted": false,
+  "native_nics": 0,
+  "native_host_shares": 0,
+  "remaining": [
+    "realVZ stop-mid-transfer/caller-cancel integration",
+    "actual128MiB body boundary and memory/backpressure integration",
+    "pinned browser backend upload contract comparison",
+    "native attachment state/send restoration/picker/UIUX comparison",
+    "citation viewport andUndo external retests",
+    "kernel boot/recovery reliability and distribution",
+    "other product feature gates"
+  ]
+}

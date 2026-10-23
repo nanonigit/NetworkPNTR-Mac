@@ -87,3 +87,14 @@ RED42e642aでは未実装ChatMultipartBodyを参照するテストのコンパ�
 readerはmultipart構造全体を含む長さを事前計算して128MiB以内に制限し、1回最大64KiBで読み取る。本文全体をメモリへ結合しない。上限ちょうどと1バイト超過は架空のスパースファイルで確認し、128MiBの送信・メモリ確保はしていない。5MiBのテストは分割読み取りとバイト数を確認するもので、プロセスメモリ測定やsocket逆圧テストではない。device/inode/size/mtime/ctimeで観測できる置換・内容／サイズ変更を途中読み取り後も検出するが、ファイルシステムのスナップショット保証ではない。不正選択、通常ファイル以外のFIFO、名前によるヘッダー注入、不正boundary、close、タスク取消をテストした。汎用JSONの4MiB制限は維持している。
 
 対象readerのカバレッジは行150/154（97.40%）、領域105/121（86.78%）、関数24/26（92.31%）。分岐・製品全体の割合とはしない。証拠はevidence/chat/upload-a1-verification.jsonとupload-formdata-reference.json。後者はネットワーク送信なしの補助エンコーダであり、実ブラウザやARTEXへの添付成功ではない。認証付きmultipart通信、socket取消・逆圧、実VMと固定ブラウザの128MiB比較、ネイティブ添付状態・選択UIはA2〜A5として残る。引用候補位置・Undoの実画面再確認と機能全体の受け入れも未完了。
+
+
+## A2 認証付きmultipartと署名アプリによる最初の実転送
+
+現在ローカルSwift124件（Core118、実AppKit5、診断fixture1）が全件成功。Pythonは変更がなく従来34件を検証段階とする。実socket11テストで小さいバッファの部分送信、遅い受信、早期401、EOF前完了、未読要求を残したTCP reset、期限、送信中・応答待ち・worker完了後の取消、不正／途中切れ／曖昧／過大応答、早すぎる成功を確認。認証・client6テストで入力、セッション世代、Keychain削除失敗時の401無効化、VM未起動より前の上限検証、開始前取消を確認。診断fixtureのテストは内容不一致を注入し、所有ファイル・会話・ローカルの後片付けを検証する。RED/GREENと対象カバレッジはevidence/chat/upload-a2-verification.json。製品全体や分岐のカバレッジとはしない。
+
+BackendJSONClientは不変Sendableのmultipart計画をMainActor外で事前検証してから接続する。正の会話IDによるsession添付専用経路だけを扱い、BearerはAuthenticationSession／client内に保持する。Runtimeはロック付き複製descriptorを所有し、取消・停止・異常で中断し、workerのawait後にもVMと転送の有効性を検証する。汎用JSON4MiB、本文待機64KiB、有限応答4MiBの制限は維持する。socketテストやVM未起動の境界テストだけで、実VZの転送中停止を確認済みとはしない。
+
+署名アプリの新規実行upload-a2-v1は、1vCPUソース候補でbootstrap／転送前にpanicした。upload-a2-boot-red.jsonに記録する。終了と後片付けを確認後、同じ条件の新規実行upload-a2-v2は完走した。productionの認証付きvsockで、架空の70,001バイトのバイナリ、空ファイル、28バイトの同名ファイルをアップロード。固定本体は後者をfixture-1.binへ変更した。既存ゲストworkspace APIでダウンロードし、全バイトとSHA256が一致。所有するゲストuploads・会話・選択用ローカルファイルを削除し、一時Keychain削除、認証を保持する停止／再起動、最後のプロセス終了も成功した。証拠はupload-contract-vm.json、upload-native-results.json、upload-native-failed-results.json。
+
+再試行の成功で最初のカーネル障害を取り消したり、実行安定性を合格にしたりしない。今回128MiBの実データは送っていない。実上限転送、メモリ測定、停止／取消の実機統合、固定ブラウザ添付契約、ネイティブ添付状態とUI/UX比較は未完了。引用の実画面再確認と全機能の受け入れも残っている。

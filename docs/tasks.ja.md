@@ -30,3 +30,6 @@ C4操作段階: 引用コントロール、実ブラウザ編集9ケース、実
 
 
 A1添付本文readerを実装・対象テスト済み。本文全体128MiB、64KiB分割、観測可能なファイル変更拒否、取消後の再利用拒否、補助FormData3ケースを確認。Swift106件成功、アプリ再ビルド・署名検証済み。A1の基盤であり、添付通信や同等性の受け入れではない。次はA2の認証付きmultipart／runtime経路と実socketの逆圧・取消・早期応答・異常テスト。A3〜A5と引用の実画面再確認は未完了。chat-advanced-design.mdとchat-verification.mdを参照。
+
+
+A2段階: 認証付きmultipart client／runtime、取り消せるdescriptor所有、await後の有効性確認を実装。socket11／認証client6／診断fixture1を含むSwift124件成功。新規の署名アプリ／VM再試行では3つの架空ファイルを転送・再取得し、全バイトとSHA256、後片付けを確認した。最初のソース候補実行はbootstrap前にpanicしたため、安定性の反証として保持する。A2の実停止／取消、A3の実128MiB／固定ブラウザ契約は未完了。次は使い捨ての固定ブラウザ添付比較を正式化し、上限・停止、A4／A5の状態とUI条件へ進む。カーネル候補は正式採用しない。chat-verification.mdとbugs/guest-boot-investigation.mdを参照。

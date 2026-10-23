@@ -1,0 +1,25 @@
+{
+  "source_kernel_sha256": "8e57308787c420cb42e4c4ea80e6def6438a52232692c010dc4609bb9bf21879",
+  "cpu_count": 1,
+  "boot_mode": "rootDisk",
+  "guest_ready": false,
+  "bootstrap_prompt_seen": false,
+  "kernel_panic": true,
+  "oops": true,
+  "call_symbols": [
+    "anon_vma_clone",
+    "__split_vma",
+    "vms_gather_munmap_vmas",
+    "do_vmi_align_munmap",
+    "do_vmi_munmap",
+    "__vm_munmap",
+    "__arm64_sys_munmap",
+    "do_el0_svc",
+    "el0_svc",
+    "el0t_64_sync_handler",
+    "el0t_64_sync"
+  ],
+  "upload_reached": false,
+  "terminal_native_process": true,
+  "runtime_acceptance": "failed; candidate not promoted"
+}

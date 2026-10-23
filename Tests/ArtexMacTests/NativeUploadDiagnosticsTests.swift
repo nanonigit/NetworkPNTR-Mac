@@ -28,6 +28,8 @@ import XCTest
             return BackendHTTPResponse(status: 200, body: failDownload ? Data("wrong".utf8) : (guestFiles[name] ?? Data()))
         }
         if method == "DELETE", path.hasPrefix("/api/workspace/delete?") {
+            let query = URLComponents(string: "http://fixture" + path)
+            guard query?.queryItems?.first(where: { $0.name == "path" })?.value == "sessions/conv-73/uploads" else { throw BackendAPIError.invalidResponse }
             cleanup.append("files"); guestFiles.removeAll(); return try json(["ok": true])
         }
         if method == "DELETE", path == "/api/conversations/73" { cleanup.append("conversation"); return try json(["deleted":73]) }
