@@ -39,10 +39,11 @@ final class ChatMentionTests: XCTestCase {
     }
     @MainActor func testSearchKeepsZeroWidthSpaceLikePinnedGoServer() async throws {
         let api = ChatTestTransport(); let service = ChatMentionService(client: api)
-        for (input, expected) in [("\u{200B}record\u{200B}", "\u{200B}record\u{200B}"), ("\u{0085}record\u{0085}", "record"), ("\u{FEFF}record\u{FEFF}", "\u{FEFF}record\u{FEFF}")] {
+        for (input, expectedWire) in [("\u{200B}record\u{200B}", "%E2%80%8Brecord%E2%80%8B"), ("\u{0085}record\u{0085}", "record"), ("\u{FEFF}record\u{FEFF}", "%EF%BB%BFrecord%EF%BB%BF")] {
             try api.enqueue(["items": []]); _ = try await service.search(query: input)
-            let url = try XCTUnwrap(URLComponents(string: api.calls.last!.path))
-            XCTAssertEqual(url.queryItems?.first(where: { $0.name == "q" })?.value, expected)
+            // Inspect sent bytes: Foundation query decoding itself drops a leading BOM.
+            let field = api.calls.last!.path.split(separator: "&").first { $0.hasPrefix("q=") }
+            XCTAssertEqual(field.map { String($0.dropFirst(2)) }, expectedWire)
         }
     }
     @MainActor func testMalformedPagesAndErrorsStaySanitized() async throws {

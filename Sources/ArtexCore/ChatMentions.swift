@@ -60,7 +60,16 @@ public struct ChatMentionPage: Decodable, Equatable, Sendable {
         }
     }
     public func search(kind: ChatMentionKind? = nil, query: String, cursor: String = "") async throws -> ChatMentionPage {
-        let query = query.trimmingCharacters(in: .whitespacesAndNewlines)
+        // Go strings.TrimSpace uses Unicode White_Space; Foundation also removes
+        // zero-width characters. Trim scalar-wise to preserve the server cursor scope.
+        func isSpace(_ scalar: Unicode.Scalar) -> Bool {
+            let value = scalar.value
+            return (9...13).contains(value) || [32, 0x85, 0xA0, 0x1680, 0x2028, 0x2029, 0x202F, 0x205F, 0x3000].contains(value) || (0x2000...0x200A).contains(value)
+        }
+        var scalars = query.unicodeScalars
+        while let first = scalars.first, isSpace(first) { scalars.removeFirst() }
+        while let last = scalars.last, isSpace(last) { scalars.removeLast() }
+        let query = String(scalars)
         guard query.unicodeScalars.count <= 200, Self.validCursor(cursor) else {
             throw BackendAPIError.validation("引用の検索内容を確認してください。")
         }
