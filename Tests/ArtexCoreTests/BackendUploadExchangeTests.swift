@@ -20,6 +20,12 @@ private final class UploadPeer: @unchecked Sendable {
         return try XCTUnwrap(result).get()
     }
 }
+private final class LockedUploadProgress: @unchecked Sendable {
+    private let lock = NSLock()
+    private var value: BackendUploadProgress?
+    func record(_ event: BackendUploadProgress) { lock.lock(); value = event; lock.unlock() }
+    var last: BackendUploadProgress? { lock.lock(); defer { lock.unlock() }; return value }
+}
 final class BackendUploadExchangeTests: XCTestCase {
     private func selectedFile(size: Int = 0) throws -> URL {
         let path = FileManager.default.temporaryDirectory.appendingPathComponent("artex-upload-exchange-" + UUID().uuidString)
@@ -93,6 +99,28 @@ final class BackendUploadExchangeTests: XCTestCase {
         XCTAssertTrue(wire.starts(with: preamble + header))
         XCTAssertTrue(wire.suffix(15).elementsEqual(Data("\r\n--fixture--\r\n".utf8)))
         XCTAssertTrue(socket.isFinished)
+    }
+    func testProgressCountsOnlyBodyAndCanCancelActualSocketBeforeFullPayload() throws {
+        let plan = try ChatMultipartPlan(files: [selectedFile(size: 120 * 1024 * 1024)])
+        let header = try BackendMultipartRequest.header(conversationID: 1, plan: plan, bearer: "fixture.jwt")
+        let (socket, server) = try pair()
+        let peer = UploadPeer(server) { fd in
+            var buffer = [UInt8](repeating: 0, count: 4096)
+            while Darwin.read(fd, &buffer, buffer.count) > 0 { }
+            return Data()
+        }
+        let progress = LockedUploadProgress()
+        XCTAssertThrowsError(try BackendUploadExchange.exchange(socket: socket, preamble: Data("fixture\n".utf8), header: header, plan: plan, timeout: .seconds(2), progress: { event in
+            progress.record(event)
+            socket.cancel()
+        })) { XCTAssertTrue($0 is CancellationError) }
+        let event = try XCTUnwrap(progress.last)
+        XCTAssertGreaterThan(event.sentBodyBytes, 0)
+        XCTAssertLessThanOrEqual(event.sentBodyBytes, 65536)
+        XCTAssertEqual(event.totalBodyBytes, plan.contentLength)
+        XCTAssertLessThan(event.sentBodyBytes, event.totalBodyBytes)
+        XCTAssertTrue(socket.isFinished)
+        _ = try peer.value()
     }
     func testEarlyUnauthorizedResponseDoesNotRequireSendingEntireLargeFile() throws {
         let plan = try ChatMultipartPlan(files: [selectedFile(size: 120 * 1024 * 1024)])
