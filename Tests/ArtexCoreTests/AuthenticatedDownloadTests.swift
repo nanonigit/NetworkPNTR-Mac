@@ -45,6 +45,12 @@ final class AuthenticatedDownloadTests: XCTestCase {
         for size: Int64 in [-1,128 * 1024 * 1024 + 1] { XCTAssertThrowsError(try ChatAttachmentDownload(conversationID: 1, name: "x", expectedSize: size)) }
         for bearer in ["", "bad token", "bad\r\nInjected: yes"] { XCTAssertThrowsError(try attachment.request(bearer: bearer)) }
     }
+    func testLiteralPlusIsEscapedForGoFormQueryDecoding() throws {
+        let attachment = try ChatAttachmentDownload(conversationID: 1, name: "a+b &c.bin", expectedSize: 0)
+        let header = String(decoding: try attachment.request(bearer: "fixture.jwt"), as: UTF8.self)
+        XCTAssertTrue(header.contains("a%2Bb%20%26c.bin HTTP/1.1"))
+        XCTAssertFalse(header.contains("a+b"))
+    }
     @MainActor func testUnauthenticatedAndInvalidRequestsNeverReachCapability() async throws {
         let api = DownloadAPI(), vault = DownloadVault(), session = AuthenticationSession(client: api, vault: vault, setupToken: "fixture")
         do { _ = try await session.authenticatedDownloadDigest(conversationID: 1, name: "x", expectedSize: 0); XCTFail("Unauthenticated") } catch { }
