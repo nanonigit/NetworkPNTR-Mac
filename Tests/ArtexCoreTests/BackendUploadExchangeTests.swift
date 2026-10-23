@@ -239,4 +239,23 @@ final class BackendUploadExchangeTests: XCTestCase {
         }
     }
 
+    func testCompletedExchangeCannotPassCancelledTransferLease() throws {
+        let plan = try ChatMultipartPlan(files: [selectedFile()])
+        let header = try BackendMultipartRequest.header(conversationID: 1, plan: plan, bearer: "fixture.jwt")
+        let (socket, server) = try pair(), expected = header.count + Int(plan.contentLength)
+        let peer = UploadPeer(server) { fd in
+            _ = try Self.receive(fd, count: expected)
+            try Self.write(fd, Data("HTTP/1.1 200 OK\r\nContent-Length: 2\r\n\r\n{}".utf8))
+            return Data()
+        }
+        let response = try BackendUploadExchange.exchange(socket: socket, preamble: Data(), header: header, plan: plan)
+        XCTAssertEqual(response.status, 200); XCTAssertTrue(socket.isFinished)
+        XCTAssertNoThrow(try socket.validateCompletion())
+        // The runtime stop/caller-cancel signal may arrive after worker EOF,
+        // while the main actor still has not accepted the completed response.
+        socket.cancel()
+        XCTAssertThrowsError(try socket.validateCompletion()) { XCTAssertTrue($0 is CancellationError) }
+        _ = try peer.value()
+    }
+
 }
