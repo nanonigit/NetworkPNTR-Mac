@@ -46,7 +46,10 @@ import Foundation
                 result["native_chat_populated_history_and_final_delta"] = true
                 result["native_chat_history_restart_persistence"] = true
             }
-            if CommandLine.arguments.contains("--dashboard-diagnostics") { try await NativeDashboardDiagnostics.seed(session: authentication, directory: directory) }
+            if CommandLine.arguments.contains("--dashboard-diagnostics") {
+                guard let current = environment.authentication, current.phase == .authenticated else { throw RuntimeError.integrity("dashboard seed authentication") }
+                try await NativeDashboardDiagnostics.seed(session: current, directory: directory)
+            }
             try await environment.stop()
             await environment.start()
             guard environment.authentication?.phase == .authenticated else { throw RuntimeError.integrity(environment.authentication?.error ?? environment.error ?? "Keychain session restore") }

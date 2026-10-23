@@ -4,6 +4,12 @@ import Foundation
 
 /// Fixed fixture only. Exercises production history services/store with no AI execution.
 @MainActor enum NativeChatHistoryDiagnostics {
+    struct Snapshot {
+        let conversationID: Int64
+        let firstSequence: Int64
+        let messages: [ChatActivity]
+        let contract: [String: Any]
+    }
     private static func seed(session: AuthenticationSession, phase: String) async throws {
         guard ["initial", "append"].contains(phase) else { throw RuntimeError.integrity("chat seed phase") }
         let root = URL(fileURLWithPath: #filePath).deletingLastPathComponent().deletingLastPathComponent().deletingLastPathComponent()
@@ -21,7 +27,7 @@ import Foundation
             throw RuntimeError.integrity("chat history seed proof")
         }
     }
-    static func run(session: AuthenticationSession, directory: URL) async throws {
+    static func run(session: AuthenticationSession, directory: URL) async throws -> Snapshot {
         let service = ChatService(client: AuthenticatedBackendClient(session: session))
         guard try await service.conversations().isEmpty else { throw RuntimeError.integrity("fresh populated chat database") }
         struct Agents: Decodable { struct Agent: Decodable { let key: String }; let agents: [Agent] }
@@ -63,8 +69,8 @@ import Foundation
         let other = try await service.create(agentKey: key, title: "History scope check")
         let crossDetail = try await service.detail(id: other.id, sequence: first.seq)
         guard crossDetail.isEmpty else { throw RuntimeError.integrity("conversation detail scope") }
-        try await service.delete(id: other.id); try await service.delete(id: conversation.id)
-        guard try await service.conversations().isEmpty else { throw RuntimeError.integrity("history fixture cleanup") }
+        try await service.delete(id: other.id)
+        guard try await service.conversations().map(\.id) == [conversation.id] else { throw RuntimeError.integrity("history fixture retained for restart") }
         let contract: [String: Any] = ["latest_count": latest.items.count, "latest_has_more": latest.hasMore,
             "older_count": initial.count - latest.items.count, "older_has_more": false, "initial_total": initial.count,
             "initial_cursor_offset": latestCursor - first.seq, "lazy_details_omitted": initial.allSatisfy({ $0.detail == nil }),
@@ -74,7 +80,22 @@ import Foundation
             "overlap_deduplicated": true, "final_total": store.messages.count, "final_cursor_offset": store.cursor - first.seq,
             "final_summaries": store.messages.suffix(6).map(\.summary), "final_running": store.running,
             "cross_conversation_detail_empty": crossDetail.isEmpty, "cleanup": true]
-        try JSONSerialization.data(withJSONObject: contract, options: [.prettyPrinted, .sortedKeys])
+        return Snapshot(conversationID: conversation.id, firstSequence: first.seq, messages: store.messages, contract: contract)
+    }
+    static func verifyPersistence(_ snapshot: Snapshot, session: AuthenticationSession, directory: URL) async throws {
+        let service = ChatService(client: AuthenticatedBackendClient(session: session))
+        let store = ChatStore(service: service)
+        await store.select(id: snapshot.conversationID)
+        guard store.messages.count == 200, store.hasMore else { throw RuntimeError.integrity("post-restart latest history") }
+        await store.loadOlder()
+        guard store.messages == snapshot.messages, !store.hasMore,
+              store.cursor == snapshot.firstSequence + 210,
+              try await service.detail(id: snapshot.conversationID, sequence: snapshot.firstSequence) == String(repeating: "guest fixture detail ", count: 512) else {
+            throw RuntimeError.integrity("post-restart complete history and detail")
+        }
+        try await service.delete(id: snapshot.conversationID)
+        guard try await service.conversations().isEmpty else { throw RuntimeError.integrity("post-restart history cleanup") }
+        try JSONSerialization.data(withJSONObject: snapshot.contract, options: [.prettyPrinted, .sortedKeys])
             .write(to: directory.appendingPathComponent("chat-history-contract-vm.json"))
     }
 }
