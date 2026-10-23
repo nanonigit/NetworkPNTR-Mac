@@ -70,8 +70,8 @@ import Foundation
             await login.login(password: password, agreed: true)
             guard login.phase == .authenticated else { throw RuntimeError.integrity(login.error ?? "native login") }
             result["native_login_validation_and_real_auth"] = true
-            if CommandLine.arguments.contains("--upload-diagnostics") {
-                try await NativeUploadDiagnostics.run(session: login, directory: directory)
+            if CommandLine.arguments.contains("--upload-diagnostics") || CommandLine.arguments.contains("--upload-limit-diagnostics") {
+                try await NativeUploadDiagnostics.run(session: login, directory: directory, includeLimit: CommandLine.arguments.contains("--upload-limit-diagnostics"))
                 result["native_authenticated_upload_and_content"] = true
             }
             if CommandLine.arguments.contains("--chat-review") {

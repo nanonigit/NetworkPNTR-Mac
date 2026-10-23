@@ -6,7 +6,7 @@ import Foundation
 @MainActor enum NativeUploadDiagnostics {
     private struct Attachment: Decodable { let name: String; let path: String; let size: Int64 }
     private struct Uploaded: Decodable { let attachments: [Attachment] }
-    static func run(session: AuthenticationSession, directory: URL) async throws {
+    static func run(session: AuthenticationSession, directory: URL, includeLimit: Bool = false) async throws {
         let files = directory.appendingPathComponent("upload-selected-fixtures", isDirectory: true)
         guard !FileManager.default.fileExists(atPath: files.path) else { throw RuntimeError.integrity("fresh selected upload fixture") }
         try FileManager.default.createDirectory(at: files, withIntermediateDirectories: false, attributes: [.posixPermissions: 0o700])
@@ -39,9 +39,12 @@ import Foundation
                 guard download.status == 200, download.body == bytes else { throw RuntimeError.integrity("native attachment content") }
                 records.append(["name": attachment.name, "path": attachment.path, "size": attachment.size, "sha256": ArtifactIntegrity.sha256(download.body)])
             }
+            var limit: [String: Any]?
+            if includeLimit { limit = try await verifyLimit(conversation.id, session: session, directory: files) }
             try await cleanup(conversation.id, session: session, service: service); owned = nil
             try FileManager.default.removeItem(at: files)
-            let result: [String: Any] = ["records": records, "actual_authenticated_vsock_upload": true, "downloaded_bytes_equal": true, "owned_files_and_conversation_cleaned": true, "large_body_limit_and_vm_stop_acceptance": "pending"]
+            var result: [String: Any] = ["records": records, "actual_authenticated_vsock_upload": true, "downloaded_bytes_equal": true, "owned_files_and_conversation_cleaned": true, "large_body_limit_and_vm_stop_acceptance": "pending"]
+            if let limit { result["limit"] = limit }
             try JSONSerialization.data(withJSONObject: result, options: [.prettyPrinted, .sortedKeys]).write(to: directory.appendingPathComponent("upload-contract-vm.json"))
         } catch {
             if let owned {
@@ -50,6 +53,45 @@ import Foundation
             }
             throw error
         }
+    }
+    private struct Entry: Decodable { let name: String; let size: Int64 }
+    private struct Listing: Decodable { let entries: [Entry] }
+    private static func verifyLimit(_ id: Int64, session: AuthenticationSession, directory: URL) async throws -> [String: Any] {
+        let file = directory.appendingPathComponent("limit.bin")
+        guard !FileManager.default.fileExists(atPath: file.path),
+              FileManager.default.createFile(atPath: file.path, contents: nil, attributes: [.posixPermissions: 0o600]) else { throw RuntimeError.integrity("fresh limit fixture") }
+        // Every default UUID boundary has the same45-byte length. Payload plus
+        // its framing, not payload alone, must equal the backend's128MiB cap.
+        let overhead = try ChatMultipartPlan(files: [file]).contentLength
+        let size = ChatMultipartBody.maximumBytes - overhead
+        guard size > 0 else { throw RuntimeError.integrity("limit fixture overhead") }
+        let writer = try FileHandle(forWritingTo: file)
+        defer { try? writer.close() }
+        try writer.truncate(atOffset: UInt64(size))
+        guard try ChatMultipartPlan(files: [file]).contentLength == ChatMultipartBody.maximumBytes else { throw RuntimeError.integrity("exact limit framing") }
+        let response = try await session.authenticatedUpload(conversationID: id, files: [file])
+        guard response.status == 200 else { throw RuntimeError.integrity("exact limit upload status") }
+        let uploaded = try BackendJSONCoding.decode(Uploaded.self, from: response.body)
+        guard uploaded.attachments.count == 1, uploaded.attachments[0].name == "limit.bin",
+              uploaded.attachments[0].path == "uploads/limit.bin", uploaded.attachments[0].size == size else { throw RuntimeError.integrity("exact limit metadata") }
+        func entries() async throws -> [Entry] {
+            var query = URLComponents()
+            query.queryItems = [URLQueryItem(name: "path", value: "sessions/conv-\(id)/uploads")]
+            let response = try await session.authenticatedRequest(method: "GET", path: "/api/workspace/list?" + (query.percentEncodedQuery ?? ""))
+            guard response.status == 200 else { throw RuntimeError.integrity("limit fixture listing") }
+            return try BackendJSONCoding.decode(Listing.self, from: response.body).entries
+        }
+        guard try await entries().first(where: { $0.name == "limit.bin" })?.size == size else { throw RuntimeError.integrity("exact limit persisted size") }
+        try writer.truncate(atOffset: UInt64(size + 1))
+        do {
+            _ = try await session.authenticatedUpload(conversationID: id, files: [file])
+            throw RuntimeError.integrity("over-limit upload accepted")
+        } catch ChatUploadBodyError.tooLarge { }
+        let after = try await entries()
+        guard !after.contains(where: { $0.name == "limit-1.bin" }),
+              after.first(where: { $0.name == "limit.bin" })?.size == size else { throw RuntimeError.integrity("over-limit changed stored file") }
+        return ["body_bytes": ChatMultipartBody.maximumBytes, "file_size": size, "persisted_size": size,
+                "over_limit_rejected": true, "duplicate_after_rejection": false]
     }
     private static func cleanup(_ id: Int64, session: AuthenticationSession, service: ChatService) async throws {
         var query = URLComponents()
