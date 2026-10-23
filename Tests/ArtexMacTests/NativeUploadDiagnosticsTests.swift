@@ -1,4 +1,5 @@
 import ArtexCore
+import CryptoKit
 import Foundation
 import XCTest
 @testable import ArtexMac
@@ -8,8 +9,10 @@ import XCTest
     func save(_ token: String) throws { }
     func remove() throws { }
 }
-@MainActor private final class DiagnosticUploadAPI: BackendJSONTransport, BackendMultipartTransport {
+@MainActor private final class DiagnosticUploadAPI: BackendJSONTransport, BackendMultipartTransport, BackendAttachmentDownloadTransport {
     var failDownload = false
+    var failLargeDigest = false
+    var digestRequests: [String] = []
     var guestFiles: [String: Data] = [:]
     var guestSizes: [String: Int64] = [:]
     var cleanup: [String] = []
@@ -38,6 +41,15 @@ import XCTest
         }
         if method == "DELETE", path == "/api/conversations/73" { cleanup.append("conversation"); return try json(["deleted":73]) }
         throw BackendAPIError.invalidResponse
+    }
+    func downloadDigest(_ attachment: ChatAttachmentDownload, bearer: String) async throws -> BackendDownloadResult {
+        digestRequests.append(attachment.name)
+        var hash = SHA256(), remaining = attachment.expectedSize
+        while remaining > 0 {
+            let count = Int(min(remaining, 65536)); hash.update(data: Data(repeating: 0, count: count)); remaining -= Int64(count)
+        }
+        let digest = hash.finalize().map { String(format: "%02x", $0) }.joined()
+        return BackendDownloadResult(status: 200, byteCount: attachment.expectedSize, sha256: failLargeDigest ? "wrong" : digest)
     }
     func upload(conversationID: Int64, files: [URL], bearer: String) async throws -> BackendHTTPResponse {
         if files.count == 1, files[0].lastPathComponent == "limit.bin" {
@@ -74,6 +86,19 @@ final class NativeUploadDiagnosticsTests: XCTestCase {
             XCTAssertEqual(FileManager.default.fileExists(atPath: root.appendingPathComponent("upload-contract-vm.json").path), !fail)
         }
     }
+    @MainActor func testLargeDigestMismatchCannotPublishSuccessAndStillCleansOwnedData() async throws {
+        let root = FileManager.default.temporaryDirectory.appendingPathComponent("artex-native-upload-hash-test-" + UUID().uuidString)
+        try FileManager.default.createDirectory(at: root, withIntermediateDirectories: true)
+        defer { try? FileManager.default.removeItem(at: root) }
+        let api = DiagnosticUploadAPI(); api.failLargeDigest = true
+        let session = AuthenticationSession(client: api, vault: DiagnosticUploadVault(), setupToken: "fixture")
+        await session.refresh()
+        do { try await NativeUploadDiagnostics.run(session: session, directory: root, includeLimit: true); XCTFail("Mismatched full hash") } catch { }
+        XCTAssertEqual(api.digestRequests, ["limit.bin"])
+        XCTAssertEqual(api.cleanup, ["files", "conversation"])
+        XCTAssertFalse(FileManager.default.fileExists(atPath: root.appendingPathComponent("upload-contract-vm.json").path))
+        XCTAssertFalse(FileManager.default.fileExists(atPath: root.appendingPathComponent("upload-selected-fixtures").path))
+    }
     @MainActor func testOptionalLimitFixtureCountsFramingAndPreservesOwnedCleanup() async throws {
         let root = FileManager.default.temporaryDirectory.appendingPathComponent("artex-native-upload-limit-test-" + UUID().uuidString)
         try FileManager.default.createDirectory(at: root, withIntermediateDirectories: true)
@@ -88,6 +113,10 @@ final class NativeUploadDiagnosticsTests: XCTestCase {
         XCTAssertEqual((limit["file_size"] as? NSNumber)?.int64Value, (limit["persisted_size"] as? NSNumber)?.int64Value)
         XCTAssertEqual(limit["over_limit_rejected"] as? Bool, true)
         XCTAssertEqual(limit["duplicate_after_rejection"] as? Bool, false)
+        XCTAssertEqual(api.digestRequests, ["limit.bin"])
+        XCTAssertEqual((limit["downloaded_size"] as? NSNumber)?.int64Value, (limit["file_size"] as? NSNumber)?.int64Value)
+        XCTAssertEqual((limit["sha256"] as? String)?.count, 64)
+        XCTAssertEqual(limit["full_content_hash_verified"] as? Bool, true)
         XCTAssertTrue(api.guestFiles.isEmpty); XCTAssertTrue(api.guestSizes.isEmpty)
         XCTAssertEqual(api.cleanup, ["files", "conversation"])
         XCTAssertFalse(FileManager.default.fileExists(atPath: root.appendingPathComponent("upload-selected-fixtures").path))

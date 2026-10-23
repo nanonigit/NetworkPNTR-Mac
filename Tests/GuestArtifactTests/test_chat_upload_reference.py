@@ -1,10 +1,11 @@
 """The upload reference must be inert outside its owned disposable container."""
+import hashlib
 from pathlib import Path
 import runpy
 import subprocess
 import sys
 import unittest
-from unittest.mock import patch
+from unittest.mock import Mock, patch
 
 ROOT = Path(__file__).resolve().parents[2]
 FIXTURE = ROOT / 'script/chat_upload_contract_fixture.py'
@@ -68,3 +69,47 @@ class ChatUploadReferenceTests(unittest.TestCase):
                                 ([('file', 0, lambda: iter([]))], 'bad\r\nboundary')]:
             with self.assertRaises(ValueError):
                 multipart(parts, boundary=boundary)
+
+    def digest_fixture(self, data, headers=None, status=200):
+        module = self.load()
+        response = Mock(status=status)
+        response.getheaders.return_value = headers if headers is not None else [('Content-Length', str(len(data)))]
+        remaining = [data]
+        def read(count):
+            self.assertLessEqual(count, 65536)
+            chunk, remaining[0] = remaining[0][:count], remaining[0][count:]
+            return chunk
+        response.read.side_effect = read
+        connection = Mock()
+        connection.getresponse.return_value = response
+        return module, response, connection
+
+    def test_download_digest_reads_full_content_in_bounded_blocks(self):
+        data = bytes(range(256)) * (6 * 4096)
+        module, response, connection = self.digest_fixture(data)
+        with patch('http.client.HTTPConnection', return_value=connection):
+            digest = module['Client']().digest('/api/workspace/download?path=fixture', len(data))
+        self.assertEqual(digest, {'downloaded_size': len(data), 'sha256': hashlib.sha256(data).hexdigest(), 'full_content_hash_verified': True})
+        self.assertGreater(response.read.call_count, 1)
+        connection.close.assert_called_once()
+
+    def test_download_digest_rejects_truncated_extra_or_changed_length(self):
+        for data, expected, headers in [(b'x', 2, [('Content-Length', '2')]),
+                                         (b'xxx', 2, [('Content-Length', '2')]),
+                                         (b'x', 2, [('Content-Length', '1')])]:
+            module, _, connection = self.digest_fixture(data, headers)
+            with patch('http.client.HTTPConnection', return_value=connection):
+                with self.assertRaises(RuntimeError):
+                    module['Client']().digest('/api/workspace/download?path=fixture', expected)
+            connection.close.assert_called_once()
+
+    def test_download_digest_rejects_ambiguous_encoded_or_unsuccessful_response(self):
+        for status, headers in [(401, [('Content-Length', '0')]), (206, [('Content-Length', '0')]),
+                                 (200, []), (200, [('Content-Length', '0'), ('Content-Length', '0')]),
+                                 (200, [('Content-Length', '0'), ('Transfer-Encoding', 'chunked')]),
+                                 (200, [('Content-Length', '0'), ('Content-Encoding', 'gzip')])]:
+            module, _, connection = self.digest_fixture(b'', headers, status)
+            with patch('http.client.HTTPConnection', return_value=connection):
+                with self.assertRaises(RuntimeError):
+                    module['Client']().digest('/api/workspace/download?path=fixture', 0)
+            connection.close.assert_called_once()
