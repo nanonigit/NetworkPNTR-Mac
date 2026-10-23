@@ -1,5 +1,6 @@
 #if DEBUG
 import ArtexCore
+import CryptoKit
 import Foundation
 
 /// Test-owned files and conversation on NativeDiagnostics' fresh private VM only.
@@ -82,6 +83,23 @@ import Foundation
             return try BackendJSONCoding.decode(Listing.self, from: response.body).entries
         }
         guard try await entries().first(where: { $0.name == "limit.bin" })?.size == size else { throw RuntimeError.integrity("exact limit persisted size") }
+        let hashing = Task.detached { () throws -> String in
+            let reader = try FileHandle(forReadingFrom: file)
+            defer { try? reader.close() }
+            var hash = SHA256(), count: Int64 = 0
+            while let chunk = try reader.read(upToCount: 65536), !chunk.isEmpty {
+                try Task.checkCancellation()
+                count += Int64(chunk.count)
+                guard count <= size else { throw RuntimeError.integrity("selected limit file size") }
+                hash.update(data: chunk)
+            }
+            guard count == size else { throw RuntimeError.integrity("selected limit short file") }
+            return hash.finalize().map { String(format: "%02x", $0) }.joined()
+        }
+        let expectedHash = try await withTaskCancellationHandler { try await hashing.value } onCancel: { hashing.cancel() }
+        try Task.checkCancellation()
+        let download = try await session.authenticatedDownloadDigest(conversationID: id, name: "limit.bin", expectedSize: size)
+        guard download.status == 200, download.byteCount == size, download.sha256 == expectedHash else { throw RuntimeError.integrity("large attachment full content hash") }
         try writer.truncate(atOffset: UInt64(size + 1))
         do {
             _ = try await session.authenticatedUpload(conversationID: id, files: [file])
@@ -91,7 +109,8 @@ import Foundation
         guard !after.contains(where: { $0.name == "limit-1.bin" }),
               after.first(where: { $0.name == "limit.bin" })?.size == size else { throw RuntimeError.integrity("over-limit changed stored file") }
         return ["body_bytes": ChatMultipartBody.maximumBytes, "file_size": size, "persisted_size": size,
-                "over_limit_rejected": true, "duplicate_after_rejection": false]
+                "over_limit_rejected": true, "duplicate_after_rejection": false,
+                "downloaded_size": download.byteCount, "sha256": download.sha256, "full_content_hash_verified": true]
     }
     private static func cleanup(_ id: Int64, session: AuthenticationSession, service: ChatService) async throws {
         var query = URLComponents()

@@ -103,7 +103,7 @@ def main():
             cases = ['latest_200_history', 'older_five_merge', 'stable_cursor', 'lazy_full_detail', 'unknown_event_kind',
                      'tool_pair', 'result_usage', 'overlap_deduplication', 'final_six_idle_delta', 'detail_scope_cleanup']
         if args.kind == 'chat-upload':
-            cases = ['binary_empty_duplicate_upload', 'exact_small_file_content', 'exact128MiB_body_accepted', 'persisted_large_file_size', 'one_byte_over_rejected', 'original_preserved', 'owned_fixture_cleanup']
+            cases = ['binary_empty_duplicate_upload', 'exact_small_file_content', 'exact128MiB_body_accepted', 'persisted_large_file_size', 'full_large_file_hash', 'one_byte_over_rejected', 'original_preserved', 'owned_fixture_cleanup']
         (args.output_directory / 'api-contract-comparison.json').write_text(json.dumps({'baseline': 'e75ae371ad777ffd1eecdd28d2781a6519b05591', 'identical_fixture': True, 'api_contract_equal': True, 'cases': cases, 'browser_data_modified': False, 'ui_workflow_parity': 'pending'}, indent=2) + '\n')
         print('PASS VM and disposable pinned browser-backend API contracts match; existing browser data untouched.')
     finally:

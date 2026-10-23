@@ -81,6 +81,37 @@ class Client:
         require(status == expected, 'API status')
         return value
 
+    def digest(self, path, expected_size):
+        require(isinstance(expected_size, int) and 0 <= expected_size <= MAX_BODY, 'download size bound')
+        connection = http.client.HTTPConnection('127.0.0.1', 8787, timeout=60)
+        try:
+            headers = {'Connection': 'close', 'Accept-Encoding': 'identity'}
+            if self.token:
+                headers['Authorization'] = 'Bearer ' + self.token
+            connection.request('GET', path, headers=headers)
+            response = connection.getresponse()
+            fields = {}
+            for name, value in response.getheaders():
+                name = name.lower()
+                require(name not in fields or name not in ('content-length', 'transfer-encoding', 'content-encoding'), 'duplicate download framing')
+                fields[name] = value.strip()
+            length = fields.get('content-length', '')
+            require(response.status == 200 and re.fullmatch(r'[0-9]+', length) is not None and int(length) == expected_size,
+                    'download status and length')
+            require('transfer-encoding' not in fields and fields.get('content-encoding', 'identity').lower() == 'identity', 'download encoding')
+            count, digest = 0, hashlib.sha256()
+            while True:
+                block = response.read(CHUNK)
+                if not block:
+                    break
+                count += len(block)
+                require(len(block) <= CHUNK and count <= expected_size, 'download extra content')
+                digest.update(block)
+            require(count == expected_size, 'download short content')
+            return {'downloaded_size': count, 'sha256': digest.hexdigest(), 'full_content_hash_verified': True}
+        finally:
+            connection.close()
+
     def upload(self, identity, multipart):
         connection = http.client.HTTPConnection('127.0.0.1', 8787, timeout=60)
         try:
@@ -152,6 +183,11 @@ def main():
         require(status == 200 and value['attachments'][0]['name'] == 'limit.bin' and value['attachments'][0]['size'] == size, 'exact limit accepted')
         entries = client.api('GET', '/api/workspace/list?' + urlencode({'path': workspace}))['entries']
         require(next(item['size'] for item in entries if item['name'] == 'limit.bin') == size, 'persisted size')
+        downloaded = client.digest('/api/workspace/download?' + urlencode({'path': workspace + '/limit.bin'}), size)
+        expected_hash = hashlib.sha256()
+        for block in zero_blocks(size):
+            expected_hash.update(block)
+        require(downloaded['sha256'] == expected_hash.hexdigest(), 'large file full hash')
         oversized = Multipart([('limit.bin', size + 1, lambda: zero_blocks(size + 1))])
         require(oversized.length == MAX_BODY + 1, 'over body length')
         require(client.upload(identity, oversized)[0] == 400, 'over body rejected')
@@ -159,7 +195,7 @@ def main():
         require(not any(item['name'] == 'limit-1.bin' for item in after), 'no rejected duplicate')
         require(next(item['size'] for item in after if item['name'] == 'limit.bin') == size, 'original preserved')
         result = {'records': records, 'limit': {'body_bytes': MAX_BODY, 'file_size': size, 'persisted_size': size,
-                  'over_limit_rejected': True, 'duplicate_after_rejection': False}, 'owned_files_and_conversation_cleaned': True}
+                  'over_limit_rejected': True, 'duplicate_after_rejection': False, **downloaded}, 'owned_files_and_conversation_cleaned': True}
     finally:
         client.api('DELETE', '/api/workspace/delete?' + urlencode({'path': workspace}))
         require(client.api('DELETE', '/api/conversations/' + str(identity))['deleted'] == identity, 'conversation cleanup')
