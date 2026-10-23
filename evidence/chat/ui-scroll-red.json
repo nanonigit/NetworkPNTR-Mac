@@ -1,0 +1,11 @@
+{
+  "test": "Preserve the old first message after loading older history",
+  "app_build": "69a4b3a",
+  "fixture_events": 211,
+  "initial_page_first_summary": "fixture event 12",
+  "action": "Scroll to top; click load earlier messages",
+  "expected_top_summary": "fixture event 12",
+  "observed_top_summary": "fixture event 2",
+  "passed": false,
+  "evidence": "CUA screenshot inspected; raw screenshot in ignored evidence/local/chat/ui1/native-older-position-before-fix.png"
+}
