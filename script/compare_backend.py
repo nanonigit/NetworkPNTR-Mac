@@ -54,7 +54,7 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('vm_contract', type=Path)
     parser.add_argument('output_directory', type=Path)
-    parser.add_argument('--kind', choices=['backend', 'llm', 'chat'], default='backend')
+    parser.add_argument('--kind', choices=['backend', 'llm', 'chat', 'chat-history'], default='backend')
     args = parser.parse_args()
     expected = json.loads(args.vm_contract.read_text())
     identity = 'artex-mac-parity-' + uuid.uuid4().hex[:12]
@@ -77,8 +77,16 @@ def main():
             raise RuntimeError('Reference PostgreSQL readiness failed')
         run('docker', 'run', '-d', '--name', app, '--network', network, '--read-only', '--user', '1000:1000', '--cap-drop', 'ALL', '--security-opt', 'no-new-privileges:true', '--tmpfs', '/state:rw,nosuid,nodev,size=256m,uid=1000,gid=1000,mode=700', '--tmpfs', '/tmp:rw,noexec,nosuid,nodev,size=64m', '--workdir', '/tmp', '-e', 'ARTEX_PG_DSN', '-e', 'ARTEX_SETUP_TOKEN', '-e', 'ARTEX_DISPOSABLE_REFERENCE=1', '--entrypoint', '/bin/sh', BACKEND_IMAGE, '-c', 'mkdir -p /state/home /state/data; exec /opt/artex/artex -addr 127.0.0.1:8787 -data /state/data -proxy ""', env=env, stdout=subprocess.DEVNULL)
         created.append(app)
-        fixture = FIXTURE if args.kind == 'backend' else Path(__file__).with_name(args.kind + '_contract_fixture.py').read_text()
-        output = subprocess.check_output(['docker', 'exec', '-i', app, 'python3', '-'], input=fixture.encode())
+        fixture = FIXTURE if args.kind == 'backend' else Path(__file__).with_name(args.kind.replace('-', '_') + '_contract_fixture.py').read_text()
+        if args.kind == 'chat-history':
+            from chat_history_seed_guest import SQL, APPEND_SQL
+            for phase, sql in [('prepare', SQL), ('initial', APPEND_SQL)]:
+                subprocess.run(['docker', 'exec', '-i', app, 'python3', '-', phase], input=fixture.encode(), check=True, stdout=subprocess.DEVNULL)
+                subprocess.run(['docker', 'exec', '-i', postgres, 'psql', '-X', '-q', '-U', 'artex', '-d', 'artex', '-v', 'ON_ERROR_STOP=1'],
+                               input=sql.encode(), check=True, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+            output = subprocess.check_output(['docker', 'exec', '-i', app, 'python3', '-', 'final'], input=fixture.encode())
+        else:
+            output = subprocess.check_output(['docker', 'exec', '-i', app, 'python3', '-'], input=fixture.encode())
         actual = json.loads(output)
         args.output_directory.mkdir(parents=True, exist_ok=True)
         (args.output_directory / 'api-contract-reference.json').write_text(json.dumps(actual, indent=2, sort_keys=True) + '\n')
@@ -89,6 +97,9 @@ def main():
             cases = ['conversation_create_rename', 'pin_unpin', 'profile_clear_restore', 'empty_history_delta',
                      'missing_detail_empty', 'idle_stop', 'empty_send_rejected', 'missing_profile_rejected',
                      'partial_batch_delete_deduplication', 'single_delete_cleanup']
+        if args.kind == 'chat-history':
+            cases = ['latest_200_history', 'older_five_merge', 'stable_cursor', 'lazy_full_detail', 'unknown_event_kind',
+                     'tool_pair', 'result_usage', 'overlap_deduplication', 'final_six_idle_delta', 'detail_scope_cleanup']
         (args.output_directory / 'api-contract-comparison.json').write_text(json.dumps({'baseline': 'e75ae371ad777ffd1eecdd28d2781a6519b05591', 'identical_fixture': True, 'api_contract_equal': True, 'cases': cases, 'browser_data_modified': False, 'ui_workflow_parity': 'pending'}, indent=2) + '\n')
         print('PASS VM and disposable pinned browser-backend API contracts match; existing browser data untouched.')
     finally:
