@@ -35,3 +35,9 @@ A2はSendableで不変のChatMultipartPlanを設け、ソケット接続前の�
 
 
 A3の正式な添付契約: compare_backendにchat-uploadを追加し、mainガード付きLinux／UID1000／使い捨て限定fixtureを実行する。固定本体の内部loopbackへ接続し、ホスト共有・公開ポートは使わない。使い捨てstate512MiB・tmp256MiBを与え、128MiBの退避が旧64MiBの入口／tmp上限で失敗するのを避ける。他の比較モードは維持する。小さい3ファイルのハッシュ・名前・順序と、multipart128MiBちょうどの受理／保存サイズ、1バイト超過の拒否／重複なしを正規化する。MacのDEBUG検証も任意フラグでスパース選択ファイルとproductionの認証付き通信による境界テストを行う。超過はMacでは事前検証、本体比較ではHTTP400となる違いを記録し、同じUI動作とはしない。大きいファイルの全ハッシュ、メモリ測定、実VZの転送途中停止は独立した必須条件として残し、このサイズ契約で代用しない。画面変更がないバックエンド検証のためLazyweb対象外。
+
+## A3全内容の有界照合
+
+固定workspace/downloadはhttp.ServeFileを使う。複数Range要求間で変更内容が混ざらないよう、1回のGET応答を最大64KiB単位で受信しCryptoKit SHA256へ逐次入力する。成功はHTTP200、単一の十進Content-Lengthが添付メタデータの期待サイズに一致、128MiB以下、Transfer-Encodingなし・Content-Encodingなし/identityのみ。ヘッダー保持は64KiB、成功/エラー本文は保持しない。エラー本文は4MiB以下とし、ステータスを認証世代検証へ戻す。不正/重複フレーム、206、長さ欠落、途中切れ、余分なバイトを拒否。同時ゲスト書換えに対するスナップショットとは扱わない。
+
+順序: パーサRED/GREEN→実ソケットのバックプレッシャー/取消/期限→正の会話ID・単一basename・期待サイズだけを受ける認証付き専用API→VMの処理後取消/稼働/所有権検証→署名付き実VMと独立した固定比較環境の全内容ハッシュ。NIC、共有フォルダ、ホストコマンドRPC、UI変更は追加しないためLazyweb対象外。要求送信前の成功受理と+名の回帰はbugs/attachment-download-investigation.ja.mdに記録。

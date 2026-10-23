@@ -1,0 +1,147 @@
+{
+  "scope": "A3 bounded full-content digest, not attachment UI or runtime reliability acceptance",
+  "source_commit": "e75ae371ad777ffd1eecdd28d2781a6519b05591",
+  "implementation_commit": "ca4f3d9",
+  "swift_tests": 145,
+  "swift_core_tests": 137,
+  "swift_appkit_component_tests": 5,
+  "swift_native_fixture_tests": 3,
+  "python_tests": 42,
+  "scoped_download_tests": 19,
+  "coverage": [
+    {
+      "file": "BackendDownloadDigest.swift",
+      "summary": {
+        "branches": {
+          "count": 0,
+          "covered": 0,
+          "notcovered": 0,
+          "percent": 0
+        },
+        "functions": {
+          "count": 33,
+          "covered": 33,
+          "percent": 100
+        },
+        "instantiations": {
+          "count": 33,
+          "covered": 33,
+          "percent": 100
+        },
+        "lines": {
+          "count": 99,
+          "covered": 99,
+          "percent": 100
+        },
+        "mcdc": {
+          "count": 0,
+          "covered": 0,
+          "notcovered": 0,
+          "percent": 0
+        },
+        "regions": {
+          "count": 93,
+          "covered": 90,
+          "notcovered": 3,
+          "percent": 96.7741935483871
+        }
+      }
+    },
+    {
+      "file": "BackendDownloadExchange.swift",
+      "summary": {
+        "branches": {
+          "count": 0,
+          "covered": 0,
+          "notcovered": 0,
+          "percent": 0
+        },
+        "functions": {
+          "count": 9,
+          "covered": 4,
+          "percent": 44.44444444444444
+        },
+        "instantiations": {
+          "count": 9,
+          "covered": 4,
+          "percent": 44.44444444444444
+        },
+        "lines": {
+          "count": 60,
+          "covered": 54,
+          "percent": 90
+        },
+        "mcdc": {
+          "count": 0,
+          "covered": 0,
+          "notcovered": 0,
+          "percent": 0
+        },
+        "regions": {
+          "count": 57,
+          "covered": 44,
+          "notcovered": 13,
+          "percent": 77.19298245614034
+        }
+      }
+    },
+    {
+      "file": "ChatAttachmentDownload.swift",
+      "summary": {
+        "branches": {
+          "count": 0,
+          "covered": 0,
+          "notcovered": 0,
+          "percent": 0
+        },
+        "functions": {
+          "count": 10,
+          "covered": 10,
+          "percent": 100
+        },
+        "instantiations": {
+          "count": 10,
+          "covered": 10,
+          "percent": 100
+        },
+        "lines": {
+          "count": 22,
+          "covered": 22,
+          "percent": 100
+        },
+        "mcdc": {
+          "count": 0,
+          "covered": 0,
+          "notcovered": 0,
+          "percent": 0
+        },
+        "regions": {
+          "count": 16,
+          "covered": 15,
+          "notcovered": 1,
+          "percent": 93.75
+        }
+      }
+    }
+  ],
+  "actual_signed_vm": true,
+  "native_diagnostic_directory": "upload-hash-a3-v1",
+  "pinned_reference_contract_equal": true,
+  "contract_groups": 8,
+  "multipart_body_bytes": 134217728,
+  "large_file_bytes": 134217517,
+  "large_full_content_hash_verified": true,
+  "sha256": "a8f734b2b3cda26b7ee98640acdf9ee6096eb40c1f720934466e4a9b9f4f2873",
+  "generic_json_maximum_bytes": 4194304,
+  "maximum_digest_feed_bytes": 65536,
+  "owned_fixture_cleanup": true,
+  "temporary_keychain_removed": true,
+  "native_vm_stopped_and_process_terminal": true,
+  "original_browser_services_healthy": true,
+  "process_memory_measured": false,
+  "live_vz_stop_mid_transfer_verified": false,
+  "native_attachment_ui_parity": "pending",
+  "source_kernel_reliability": "pending; earlier one-vCPU panic retained",
+  "branch_coverage": "not supplied by tool; not inferred",
+  "review": "read-only reviewer found premature success; executed regression fixed and final review approved"
+}

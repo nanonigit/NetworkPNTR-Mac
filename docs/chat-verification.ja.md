@@ -109,3 +109,11 @@ BackendJSONClientは不変Sendableのmultipart計画をMainActor外で事前検�
 別の固定ブラウザ本体とPostgreSQLをDocker内部ネットワークで動かすと、小ファイルのハッシュ・名前・順序、本文上限、保存サイズ、超過拒否と元ファイル維持の正規化結果が完全一致した。内部loopback APIを使い、入口・公開ポート・ホスト共有はない。使い捨てstate512MiB／tmp256MiBにより実際のmultipart退避を許し、既存入口の64MiB制限と取り違えない。比較用本体は超過本文をHTTP400で拒否し、Macは事前検証で拒否する。検証層が異なるためUI同等性とはしない。比較処理は正常終了し、比較用コンテナ／ネットワークも削除済み。元の8787環境と固定ソースは変更しなかった。
 
 証拠はevidence/chat/upload-limit-contract-vm.json、upload-limit-contract-reference.json、upload-limit-comparison.json、upload-limit-native-results.json、upload-a3-verification.json。共通の正規化項目だけを比較し、診断実装のメタデータを本体互換性に含めない。大きいファイルの全ハッシュ、メモリ・逆圧の測定、実VZの取消／停止、ネイティブ添付状態・UI、引用の実画面再確認は未完了。以前のカーネルpanicは実行安定性の反証として残し、今回の成功で正式採用や機能全体の受け入れを完了とはしない。
+
+## A3大きい添付の全内容
+
+新しい署名付き実行upload-hash-a3-v1でmultipart本文128MiBを送信後、実装した認証付きvsock取得でペイロード134,217,517バイトを全取得した。元の選択ファイルと独立した使い捨て固定バックエンドのSHA256がa8f734b2b3cda26b7ee98640acdf9ee6096eb40c1f720934466e4a9b9f4f2873で一致し、全内容ハッシュを含む8契約群が一致。ゲスト/ローカル所有ファイルと会話、仮Keychainを清掃し、VM停止・アプリ終了を確認。元のDocker4サービスは正常で、比較用コンテナ/ネットワークは清掃済み。添付UIの同等性は証明していない。
+
+Swift145件（Core137、実AppKit5、診断fixture3）/Python42件成功。ダウンロード19件で128MiB逐次ハッシュ、4MiB超の実ソケット、途中切れ/曖昧フレーム、空、期限、早期401、取消、認証世代を確認。独立レビューで要求送信前の成功受理を発見し実行REDa17b157→GREENc81b1f6。+名はRED5cfdd3a→GREEN807912c。ハッシュ不一致でも診断成功となるRED9ecc5c4から、照合必須・失敗清掃をGREENca4f3d9で確認。詳細はbugs/attachment-download-investigation.ja.md。
+
+対象LLVM行カバレッジはパーサ99/99、通信54/60、経路22/22。領域は90/93、44/57、15/16。未通過のソケットエラー処理は残り、分岐/製品全体/プロセスメモリの保証はしない。証拠はupload-hash-verification.json、upload-hash-contract-vm/reference.json、upload-hash-comparison.json、upload-hash-native-results.json。旧A3サイズのみの証拠は保持。実VZ転送中の取消/停止・進捗・A4/A5状態/UI・引用外部再テスト・クラウド/SSE・カーネル安定性・全機能完成条件は引き続き未完了。今回の起動成功で過去のpanicを取り消したり候補を昇格しない。

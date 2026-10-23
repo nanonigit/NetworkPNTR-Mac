@@ -39,3 +39,5 @@ Maintain identical fixtures and expected outcomes before each migrated feature p
 Source is under AGPL-3.0; see LICENSE and THIRD_PARTY.md. Large generated guest artifacts and raw logs are excluded from Git. This is a development build, not a notarized release.
 
 Chat finite API/state core, ten basic CRUD groups and ten populated-history groups are verified. The signed app restores all 211 fixture events and their full detail after VM restart. Native chat core UI has partial external comparison; successful AI send/running-stop and full acceptance remain pending. See [chat verification](docs/chat-verification.md).
+
+Latest attachment backend checkpoint: full134,217,517-byte content SHA matches between the signed native VM and pinned disposable browser backend; eight contract groups,145 Swift and42 Python tests pass. Attachment UI, live VM cancellation/progress and runtime reliability remain pending. See docs/chat-verification.md and evidence/chat/upload-hash-verification.json.
