@@ -70,6 +70,10 @@ import Foundation
             await login.login(password: password, agreed: true)
             guard login.phase == .authenticated else { throw RuntimeError.integrity(login.error ?? "native login") }
             result["native_login_validation_and_real_auth"] = true
+            if CommandLine.arguments.contains("--upload-diagnostics") {
+                try await NativeUploadDiagnostics.run(session: login, directory: directory)
+                result["native_authenticated_upload_and_content"] = true
+            }
             if CommandLine.arguments.contains("--chat-review") {
                 _ = try await NativeChatHistoryDiagnostics.run(session: login, directory: directory)
                 result["chat_review_fixture_seeded"] = true
