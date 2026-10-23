@@ -47,6 +47,7 @@ public struct ChatMultipartPlan: Sendable {
             total += count
         }
         for url in files {
+            try Task.checkCancellation()
             guard url.isFileURL, url.host == nil || url.host == "" || url.host == "localhost",
                   !url.path.utf8.contains(0) else { throw ChatUploadBodyError.invalidFile }
             let name = url.lastPathComponent

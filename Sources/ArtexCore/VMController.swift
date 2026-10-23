@@ -15,6 +15,7 @@ import Virtualization
     @ObservationIgnored private var poller: Task<Void, Never>?
     @ObservationIgnored private var logURL: URL?
     @ObservationIgnored private var backendConnections: [UUID: VZVirtioSocketConnection] = [:]
+    @ObservationIgnored private var backendUploads: [UUID: BackendUploadSocket] = [:]
     @ObservationIgnored private var pendingConnections: [UUID: CheckedContinuation<UUID, Error>] = [:]
     public var mayStart: Bool { state.canStart && machine == nil }
     public var hasMachine: Bool { machine != nil }
@@ -72,6 +73,7 @@ import Virtualization
     public func stop() async throws {
         guard state.canStop, let input else { throw RuntimeError.invalidTransition(state.rawValue, "stopping") }
         try state.transition(to: .stopping)
+        cancelBackendUploads()
         do {
             // Bootstrap must complete before the guest can interpret management tokens.
             // Sending STOP into its credential reader would corrupt the bootstrap protocol.
@@ -94,6 +96,7 @@ import Virtualization
     }
     public func forceStop() async throws {
         guard let vm = machine else { return }
+        cancelBackendUploads()
         do {
             try await stopMachine(vm)
             refreshLog(); releaseResources()
@@ -128,7 +131,7 @@ import Virtualization
             fail(RuntimeError.integrity(String(failure.prefix(160))))
         }
     }
-    private func fail(_ error: Error) { lastError = error.localizedDescription; if state != .failed { try? state.transition(to: .failed) } }
+    private func fail(_ error: Error) { cancelBackendUploads(); lastError = error.localizedDescription; if state != .failed { try? state.transition(to: .failed) } }
     // Completion-handler calls stay on our MainActor. Older SDK async overlays treat
     // VZVirtualMachine as a non-Sendable value crossing isolation during `await`.
     private func startMachine(_ vm: VZVirtualMachine) async throws {
@@ -159,31 +162,67 @@ import Virtualization
             return try BackendSocketExchange.exchange(descriptor: descriptor, request: bytes)
         }.value
     }
+    /// Dedicated multipart exchange; payload files never become a shared VM directory.
+    func uploadBackend(plan: ChatMultipartPlan, header: Data, provisioning: GuestProvisioning) async throws -> BackendHTTPResponse {
+        try Task.checkCancellation()
+        guard guestReady, state == .running else { throw RuntimeError.integrity("backend not ready") }
+        let identifier = try await connectBackend()
+        defer {
+            backendUploads.removeValue(forKey: identifier)?.finish()
+            backendConnections.removeValue(forKey: identifier)?.close()
+        }
+        try Task.checkCancellation()
+        guard guestReady, state == .running,
+              let connection = backendConnections[identifier] else { throw RuntimeError.integrity("closed upload connection") }
+        let descriptor = dup(connection.fileDescriptor)
+        guard descriptor >= 0 else { throw POSIXError(.EIO) }
+        let socket = BackendUploadSocket(owning: descriptor)
+        backendUploads[identifier] = socket
+        guard fcntl(descriptor, F_SETFD, FD_CLOEXEC) == 0 else { throw POSIXError(.EIO) }
+        let preamble = Data(("ARTEX_VSOCK_1 " + provisioning.transportToken + "\n").utf8)
+        return try await withTaskCancellationHandler {
+            try Task.checkCancellation()
+            return try await Task.detached {
+                try BackendUploadExchange.exchange(socket: socket, preamble: preamble, header: header, plan: plan)
+            }.value
+        } onCancel: { socket.cancel() }
+    }
+    private func cancelBackendUploads() {
+        for socket in backendUploads.values { socket.cancel() }
+    }
     private func connectBackend() async throws -> UUID {
         guard let device = machine?.socketDevices.first as? VZVirtioSocketDevice else { throw RuntimeError.integrity("backend vsock device") }
         let identifier = UUID()
-        return try await withCheckedThrowingContinuation { continuation in
-            pendingConnections[identifier] = continuation
-            device.connect(toPort: 8787) { [weak self] result in
-                // VZVirtualMachine's default queue invokes all callbacks on the main queue.
-                MainActor.assumeIsolated {
-                    guard let self, let pending = self.pendingConnections.removeValue(forKey: identifier) else {
-                        if case let .success(connection) = result { connection.close() }
-                        return
-                    }
-                    switch result {
-                    case let .success(connection): self.backendConnections[identifier] = connection; pending.resume(returning: identifier)
-                    case let .failure(error): pending.resume(throwing: error)
+        return try await withTaskCancellationHandler {
+            try Task.checkCancellation()
+            return try await withCheckedThrowingContinuation { continuation in
+                pendingConnections[identifier] = continuation
+                device.connect(toPort: 8787) { [weak self] result in
+                    // VZVirtualMachine's default queue invokes all callbacks on the main queue.
+                    MainActor.assumeIsolated {
+                        guard let self, let pending = self.pendingConnections.removeValue(forKey: identifier) else {
+                            if case let .success(connection) = result { connection.close() }
+                            return
+                        }
+                        switch result {
+                        case let .success(connection): self.backendConnections[identifier] = connection; pending.resume(returning: identifier)
+                        case let .failure(error): pending.resume(throwing: error)
+                        }
                     }
                 }
+                Task { [weak self] in
+                    try? await Task.sleep(for: .seconds(10))
+                    self?.pendingConnections.removeValue(forKey: identifier)?.resume(throwing: RuntimeError.timeout("backend connection"))
+                }
             }
-            Task { [weak self] in
-                try? await Task.sleep(for: .seconds(10))
-                self?.pendingConnections.removeValue(forKey: identifier)?.resume(throwing: RuntimeError.timeout("backend connection"))
+        } onCancel: { [weak self] in
+            Task { @MainActor in
+                self?.pendingConnections.removeValue(forKey: identifier)?.resume(throwing: CancellationError())
             }
         }
     }
     private func releaseResources() {
+        cancelBackendUploads(); backendUploads.removeAll()
         for continuation in pendingConnections.values { continuation.resume(throwing: RuntimeError.integrity("VM connection closed")) }
         pendingConnections.removeAll()
         for connection in backendConnections.values { connection.close() }
