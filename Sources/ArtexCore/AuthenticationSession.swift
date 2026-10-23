@@ -11,6 +11,7 @@ public enum AuthenticationPhase: String, Sendable { case checking, needsSetup, n
     @ObservationIgnored private let vault: any SessionVault
     @ObservationIgnored private let setupToken: String
     @ObservationIgnored private var token: String?
+    @ObservationIgnored private var revision = UUID()
     private struct Status: Decodable { let initialized: Bool; let setup_token_required: Bool }
     private struct Session: Decodable { let token: String }
     public init(client: any BackendJSONTransport, vault: any SessionVault, setupToken: String) {
@@ -18,7 +19,7 @@ public enum AuthenticationPhase: String, Sendable { case checking, needsSetup, n
     }
     public func refresh() async {
         guard !isBusy else { return }
-        isBusy = true; error = nil; token = nil; phase = .checking
+        isBusy = true; error = nil; token = nil; revision = UUID(); phase = .checking
         defer { isBusy = false }
         do {
             let status: Status = try await request(method: "GET", path: "/api/auth/status")
@@ -63,19 +64,37 @@ public enum AuthenticationPhase: String, Sendable { case checking, needsSetup, n
     }
     public func logout() {
         guard !isBusy else { return }
-        do { try vault.remove(); token = nil; phase = .needsLogin; error = nil }
+        do { try vault.remove(); token = nil; revision = UUID(); phase = .needsLogin; error = nil }
         catch { self.error = error.localizedDescription }
     }
     public func authenticatedRequest(method: String, path: String, body: Data? = nil) async throws -> BackendHTTPResponse {
         guard phase == .authenticated, let token else { throw BackendAPIError.status(401) }
+        let ticket = revision
         let response = try await client.send(method: method, path: path, body: body, bearer: token)
-        if response.status == 401 { try vault.remove(); self.token = nil; phase = .needsLogin }
+        try validateReply(response, ticket: ticket)
         return response
+    }
+    public func authenticatedUpload(conversationID: Int64, files: [URL]) async throws -> BackendHTTPResponse {
+        guard phase == .authenticated, let token else { throw BackendAPIError.status(401) }
+        guard conversationID > 0, !files.isEmpty else { throw ChatUploadBodyError.invalidFile }
+        guard let uploader = client as? any BackendMultipartTransport else { throw BackendAPIError.invalidResponse }
+        let ticket = revision
+        let response = try await uploader.upload(conversationID: conversationID, files: files, bearer: token)
+        try validateReply(response, ticket: ticket)
+        return response
+    }
+    private func validateReply(_ response: BackendHTTPResponse, ticket: UUID) throws {
+        guard revision == ticket, phase == .authenticated else { throw CancellationError() }
+        if response.status == 401 {
+            token = nil; revision = UUID(); phase = .needsLogin
+            // In-memory authentication must expire even if Keychain removal fails.
+            try vault.remove()
+        }
     }
     private func accept(_ value: String) throws {
         _ = try BackendHTTPRequest.make(method: "GET", path: "/api/auth/status", body: nil, bearer: value)
         try vault.save(value)
-        token = value; phase = .authenticated; error = nil
+        token = value; revision = UUID(); phase = .authenticated; error = nil
     }
     private func request<T: Decodable>(method: String, path: String, body: Data? = nil) async throws -> T {
         let response = try await client.send(method: method, path: path, body: body, bearer: nil)
