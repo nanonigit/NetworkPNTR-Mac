@@ -1,0 +1,12 @@
+{
+  "failed_commit": "a893e2977b1ad9e5949c17a1ad8f3bde3dcfcdf7",
+  "run": "https://github.com/nanonigit/artex-mac/actions/runs/39973837177",
+  "job": "core",
+  "step": "swift test",
+  "file": "Sources/ArtexMac/ChatMentionComposer.swift",
+  "diagnostic": "the compiler is unable to type-check this expression in reasonable time; try breaking up the expression into distinct sub-expressions",
+  "local_swift": "6.4",
+  "local_tests_passed": 95,
+  "repair": "extract editor, selection chips, editing callback and search task into typed helpers",
+  "remote_repair_verification": "pending at repair commit"
+}

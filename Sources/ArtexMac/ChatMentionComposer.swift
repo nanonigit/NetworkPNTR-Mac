@@ -46,36 +46,55 @@ struct ChatMentionComposer: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 5) {
             if active != nil { candidates }
-            ChatComposer(text: $text, mode: mode, disabled: disabled, send: send, onEditing: { value, range, marked in
-                if Array(value.utf16) != Array(lastEditedText.utf16) { dismissed = false; activeIndex = 0; selection = nil; pendingKeyboardIndex = nil }
-                lastEditedText = value; caret = range.location; composing = marked
-            }, onMentionKey: handleKey, selectionRequest: selection)
-                .frame(height: 90).overlay(RoundedRectangle(cornerRadius: 7).stroke(.quaternary))
-            let tokens = ChatMentionEditing.selected(in: text)
-            if !tokens.isEmpty {
-                ScrollView(.horizontal) {
-                    HStack {
-                        ForEach(Array(tokens.enumerated()), id: \.offset) { _, token in
-                            Button {
-                                if let edit = ChatMentionEditing.remove(token, from: text) { apply(edit, close: true) }
-                            } label: { Label(title(token.kind) + "#" + token.id + " " + token.text, systemImage: "xmark.circle").lineLimit(1) }
-                                .buttonStyle(.bordered).accessibilityLabel("引用を外す：" + title(token.kind) + "#" + token.id + " " + token.text)
-                        }
+            editor
+            selectedChips
+        }
+        .task(id: TaskKey(query: key, retry: retry)) { await searchCandidates() }
+        .onDisappear { results.cancel() }
+    }
+    private var editor: some View {
+        ChatComposer(text: $text, mode: mode, disabled: disabled, send: send,
+                     onEditing: didEdit, onMentionKey: handleKey, selectionRequest: selection)
+            .frame(height: 90)
+            .overlay(RoundedRectangle(cornerRadius: 7).stroke(.quaternary))
+    }
+    private func didEdit(_ value: String, range: NSRange, marked: Bool) {
+        if Array(value.utf16) != Array(lastEditedText.utf16) {
+            dismissed = false; activeIndex = 0; selection = nil; pendingKeyboardIndex = nil
+        }
+        lastEditedText = value; caret = range.location; composing = marked
+    }
+    @ViewBuilder private var selectedChips: some View {
+        let tokens = ChatMentionEditing.selected(in: text)
+        if !tokens.isEmpty {
+            ScrollView(.horizontal) {
+                HStack {
+                    ForEach(Array(tokens.enumerated()), id: \.offset) { entry in
+                        selectedChip(entry.element)
                     }
                 }
             }
         }
-        .task(id: TaskKey(query: key, retry: retry)) {
-            let ticket = UUID(); epoch = ticket; activeIndex = 0; pendingKeyboardIndex = nil; results.cancel(); shownKey = key
-            guard key != nil else { debouncing = false; return }
-            debouncing = true
-            defer { if epoch == ticket { debouncing = false } }
-            do { try await Task.sleep(for: .milliseconds(180)) } catch { return }
-            guard !Task.isCancelled else { return }
-            let search = input
-            await results.search(kind: search.kind, query: search.query)
+    }
+    private func selectedChip(_ token: ChatSelectedMention) -> some View {
+        let label = title(token.kind) + "#" + token.id + " " + token.text
+        return Button {
+            if let edit = ChatMentionEditing.remove(token, from: text) { apply(edit, close: true) }
+        } label: {
+            Label(label, systemImage: "xmark.circle").lineLimit(1)
         }
-        .onDisappear { results.cancel() }
+        .buttonStyle(.bordered)
+        .accessibilityLabel("引用を外す：" + label)
+    }
+    private func searchCandidates() async {
+        let ticket = UUID(); epoch = ticket; activeIndex = 0; pendingKeyboardIndex = nil; results.cancel(); shownKey = key
+        guard key != nil else { debouncing = false; return }
+        debouncing = true
+        defer { if epoch == ticket { debouncing = false } }
+        do { try await Task.sleep(for: .milliseconds(180)) } catch { return }
+        guard !Task.isCancelled else { return }
+        let search = input
+        await results.search(kind: search.kind, query: search.query)
     }
     private struct TaskKey: Hashable { let query: Data?; let retry: UUID }
     private var candidates: some View {
