@@ -103,3 +103,6 @@ L2 shell checkpoint: compiled String Catalog/helper and native toolbar en/ja pic
 
 
 CI portable-resource gates: retain failed hosted test as actual RED; exporter schema/determinism/stale check tests RED then GREEN; portable resources/CI/build integration; local legacy native build-system cold tests and signed resource check, reviewer, remoteCI. Do not retry the same incompatible artifact hoping for green.
+
+
+L2 portability checkpoint: initial hosted40110609236 failed because legacy SwiftPM copied catalog without compilation. Strict exporter+generated portable en/ja resources and drift checks repaired it;5cold legacy catalog cases,234default Swift cases(233pass/oneAXskip),52Python pass; exporter94.6% line coverage. Final signed bundle verification and remoteCI required; whole language/backend/all21 gates remain open.

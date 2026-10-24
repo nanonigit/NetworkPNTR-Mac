@@ -1,0 +1,10 @@
+{
+  "scope": "Three exporter unit cases and actual --check CLI traced with stdlib trace",
+  "executable_lines": 37,
+  "covered_lines": 35,
+  "percent": 94.5945945945946,
+  "not_covered": [
+    0,
+    15
+  ]
+}

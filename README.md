@@ -6,7 +6,7 @@ Native SwiftUI macOS application with an app-managed isolated Linux VM. **Develo
 
 - Apple Virtualization.framework really boots ARM64 Linux and cooperatively stops it, twice in sequence, without Docker, host shares, NICs or persistent disks.
 - Modified kernel is rejected before VM creation. An actual guest that never emits readiness times out visibly and recovers through force stop.
-- 125 Swift tests (118 core, 5 AppKit components and 2 diagnostic fixtures) and 39 Python regression tests cover inventory, lifecycle, integrity, isolation, auth, LLM services and dashboard calculations/polling.
+- Latest checkpoint:234 Swift cases (233 passed, one explicitly skipped AX test) and52 Python regression tests; this does not close full UI/runtime acceptance.
 - Native application .app is built, locally ad-hoc signed with the virtualization entitlement and launched. Its developer harness runs the VM service from the real app and records readiness/shutdown. External CUA verified native LLM creation/editing, numeric validation, Return-key save and active-profile protection. The connection later failed; full click/visual acceptance is still pending. Content-view snapshots are diagnostic only and have layer-compositing limitations; they are not signed off as UI parity.
 
 The separate backend acceptance guest now boots pinned ARTEX and PostgreSQL 16 with authenticated vsock and a private persistent disk. Real normal/forced restarts preserve authentication and an LLM fixture. Five normalized API contract cases match a disposable pinned browser backend. See [Phase 2 evidence](docs/phase2-verification.md). The app now bundles this real backend by default and provides native setup/login/logout with a Keychain session. Two-vCPU experiments exposed intermittent kernel faults. A one-vCPU direct-root diagnostic profile passed repeated native auth runs; a separate database recovery readiness race was repaired and three forced recoveries passed. Release reliability is not accepted; see [the investigation](docs/bugs/guest-boot-investigation.md).
@@ -41,3 +41,18 @@ Source is under AGPL-3.0; see LICENSE and THIRD_PARTY.md. Large generated guest 
 Chat finite API/state core, ten basic CRUD groups and ten populated-history groups are verified. The signed app restores all 211 fixture events and their full detail after VM restart. Native chat core UI has partial external comparison; successful AI send/running-stop and full acceptance remain pending. See [chat verification](docs/chat-verification.md).
 
 Latest attachment checkpoint: the full134,217,517-byte content SHA matches the signed native VM and pinned disposable browser backend. Actual VZ upload cancellation and VM stop during partial transfer pass with an active-socket witness, authenticated restart and owned cleanup.190 Swift/45 Python tests pass. Typed upload/create/text handoff now passes an actual VM/control run and six pinned backend metadata/failure groups; four source-derived browser send cases remain verified. The first new VM attempt failed in blank checking with kernel memory warnings and is retained as counter-evidence. Picker/cards, download cancellation, multipart-spill cancellation, process-memory measurement and runtime reliability remain open. See [chat verification](docs/chat-verification.md) and evidence/chat/attachment-handoff-verification.json.
+
+
+## English and Japanese UI
+
+The toolbar switches the shared native shell between English and Japanese. Actual switching preserves the active chat draft, attachment card and selection; a new app process retains the chosen language. Feature interiors and backend output-language synchronization are still being migrated, so this is not complete bilingual support. See [verification](docs/localization-shell-verification.md).
+
+Edit `Sources/ArtexCore/Resources/Localizable.xcstrings` as the translation source, then run:
+
+```sh
+python3 script/export_localizations.py
+python3 script/export_localizations.py --check
+swift test
+```
+
+The generated en/ja `.strings` files are committed for SwiftPM build-system compatibility. Do not edit them by hand. CI and the app build wrapper reject stale generated resources.

@@ -1,5 +1,5 @@
 {
-  "source": "ad9a7fe",
+  "source": "3025b1b",
   "signature_verified": true,
   "compiled_resource_locales": [
     "en",
@@ -8,5 +8,6 @@
   "english_runtime_label": "Runtime",
   "japanese_runtime_label": "実行環境",
   "six_final_japanese_browser_names_verified": true,
-  "scope": "Signed bundle compiled resources; earlier live screenshots remain5a66610"
+  "scope": "Signed bundle compiled resources; earlier live screenshots remain5a66610",
+  "portable_resources_verified": true
 }

@@ -95,3 +95,6 @@ L2共通画面チェックポイント: カタログ・ヘルパーとツール�
 
 
 CI互換ゲート: 実CI失敗をREDとして保持、exporterのschema・決定性・陳腐化検査RED→GREEN、互換リソースとCI/build接続、legacy native build-systemのcold試験・署名同梱・レビュー・リモートCI。同じ非互換物を再試行して合格待ちしない。
+
+
+L2互換チェックポイント: 初回CI40110609236は旧SwiftPMのカタログ未コンパイルコピーで失敗。厳格exporter・派生en/jaリソース・一致検査で修正。cold legacyカタログ5件、通常Swift234件（成功233・AX1スキップ）、Python52成功、exporter行94.6%。最終署名同梱とリモートCIを確認し、言語全体・backend・全21ゲートは未完了を維持。

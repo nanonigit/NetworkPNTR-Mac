@@ -5,7 +5,7 @@
   "swift_total": 234,
   "swift_passed": 233,
   "swift_skipped": 1,
-  "python_passed": 49,
+  "python_passed": 52,
   "catalog_tests": 5,
   "cold_scratch_catalog_tests_passed": 3,
   "initial_incremental_lookup_failure": "93 assertions failed; next probe and cold build passed; exact root cause unproven, retained counterevidence",
@@ -51,5 +51,9 @@
     "system menus/raw lifecycle state labels",
     "full two-locale accessibility and all21 function parity",
     "runtime kernel reliability"
-  ]
+  ],
+  "portable_resource_source": "3025b1b",
+  "cold_legacy_builder_catalog_cases": 5,
+  "initial_hosted_ci_failure": "40110609236 native SwiftPM copied raw catalog without compilation",
+  "portability_fix": "Single-source exporter, committed derived en/ja strings, mandatory drift check"
 }

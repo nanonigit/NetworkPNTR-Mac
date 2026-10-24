@@ -13,3 +13,6 @@ MUSUBI: 未実装と名称不一致を再現、カタログ・cold build・AX画
 Lazyweb検索76693227-6d1e-45bf-9de0-c269b458b639はメタデータのみで画像確認の証拠ではない。固定settingsソースと実画面を基準としレポート生成なし。
 
 機能内部の日本語直書き、中国語の初期説明・韓国語の初期会話名、backend同期は残る。入力された中国語／韓国語は意図的に保持。生のruntime状態・システムメニュー・VoiceOver・全21状態も未完了。私的V1ディスクに比較用guest uploadを保持し、個別削除・ハッシュ未計測。参照コンテナ／ネットワーク・所有host一時ファイルは削除。クラウド通信なし。カーネル信頼性・アプリ全体の完成は未証明。
+
+
+CI互換修正:40110609236でCIのnative SwiftPMがraw xcstringsをコピーしキーを返す実失敗を確認。初期ローカルincrementalの未確定原因とは別。e3b4874 RED3→3025b1b exporter3件・Python全52件・cold native-builderカタログ5件GREEN。原本から生成したUTF8 plistをコミットしrawをexclude、両方式でen/ja.lprojをprocess。--checkをCI／アプリbuildの必須検査へ追加。stdlib traceでexporter行94.6%。Swift234件中233成功・AX1スキップは維持。最終署名3025b1bの同梱リソースを検証。画像は5a66610のままで、既記録の名称6修正以外は同じ文言。CI再試行成功前にCI合格と報告しない。
