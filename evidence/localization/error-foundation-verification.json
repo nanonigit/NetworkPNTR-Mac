@@ -1,0 +1,15 @@
+{
+  "source": "a3f7681",
+  "red": "ea39007",
+  "swift_cases": 243,
+  "swift_passed": 242,
+  "swift_skipped": 1,
+  "python_passed": 52,
+  "signed_bundle_error_strings_verified": {
+    "en": 29,
+    "ja": 29
+  },
+  "live_error_switching": "pending store/UI migration",
+  "browser_comparison": "No new UI comparison in this infrastructure stage; pinned baseline unchanged",
+  "scope": "Core error foundation only"
+}

@@ -105,3 +105,5 @@ L3ゲート: 初期文言／編集保持とchatカタログRED/GREEN→AppKitボ
 L3チェックポイント：Chat操作・既定文言をSwift240件（成功239・既存AX1スキップ）、Python52件、警告なしの署名ビルドで検証。実native／browserの英語→日本語で混在本文と21B添付を保持。画像2a62b55は全文修正5232876より前で、最終リソースは別検証。韓国語初期名は明示翻訳するとbackend自動命名を壊すため未解決。専用State全体を破棄し、個別ファイルハッシュは主張しない。[Chat日英検証](localization-chat-verification.ja.md)を参照。R8／Chat／全21ゲートは未完了。
 
 L4aエラー基盤：ネイティブの静的検証文字列をBackendValidation型に移し、日英エラープレゼンターを追加。store移行中は従来の日本語LocalizedError互換を保持。明示言語で取得しOS設定に依存せず、未知のエラーを文字列化しない。HTTP／Keychain数値のみ埋め込み、任意のserver本文・パス・秘密を表示しない。この基盤だけでUIエラー切替／R8を合格にしない。
+
+L4a検証済み：ea39007の意図した未実装表示／理由RED→a3f7681 GREEN3。全Swift243（成功242・既存AX1スキップ）、Python52、表示ヘルパー行26/26・領域21/21。最終署名同梱は各言語29項目一致、レビュー済み。store／UI言語接続は未完了。bugs/error-localization-investigation.ja.mdを参照。
