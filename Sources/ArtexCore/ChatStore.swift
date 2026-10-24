@@ -170,7 +170,7 @@ import Observation
         let submitted = submittedMessage ?? drafts[id] ?? "", cards = attachments(for: id)
         guard !submitted.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty || !cards.isEmpty else { return false }
         let ticket = lifetime
-        let clearsText = draft(for: id) == submitted
+        let clearsText = draft(for: id).utf8.elementsEqual(submitted.utf8)
         if clearsText { setDraft("", for: id) }
         pendingSends[id] = PendingSend(text: clearsText ? submitted : nil,
             clearedTextRevision: clearsText ? draftRevisions[id] : nil, attachments: cards)
