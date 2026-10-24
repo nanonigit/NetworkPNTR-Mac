@@ -52,3 +52,5 @@ L3 Chat操作: 一覧・ヘッダ・入力、添付操作・進捗・ネイテ�
 L4aエラー基盤：ネイティブの静的検証文字列をBackendValidation型に移し、日英エラープレゼンターを追加。store移行中は従来の日本語LocalizedError互換を保持。明示言語で取得しOS設定に依存せず、未知のエラーを文字列化しない。HTTP／Keychain数値のみ埋め込み、任意のserver本文・パス・秘密を表示しない。この基盤だけでUIエラー切替／R8を合格にしない。
 
 L4b Chatエラー：storeは安全な型付きAppErrorMessageを保持し、viewの現在localeで表示。view再作成・リクエスト発行・本文／添付／選択変更をしない。診断／旧試験向け日本語Stringは計算プロパティで互換保持。一覧／履歴／送信／停止／workspace／添付／部分削除／引用ページング／本文／詳細を対象とし、キャンセル・世代・所有者判定を維持。未知のエラーはraw情報を保持せず型付きfallbackへ縮退。store RED/GREEN・全試験・レビュー・署名・実native/browser失敗送信中の言語比較を別ゲートとする。Lazyweb検索chat error retry messageは隣接DoorDashメタデータのみ（類似度.385）で視覚証拠とせず、固定版のエラーUIを基準にする。
+
+L4c移植済み画面のエラー／通知ゲート：AuthenticationSession・LLMStore・DashboardLoadStateはAppErrorMessageを保持し、日本語Stringは計算プロパティで互換。LLM完了通知はカタログキーで保持し、再取得失敗と独立させる。認証・LLM設定／編集／rotation・dashboardの現在view localeで表示。localeによる認証／変更操作／poll再起動やパスワード／APIキー保存をしない。フォーム・規約同意・世代・前回データを保持。周辺未翻訳操作／規約言語は別ゲート。検証失敗・未知エラー秘密除去・保存成功後の再取得失敗・dashboard前回データ保持を試験。Lazyweb settings inline validation errorは隣接Gopuff captchaメタデータのみ（.356）で視覚証拠としない。実native/browser比較はMac解除まで延期。
