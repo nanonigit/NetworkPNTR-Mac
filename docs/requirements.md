@@ -30,3 +30,6 @@ A5 attachment UI: use a window-owned native multiple-file panel, excluding direc
 
 
 A6 persisted user messages: display full plain text and read-only attachment name/relative path/size cards from inline or lazily fetched Detail JSON {text, attachments}, matching pinned UserRow. Load only mounted user rows, preserve summary on empty/error replies and show a safe retryable failure. A cancelled, disappeared, updated or different-conversation row cannot accept an old detail response. Keep validated metadata and ignore abs; malformed unsafe attachment records fall back to literal body text. No file open/delete/download or host RPC is introduced. Compare structured/plain/empty/error/Unicode fixtures against pinned source and actual browser/native rows.
+
+
+A7 matched restoration requirement: disposable native and pinned browser both have zero LLM profiles before and after restart. Real picker upload, mixed text/card and attachment-only sends must receive backend503, restore the original draft/cards, retain uploaded files and not create user activity. Test-only mode must reject conflicting diagnostic seed flags before VM start. No production network or UI change.
