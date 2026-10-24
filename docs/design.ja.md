@@ -15,3 +15,6 @@ SwiftPMの複数ターゲット、SwiftUI/AppKitのネイティブ画面、Virtu
 
 
 L1: AppLanguageはCodable/CaseIterable/Identifiable/Sendableなen/ja型で、自言語名とLocaleを提供。AppLanguagePreferencesはMainActor observableとしUserDefaultsを注入、専用の言語キーだけを読み書き。初回のOS候補はen-/ja-地域指定やアンダースコアを認識するが保存値は正規en/jaだけ。不正な保存値と未選択を区別し、前者を英語へ修復。選択APIは型で制限。UI・String Catalog・backend同期は後続ゲートで、Core設定だけの段階はLazyweb対象外。
+
+
+L2: 英語原文のString CatalogをCoreのSwiftPMリソースでprocessしdefaultLocalization=en。AppStringsで型付き共通キー・明示言語取得・英語フォールバックを提供し、機能IDを翻訳名へ対応。ユーザー内容は変換しない。AppはStateに言語設定を1つ保持してRootへ渡し、ツールバーのメニューPickerを自言語名で表示。localeを設定しても言語.idやruntime再作成を使わない。Rootのラベルを共通カタログへ移行。固定settings/page.tsx:124/665が即時UI切替とbackend失敗の別通知の根拠で、同期は後続。Lazyweb検索76693227-6d1e-45bf-9de0-c269b458b639のAmazon/Freevee言語選択メタデータは補助情報のみで、画像を見た証拠ではない。レポート生成は依頼されていない。

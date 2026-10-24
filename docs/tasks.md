@@ -94,3 +94,6 @@ L1 ordered gates: language/locale/default precedence/migration/persistence and u
 
 
 L1 checkpoint:690c4e1 implements only typed persisted en/ja preferences. Five focused tests pass, both new files100% line/region coverage; full229Swift cases(228pass/oneAXskip) and49Python pass; reviewer approved. Saved-value precedence, invalid-to-English repair and isolated suites/unrelated defaults verified across new instances. Actual UI switch/catalog/backend sync and app-process restart remain unverified. Next L2: current Lazyweb evidence before UI, String Catalog/resources, native switch without rebuilding/resetting chat state, rendered two-locale comparisons; then backend synchronization with explicit failure semantics. Full goal stays open.
+
+
+L2 ordered: compiled-catalog explicit en/ja/feature-title and fallback tests RED; resources/helper GREEN; native picker/root integration and reviewer; full tests/coverage/signed resource verification; real two-direction UI switch and active composer/selection/VM preservation comparison. Keep feature-inner strings and backend sync open.

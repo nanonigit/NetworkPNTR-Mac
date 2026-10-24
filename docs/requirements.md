@@ -42,3 +42,6 @@ R8. Final supported application languages are English(en) and Japanese(ja) only.
 
 
 L1 language foundation: represent only en/ja in the public type; choose the first supported system preference for a fresh install, otherwise English. Persist explicit user selection independent of later system-language changes. Invalid or non-string saved preference normalizes to English. Preserve unrelated defaults and do not store cloud/backend credentials in language preferences. This core stage adds no UI and does not satisfy R8 alone.
+
+
+L2 shell gate: expose exactly English/日本語 in an always-accessible native picker; translate shared navigation, feature titles and root unavailable/detail messages with en/ja resources. Switching must keep the same runtime/auth/chat identity, draft, attachments and selected conversation. Package compiled catalogs in the signed app. Both language resource lookups must work independently of host language; missing Japanese entries fall back to English. This shell gate does not close untranslated feature interiors/backend output.
