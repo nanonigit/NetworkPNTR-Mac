@@ -25,13 +25,21 @@ final class LLMUILocalizationTests: XCTestCase {
         XCTAssertEqual(AppStrings.render(template:"plain 日本語",values:[:]),"plain 日本語")
         XCTAssertEqual(AppStrings.render(template:"A{empty}B",values:["empty":""]),"AB")
     }
+    private func canonicalJSON(_ data: Data) throws -> Data {
+        try JSONSerialization.data(withJSONObject: JSONSerialization.jsonObject(with: data), options: [.sortedKeys])
+    }
     func testDisplayFormattingDoesNotChangeWireDraftOrRetryValues() throws {
         var draft = LLMProfileDraft();draft.name="literal {count} 中文 한국어";draft.model="fixture";draft.format = .openaiResponses
         let before = try draft.encoded();var policy = LLMRetryPolicy();policy.connect = .init(attempts:2,intervalMs:100)
         let retryBefore = try LLMWire.encode(policy)
         XCTAssertEqual(AppStrings.formatted(.llmUIModelCandidates,language:.english,values:["count":"3"]),"Model candidates (3)")
         XCTAssertEqual(AppStrings.formatted(.llmUIRates,language:.japanese,values:["second":"1.5","minute":"30"]),"1.5/秒 · 30/分")
-        XCTAssertEqual(try draft.encoded(),before);XCTAssertEqual(try LLMWire.encode(policy),retryBefore)
+        XCTAssertEqual(try canonicalJSON(draft.encoded()),canonicalJSON(before))
+        XCTAssertEqual(try canonicalJSON(LLMWire.encode(policy)),canonicalJSON(retryBefore))
+        let first = Data(#"{"a":1,"b":2}"#.utf8), reordered = Data(#"{"b":2,"a":1}"#.utf8)
+        let changed = Data(#"{"b":3,"a":1}"#.utf8)
+        XCTAssertEqual(try canonicalJSON(first),canonicalJSON(reordered))
+        XCTAssertNotEqual(try canonicalJSON(first),canonicalJSON(changed))
         XCTAssertEqual(draft.format.rawValue,"openai-responses");XCTAssertEqual(draft.name,"literal {count} 中文 한국어")
     }
 }
