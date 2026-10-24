@@ -18,3 +18,6 @@ L1: AppLanguageはCodable/CaseIterable/Identifiable/Sendableなen/ja型で、自
 
 
 L2: 英語原文のString CatalogをCoreのSwiftPMリソースでprocessしdefaultLocalization=en。AppStringsで型付き共通キー・明示言語取得・英語フォールバックを提供し、機能IDを翻訳名へ対応。ユーザー内容は変換しない。AppはStateに言語設定を1つ保持してRootへ渡し、ツールバーのメニューPickerを自言語名で表示。localeを設定しても言語.idやruntime再作成を使わない。Rootのラベルを共通カタログへ移行。固定settings/page.tsx:124/665が即時UI切替とbackend失敗の別通知の根拠で、同期は後続。Lazyweb検索76693227-6d1e-45bf-9de0-c269b458b639のAmazon/Freevee言語選択メタデータは補助情報のみで、画像を見た証拠ではない。レポート生成は依頼されていない。
+
+
+L2 CI訂正:40110609236はCIのSwiftPMがxcstringsを未コンパイルのままコピーすることを証明。ローカルSwift Buildとの差。String Catalogを原本とし、生成したUTF8 plist形式.stringsをen.lproj/ja.lprojへコミットしてprocess、rawカタログを実行リソースから除外。標準ライブラリの厳格exporterは現行の単純なtranslated stringUnitと対応localeのみ許可しvariation等を拒否。--checkで生成バイト一致を検査し、CI・署名buildラッパーのSwift実行前に必須化。直接swift testもコミットした派生リソースを使い、翻訳を二重に手修正しない。
