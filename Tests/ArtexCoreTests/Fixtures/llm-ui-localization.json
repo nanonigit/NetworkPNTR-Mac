@@ -1,0 +1,652 @@
+{
+  "entries": [
+    {
+      "key": "llm.ui.description",
+      "case": "llmUIDescription",
+      "en": "Manage models, API formats, and limits for all agents. A star marks the active configuration.",
+      "ja": "全エージェントで使うモデル・API形式・制限を管理します。有効な設定には星が付きます。"
+    },
+    {
+      "key": "llm.ui.rotation",
+      "case": "llmUIRotation",
+      "en": "Rotation",
+      "ja": "ローテーション"
+    },
+    {
+      "key": "llm.ui.new",
+      "case": "llmUINew",
+      "en": "New",
+      "ja": "新規"
+    },
+    {
+      "key": "llm.ui.reload",
+      "case": "llmUIReload",
+      "en": "Reload",
+      "ja": "再読み込み"
+    },
+    {
+      "key": "llm.ui.stale",
+      "case": "llmUIStale",
+      "en": "Showing previously loaded data. Reload to update it.",
+      "ja": "前回取得した内容を表示しています。再読み込みしてください。"
+    },
+    {
+      "key": "llm.ui.saving",
+      "case": "llmUISaving",
+      "en": "Saving changes",
+      "ja": "変更を保存しています"
+    },
+    {
+      "key": "llm.ui.loading",
+      "case": "llmUILoading",
+      "en": "Loading settings",
+      "ja": "設定を読み込んでいます"
+    },
+    {
+      "key": "llm.ui.display",
+      "case": "llmUIDisplay",
+      "en": "View",
+      "ja": "表示"
+    },
+    {
+      "key": "llm.ui.profiles",
+      "case": "llmUIProfiles",
+      "en": "Model configurations",
+      "ja": "モデル設定"
+    },
+    {
+      "key": "llm.ui.retryTab",
+      "case": "llmUIRetryTab",
+      "en": "Retries and waiting",
+      "ja": "再試行と待機"
+    },
+    {
+      "key": "llm.ui.noProfiles",
+      "case": "llmUINoProfiles",
+      "en": "No model configurations",
+      "ja": "モデル設定がありません"
+    },
+    {
+      "key": "llm.ui.createHint",
+      "case": "llmUICreateHint",
+      "en": "Create a configuration, then activate the one you want to use.",
+      "ja": "新規設定を作成し、使う設定を有効にしてください。"
+    },
+    {
+      "key": "llm.ui.deleteConfirm",
+      "case": "llmUIDeleteConfirm",
+      "en": "Delete this model configuration?",
+      "ja": "このモデル設定を削除しますか？"
+    },
+    {
+      "key": "llm.ui.delete",
+      "case": "llmUIDelete",
+      "en": "Delete",
+      "ja": "削除"
+    },
+    {
+      "key": "llm.ui.cancel",
+      "case": "llmUICancel",
+      "en": "Cancel",
+      "ja": "キャンセル"
+    },
+    {
+      "key": "llm.ui.deleteHelp",
+      "case": "llmUIDeleteHelp",
+      "en": "Tasks and other references to this configuration are updated by the same backend behavior as the browser version.",
+      "ja": "この設定を参照するタスク等は、ブラウザ版と同じバックエンド処理で更新されます。"
+    },
+    {
+      "key": "llm.ui.healthy",
+      "case": "llmUIHealthy",
+      "en": "Healthy",
+      "ja": "正常"
+    },
+    {
+      "key": "llm.ui.noKey",
+      "case": "llmUINoKey",
+      "en": "API key not configured",
+      "ja": "APIキー未設定"
+    },
+    {
+      "key": "llm.ui.proxySet",
+      "case": "llmUIProxySet",
+      "en": "Proxy configured",
+      "ja": "プロキシ設定あり"
+    },
+    {
+      "key": "llm.ui.excluded",
+      "case": "llmUIExcluded",
+      "en": "Excluded from rotation",
+      "ja": "ローテーション対象外"
+    },
+    {
+      "key": "llm.ui.edit",
+      "case": "llmUIEdit",
+      "en": "Edit",
+      "ja": "編集"
+    },
+    {
+      "key": "llm.ui.active",
+      "case": "llmUIActive",
+      "en": "Active",
+      "ja": "有効"
+    },
+    {
+      "key": "llm.ui.activate",
+      "case": "llmUIActivate",
+      "en": "Activate",
+      "ja": "有効にする"
+    },
+    {
+      "key": "llm.ui.deleteProfile",
+      "case": "llmUIDeleteProfile",
+      "en": "Delete model configuration",
+      "ja": "モデル設定を削除"
+    },
+    {
+      "key": "llm.ui.createTitle",
+      "case": "llmUICreateTitle",
+      "en": "Create model configuration",
+      "ja": "モデル設定を作成"
+    },
+    {
+      "key": "llm.ui.editTitle",
+      "case": "llmUIEditTitle",
+      "en": "Edit model configuration",
+      "ja": "モデル設定を編集"
+    },
+    {
+      "key": "llm.ui.activateHint",
+      "case": "llmUIActivateHint",
+      "en": "Creating a configuration does not activate it. Select Activate in the list.",
+      "ja": "新規作成だけでは有効になりません。一覧で「有効にする」を選びます。"
+    },
+    {
+      "key": "llm.ui.connection",
+      "case": "llmUIConnection",
+      "en": "Connection",
+      "ja": "接続"
+    },
+    {
+      "key": "llm.ui.name",
+      "case": "llmUIName",
+      "en": "Name",
+      "ja": "名前"
+    },
+    {
+      "key": "llm.ui.format",
+      "case": "llmUIFormat",
+      "en": "API format",
+      "ja": "API形式"
+    },
+    {
+      "key": "llm.ui.model",
+      "case": "llmUIModel",
+      "en": "Model",
+      "ja": "モデル"
+    },
+    {
+      "key": "llm.ui.fetchModels",
+      "case": "llmUIFetchModels",
+      "en": "Load models",
+      "ja": "モデル一覧を取得"
+    },
+    {
+      "key": "llm.ui.baseURL",
+      "case": "llmUIBaseURL",
+      "en": "Base URL (optional)",
+      "ja": "Base URL（省略可）"
+    },
+    {
+      "key": "llm.ui.proxy",
+      "case": "llmUIProxy",
+      "en": "Proxy (optional)",
+      "ja": "プロキシ（省略可）"
+    },
+    {
+      "key": "llm.ui.proxyHelp",
+      "case": "llmUIProxyHelp",
+      "en": "The proxy applies to outbound LLM traffic. HTTP, HTTPS, and SOCKS5 are supported; leave blank for a direct connection. Outbound networking in the dedicated VM is still awaiting verification.",
+      "ja": "プロキシはLLMの外向き通信に適用します。HTTP/HTTPS/SOCKS5を指定でき、空欄は直接接続です。現在の専用VMは外向き通信の検証待ちです。"
+    },
+    {
+      "key": "llm.ui.sessionHeader",
+      "case": "llmUISessionHeader",
+      "en": "Session header name (optional)",
+      "ja": "セッションヘッダー名（省略可）"
+    },
+    {
+      "key": "llm.ui.sessionHelp",
+      "case": "llmUISessionHelp",
+      "en": "When set, sends the session ID for the same conversation or task in this header. Leave blank to omit it.",
+      "ja": "指定すると、同じ会話・タスクのセッションIDをこのヘッダーで送信します。空欄では送りません。"
+    },
+    {
+      "key": "llm.ui.aPIKey",
+      "case": "llmUIAPIKey",
+      "en": "API key",
+      "ja": "APIキー"
+    },
+    {
+      "key": "llm.ui.limits",
+      "case": "llmUILimits",
+      "en": "Limits",
+      "ja": "制限"
+    },
+    {
+      "key": "llm.ui.perSecond",
+      "case": "llmUIPerSecond",
+      "en": "Requests per second",
+      "ja": "秒あたりの回数"
+    },
+    {
+      "key": "llm.ui.perMinute",
+      "case": "llmUIPerMinute",
+      "en": "Requests per minute",
+      "ja": "分あたりの回数"
+    },
+    {
+      "key": "llm.ui.context",
+      "case": "llmUIContext",
+      "en": "Context window (K)",
+      "ja": "コンテキスト（K）"
+    },
+    {
+      "key": "llm.ui.limitsHelp",
+      "case": "llmUILimitsHelp",
+      "en": "A request limit of 0 is unlimited and shared by all agents. Context 0 uses the default 200K; the maximum is 1000K.",
+      "ja": "回数0は無制限で全エージェントが共有します。コンテキスト0は既定の200K、上限は1000Kです。"
+    },
+    {
+      "key": "llm.ui.priority",
+      "case": "llmUIPriority",
+      "en": "Priority",
+      "ja": "優先順位"
+    },
+    {
+      "key": "llm.ui.priorityHelp",
+      "case": "llmUIPriorityHelp",
+      "en": "Higher values have priority. The active configuration always comes first; equal priorities take turns.",
+      "ja": "大きい値から優先します。有効な設定は常に先頭、同順位は交代して使います。"
+    },
+    {
+      "key": "llm.ui.excludeRotation",
+      "case": "llmUIExcludeRotation",
+      "en": "Exclude from rotation",
+      "ja": "ローテーションの対象から除外"
+    },
+    {
+      "key": "llm.ui.excludeHelp",
+      "case": "llmUIExcludeHelp",
+      "en": "Excluded configurations can still be selected explicitly by agents or tasks.",
+      "ja": "除外してもエージェントやタスクから個別指定できます。"
+    },
+    {
+      "key": "llm.ui.streaming",
+      "case": "llmUIStreaming",
+      "en": "Streaming output",
+      "ja": "ストリーミング出力"
+    },
+    {
+      "key": "llm.ui.streamingHelp",
+      "case": "llmUIStreamingHelp",
+      "en": "When off, receives the entire response at once. Use this if the gateway has SSE issues.",
+      "ja": "オフでは応答全体をまとめて受信します。ゲートウェイのSSEに問題がある場合に使えます。"
+    },
+    {
+      "key": "llm.ui.maxTokens",
+      "case": "llmUIMaxTokens",
+      "en": "Output limit per response",
+      "ja": "1回の応答の出力上限"
+    },
+    {
+      "key": "llm.ui.maxTokensHelp",
+      "case": "llmUIMaxTokensHelp",
+      "en": "With 0, omits the limit field and uses the provider default. This is separate from total context capacity.",
+      "ja": "0では上限フィールドを送らず、接続先の既定値を使います。コンテキスト全体の容量とは別の設定です。"
+    },
+    {
+      "key": "llm.ui.maxTokensField",
+      "case": "llmUIMaxTokensField",
+      "en": "Output limit field name",
+      "ja": "出力上限のフィールド名"
+    },
+    {
+      "key": "llm.ui.defaultMaxTokens",
+      "case": "llmUIDefaultMaxTokens",
+      "en": "max_tokens (default)",
+      "ja": "max_tokens（既定）"
+    },
+    {
+      "key": "llm.ui.thinking",
+      "case": "llmUIThinking",
+      "en": "Thinking",
+      "ja": "思考"
+    },
+    {
+      "key": "llm.ui.thinkingSwitch",
+      "case": "llmUIThinkingSwitch",
+      "en": "Thinking switch",
+      "ja": "思考スイッチ"
+    },
+    {
+      "key": "llm.ui.omit",
+      "case": "llmUIOmit",
+      "en": "Do not send",
+      "ja": "送信しない"
+    },
+    {
+      "key": "llm.ui.disabled",
+      "case": "llmUIDisabled",
+      "en": "Disabled (disabled)",
+      "ja": "無効（disabled）"
+    },
+    {
+      "key": "llm.ui.enabled",
+      "case": "llmUIEnabled",
+      "en": "Enabled (enabled)",
+      "ja": "有効（enabled）"
+    },
+    {
+      "key": "llm.ui.effort",
+      "case": "llmUIEffort",
+      "en": "Reasoning effort",
+      "ja": "思考強度"
+    },
+    {
+      "key": "llm.ui.thinkingHelp",
+      "case": "llmUIThinkingHelp",
+      "en": "The thinking switch and reasoning effort are independent parameters. Select Do not send for unsupported models.",
+      "ja": "思考スイッチと思考強度は独立したパラメーターです。対応していないモデルでは送信しない設定を選びます。"
+    },
+    {
+      "key": "llm.ui.profileRetry",
+      "case": "llmUIProfileRetry",
+      "en": "Retries for this configuration",
+      "ja": "この設定だけの再試行"
+    },
+    {
+      "key": "llm.ui.connectDetail",
+      "case": "llmUIConnectDetail",
+      "en": "Network failures before connection, or HTTP 408, 429, or 5xx",
+      "ja": "接続確立前のネットワーク障害や408・429・5xx"
+    },
+    {
+      "key": "llm.ui.empty",
+      "case": "llmUIEmpty",
+      "en": "Empty response",
+      "ja": "空応答"
+    },
+    {
+      "key": "llm.ui.emptyDetail",
+      "case": "llmUIEmptyDetail",
+      "en": "An OpenAI-format response completes successfully with an empty body",
+      "ja": "OpenAI形式で正常終了したのに本文が空の場合"
+    },
+    {
+      "key": "llm.ui.stream",
+      "case": "llmUIStream",
+      "en": "Stream",
+      "ja": "ストリーム"
+    },
+    {
+      "key": "llm.ui.streamDetail",
+      "case": "llmUIStreamDetail",
+      "en": "Disconnections or transient failures before receiving any tokens",
+      "ja": "まだ1トークンも受け取っていない時の切断や一時障害"
+    },
+    {
+      "key": "llm.ui.close",
+      "case": "llmUIClose",
+      "en": "Close",
+      "ja": "閉じる"
+    },
+    {
+      "key": "llm.ui.test",
+      "case": "llmUITest",
+      "en": "Test connection",
+      "ja": "接続テスト"
+    },
+    {
+      "key": "llm.ui.save",
+      "case": "llmUISave",
+      "en": "Save",
+      "ja": "保存"
+    },
+    {
+      "key": "llm.ui.searchModels",
+      "case": "llmUISearchModels",
+      "en": "Search models",
+      "ja": "モデルを検索"
+    },
+    {
+      "key": "llm.ui.noMatchingModels",
+      "case": "llmUINoMatchingModels",
+      "en": "No matching models",
+      "ja": "一致するモデルがありません"
+    },
+    {
+      "key": "llm.ui.rotationTitle",
+      "case": "llmUIRotationTitle",
+      "en": "Rotation settings",
+      "ja": "ローテーション設定"
+    },
+    {
+      "key": "llm.ui.rotationHelp",
+      "case": "llmUIRotationHelp",
+      "en": "Uses the active configuration first, then switches by priority when a connection fails.",
+      "ja": "有効な設定を最初に使い、接続障害時は優先順位に従って別の設定へ切り替えます。"
+    },
+    {
+      "key": "llm.ui.fetching",
+      "case": "llmUIFetching",
+      "en": "Loading settings",
+      "ja": "設定を取得しています"
+    },
+    {
+      "key": "llm.ui.enableRotation",
+      "case": "llmUIEnableRotation",
+      "en": "Enable rotation",
+      "ja": "ローテーションを有効にする"
+    },
+    {
+      "key": "llm.ui.allowFallback",
+      "case": "llmUIAllowFallback",
+      "en": "Allow fallback for explicitly selected models",
+      "ja": "個別指定したモデルでも代替を許可"
+    },
+    {
+      "key": "llm.ui.fallbackHelp",
+      "case": "llmUIFallbackHelp",
+      "en": "Use rotation when an explicitly selected model is unavailable.",
+      "ja": "個別指定のモデルが利用できない場合にもローテーションを使います。"
+    },
+    {
+      "key": "llm.ui.attemptOrder",
+      "case": "llmUIAttemptOrder",
+      "en": "Actual attempt order",
+      "ja": "実際の試行順"
+    },
+    {
+      "key": "llm.ui.resetAll",
+      "case": "llmUIResetAll",
+      "en": "Recover all",
+      "ja": "すべて復旧"
+    },
+    {
+      "key": "llm.ui.notEligible",
+      "case": "llmUINotEligible",
+      "en": "Excluded",
+      "ja": "対象外"
+    },
+    {
+      "key": "llm.ui.resetOne",
+      "case": "llmUIResetOne",
+      "en": "Recover this configuration",
+      "ja": "この設定を復旧"
+    },
+    {
+      "key": "llm.ui.globalRetry",
+      "case": "llmUIGlobalRetry",
+      "en": "Global retry policy",
+      "ja": "全体の再試行ポリシー"
+    },
+    {
+      "key": "llm.ui.retryHelp",
+      "case": "llmUIRetryHelp",
+      "en": "Applies connection → empty response → stream → rotation circuit breaker → intent retry in order. The first three layers can be overridden per model configuration.",
+      "ja": "接続 → 空応答 → ストリーム → ローテーションの遮断 → 意図の再実行の順に適用します。最初の3層はモデル設定ごとに上書きできます。"
+    },
+    {
+      "key": "llm.ui.globalConnectDetail",
+      "case": "llmUIGlobalConnectDetail",
+      "en": "Connection failures, timeouts, and HTTP 408, 429, or 500/502/503/504. Applies before receiving HTTP 200.",
+      "ja": "接続失敗・タイムアウト・408・429・500/502/503/504。HTTP 200を受け取る前に適用します。"
+    },
+    {
+      "key": "llm.ui.globalEmptyDetail",
+      "case": "llmUIGlobalEmptyDetail",
+      "en": "OpenAI format only. Retries successfully completed responses with an empty body.",
+      "ja": "OpenAI形式のみ。正常終了しても本文が空の応答を再試行します。"
+    },
+    {
+      "key": "llm.ui.globalStreamDetail",
+      "case": "llmUIGlobalStreamDetail",
+      "en": "Disconnections or transient failures before any output is delivered. Does not duplicate content after output starts.",
+      "ja": "出力をまだ届けていない時の切断や一時障害。出力開始後の内容を二重に流しません。"
+    },
+    {
+      "key": "llm.ui.breaker",
+      "case": "llmUIBreaker",
+      "en": "Rotation circuit breaker",
+      "ja": "ローテーションの遮断"
+    },
+    {
+      "key": "llm.ui.breakerHelp",
+      "case": "llmUIBreakerHelp",
+      "en": "Consecutive transient failures temporarily exclude a provider. Permanent errors, such as invalid settings or insufficient balance, trip the breaker immediately.",
+      "ja": "連続する一時障害で接続先を一時的に除外します。無効設定や残高不足等の恒久エラーは即座に遮断されます。"
+    },
+    {
+      "key": "llm.ui.intent",
+      "case": "llmUIIntent",
+      "en": "Intent retry",
+      "ja": "意図の再実行"
+    },
+    {
+      "key": "llm.ui.intentHelp",
+      "case": "llmUIIntentHelp",
+      "en": "Retries the entire intent when a worker exits with model_error.",
+      "ja": "workerがmodel_errorで終了した場合に、意図全体を再試行します。"
+    },
+    {
+      "key": "llm.ui.unsaved",
+      "case": "llmUIUnsaved",
+      "en": "You have unsaved changes",
+      "ja": "未保存の変更があります"
+    },
+    {
+      "key": "llm.ui.refetch",
+      "case": "llmUIRefetch",
+      "en": "Reload",
+      "ja": "再取得"
+    },
+    {
+      "key": "llm.ui.discardConfirm",
+      "case": "llmUIDiscardConfirm",
+      "en": "Discard unsaved changes and reload?",
+      "ja": "未保存の変更を破棄して再取得しますか？"
+    },
+    {
+      "key": "llm.ui.invalidNumber",
+      "case": "llmUIInvalidNumber",
+      "en": "Check the number and allowed range.",
+      "ja": "数値と許容範囲を確認してください。"
+    },
+    {
+      "key": "llm.ui.attempts",
+      "case": "llmUIAttempts",
+      "en": "Attempts (-1 to 20)",
+      "ja": "回数（-1〜20）"
+    },
+    {
+      "key": "llm.ui.interval",
+      "case": "llmUIInterval",
+      "en": "Interval (ms)",
+      "ja": "間隔（ms）"
+    },
+    {
+      "key": "llm.ui.retryDefaults",
+      "case": "llmUIRetryDefaults",
+      "en": "0: use defaults · Attempts -1: disable this layer · Interval 0: default waiting strategy",
+      "ja": "0：既定値を使用 · 回数 -1：この層を無効 · 間隔 0：既定の待機方法"
+    },
+    {
+      "key": "llm.ui.cooldown",
+      "case": "llmUICooldown",
+      "en": "Cooldown: {seconds}s",
+      "ja": "待機中：{seconds}秒"
+    },
+    {
+      "key": "llm.ui.failures",
+      "case": "llmUIFailures",
+      "en": "Consecutive failures: {count}",
+      "ja": "連続失敗：{count}"
+    },
+    {
+      "key": "llm.ui.rates",
+      "case": "llmUIRates",
+      "en": "{second}/s · {minute}/min",
+      "ja": "{second}/秒 · {minute}/分"
+    },
+    {
+      "key": "llm.ui.effortValue",
+      "case": "llmUIEffortValue",
+      "en": "Reasoning effort: {value}",
+      "ja": "思考強度：{value}"
+    },
+    {
+      "key": "llm.ui.priorityValue",
+      "case": "llmUIPriorityValue",
+      "en": "Priority: {value}",
+      "ja": "優先順位：{value}"
+    },
+    {
+      "key": "llm.ui.modelCandidates",
+      "case": "llmUIModelCandidates",
+      "en": "Model candidates ({count})",
+      "ja": "モデル候補（{count}）"
+    },
+    {
+      "key": "llm.ui.savedKeyHint",
+      "case": "llmUISavedKeyHint",
+      "en": "Saved: {hint} · Leave blank to keep the existing key.",
+      "ja": "保存済み：{hint} · 空欄のまま保存すると既存のキーを保持します。"
+    },
+    {
+      "key": "llm.ui.testSuccess",
+      "case": "llmUITestSuccess",
+      "en": "Connected · {model} · {latency}ms",
+      "ja": "接続成功 · {model} · {latency}ms"
+    },
+    {
+      "key": "llm.ui.rotationCooldown",
+      "case": "llmUIRotationCooldown",
+      "en": "Cooldown {seconds}s",
+      "ja": "待機 {seconds}秒"
+    },
+    {
+      "key": "llm.ui.rotationFailures",
+      "case": "llmUIRotationFailures",
+      "en": "Consecutive failures {count}",
+      "ja": "連続失敗 {count}"
+    },
+    {
+      "key": "llm.ui.modelPriority",
+      "case": "llmUIModelPriority",
+      "en": "{model} · Priority {priority}",
+      "ja": "{model} · 優先順位 {priority}"
+    }
+  ]
+}
