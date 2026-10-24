@@ -158,3 +158,10 @@ A5 partial UI checkpoint: native multiple-file sheet/cancel, two cards and text 
 
 
 A5 compiler follow-up: CI40068762394 exposed nonisolated generic result inference in the scoped-file helper. Explicit MainActor operation65ab676 + actor-owned identity test pass all206 Swift cases locally (181core/25Mac). Existing45 Python and UI artifacts retain their stated scope; final UI coverage is the earlier205-test/ba85afb profile, not whole-product acceptance. Current bundle rebuilt with the compatibility annotation; actual GitHub recheck required.
+
+
+### A6 persisted user bodies
+
+See evidence/chat/user-body-verification.json, both normalized contracts, six screenshots and external AX snapshots. Final code d287b3a;221 Swift cases/220 passed/one explicitly skipped AX test,49 Python passed. The in-process SwiftUI tree was empty; it is not a UI pass. External CUA instead observed the actual signed app and fixed browser3cases, two readonly cards per case, no removal controls, empty composer/send disabled. NFD filename size is54 bytes (not53), empty file0. Full-body literal text, emoji/newline and repeated references agree. Agent error content differs by environment and is outside this user-row checkpoint; dummy api.example.invalid fails without live cloud access.
+
+Native diagnostic reports own VM shutdown/keychain and fixture cleanup; reference cleanup reports true; both sessions exited0 and no artex-message-ui containers/networks remain. The generic native visual_acceptance flag stays pending: external evidence closes only these3user-row cases, not the entire app. Core parser/store100% lines, store94.3% regions; native view77.1% lines. Retain external retry, viewport/scroll/aggregate memory, VoiceOver, A5 restoration/progress and kernel reliability as pending.

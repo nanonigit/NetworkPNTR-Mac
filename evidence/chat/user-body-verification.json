@@ -1,0 +1,42 @@
+{
+  "baseline": "e75ae371ad777ffd1eecdd28d2781a6519b05591",
+  "source_commit": "d287b3a",
+  "tests": {
+    "swift_total": 221,
+    "swift_passed": 220,
+    "swift_skipped": 1,
+    "python_passed": 49,
+    "oracle_cases": 12
+  },
+  "normalized_contract_equal": true,
+  "external_native_browser_cases": [
+    "full",
+    "only",
+    "repeated"
+  ],
+  "attachment_bytes": [
+    54,
+    0
+  ],
+  "nfd_name_preserved": true,
+  "literal_markdown_characters_preserved": true,
+  "duplicate_reference_cards": 2,
+  "sent_cards_have_no_remove_action": true,
+  "composer_empty_send_disabled": true,
+  "native_and_reference_process_exit": 0,
+  "reference_owned_fixture_removed": true,
+  "native_owned_fixture_removed": true,
+  "native_vm_stopped": true,
+  "live_cloud_call": false,
+  "native_network": "zero NIC",
+  "scope": "Persisted user body and readonly cards; not whole Chat or all21 feature acceptance",
+  "pending": [
+    "long history viewport/scroll and aggregate memory",
+    "external detail-error retry",
+    "VoiceOver",
+    "matched no-LLM failed send restoration",
+    "progress visual synchronization",
+    "source kernel reliability",
+    "full21 feature migration"
+  ]
+}

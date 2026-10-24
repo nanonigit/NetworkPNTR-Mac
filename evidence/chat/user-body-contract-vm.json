@@ -1,0 +1,56 @@
+{
+  "cases" : [
+    {
+      "attachments" : [
+        {
+          "name" : "é-a6.txt",
+          "path" : "uploads\/é-a6.txt",
+          "size" : 54
+        },
+        {
+          "name" : "empty-a6.txt",
+          "path" : "uploads\/empty-a6.txt",
+          "size" : 0
+        }
+      ],
+      "list_omits_detail" : true,
+      "text" : "A6 **literal**\nFull-body sentinel 🧪",
+      "title" : "A6 full attachment body"
+    },
+    {
+      "attachments" : [
+        {
+          "name" : "é-a6.txt",
+          "path" : "uploads\/é-a6.txt",
+          "size" : 54
+        },
+        {
+          "name" : "empty-a6.txt",
+          "path" : "uploads\/empty-a6.txt",
+          "size" : 0
+        }
+      ],
+      "list_omits_detail" : true,
+      "text" : "",
+      "title" : "A6 attachment only"
+    },
+    {
+      "attachments" : [
+        {
+          "name" : "é-a6.txt",
+          "path" : "uploads\/é-a6.txt",
+          "size" : 54
+        },
+        {
+          "name" : "é-a6.txt",
+          "path" : "uploads\/é-a6.txt",
+          "size" : 54
+        }
+      ],
+      "list_omits_detail" : true,
+      "text" : "Repeated reference",
+      "title" : "A6 repeated reference"
+    }
+  ],
+  "fixture_only" : true
+}
