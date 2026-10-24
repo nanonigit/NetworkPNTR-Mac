@@ -2,6 +2,10 @@ import ArtexCore
 import SwiftUI
 
 struct DashboardActivityPanel: View {
+    @Environment(\.locale) private var locale
+    private var language: AppLanguage { AppLanguage.preferred(in: [locale.identifier]) }
+    private func s(_ key: AppStringKey) -> String { AppStrings.text(key, language: language) }
+    private func f(_ key: AppStringKey, _ values: [String: String]) -> String { AppStrings.formatted(key, language: language, values: values) }
     let data: DashboardFastData?
     let metrics: DashboardMetrics
     let navigate: (DashboardDestination) -> Void
@@ -9,24 +13,24 @@ struct DashboardActivityPanel: View {
         GroupBox {
             VStack(alignment: .leading, spacing: 12) {
                 HStack {
-                    Label("最近の活動", systemImage: "waveform.path").font(.headline)
-                    Spacer(); Button("タスクを見る") { navigate(.feature("tasks")) }
+                    Label(s(.dashboardUIRecentActivity), systemImage: "waveform.path").font(.headline)
+                    Spacer(); Button(s(.dashboardUIViewTasks)) { navigate(.feature("tasks")) }
                 }
                 if let data {
-                    Text("\(data.activity.filter { $0.kind != "usage" }.count) イベント（最新30件の取得結果）").font(.caption).foregroundStyle(.secondary)
+                    Text(f(.dashboardUIEventCount, ["count": String(data.activity.filter { $0.kind != "usage" }.count)])).font(.caption).foregroundStyle(.secondary)
                     HStack {
                         ForEach(["tool_use", "tool_result", "text", "thinking", "result"], id: \.self) { kind in
                             if let count = metrics.activityCounts[kind], count > 0 {
-                                Text("\(kind) \(count)").font(.caption2).foregroundStyle(.secondary)
+                                Text("\(DashboardLabels.text(kind, domain: .activity, language: language)) \(count)").font(.caption2).foregroundStyle(.secondary)
                             }
                         }
                     }
-                    if metrics.recentActivity.isEmpty { Text("活動はありません。").foregroundStyle(.secondary) }
+                    if metrics.recentActivity.isEmpty { Text(s(.dashboardUINoActivity)).foregroundStyle(.secondary) }
                     ForEach(metrics.recentActivity) { row in
                         HStack(alignment: .top) {
                             Circle().fill(row.worker == "planner" ? Color.purple : row.worker == "mainagent" ? .cyan : .blue).frame(width: 7, height: 7).padding(.top, 5)
                             VStack(alignment: .leading, spacing: 4) {
-                                HStack { Text(row.worker).fontWeight(.semibold); Text(row.kindLabel).foregroundStyle(.secondary) }.font(.caption)
+                                HStack { Text(row.worker).fontWeight(.semibold); Text(DashboardLabels.activity(kind: row.kind, tool: row.tool, language: language)).foregroundStyle(.secondary) }.font(.caption)
                                 Text(row.summary).font(.callout).lineLimit(3).help(row.summary)
                                 DashboardTimestamp(value: row.ts)
                             }.textSelection(.enabled)
@@ -39,6 +43,9 @@ struct DashboardActivityPanel: View {
     }
 }
 struct DashboardFindingsPanel: View {
+    @Environment(\.locale) private var locale
+    private var language: AppLanguage { AppLanguage.preferred(in: [locale.identifier]) }
+    private func s(_ key: AppStringKey) -> String { AppStrings.text(key, language: language) }
     let data: DashboardFastData?
     let metrics: DashboardMetrics
     let navigate: (DashboardDestination) -> Void
@@ -46,15 +53,15 @@ struct DashboardFindingsPanel: View {
         GroupBox {
             VStack(alignment: .leading, spacing: 12) {
                 HStack {
-                    Label("最近の検出結果", systemImage: "shield").font(.headline)
-                    Spacer(); Button("すべて表示") { navigate(.feature("findings")) }
+                    Label(s(.dashboardUIRecentFindings), systemImage: "shield").font(.headline)
+                    Spacer(); Button(s(.dashboardUIViewAll)) { navigate(.feature("findings")) }
                 }
                 if data != nil {
-                    if metrics.recentFindings.isEmpty { Text("検出結果はありません。").foregroundStyle(.secondary) }
+                    if metrics.recentFindings.isEmpty { Text(s(.dashboardUINoFindings)).foregroundStyle(.secondary) }
                     ForEach(metrics.recentFindings) { finding in
                         VStack(alignment: .leading, spacing: 5) {
                             HStack {
-                                Text(finding.severity.uppercased()).font(.caption.bold()).foregroundStyle(finding.severity == "critical" || finding.severity == "high" ? .red : .orange)
+                                Text(DashboardLabels.text(finding.severity, domain: .severity, language: language)).font(.caption.bold()).foregroundStyle(finding.severity == "critical" || finding.severity == "high" ? .red : .orange)
                                 Text(finding.vulnclass).font(.callout.bold())
                                 Spacer()
                             }
@@ -70,6 +77,10 @@ struct DashboardFindingsPanel: View {
     }
 }
 struct DashboardTasksPanel: View {
+    @Environment(\.locale) private var locale
+    private var language: AppLanguage { AppLanguage.preferred(in: [locale.identifier]) }
+    private func s(_ key: AppStringKey) -> String { AppStrings.text(key, language: language) }
+    private func f(_ key: AppStringKey, _ values: [String: String]) -> String { AppStrings.formatted(key, language: language, values: values) }
     let tasks: [DashboardTask]?
     let metrics: DashboardMetrics
     let navigate: (DashboardDestination) -> Void
@@ -77,15 +88,15 @@ struct DashboardTasksPanel: View {
         GroupBox {
             VStack(alignment: .leading, spacing: 14) {
                 HStack {
-                    Label("最近のタスク", systemImage: "checklist").font(.headline)
-                    Spacer(); Button("すべて表示") { navigate(.feature("tasks")) }
+                    Label(s(.dashboardUIRecentTasks), systemImage: "checklist").font(.headline)
+                    Spacer(); Button(s(.dashboardUIViewAll)) { navigate(.feature("tasks")) }
                 }
                 if let tasks {
-                    if tasks.isEmpty { Text("タスクはありません。").foregroundStyle(.secondary) }
+                    if tasks.isEmpty { Text(s(.dashboardUINoTasks)).foregroundStyle(.secondary) }
                     else {
                         ScrollView(.horizontal) {
                             Grid(alignment: .leading, horizontalSpacing: 20, verticalSpacing: 12) {
-                                GridRow { Text("タスク"); Text("状態"); Text("実行モード"); Text("目標"); Text("処理中"); Text("最終活動") }.font(.caption.bold()).foregroundStyle(.secondary)
+                                GridRow { Text(s(.dashboardUITasks)); Text(s(.dashboardUIStatus)); Text(s(.dashboardUIEngine)); Text(s(.dashboardUIGoals)); Text(s(.dashboardUIInFlight)); Text(s(.dashboardUILastActivity)) }.font(.caption.bold()).foregroundStyle(.secondary)
                                 ForEach(metrics.recentTasks) { task in
                                     GridRow(alignment: .top) {
                                         Button { navigate(.task(task.id)) } label: {
@@ -93,9 +104,9 @@ struct DashboardTasksPanel: View {
                                                 Text(task.description).lineLimit(1).help(task.description)
                                                 Text(task.id).font(.caption2.monospaced()).foregroundStyle(.secondary).lineLimit(1)
                                             }.frame(width: 240, alignment: .leading)
-                                        }.buttonStyle(.link).accessibilityLabel("タスク詳細：" + task.description)
-                                        Text(task.status).foregroundStyle(task.status == "running" ? .green : .secondary)
-                                        Text(task.engineMode ?? "idle").foregroundStyle(.secondary)
+                                        }.buttonStyle(.link).accessibilityLabel(f(.dashboardUITaskDetail, ["description": task.description]))
+                                        Text(DashboardLabels.text(task.status, domain: .task, language: language)).foregroundStyle(task.status == "running" ? .green : .secondary)
+                                        Text(DashboardLabels.text(task.engineMode ?? "idle", domain: .engine, language: language)).foregroundStyle(.secondary)
                                         if let total = task.goalsTotal, total > 0 {
                                             VStack(alignment: .leading, spacing: 4) {
                                                 ProgressView(value: min(1, max(0, Double(task.goalsMet ?? 0) / Double(total)))).frame(width: 65)
@@ -116,7 +127,10 @@ struct DashboardTasksPanel: View {
     }
 }
 struct DashboardWaiting: View {
-    var body: some View { Text("データ取得待ち").foregroundStyle(.secondary).frame(maxWidth: .infinity, minHeight: 70) }
+    @Environment(\.locale) private var locale
+    private var language: AppLanguage { AppLanguage.preferred(in: [locale.identifier]) }
+    private func s(_ key: AppStringKey) -> String { AppStrings.text(key, language: language) }
+    var body: some View { Text(s(.dashboardUIDataWaiting)).foregroundStyle(.secondary).frame(maxWidth: .infinity, minHeight: 70) }
 }
 struct DashboardTimestamp: View {
     let value: String

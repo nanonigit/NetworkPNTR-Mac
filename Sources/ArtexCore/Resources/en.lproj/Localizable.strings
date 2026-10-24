@@ -198,6 +198,212 @@
 	<string>Uploading…</string>
 	<key>chat.You</key>
 	<string>You</string>
+	<key>dashboard.status.engine.exploring</key>
+	<string>Exploring</string>
+	<key>dashboard.status.engine.idle</key>
+	<string>Idle</string>
+	<key>dashboard.status.engine.paused</key>
+	<string>Paused</string>
+	<key>dashboard.status.engine.stalled</key>
+	<string>Stalled</string>
+	<key>dashboard.status.severity.critical</key>
+	<string>Critical</string>
+	<key>dashboard.status.severity.high</key>
+	<string>High</string>
+	<key>dashboard.status.severity.low</key>
+	<string>Low</string>
+	<key>dashboard.status.severity.medium</key>
+	<string>Medium</string>
+	<key>dashboard.status.task.created</key>
+	<string>Created</string>
+	<key>dashboard.status.task.done</key>
+	<string>Done</string>
+	<key>dashboard.status.task.failed</key>
+	<string>Failed</string>
+	<key>dashboard.status.task.paused</key>
+	<string>Paused</string>
+	<key>dashboard.status.task.queued</key>
+	<string>Queued</string>
+	<key>dashboard.status.task.running</key>
+	<string>Running</string>
+	<key>dashboard.status.task.timeout</key>
+	<string>Timed out</string>
+	<key>dashboard.ui.activeModel</key>
+	<string>Active model</string>
+	<key>dashboard.ui.activityResult</key>
+	<string>Result</string>
+	<key>dashboard.ui.activitySystem</key>
+	<string>Activity and system</string>
+	<key>dashboard.ui.activityText</key>
+	<string>Text</string>
+	<key>dashboard.ui.activityThinking</key>
+	<string>Thinking</string>
+	<key>dashboard.ui.activityToolResult</key>
+	<string>Tool result</string>
+	<key>dashboard.ui.activityToolUse</key>
+	<string>Tool call</string>
+	<key>dashboard.ui.all</key>
+	<string>All</string>
+	<key>dashboard.ui.assetDistribution</key>
+	<string>Asset distribution</string>
+	<key>dashboard.ui.assetTotal</key>
+	<string>Total {count} nodes</string>
+	<key>dashboard.ui.assets</key>
+	<string>Assets</string>
+	<key>dashboard.ui.cache</key>
+	<string>Cache</string>
+	<key>dashboard.ui.cacheHit</key>
+	<string>Cache hit</string>
+	<key>dashboard.ui.cacheRead</key>
+	<string>Cache reads</string>
+	<key>dashboard.ui.captureOff</key>
+	<string>Capture OFF · Up to the latest 50 records</string>
+	<key>dashboard.ui.captureOn</key>
+	<string>Capture ON · Up to the latest 50 records</string>
+	<key>dashboard.ui.chartAccessibility</key>
+	<string>Daily token usage. Select a date or use the daily data table for exact values.</string>
+	<key>dashboard.ui.chartHelp</key>
+	<string>Shows the same three series as the browser version. Input includes cache reads, so the stacked height differs from total tokens.</string>
+	<key>dashboard.ui.configured</key>
+	<string>Configured</string>
+	<key>dashboard.ui.dailyTable</key>
+	<string>View daily data as a table</string>
+	<key>dashboard.ui.dataWaiting</key>
+	<string>Waiting for data</string>
+	<key>dashboard.ui.date</key>
+	<string>Date</string>
+	<key>dashboard.ui.daySummary</key>
+	<string>{date} · Input {input} · Output {output} · Cache {cache}</string>
+	<key>dashboard.ui.days</key>
+	<string>{days} days</string>
+	<key>dashboard.ui.description</key>
+	<string>Tasks, usage, findings, and isolated runtime status</string>
+	<key>dashboard.ui.engine</key>
+	<string>Engine mode</string>
+	<key>dashboard.ui.eventCount</key>
+	<string>{count} events (from the latest 30 records)</string>
+	<key>dashboard.ui.failureGroup</key>
+	<string>{group}: {error}</string>
+	<key>dashboard.ui.findings</key>
+	<string>Findings</string>
+	<key>dashboard.ui.goals</key>
+	<string>Goals</string>
+	<key>dashboard.ui.inFlight</key>
+	<string>In flight</string>
+	<key>dashboard.ui.input</key>
+	<string>Input</string>
+	<key>dashboard.ui.inspectDay</key>
+	<string>Inspect daily values</string>
+	<key>dashboard.ui.invalidHelp</key>
+	<string>The loaded data is inconsistent. Reload to try again.</string>
+	<key>dashboard.ui.invalidTitle</key>
+	<string>Unable to verify metrics</string>
+	<key>dashboard.ui.lastActivity</key>
+	<string>Last activity</string>
+	<key>dashboard.ui.ledger</key>
+	<string>Usage ledger</string>
+	<key>dashboard.ui.ledgerDailyHelp</key>
+	<string>Ledger daily data uses the UTC record date. Totals include all records; daily data covers at most 365 days.</string>
+	<key>dashboard.ui.legacy</key>
+	<string>Legacy totals</string>
+	<key>dashboard.ui.legacyDailyHelp</key>
+	<string>Legacy daily totals are estimates based on task and conversation creation dates.</string>
+	<key>dashboard.ui.loadingGroup</key>
+	<string>Loading {group}</string>
+	<key>dashboard.ui.modelsAssetsTraffic</key>
+	<string>Models, assets, and traffic</string>
+	<key>dashboard.ui.morePending</key>
+	<string>Show {count} more</string>
+	<key>dashboard.ui.noActivity</key>
+	<string>No activity.</string>
+	<key>dashboard.ui.noAssets</key>
+	<string>No assets.</string>
+	<key>dashboard.ui.noFindings</key>
+	<string>No findings.</string>
+	<key>dashboard.ui.noPending</key>
+	<string>No operations awaiting approval</string>
+	<key>dashboard.ui.noTasks</key>
+	<string>No tasks.</string>
+	<key>dashboard.ui.noTraffic</key>
+	<string>No traffic data.</string>
+	<key>dashboard.ui.noUsage</key>
+	<string>No usage in this period.</string>
+	<key>dashboard.ui.notConfigured</key>
+	<string>Not configured</string>
+	<key>dashboard.ui.notLoaded</key>
+	<string>No data has been loaded yet.</string>
+	<key>dashboard.ui.output</key>
+	<string>Output</string>
+	<key>dashboard.ui.pendingCount</key>
+	<string>{count} awaiting approval</string>
+	<key>dashboard.ui.period</key>
+	<string>Period</string>
+	<key>dashboard.ui.profiles</key>
+	<string>Model configuration</string>
+	<key>dashboard.ui.recentActivity</key>
+	<string>Recent activity</string>
+	<key>dashboard.ui.recentFindings</key>
+	<string>Recent findings</string>
+	<key>dashboard.ui.recentTasks</key>
+	<string>Recent tasks</string>
+	<key>dashboard.ui.reload</key>
+	<string>Reload</string>
+	<key>dashboard.ui.requestCount</key>
+	<string>Sample of up to the latest 50 records · {count} requests</string>
+	<key>dashboard.ui.runningTasks</key>
+	<string>Running tasks</string>
+	<key>dashboard.ui.selectDate</key>
+	<string>Select a date</string>
+	<key>dashboard.ui.series</key>
+	<string>Series</string>
+	<key>dashboard.ui.severitySummary</key>
+	<string>Critical {critical} · High {high} · Medium {medium} · Low {low}</string>
+	<key>dashboard.ui.source</key>
+	<string>Source</string>
+	<key>dashboard.ui.sourceHelp</key>
+	<string>Legacy totals estimate usage from task and conversation activity. The usage ledger records each call, including interrupted work. It excludes consumption before the ledger was introduced.</string>
+	<key>dashboard.ui.stale</key>
+	<string>Showing previously loaded data ({time})</string>
+	<key>dashboard.ui.status</key>
+	<string>Status</string>
+	<key>dashboard.ui.systemStatus</key>
+	<string>System status</string>
+	<key>dashboard.ui.taskDetail</key>
+	<string>Task details: {description}</string>
+	<key>dashboard.ui.taskSummary</key>
+	<string>Paused {paused} · Done {done}</string>
+	<key>dashboard.ui.tasks</key>
+	<string>Tasks</string>
+	<key>dashboard.ui.title</key>
+	<string>Dashboard</string>
+	<key>dashboard.ui.tokenSummary</key>
+	<string>Input {input} · Output {output}</string>
+	<key>dashboard.ui.tokenUsage</key>
+	<string>Token usage</string>
+	<key>dashboard.ui.tokens</key>
+	<string>Tokens</string>
+	<key>dashboard.ui.trafficCapture</key>
+	<string>Traffic capture</string>
+	<key>dashboard.ui.trafficSample</key>
+	<string>Traffic sample</string>
+	<key>dashboard.ui.trafficStatus</key>
+	<string>Traffic status</string>
+	<key>dashboard.ui.typeCount</key>
+	<string>{count} types</string>
+	<key>dashboard.ui.unassigned</key>
+	<string>Unassigned</string>
+	<key>dashboard.ui.uncachedInput</key>
+	<string>Input (excluding cache)</string>
+	<key>dashboard.ui.usageLoading</key>
+	<string>Loading the data required for usage metrics.</string>
+	<key>dashboard.ui.usageSummary</key>
+	<string>{tasks} tasks · Total {total} tokens</string>
+	<key>dashboard.ui.viewAll</key>
+	<string>View all</string>
+	<key>dashboard.ui.viewTasks</key>
+	<string>View tasks</string>
+	<key>dashboard.ui.waiting</key>
+	<string>Waiting for data</string>
 	<key>error.communication</key>
 	<string>Check communication with the runtime.</string>
 	<key>error.credentials</key>

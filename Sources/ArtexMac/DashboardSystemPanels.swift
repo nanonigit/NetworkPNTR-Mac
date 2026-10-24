@@ -2,14 +2,18 @@ import ArtexCore
 import SwiftUI
 
 struct DashboardAssetsPanel: View {
+    @Environment(\.locale) private var locale
+    private var language: AppLanguage { AppLanguage.preferred(in: [locale.identifier]) }
+    private func s(_ key: AppStringKey) -> String { AppStrings.text(key, language: language) }
+    private func f(_ key: AppStringKey, _ values: [String: String]) -> String { AppStrings.formatted(key, language: language, values: values) }
     let data: DashboardSlowData?
     let metrics: DashboardMetrics
     var body: some View {
         GroupBox {
             VStack(alignment: .leading, spacing: 14) {
-                Label("資産の分布", systemImage: "shippingbox").font(.headline)
+                Label(s(.dashboardUIAssetDistribution), systemImage: "shippingbox").font(.headline)
                 if data != nil {
-                    if metrics.assetTypes.isEmpty { Text("資産はありません。").foregroundStyle(.secondary) }
+                    if metrics.assetTypes.isEmpty { Text(s(.dashboardUINoAssets)).foregroundStyle(.secondary) }
                     ForEach(metrics.assetTypes) { item in
                         HStack {
                             Text(item.name).font(.caption).frame(width: 80, alignment: .leading)
@@ -17,22 +21,26 @@ struct DashboardAssetsPanel: View {
                             Text("\(item.count)").font(.caption).monospacedDigit()
                         }.accessibilityElement(children: .combine)
                     }
-                    Divider(); Text("合計 \(metrics.assetTotal) ノード").font(.caption).foregroundStyle(.secondary)
+                    Divider(); Text(f(.dashboardUIAssetTotal, ["count": String(metrics.assetTotal)])).font(.caption).foregroundStyle(.secondary)
                 } else { DashboardWaiting() }
             }.frame(maxWidth: .infinity, alignment: .topLeading).padding(12)
         }
     }
 }
 struct DashboardTrafficPanel: View {
+    @Environment(\.locale) private var locale
+    private var language: AppLanguage { AppLanguage.preferred(in: [locale.identifier]) }
+    private func s(_ key: AppStringKey) -> String { AppStrings.text(key, language: language) }
+    private func f(_ key: AppStringKey, _ values: [String: String]) -> String { AppStrings.formatted(key, language: language, values: values) }
     let data: DashboardSlowData?
     let metrics: DashboardMetrics
     var body: some View {
         GroupBox {
             VStack(alignment: .leading, spacing: 14) {
-                Label("通信ステータス", systemImage: "network").font(.headline)
+                Label(s(.dashboardUITrafficStatus), systemImage: "network").font(.headline)
                 if let data {
-                    Text("最新50件までのサンプル · \(data.traffic.count) リクエスト").font(.caption).foregroundStyle(.secondary)
-                    if metrics.trafficBuckets.isEmpty { Text("通信データはありません。").foregroundStyle(.secondary) }
+                    Text(f(.dashboardUIRequestCount, ["count": String(data.traffic.count)])).font(.caption).foregroundStyle(.secondary)
+                    if metrics.trafficBuckets.isEmpty { Text(s(.dashboardUINoTraffic)).foregroundStyle(.secondary) }
                     ForEach(metrics.trafficBuckets) { bucket in
                         HStack {
                             Text("\(bucket.status)").font(.caption.monospaced()).frame(width: 55, alignment: .leading)
@@ -55,27 +63,31 @@ struct DashboardTrafficPanel: View {
     }
 }
 struct DashboardSystemPanel: View {
+    @Environment(\.locale) private var locale
+    private var language: AppLanguage { AppLanguage.preferred(in: [locale.identifier]) }
+    private func s(_ key: AppStringKey) -> String { AppStrings.text(key, language: language) }
+    private func f(_ key: AppStringKey, _ values: [String: String]) -> String { AppStrings.formatted(key, language: language, values: values) }
     let fast: DashboardFastData?
     let slow: DashboardSlowData?
     let navigate: (DashboardDestination) -> Void
     var body: some View {
         GroupBox {
             VStack(alignment: .leading, spacing: 14) {
-                Label("システムの状態", systemImage: "shield.lefthalf.filled").font(.headline)
+                Label(s(.dashboardUISystemStatus), systemImage: "shield.lefthalf.filled").font(.headline)
                 if let fast {
-                    LabeledContent("LLM", value: fast.stats.llmConfigured ? "設定済み" : "未設定")
-                    LabeledContent("通信キャプチャ", value: fast.settings.trafficCapture ? "ON" : "OFF")
+                    LabeledContent("LLM", value: fast.stats.llmConfigured ? s(.dashboardUIConfigured) : s(.dashboardUINotConfigured))
+                    LabeledContent(s(.dashboardUITrafficCapture), value: fast.settings.trafficCapture ? "ON" : "OFF")
                 } else { DashboardWaiting() }
                 if let slow {
                     if let active = slow.profiles.first(where: \.isDefault) {
-                        LabeledContent("有効なモデル") { Text(active.model).font(.caption.monospaced()).textSelection(.enabled) }
+                        LabeledContent(s(.dashboardUIActiveModel)) { Text(active.model).font(.caption.monospaced()).textSelection(.enabled) }
                     }
                 }
                 if let fast {
                     Divider()
-                    if fast.pending.isEmpty { Label("承認待ちの操作はありません", systemImage: "checkmark.shield").font(.caption).foregroundStyle(.secondary) }
+                    if fast.pending.isEmpty { Label(s(.dashboardUINoPending), systemImage: "checkmark.shield").font(.caption).foregroundStyle(.secondary) }
                     else {
-                        Text("承認待ち \(fast.pending.count) 件").font(.callout.bold()).foregroundStyle(.orange)
+                        Text(f(.dashboardUIPendingCount, ["count": String(fast.pending.count)])).font(.callout.bold()).foregroundStyle(.orange)
                         ForEach(Array(fast.pending.prefix(3))) { pending in
                             Button { navigate(.feature("approvals")) } label: {
                                 HStack {
@@ -84,7 +96,7 @@ struct DashboardSystemPanel: View {
                                 }
                             }.buttonStyle(.bordered)
                         }
-                        if fast.pending.count > 3 { Button("ほか \(fast.pending.count - 3) 件を表示") { navigate(.feature("approvals")) } }
+                        if fast.pending.count > 3 { Button(f(.dashboardUIMorePending, ["count": String(fast.pending.count - 3)])) { navigate(.feature("approvals")) } }
                     }
                 }
             }.font(.callout).frame(maxWidth: .infinity, alignment: .topLeading).padding(12)
