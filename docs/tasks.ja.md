@@ -98,3 +98,6 @@ CI互換ゲート: 実CI失敗をREDとして保持、exporterのschema・決定
 
 
 L2互換チェックポイント: 初回CI40110609236は旧SwiftPMのカタログ未コンパイルコピーで失敗。厳格exporter・派生en/jaリソース・一致検査で修正。cold legacyカタログ5件、通常Swift234件（成功233・AX1スキップ）、Python52成功、exporter行94.6%。最終署名同梱とリモートCIを確認し、言語全体・backend・全21ゲートは未完了を維持。
+
+
+L3ゲート: 初期文言／編集保持とchatカタログRED/GREEN→AppKitボタン・パネル・エディタ・進捗の日英RED/GREEN→操作／空状態接続・レビュー・全試験・coverage・署名→本文・添付・カーソル保持と固定ブラウザ比較。エラー・会話初期名・backend・読み上げの残ゲートまでChat/R8全体は合格にしない。

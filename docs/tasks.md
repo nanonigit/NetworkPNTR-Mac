@@ -106,3 +106,6 @@ CI portable-resource gates: retain failed hosted test as actual RED; exporter sc
 
 
 L2 portability checkpoint: initial hosted40110609236 failed because legacy SwiftPM copied catalog without compilation. Strict exporter+generated portable en/ja resources and drift checks repaired it;5cold legacy catalog cases,234default Swift cases(233pass/oneAXskip),52Python pass; exporter94.6% line coverage. Final signed bundle verification and remoteCI required; whole language/backend/all21 gates remain open.
+
+
+L3 gates: builtin default/custom preservation and chat catalog tests RED/GREEN; localized AppKit button/panel/editor/progress tests RED/GREEN; controls/empty states integration, reviewer/full tests/coverage/signed build; actual en/ja Chat with literal draft/file/caret preservation and pinned browser comparison. No whole Chat/R8 acceptance until remaining errors/default-title/backend/accessibility gates pass.

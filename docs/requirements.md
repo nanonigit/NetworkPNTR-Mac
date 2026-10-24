@@ -45,3 +45,6 @@ L1 language foundation: represent only en/ja in the public type; choose the firs
 
 
 L2 shell gate: expose exactly English/日本語 in an always-accessible native picker; translate shared navigation, feature titles and root unavailable/detail messages with en/ja resources. Switching must keep the same runtime/auth/chat identity, draft, attachments and selected conversation. Package compiled catalogs in the signed app. Both language resource lookups must work independently of host language; missing Japanese entries fall back to English. This shell gate does not close untranslated feature interiors/backend output.
+
+
+L3 Chat controls: localize native Chat list/header/composer, attachment card actions/progress/native file panel, transcript empty/loading/detail actions and mention controls in en/ja. Keep text/caret/IME, selected IDs, async generations and files unchanged on locale changes. Translate only byte-exact pinned builtin Auto/pentest names/descriptions under their known agent keys; preserve customized/unknown content. Existing conversation titles retain source data until provenance-aware new-title handling. Core error strings and backend output sync remain separate explicit gates.
