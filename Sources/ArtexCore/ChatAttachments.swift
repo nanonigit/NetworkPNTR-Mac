@@ -5,11 +5,15 @@ public struct ChatAttachment: Codable, Equatable, Sendable, Identifiable {
     public let name: String
     public let path: String
     public let size: Int64
-    public var id: String { path }
+    /// Linux guest paths are byte identities, not canonically equivalent Swift strings.
+    public var id: Data { Data(path.utf8) }
+    public static func == (lhs: Self, rhs: Self) -> Bool {
+        lhs.size == rhs.size && lhs.name.utf8.elementsEqual(rhs.name.utf8) && lhs.path.utf8.elementsEqual(rhs.path.utf8)
+    }
     private enum CodingKeys: String, CodingKey { case name, path, size }
     public init(name: String, path: String, size: Int64) throws {
         _ = try ChatAttachmentDownload(conversationID: 1, name: name, expectedSize: size)
-        guard path == "uploads/" + name else { throw BackendAPIError.invalidResponse }
+        guard path.utf8.elementsEqual(("uploads/" + name).utf8) else { throw BackendAPIError.invalidResponse }
         self.name = name; self.path = path; self.size = size
     }
     public init(from decoder: any Decoder) throws {
@@ -26,6 +30,6 @@ public struct ChatUploadResponse: Decodable, Sendable {
     public init(from decoder: any Decoder) throws {
         let values = try decoder.container(keyedBy: CodingKeys.self)
         attachments = try values.decode([ChatAttachment].self, forKey: .attachments)
-        guard !attachments.isEmpty, Set(attachments.map(\.path)).count == attachments.count else { throw BackendAPIError.invalidResponse }
+        guard !attachments.isEmpty, Set(attachments.map(\.id)).count == attachments.count else { throw BackendAPIError.invalidResponse }
     }
 }

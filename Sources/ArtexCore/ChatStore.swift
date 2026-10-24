@@ -51,20 +51,20 @@ import Observation
     public var attachments: [ChatAttachment] { attachments(for: selectedID) }
     public func attachments(for id: Int64?) -> [ChatAttachment] { id.flatMap { attachmentDrafts[$0] } ?? [] }
     public func appendAttachments(_ values: [ChatAttachment], for id: Int64) throws {
-        let current = attachments(for: id), paths = Set(values.map(\.path))
-        guard id > 0, paths.count == values.count, paths.isDisjoint(with: current.map(\.path)) else { throw BackendAPIError.invalidResponse }
+        let current = attachments(for: id), paths = Set(values.map(\.id))
+        guard id > 0, paths.count == values.count, paths.isDisjoint(with: current.map(\.id)) else { throw BackendAPIError.invalidResponse }
         attachmentDrafts[id] = current + values
     }
     /// Removing a draft card never deletes the already uploaded guest file.
     public func removeAttachment(path: String, for id: Int64) {
         guard id > 0 else { return }
-        attachmentDrafts[id] = attachments(for: id).filter { $0.path != path }
+        attachmentDrafts[id] = attachments(for: id).filter { !$0.path.utf8.elementsEqual(path.utf8) }
     }
     private func restorePendingSend(_ id: Int64) {
         guard let pending = pendingSends.removeValue(forKey: id) else { return }
         if let text = pending.text, draftRevisions[id] == pending.clearedTextRevision { setDraft(text, for: id) }
-        let current = attachments(for: id), paths = Set(current.map(\.path))
-        attachmentDrafts[id] = pending.attachments.filter { !paths.contains($0.path) } + current
+        let current = attachments(for: id), paths = Set(current.map(\.id))
+        attachmentDrafts[id] = pending.attachments.filter { !paths.contains($0.id) } + current
     }
     public var isSending: Bool { selectedID.map(sendingIDs.contains) ?? false }
     public var isStopping: Bool { selectedID.map(stoppingIDs.contains) ?? false }
