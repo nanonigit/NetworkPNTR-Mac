@@ -68,3 +68,10 @@ AuthenticatedBackendClientにChatAttachmentUploadingを実装し、認証セッ�
 
 
 BOMを含みNEL・ゼロ幅空白を含まないECMAScript trimを共有する。Storeは元入力で編集競合を判定し、trim済み本文を送信・復元する。Workspaceは会話作成前に同じ空判定を使う。引用検索の既存同等処理を共有化する。チェックサム固定の送信oracleへUnicode・前後空白・添付の例を追加する。この段階ではUI変更なし。
+
+
+A5設計: https://www.lazyweb.com/agentic-search/38aa7a86-3a2a-4af4-836a-fabad477eca1 を参照。Claude入力欄は目視済み、Monodeaf画像は空白で視覚的根拠にしない。入力欄近くの簡潔な配置・意味色・ネイティブ操作を採用し、固定Composerのweb/src/app/(main)/chat/page.tsx151-285行にあるクリップ・折返しカード・名前/サイズ/削除・添付のみ判定を優先する。アクセシビリティ根拠は https://raw.githubusercontent.com/addyosmani/web-quality-skills/main/skills/accessibility/SKILL.md 。キーボード・フォーカス・ラベル・文字とアイコンのエラー・24pt以上の削除対象・進捗説明へ適用し、実VoiceOverは別途必要。
+
+NSViewRepresentableはボタンとシートNSOpenPanelだけに限定。SwiftUI再生成時も選択元ウィンドウ・完了の所有権を固定するために使う。Coordinatorがパネルとトークンを保持し、クリック時に完了処理を固定、破棄時に無効化・取消。選択会話IDで部品を分け、グローバルなウィンドウ保持なし。複数ファイルのみ、フォルダ・パッケージ不可。他の表示はSwiftUI。読み取り権限はawaitするアップロード全体を囲むヘルパーで管理し、開始成功した分だけ成功・例外・取消で解放。ChatViewが転送ごとのTaskを持ち、画面離脱でTaskとWorkspaceを停止。会話元のクロージャを保持し、既存Workspaceの処理IDを優先する。
+
+テストした入力可否モデルでボタンとキー送信を同じ条件にする。既存会話の転送中は編集可能、新規下書き転送中はブラウザ同様に不可。カードは型付きメタデータのバイトIDで折返し、名前は1行省略・相対パスをヘルプ表示し、削除はローカルのみ。サイズはブラウザ同様B/小数1桁KB・MB。進捗は値が来るまで不定、送信中は確定、全バイト送信後は処理中と表示して保存済みとしない。取消は現在のWorkspace処理だけ。選択・転送のエラーはホストパスを出さず表示。表示モデルだけでUI・クラウド・実行安定性を完了扱いしない。

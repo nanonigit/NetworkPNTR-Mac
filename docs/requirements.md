@@ -24,3 +24,6 @@ A4.2 upload ownership: feature code uses an authenticated typed attachment capab
 
 
 When sending a chat draft, use the pinned browser ECMAScript trim semantics for the empty guard, wire message and failed-send restoration. Preserve newer draft revisions and attachment-only sends. Service calls preserve their supplied message bytes; their empty guard uses the same whitespace set. UI gating is a separate A5 gate.
+
+
+A5 attachment UI: use a window-owned native multiple-file panel, excluding directories/packages; cancellation creates no conversation. Show uploaded relative filename, byte size, local-only removal, upload progress and visible safe error. Keep file access scopes for the transfer lifetime and release on success/error/cancel; leaving the screen cancels owned tasks/panel. A stale panel completion cannot upload into a different conversation. Allow attachment-only send with shared ECMAScript whitespace; disable send while busy/loading/uploading/running. Compare actual native interactions with the pinned browser using synthetic disposable files and no provider credentials.
