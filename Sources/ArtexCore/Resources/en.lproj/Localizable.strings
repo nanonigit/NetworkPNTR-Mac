@@ -2,6 +2,156 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
+	<key>chat.ActionsPrefix</key>
+	<string>Conversation actions: </string>
+	<key>chat.Agent</key>
+	<string>Agent</string>
+	<key>chat.AllAgents</key>
+	<string>All agents</string>
+	<key>chat.App</key>
+	<string>App</string>
+	<key>chat.Attach</key>
+	<string>Attach files</string>
+	<key>chat.AttachMessage</key>
+	<string>Choose files to attach to the conversation.</string>
+	<key>chat.AttachPrompt</key>
+	<string>Attach</string>
+	<key>chat.AutoDescription</key>
+	<string>Platform operations assistant: manages tasks and assets with tools, and can create or modify skills, custom tools and MCP.</string>
+	<key>chat.Cancel</key>
+	<string>Cancel</string>
+	<key>chat.CancelUpload</key>
+	<string>Cancel upload</string>
+	<key>chat.Choose</key>
+	<string>Choose an agent</string>
+	<key>chat.CiteRecord</key>
+	<string>Cite a record</string>
+	<key>chat.Company</key>
+	<string>Company</string>
+	<key>chat.ConversationName</key>
+	<string>Conversation name</string>
+	<key>chat.ConversationPrefix</key>
+	<string>Conversation: </string>
+	<key>chat.CtrlEnter</key>
+	<string>Ctrl / ⌘ + Enter to send</string>
+	<key>chat.DefaultModel</key>
+	<string>Default model</string>
+	<key>chat.Delete</key>
+	<string>Delete</string>
+	<key>chat.DeleteConversation</key>
+	<string>Delete conversations</string>
+	<key>chat.DeleteMessage</key>
+	<string>This deletes the conversations and their saved messages.</string>
+	<key>chat.DeleteQuestion</key>
+	<string>Delete the selected conversations?</string>
+	<key>chat.Details</key>
+	<string>Details</string>
+	<key>chat.DetailsFailed</key>
+	<string>Cannot load event details.</string>
+	<key>chat.DetailsHelp</key>
+	<string>Load event details</string>
+	<key>chat.Domain</key>
+	<string>Domain</string>
+	<key>chat.Enter</key>
+	<string>Enter to send</string>
+	<key>chat.EventDetails</key>
+	<string>Event details</string>
+	<key>chat.FileReadFailure</key>
+	<string>Cannot read the file. Select it again.</string>
+	<key>chat.Filter</key>
+	<string>Filter conversations by agent</string>
+	<key>chat.InputTokens</key>
+	<string>Input</string>
+	<key>chat.Latest</key>
+	<string>Jump to latest message</string>
+	<key>chat.LoadMore</key>
+	<string>Load more</string>
+	<key>chat.Loading</key>
+	<string>Loading…</string>
+	<key>chat.LoadingBody</key>
+	<string>Loading message body…</string>
+	<key>chat.LoadingDetails</key>
+	<string>Loading details</string>
+	<key>chat.LoadingHistory</key>
+	<string>Loading history</string>
+	<key>chat.MentionCandidates</key>
+	<string>Citation suggestions</string>
+	<key>chat.Message</key>
+	<string>Message</string>
+	<key>chat.Model</key>
+	<string>Model</string>
+	<key>chat.MultiSelect</key>
+	<string>Multi-select</string>
+	<key>chat.New</key>
+	<string>New conversation</string>
+	<key>chat.NoConversations</key>
+	<string>No conversations yet</string>
+	<key>chat.NoDetails</key>
+	<string>No details available</string>
+	<key>chat.NoMatches</key>
+	<string>No matching records. Try a different search.</string>
+	<key>chat.NoMessages</key>
+	<string>No messages yet</string>
+	<key>chat.OlderMessages</key>
+	<string>Load earlier messages</string>
+	<key>chat.OutputTokens</key>
+	<string>Output</string>
+	<key>chat.PentestDescription</key>
+	<string>Independent testing agent: plans, executes and verifies the workflow from reconnaissance through validation and wrap-up.</string>
+	<key>chat.PentestName</key>
+	<string>Penetration testing</string>
+	<key>chat.PickerFailure</key>
+	<string>Cannot open the file picker. Try again.</string>
+	<key>chat.Pinned</key>
+	<string>Pinned</string>
+	<key>chat.PreparingFiles</key>
+	<string>Preparing files…</string>
+	<key>chat.ProcessingFiles</key>
+	<string>Processing attachments…</string>
+	<key>chat.ReloadBody</key>
+	<string>Reload message body</string>
+	<key>chat.RemoveAttachmentHelp</key>
+	<string>Remove from this message’s attachments</string>
+	<key>chat.RemoveAttachmentPrefix</key>
+	<string>Remove attachment: </string>
+	<key>chat.RemoveMentionPrefix</key>
+	<string>Remove citation: </string>
+	<key>chat.Rename</key>
+	<string>Rename</string>
+	<key>chat.Retry</key>
+	<string>Retry</string>
+	<key>chat.RetryMore</key>
+	<string>Retry loading more</string>
+	<key>chat.SearchAgain</key>
+	<string>Search again</string>
+	<key>chat.SearchingMentions</key>
+	<string>Searching records…</string>
+	<key>chat.SelectPrefix</key>
+	<string>Select: </string>
+	<key>chat.Send</key>
+	<string>Send</string>
+	<key>chat.SendKey</key>
+	<string>Send key</string>
+	<key>chat.Sending</key>
+	<string>Sending…</string>
+	<key>chat.Service</key>
+	<string>Service</string>
+	<key>chat.Show100</key>
+	<string>Show 100 more</string>
+	<key>chat.StartHint</key>
+	<string>Choose an agent and model, then enter a message.</string>
+	<key>chat.Stop</key>
+	<string>Stop</string>
+	<key>chat.Stopping</key>
+	<string>Requesting stop…</string>
+	<key>chat.Subdomain</key>
+	<string>Subdomain</string>
+	<key>chat.Unpin</key>
+	<string>Unpin</string>
+	<key>chat.Uploading</key>
+	<string>Uploading…</string>
+	<key>chat.You</key>
+	<string>You</string>
 	<key>feature.agents</key>
 	<string>Agents</string>
 	<key>feature.approvals</key>
