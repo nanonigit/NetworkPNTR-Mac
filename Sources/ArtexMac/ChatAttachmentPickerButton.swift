@@ -1,32 +1,41 @@
 import AppKit
 import SwiftUI
+import ArtexCore
 
 /// The panel belongs to the clicked button's window and immutable conversation callback.
 struct ChatAttachmentPickerButton: NSViewRepresentable {
+    @Environment(\.locale) private var locale
+    private var language: AppLanguage { AppLanguage.preferred(in: [locale.identifier]) }
+    private func s(_ key: AppStringKey) -> String { AppStrings.text(key, language: language) }
+
     let enabled: Bool
     let onChoose: ([URL]) -> Void
     let onPresentation: (Bool) -> Void
     let onError: () -> Void
     func makeCoordinator() -> Coordinator { Coordinator(self) }
     func makeNSView(context: Context) -> NSButton {
-        let button = NSButton(title: "ファイルを添付", target: context.coordinator, action: #selector(Coordinator.pick(_:)))
+        let button = NSButton(title: s(.chatAttach), target: context.coordinator, action: #selector(Coordinator.pick(_:)))
         button.bezelStyle = .rounded
         button.image = NSImage(systemSymbolName: "paperclip", accessibilityDescription: nil)
         button.imagePosition = .imageLeading
-        button.setAccessibilityLabel("ファイルを添付")
-        button.toolTip = "ファイルを添付"
+        Self.applyLanguage(to: button, language: language)
         button.isEnabled = enabled
         return button
     }
     func updateNSView(_ button: NSButton, context: Context) {
         context.coordinator.parent = self; button.isEnabled = enabled
+        Self.applyLanguage(to: button, language: language)
     }
     static func dismantleNSView(_ button: NSButton, coordinator: Coordinator) { coordinator.invalidate() }
-    static func makePanel() -> NSOpenPanel {
+    @MainActor static func applyLanguage(to button: NSButton, language: AppLanguage) {
+        let title = AppStrings.text(.chatAttach, language: language)
+        button.title = title; button.setAccessibilityLabel(title); button.toolTip = title
+    }
+    static func makePanel(language: AppLanguage = .japanese) -> NSOpenPanel {
         let panel = NSOpenPanel()
         panel.canChooseFiles = true; panel.canChooseDirectories = false
         panel.allowsMultipleSelection = true; panel.treatsFilePackagesAsDirectories = true
-        panel.prompt = "添付"; panel.message = "会話に添付するファイルを選択してください。"
+        panel.prompt = AppStrings.text(.chatAttachPrompt, language: language); panel.message = AppStrings.text(.chatAttachMessage, language: language)
         return panel
     }
     @MainActor final class Coordinator: NSObject {
@@ -37,7 +46,7 @@ struct ChatAttachmentPickerButton: NSViewRepresentable {
         @objc func pick(_ button: NSButton) {
             guard parent.enabled, panel == nil else { return }
             guard let window = button.window else { parent.onError(); return }
-            let panel = ChatAttachmentPickerButton.makePanel(), ticket = UUID()
+            let panel = ChatAttachmentPickerButton.makePanel(language: parent.language), ticket = UUID()
             let choose = parent.onChoose, presented = parent.onPresentation
             self.panel = panel; self.ticket = ticket; presented(true)
             panel.beginSheetModal(for: window) { [weak self, weak panel] response in

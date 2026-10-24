@@ -4,6 +4,10 @@ import SwiftUI
 
 /// One instance per conversation identity; no callback can edit another conversation's binding.
 struct ChatMentionComposer: View {
+    @Environment(\.locale) private var locale
+    private var language: AppLanguage { AppLanguage.preferred(in: [locale.identifier]) }
+    private func s(_ key: AppStringKey) -> String { AppStrings.text(key, language: language) }
+
     @Binding var text: String
     let mode: String
     let disabled: Bool
@@ -39,8 +43,8 @@ struct ChatMentionComposer: View {
     private var count: Int { input.categories.isEmpty ? items.count : input.categories.count }
     private func title(_ kind: ChatMentionKind) -> String {
         switch kind {
-        case .finding: "検出結果"; case .asset: "資産"; case .company: "企業"; case .endpoint: "API"; case .ip: "IP"
-        case .app: "アプリ"; case .rootDomain: "ドメイン"; case .subdomain: "サブドメイン"; case .service: "サービス"
+        case .finding: s(.findings); case .asset: s(.assets); case .company: s(.chatCompany); case .endpoint: "API"; case .ip: "IP"
+        case .app: s(.chatApp); case .rootDomain: s(.chatDomain); case .subdomain: s(.chatSubdomain); case .service: s(.chatService)
         }
     }
     var body: some View {
@@ -84,7 +88,7 @@ struct ChatMentionComposer: View {
             Label(label, systemImage: "xmark.circle").lineLimit(1)
         }
         .buttonStyle(.bordered)
-        .accessibilityLabel("引用を外す：" + label)
+        .accessibilityLabel(s(.chatRemoveMentionPrefix) + label)
     }
     private func searchCandidates() async {
         let ticket = UUID(); epoch = ticket; activeIndex = 0; pendingKeyboardIndex = nil; results.cancel(); shownKey = key
@@ -99,7 +103,7 @@ struct ChatMentionComposer: View {
     private struct TaskKey: Hashable { let query: Data?; let retry: UUID }
     private var candidates: some View {
         VStack(alignment: .leading, spacing: 5) {
-            HStack { Text("レコードを引用").font(.caption.bold()); Spacer(); Button("閉じる") { dismissed = true } }
+            HStack { Text(s(.chatCiteRecord)).font(.caption.bold()); Spacer(); Button(s(.close)) { dismissed = true } }
             ScrollViewReader { proxy in
                 ScrollView {
                     LazyVStack(alignment: .leading, spacing: 2) {
@@ -107,16 +111,16 @@ struct ChatMentionComposer: View {
                             ForEach(Array(input.categories.enumerated()), id: \.offset) { index, kind in
                                 candidate(index: index, label: title(kind), detail: "@" + kind.wireLabel)
                             }
-                        } else if loading { HStack { ProgressView().controlSize(.small); Text("引用を検索中…") } }
-                        else if let error = results.error { Text(error).foregroundStyle(.red); Button("再検索") { retry = UUID() } }
+                        } else if loading { HStack { ProgressView().controlSize(.small); Text(s(.chatSearchingMentions)) } }
+                        else if let error = results.error { Text(error).foregroundStyle(.red); Button(s(.chatSearchAgain)) { retry = UUID() } }
                         else {
                             ForEach(Array(items.enumerated()), id: \.element.identity) { index, item in
                                 candidate(index: index, label: item.label, detail: item.kind + "#" + String(item.id) + " · " + item.description)
                             }
-                            if items.isEmpty { Text("一致するレコードがありません。検索語を変えてください。").foregroundStyle(.secondary) }
+                            if items.isEmpty { Text(s(.chatNoMatches)).foregroundStyle(.secondary) }
                             if let error = results.pageError { Text(error).foregroundStyle(.red) }
                             if results.nextCursor != nil {
-                                Button(results.loadingMore ? "読み込み中…" : (results.pageError == nil ? "さらに読み込む" : "続きを再試行")) { Task { await results.loadMore() } }.disabled(results.loadingMore)
+                                Button(results.loadingMore ? s(.chatLoading) : (results.pageError == nil ? s(.chatLoadMore) : s(.chatRetryMore))) { Task { await results.loadMore() } }.disabled(results.loadingMore)
                             }
                         }
                     }.padding(6)
@@ -129,7 +133,7 @@ struct ChatMentionComposer: View {
                 }
             }
         }.padding(8).background(.regularMaterial, in: RoundedRectangle(cornerRadius: 8))
-        .accessibilityElement(children: .contain).accessibilityLabel("引用候補")
+        .accessibilityElement(children: .contain).accessibilityLabel(s(.chatMentionCandidates))
     }
     private func candidate(index: Int, label: String, detail: String) -> some View {
         Button { choose(index) } label: {

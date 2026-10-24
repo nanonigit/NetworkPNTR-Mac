@@ -2,6 +2,10 @@ import ArtexCore
 import SwiftUI
 
 struct ChatUserMessageView: View {
+    @Environment(\.locale) private var locale
+    private var language: AppLanguage { AppLanguage.preferred(in: [locale.identifier]) }
+    private func s(_ key: AppStringKey) -> String { AppStrings.text(key, language: language) }
+
     let workspace: ChatWorkspace
     let conversationID: Int64
     let activity: ChatActivity
@@ -19,11 +23,11 @@ struct ChatUserMessageView: View {
                 // The pinned user bubble is literal text, not Markdown or executable links.
                 Text(model.body.text).textSelection(.enabled).frame(maxWidth: .infinity, alignment: .leading)
             }
-            if model.isLoading { ProgressView("本文を読み込み中…").controlSize(.small) }
+            if model.isLoading { ProgressView(s(.chatLoadingBody)).controlSize(.small) }
             if let error = model.error {
                 HStack {
                     Label(error, systemImage: "exclamationmark.triangle").foregroundStyle(.red)
-                    Button("再試行") { retry += 1 }.accessibilityLabel("メッセージ本文を再読み込み")
+                    Button(s(.chatRetry)) { retry += 1 }.accessibilityLabel(s(.chatReloadBody))
                 }.font(.caption)
             }
         }

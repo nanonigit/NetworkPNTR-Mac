@@ -2,6 +2,10 @@ import ArtexCore
 import SwiftUI
 
 struct ChatAttachmentStrip: View {
+    @Environment(\.locale) private var locale
+    private var language: AppLanguage { AppLanguage.preferred(in: [locale.identifier]) }
+    private func s(_ key: AppStringKey) -> String { AppStrings.text(key, language: language) }
+
     let attachments: [ChatAttachment]
     var remove: ((String) -> Void)? = nil
     var body: some View {
@@ -25,8 +29,8 @@ struct ChatAttachmentStrip: View {
                     Image(systemName: "xmark").frame(minWidth: 24, minHeight: 24).contentShape(Rectangle())
                 }
                 .buttonStyle(.borderless)
-                .accessibilityLabel("添付を外す：" + file.name)
-                .help("このメッセージの添付から外す")
+                .accessibilityLabel(s(.chatRemoveAttachmentPrefix) + file.name)
+                .help(s(.chatRemoveAttachmentHelp))
             }
         }
         .font(.caption).padding(.leading, 8).padding(.trailing, 2).padding(.vertical, 3)
@@ -36,6 +40,10 @@ struct ChatAttachmentStrip: View {
 }
 
 struct ChatAttachmentProgressView: View {
+    @Environment(\.locale) private var locale
+    private var language: AppLanguage { AppLanguage.preferred(in: [locale.identifier]) }
+    private func s(_ key: AppStringKey) -> String { AppStrings.text(key, language: language) }
+
     let presentation: ChatUploadPresentation
     let cancel: () -> Void
     var body: some View {
@@ -52,7 +60,7 @@ struct ChatAttachmentProgressView: View {
                     ProgressView().controlSize(.small).accessibilityLabel(presentation.title)
                 }
             }
-            Button("アップロードを取消", action: cancel).controlSize(.small)
+            Button(s(.chatCancelUpload), action: cancel).controlSize(.small)
         }
         .accessibilityElement(children: .contain)
     }

@@ -35,13 +35,13 @@ struct ChatUploadPresentation {
     let fraction: Double?
     let title: String
     let detail: String?
-    init(progress: BackendUploadProgress?) {
+    init(progress: BackendUploadProgress?, language: AppLanguage = .japanese) {
         guard let progress, progress.totalBodyBytes > 0, progress.sentBodyBytes >= 0,
               progress.sentBodyBytes <= progress.totalBodyBytes else {
-            fraction = nil; title = "ファイルを準備中…"; detail = nil; return
+            fraction = nil; title = AppStrings.text(.chatPreparingFiles, language: language); detail = nil; return
         }
         fraction = Double(progress.sentBodyBytes) / Double(progress.totalBodyBytes)
-        title = progress.sentBodyBytes == progress.totalBodyBytes ? "添付を処理中…" : "アップロード中…"
+        title = AppStrings.text(progress.sentBodyBytes == progress.totalBodyBytes ? .chatProcessingFiles : .chatUploading, language: language)
         detail = ChatAttachmentPresentation.bytes(progress.sentBodyBytes) + " / " + ChatAttachmentPresentation.bytes(progress.totalBodyBytes)
     }
 }

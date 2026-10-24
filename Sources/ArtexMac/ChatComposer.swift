@@ -9,6 +9,10 @@ struct ChatMentionSelection: Equatable {
 
 /// SwiftUI owns the draft; AppKit supplies marked-text and native editing semantics.
 struct ChatComposer: NSViewRepresentable {
+    @Environment(\.locale) private var locale
+    private var language: AppLanguage { AppLanguage.preferred(in: [locale.identifier]) }
+    private func s(_ key: AppStringKey) -> String { AppStrings.text(key, language: language) }
+
     @Binding var text: String
     let mode: String
     let disabled: Bool
@@ -26,7 +30,7 @@ struct ChatComposer: NSViewRepresentable {
         editor.font = .systemFont(ofSize: NSFont.systemFontSize); editor.textContainerInset = NSSize(width: 8, height: 8)
         editor.isVerticallyResizable = true; editor.isHorizontallyResizable = false
         editor.autoresizingMask = [.width]; editor.textContainer?.widthTracksTextView = true
-        editor.delegate = context.coordinator; editor.setAccessibilityLabel("メッセージ")
+        editor.delegate = context.coordinator; Self.applyLanguage(to: editor, language: language)
         scroll.documentView = editor
         return scroll
     }
@@ -36,9 +40,13 @@ struct ChatComposer: NSViewRepresentable {
         context.coordinator.updating = true
         defer { context.coordinator.updating = false }
         if editor.string != text, !editor.hasMarkedText() { editor.string = text }
+        Self.applyLanguage(to: editor, language: language)
         editor.isEditable = !disabled; editor.mode = mode; editor.submit = send
         editor.handleMentionKey = onMentionKey
         context.coordinator.applySelection(selectionRequest, to: editor, text: text)
+    }
+    @MainActor static func applyLanguage(to editor: Editor, language: AppLanguage) {
+        editor.setAccessibilityLabel(AppStrings.text(.chatMessage, language: language))
     }
     final class Coordinator: NSObject, NSTextViewDelegate {
         var parent: ChatComposer
