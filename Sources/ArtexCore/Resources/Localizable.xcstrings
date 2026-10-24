@@ -2000,6 +2000,470 @@
           }
         }
       }
+    },
+    "error.validation.activeProfile": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "You cannot delete the active model configuration. Activate another configuration first."
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "有効なモデル設定は削除できません。先に別の設定を有効にしてください。"
+          }
+        }
+      }
+    },
+    "error.validation.modelList": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Could not load models. Check the key, URL, and outbound network settings."
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "モデル一覧を取得できませんでした。キー・URL・外向き通信の設定を確認してください。"
+          }
+        }
+      }
+    },
+    "error.validation.testModel": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Enter a model to test."
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "テストするモデルを入力してください。"
+          }
+        }
+      }
+    },
+    "error.validation.connectionTest": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The connection test failed. Check the model, key, URL, and outbound network settings."
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "接続テストに失敗しました。モデル・キー・URL・外向き通信の設定を確認してください。"
+          }
+        }
+      }
+    },
+    "error.validation.missingProvider": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "No LLM configuration exists. Add a provider under System → LLM settings."
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "LLM設定がありません。システムのLLM設定で接続先を追加してください。"
+          }
+        }
+      }
+    },
+    "error.validation.conversationInput": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Check the conversation input."
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "会話の入力内容を確認してください。"
+          }
+        }
+      }
+    },
+    "error.validation.messageRequired": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Enter a message."
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "メッセージを入力してください。"
+          }
+        }
+      }
+    },
+    "error.validation.passwordMismatch": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The passwords do not match."
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "パスワードが一致しません。"
+          }
+        }
+      }
+    },
+    "error.validation.passwordShort": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Enter a password with at least 8 characters."
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "パスワードは8文字以上で入力してください。"
+          }
+        }
+      }
+    },
+    "error.validation.passwordBytes": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The password must be at most 72 UTF-8 bytes."
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "パスワードはUTF-8で72バイト以内にしてください。"
+          }
+        }
+      }
+    },
+    "error.validation.termsRequired": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Read and agree to the terms of use."
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "利用条件を確認して同意してください。"
+          }
+        }
+      }
+    },
+    "error.validation.passwordRequired": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Enter a password."
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "パスワードを入力してください。"
+          }
+        }
+      }
+    },
+    "error.validation.mentionQuery": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Check the reference search input."
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "引用の検索内容を確認してください。"
+          }
+        }
+      }
+    },
+    "error.validation.modelRequired": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Enter a name and model."
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "名前とモデルを入力してください。"
+          }
+        }
+      }
+    },
+    "error.validation.modelLimits": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Check the rate limits, context size, and output limit."
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "レート制限・コンテキスト・出力上限を確認してください。"
+          }
+        }
+      }
+    },
+    "error.validation.sessionHeader": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The session header name contains invalid characters."
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "セッションヘッダー名に使えない文字があります。"
+          }
+        }
+      }
+    },
+    "error.credentials": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The username or password is incorrect."
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ユーザー名またはパスワードが正しくありません。"
+          }
+        }
+      }
+    },
+    "error.forbidden": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "This operation is not allowed. Check the initial setup state."
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "この操作は許可されていません。初期設定の状態を確認してください。"
+          }
+        }
+      }
+    },
+    "error.rateLimited": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Too many attempts. Wait a while and try again."
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "試行回数が多いため、しばらく待ってから再試行してください。"
+          }
+        }
+      }
+    },
+    "error.databaseUnavailable": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The database is unavailable. Try again after recovery."
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "データベースを利用できません。復旧後に再試行してください。"
+          }
+        }
+      }
+    },
+    "error.httpStatus": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Communication with the runtime failed (HTTP {code})."
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "実行環境との通信に失敗しました（HTTP {code}）。"
+          }
+        }
+      }
+    },
+    "error.invalidResponse": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The runtime response could not be verified."
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "実行環境からの応答を確認できませんでした。"
+          }
+        }
+      }
+    },
+    "error.keychain": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Keychain operation failed ({code})."
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Keychainの操作に失敗しました（{code}）。"
+          }
+        }
+      }
+    },
+    "error.communication": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Check communication with the runtime."
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "実行環境との通信を確認してください。"
+          }
+        }
+      }
+    },
+    "error.uploadInvalidFile": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The selected attachment cannot be read. Select a regular file."
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "選択した添付ファイルを読み取れません。通常のファイルを選び直してください。"
+          }
+        }
+      }
+    },
+    "error.uploadInvalidFraming": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The attachment transfer format could not be verified."
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "添付ファイルの転送形式を確認できませんでした。"
+          }
+        }
+      }
+    },
+    "error.uploadTooLarge": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Attachments and transfer metadata must total at most 128 MiB."
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "添付ファイルと転送情報の合計は128MiB以内にしてください。"
+          }
+        }
+      }
+    },
+    "error.uploadChangedFile": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "An attachment changed after selection. Select it again."
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "選択後に添付ファイルが変更されました。選び直してください。"
+          }
+        }
+      }
+    },
+    "error.uploadReadFailure": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The attachment could not be read. Select it again."
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "添付ファイルの読み取りに失敗しました。選び直してください。"
+          }
+        }
+      }
     }
   },
   "version": "1.0"

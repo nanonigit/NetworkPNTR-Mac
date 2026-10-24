@@ -39,9 +39,9 @@ public enum AuthenticationPhase: String, Sendable { case checking, needsSetup, n
     public func setup(password: String, confirmation: String) async {
         guard !isBusy, phase == .needsSetup else { return }
         do {
-            guard password == confirmation else { throw BackendAPIError.validation("パスワードが一致しません。") }
-            guard password.unicodeScalars.count >= 8 else { throw BackendAPIError.validation("パスワードは8文字以上で入力してください。") }
-            guard password.utf8.count <= 72 else { throw BackendAPIError.validation("パスワードはUTF-8で72バイト以内にしてください。") }
+            guard password == confirmation else { throw BackendAPIError.validation(.passwordMismatch) }
+            guard password.unicodeScalars.count >= 8 else { throw BackendAPIError.validation(.passwordShort) }
+            guard password.utf8.count <= 72 else { throw BackendAPIError.validation(.passwordBytes) }
             isBusy = true; error = nil
             defer { isBusy = false }
             let body = try JSONSerialization.data(withJSONObject: ["password": password, "setup_token": setupToken])
@@ -54,8 +54,8 @@ public enum AuthenticationPhase: String, Sendable { case checking, needsSetup, n
     public func login(password: String, agreed: Bool) async {
         guard !isBusy, phase == .needsLogin else { return }
         do {
-            guard agreed else { throw BackendAPIError.validation("利用条件を確認して同意してください。") }
-            guard !password.isEmpty else { throw BackendAPIError.validation("パスワードを入力してください。") }
+            guard agreed else { throw BackendAPIError.validation(.termsRequired) }
+            guard !password.isEmpty else { throw BackendAPIError.validation(.passwordRequired) }
             isBusy = true; error = nil
             defer { isBusy = false }
             let body = try JSONSerialization.data(withJSONObject: ["username": "ARTEX", "password": password])

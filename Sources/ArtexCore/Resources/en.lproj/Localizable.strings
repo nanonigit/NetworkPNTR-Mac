@@ -152,6 +152,64 @@
 	<string>Uploading…</string>
 	<key>chat.You</key>
 	<string>You</string>
+	<key>error.communication</key>
+	<string>Check communication with the runtime.</string>
+	<key>error.credentials</key>
+	<string>The username or password is incorrect.</string>
+	<key>error.databaseUnavailable</key>
+	<string>The database is unavailable. Try again after recovery.</string>
+	<key>error.forbidden</key>
+	<string>This operation is not allowed. Check the initial setup state.</string>
+	<key>error.httpStatus</key>
+	<string>Communication with the runtime failed (HTTP {code}).</string>
+	<key>error.invalidResponse</key>
+	<string>The runtime response could not be verified.</string>
+	<key>error.keychain</key>
+	<string>Keychain operation failed ({code}).</string>
+	<key>error.rateLimited</key>
+	<string>Too many attempts. Wait a while and try again.</string>
+	<key>error.uploadChangedFile</key>
+	<string>An attachment changed after selection. Select it again.</string>
+	<key>error.uploadInvalidFile</key>
+	<string>The selected attachment cannot be read. Select a regular file.</string>
+	<key>error.uploadInvalidFraming</key>
+	<string>The attachment transfer format could not be verified.</string>
+	<key>error.uploadReadFailure</key>
+	<string>The attachment could not be read. Select it again.</string>
+	<key>error.uploadTooLarge</key>
+	<string>Attachments and transfer metadata must total at most 128 MiB.</string>
+	<key>error.validation.activeProfile</key>
+	<string>You cannot delete the active model configuration. Activate another configuration first.</string>
+	<key>error.validation.connectionTest</key>
+	<string>The connection test failed. Check the model, key, URL, and outbound network settings.</string>
+	<key>error.validation.conversationInput</key>
+	<string>Check the conversation input.</string>
+	<key>error.validation.mentionQuery</key>
+	<string>Check the reference search input.</string>
+	<key>error.validation.messageRequired</key>
+	<string>Enter a message.</string>
+	<key>error.validation.missingProvider</key>
+	<string>No LLM configuration exists. Add a provider under System → LLM settings.</string>
+	<key>error.validation.modelLimits</key>
+	<string>Check the rate limits, context size, and output limit.</string>
+	<key>error.validation.modelList</key>
+	<string>Could not load models. Check the key, URL, and outbound network settings.</string>
+	<key>error.validation.modelRequired</key>
+	<string>Enter a name and model.</string>
+	<key>error.validation.passwordBytes</key>
+	<string>The password must be at most 72 UTF-8 bytes.</string>
+	<key>error.validation.passwordMismatch</key>
+	<string>The passwords do not match.</string>
+	<key>error.validation.passwordRequired</key>
+	<string>Enter a password.</string>
+	<key>error.validation.passwordShort</key>
+	<string>Enter a password with at least 8 characters.</string>
+	<key>error.validation.sessionHeader</key>
+	<string>The session header name contains invalid characters.</string>
+	<key>error.validation.termsRequired</key>
+	<string>Read and agree to the terms of use.</string>
+	<key>error.validation.testModel</key>
+	<string>Enter a model to test.</string>
 	<key>feature.agents</key>
 	<string>Agents</string>
 	<key>feature.approvals</key>

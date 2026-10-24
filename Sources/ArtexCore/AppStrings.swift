@@ -1,6 +1,20 @@
 import Foundation
 
 public enum AppStringKey: String, CaseIterable, Sendable {
+    case errorCredentials = "error.credentials"
+    case errorForbidden = "error.forbidden"
+    case errorRateLimited = "error.rateLimited"
+    case errorDatabaseUnavailable = "error.databaseUnavailable"
+    case errorHttpStatus = "error.httpStatus"
+    case errorInvalidResponse = "error.invalidResponse"
+    case errorKeychain = "error.keychain"
+    case errorCommunication = "error.communication"
+    case errorUploadInvalidFile = "error.uploadInvalidFile"
+    case errorUploadInvalidFraming = "error.uploadInvalidFraming"
+    case errorUploadTooLarge = "error.uploadTooLarge"
+    case errorUploadChangedFile = "error.uploadChangedFile"
+    case errorUploadReadFailure = "error.uploadReadFailure"
+
     case chatNew = "chat.New"
     case chatFilter = "chat.Filter"
     case chatAllAgents = "chat.AllAgents"

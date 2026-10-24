@@ -47,7 +47,7 @@ public enum ChatStopStatus: String, Decodable, Sendable { case idle, stopping }
         guard (200..<300).contains(response.status) else {
             if method == "POST", path.hasSuffix("/messages"), response.status == 503,
                Self.isMissingProvider(response.body) {
-                throw BackendAPIError.validation("LLM設定がありません。システムのLLM設定で接続先を追加してください。")
+                throw BackendAPIError.validation(.missingProvider)
             }
             throw BackendAPIError.status(response.status)
         }
@@ -76,7 +76,7 @@ public enum ChatStopStatus: String, Decodable, Sendable { case idle, stopping }
     private func validateText(_ value: String, maximum: Int, allowEmpty: Bool = false) throws {
         let trimmed = value.trimmingCharacters(in: .whitespacesAndNewlines)
         guard (allowEmpty || !trimmed.isEmpty), trimmed.unicodeScalars.count <= maximum else {
-            throw BackendAPIError.validation("会話の入力内容を確認してください。")
+            throw BackendAPIError.validation(.conversationInput)
         }
     }
     private func validate(_ conversation: ChatConversation, expectedID: Int64? = nil) throws -> ChatConversation {
@@ -129,7 +129,7 @@ public enum ChatStopStatus: String, Decodable, Sendable { case idle, stopping }
         return try await request(Detail.self, path: route(id) + "/messages/\(sequence)").detail ?? ""
     }
     public func send(id: Int64, message: String, attachments: [ChatAttachment] = []) async throws {
-        guard !ChatText.trim(message).isEmpty || !attachments.isEmpty else { throw BackendAPIError.validation("メッセージを入力してください。") }
+        guard !ChatText.trim(message).isEmpty || !attachments.isEmpty else { throw BackendAPIError.validation(.messageRequired) }
         var body: [String: Any] = ["message": message]
         if !attachments.isEmpty { body["attachments"] = attachments.map(\.json) }
         let result = try await request(Status.self, method: "POST", path: route(id) + "/messages", body: body)

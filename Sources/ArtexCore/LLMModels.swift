@@ -104,10 +104,10 @@ public struct LLMProfileDraft: Encodable, Equatable, Sendable, CustomStringConve
         value.baseUrl = baseUrl.trimmingCharacters(in: .whitespacesAndNewlines)
         value.proxy = proxy.trimmingCharacters(in: .whitespacesAndNewlines)
         value.sessionHeaderKey = try validatedSessionHeader()
-        guard !value.name.isEmpty, !value.model.isEmpty else { throw BackendAPIError.validation("名前とモデルを入力してください。") }
+        guard !value.name.isEmpty, !value.model.isEmpty else { throw BackendAPIError.validation(.modelRequired) }
         guard ratePerSecond.isFinite, ratePerSecond >= 0, ratePerMinute.isFinite, ratePerMinute >= 0,
               (0...1000).contains(contextWindowK), maxTokens >= 0, id == nil || (id ?? 0) > 0 else {
-            throw BackendAPIError.validation("レート制限・コンテキスト・出力上限を確認してください。")
+            throw BackendAPIError.validation(.modelLimits)
         }
         value.maxTokensField = format == .openai ? maxTokensField : ""
         value.retry = retry.clamped()
@@ -117,7 +117,7 @@ public struct LLMProfileDraft: Encodable, Equatable, Sendable, CustomStringConve
         let value = sessionHeaderKey.trimmingCharacters(in: .whitespacesAndNewlines)
         let symbols = Array("!#$%&'*+-.^_`|~".utf8)
         guard value.utf8.allSatisfy({ (48...57).contains($0) || (65...90).contains($0) || (97...122).contains($0) || symbols.contains($0) }) else {
-            throw BackendAPIError.validation("セッションヘッダー名に使えない文字があります。")
+            throw BackendAPIError.validation(.sessionHeader)
         }
         return value
     }

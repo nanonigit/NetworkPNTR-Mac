@@ -73,7 +73,7 @@ public struct LLMConnectionResult: Decodable, Sendable {
         guard result.ok else { throw BackendAPIError.invalidResponse }
     }
     public func delete(id: String, isActive: Bool) async throws {
-        guard !isActive else { throw BackendAPIError.validation("有効なモデル設定は削除できません。先に別の設定を有効にしてください。") }
+        guard !isActive else { throw BackendAPIError.validation(.activeProfile) }
         let identifier = try LLMWire.numericID(id)
         let result = try await request(Deleted.self, method: "DELETE", path: "/api/llm/profiles/\(identifier)")
         guard result.deleted == identifier else { throw BackendAPIError.invalidResponse }
@@ -102,18 +102,18 @@ public struct LLMConnectionResult: Decodable, Sendable {
     }
     public func models(_ draft: LLMProfileDraft) async throws -> [String] {
         let result = try await request(Models.self, method: "POST", path: "/api/llm/models", body: LLMWire.encode(Probe(draft)))
-        guard result.ok, let models = result.models, !models.isEmpty else { throw BackendAPIError.validation("モデル一覧を取得できませんでした。キー・URL・外向き通信の設定を確認してください。") }
+        guard result.ok, let models = result.models, !models.isEmpty else { throw BackendAPIError.validation(.modelList) }
         return models
     }
     public func test(_ draft: LLMProfileDraft) async throws -> LLMConnectionResult {
         var probe = try Probe(draft)
         probe.model = draft.model.trimmingCharacters(in: .whitespacesAndNewlines)
-        guard probe.model?.isEmpty == false else { throw BackendAPIError.validation("テストするモデルを入力してください。") }
+        guard probe.model?.isEmpty == false else { throw BackendAPIError.validation(.testModel) }
         probe.thinkingType = draft.thinkingType; probe.reasoningEffort = draft.reasoningEffort
         probe.streaming = draft.streaming
         probe.sessionHeaderKey = try draft.validatedSessionHeader()
         let result = try await request(LLMConnectionResult.self, method: "POST", path: "/api/llm/test", body: LLMWire.encode(probe))
-        guard result.ok else { throw BackendAPIError.validation("接続テストに失敗しました。モデル・キー・URL・外向き通信の設定を確認してください。") }
+        guard result.ok else { throw BackendAPIError.validation(.connectionTest) }
         return result
     }
 }

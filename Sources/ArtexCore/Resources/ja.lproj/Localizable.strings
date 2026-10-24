@@ -152,6 +152,64 @@
 	<string>アップロード中…</string>
 	<key>chat.You</key>
 	<string>あなた</string>
+	<key>error.communication</key>
+	<string>実行環境との通信を確認してください。</string>
+	<key>error.credentials</key>
+	<string>ユーザー名またはパスワードが正しくありません。</string>
+	<key>error.databaseUnavailable</key>
+	<string>データベースを利用できません。復旧後に再試行してください。</string>
+	<key>error.forbidden</key>
+	<string>この操作は許可されていません。初期設定の状態を確認してください。</string>
+	<key>error.httpStatus</key>
+	<string>実行環境との通信に失敗しました（HTTP {code}）。</string>
+	<key>error.invalidResponse</key>
+	<string>実行環境からの応答を確認できませんでした。</string>
+	<key>error.keychain</key>
+	<string>Keychainの操作に失敗しました（{code}）。</string>
+	<key>error.rateLimited</key>
+	<string>試行回数が多いため、しばらく待ってから再試行してください。</string>
+	<key>error.uploadChangedFile</key>
+	<string>選択後に添付ファイルが変更されました。選び直してください。</string>
+	<key>error.uploadInvalidFile</key>
+	<string>選択した添付ファイルを読み取れません。通常のファイルを選び直してください。</string>
+	<key>error.uploadInvalidFraming</key>
+	<string>添付ファイルの転送形式を確認できませんでした。</string>
+	<key>error.uploadReadFailure</key>
+	<string>添付ファイルの読み取りに失敗しました。選び直してください。</string>
+	<key>error.uploadTooLarge</key>
+	<string>添付ファイルと転送情報の合計は128MiB以内にしてください。</string>
+	<key>error.validation.activeProfile</key>
+	<string>有効なモデル設定は削除できません。先に別の設定を有効にしてください。</string>
+	<key>error.validation.connectionTest</key>
+	<string>接続テストに失敗しました。モデル・キー・URL・外向き通信の設定を確認してください。</string>
+	<key>error.validation.conversationInput</key>
+	<string>会話の入力内容を確認してください。</string>
+	<key>error.validation.mentionQuery</key>
+	<string>引用の検索内容を確認してください。</string>
+	<key>error.validation.messageRequired</key>
+	<string>メッセージを入力してください。</string>
+	<key>error.validation.missingProvider</key>
+	<string>LLM設定がありません。システムのLLM設定で接続先を追加してください。</string>
+	<key>error.validation.modelLimits</key>
+	<string>レート制限・コンテキスト・出力上限を確認してください。</string>
+	<key>error.validation.modelList</key>
+	<string>モデル一覧を取得できませんでした。キー・URL・外向き通信の設定を確認してください。</string>
+	<key>error.validation.modelRequired</key>
+	<string>名前とモデルを入力してください。</string>
+	<key>error.validation.passwordBytes</key>
+	<string>パスワードはUTF-8で72バイト以内にしてください。</string>
+	<key>error.validation.passwordMismatch</key>
+	<string>パスワードが一致しません。</string>
+	<key>error.validation.passwordRequired</key>
+	<string>パスワードを入力してください。</string>
+	<key>error.validation.passwordShort</key>
+	<string>パスワードは8文字以上で入力してください。</string>
+	<key>error.validation.sessionHeader</key>
+	<string>セッションヘッダー名に使えない文字があります。</string>
+	<key>error.validation.termsRequired</key>
+	<string>利用条件を確認して同意してください。</string>
+	<key>error.validation.testModel</key>
+	<string>テストするモデルを入力してください。</string>
 	<key>feature.agents</key>
 	<string>エージェント</string>
 	<key>feature.approvals</key>

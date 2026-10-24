@@ -71,7 +71,7 @@ public struct ChatMentionPage: Decodable, Equatable, Sendable {
         while let last = scalars.last, isSpace(last) { scalars.removeLast() }
         let query = String(scalars)
         guard query.unicodeScalars.count <= 200, Self.validCursor(cursor) else {
-            throw BackendAPIError.validation("引用の検索内容を確認してください。")
+            throw BackendAPIError.validation(.mentionQuery)
         }
         var url = URLComponents()
         url.path = "/api/chat/mentions"

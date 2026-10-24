@@ -3,15 +3,7 @@ import Foundation
 
 public enum ChatUploadBodyError: LocalizedError {
     case invalidFile, invalidFraming, tooLarge, changedFile, readFailure
-    public var errorDescription: String? {
-        switch self {
-        case .invalidFile: "選択した添付ファイルを読み取れません。通常のファイルを選び直してください。"
-        case .invalidFraming: "添付ファイルの転送形式を確認できませんでした。"
-        case .tooLarge: "添付ファイルと転送情報の合計は128MiB以内にしてください。"
-        case .changedFile: "選択後に添付ファイルが変更されました。選び直してください。"
-        case .readFailure: "添付ファイルの読み取りに失敗しました。選び直してください。"
-        }
-    }
+    public var errorDescription: String? { AppErrorText.text(self, language: .japanese) }
 }
 
 /// Immutable file/framing preflight that may cross to a dedicated transfer worker.
