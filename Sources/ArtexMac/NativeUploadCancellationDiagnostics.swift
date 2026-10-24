@@ -50,10 +50,15 @@ private final class UploadInterruptionObservation: @unchecked Sendable {
     }
 }
 
+struct NativeUploadRestart {
+    let session: AuthenticationSession
+    let interruptedTransfers: Int
+}
+
 /// Runs only after NativeDiagnostics proves fresh test-owned guest authentication.
 @MainActor enum NativeUploadCancellationDiagnostics {
     static func run(session: AuthenticationSession, directory: URL,
-                    stopAndRestart: @MainActor () async throws -> AuthenticationSession) async throws -> AuthenticationSession {
+                    stopAndRestart: @MainActor () async throws -> NativeUploadRestart) async throws -> AuthenticationSession {
         let files = directory.appendingPathComponent("upload-cancellation-selected", isDirectory: true)
         guard !FileManager.default.fileExists(atPath: files.path) else { throw RuntimeError.integrity("fresh interruption fixture") }
         try FileManager.default.createDirectory(at: files, withIntermediateDirectories: false, attributes: [.posixPermissions:0o700])
@@ -105,7 +110,9 @@ private final class UploadInterruptionObservation: @unchecked Sendable {
             pending = stopUpload
             _ = try await firstProgress(stopped)
             _ = try stopped.partialRecord(expected: total, requireInFlight: true)
-            current = try await stopAndRestart()
+            let restart = try await stopAndRestart()
+            current = restart.session
+            guard restart.interruptedTransfers == 1 else { throw RuntimeError.integrity("missing owned transfer stop witness") }
             guard current.phase == .authenticated else { throw RuntimeError.integrity("interruption restart authentication") }
             let stopResult = await stopUpload.result
             pending = nil
@@ -119,6 +126,7 @@ private final class UploadInterruptionObservation: @unchecked Sendable {
             stopRecord["transfer_failed"] = true
             stopRecord["transfer_failure_kind"] = "cancellation"
             stopRecord["in_flight_before_stop"] = true
+            stopRecord["owned_transfer_leases_cancelled_at_stop"] = restart.interruptedTransfers
             stopRecord["restarted_authenticated"] = true
             stopRecord["no_persisted_attachment"] = true
             try await cleanup(conversation.id, session: current); owned = nil

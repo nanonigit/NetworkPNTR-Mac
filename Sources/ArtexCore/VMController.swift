@@ -9,6 +9,7 @@ import Virtualization
     public private(set) var lastError: String?
     public private(set) var guestLog = ""
     public private(set) var configuredCPUCount = 0
+    public private(set) var lastStopInterruptedTransferCount = 0
     @ObservationIgnored private var machine: VZVirtualMachine?
     @ObservationIgnored private var input: Pipe?
     @ObservationIgnored private var output: FileHandle?
@@ -22,7 +23,7 @@ import Virtualization
     public func start(artifacts directory: URL, logs: URL, readinessTimeout: Duration = .seconds(60), dataDisk: URL? = nil, provisioning: GuestProvisioning? = nil) async throws {
         guard mayStart else { throw RuntimeError.invalidTransition(state.rawValue, "starting") }
         try state.transition(to: .starting)
-        lastError = nil; guestReady = false; guestLog = ""
+        lastError = nil; guestReady = false; guestLog = ""; lastStopInterruptedTransferCount = 0
         do {
             guard VZVirtualMachine.isSupported else { throw RuntimeError.unsupported }
             let manifest = try GuestArtifacts.load(from: directory)
@@ -73,7 +74,7 @@ import Virtualization
     public func stop() async throws {
         guard state.canStop, let input else { throw RuntimeError.invalidTransition(state.rawValue, "stopping") }
         try state.transition(to: .stopping)
-        cancelBackendUploads()
+        lastStopInterruptedTransferCount = cancelBackendUploads()
         do {
             // Bootstrap must complete before the guest can interpret management tokens.
             // Sending STOP into its credential reader would corrupt the bootstrap protocol.
@@ -96,7 +97,7 @@ import Virtualization
     }
     public func forceStop() async throws {
         guard let vm = machine else { return }
-        cancelBackendUploads()
+        lastStopInterruptedTransferCount = cancelBackendUploads()
         do {
             try await stopMachine(vm)
             refreshLog(); releaseResources()
@@ -220,8 +221,8 @@ import Virtualization
             return response
         } onCancel: { socket.cancel() }
     }
-    private func cancelBackendUploads() {
-        for socket in backendUploads.values { socket.cancel() }
+    @discardableResult private func cancelBackendUploads() -> Int {
+        backendUploads.values.reduce(0) { count, socket in count + (socket.cancel() ? 1 : 0) }
     }
     private func connectBackend() async throws -> UUID {
         guard let device = machine?.socketDevices.first as? VZVirtioSocketDevice else { throw RuntimeError.integrity("backend vsock device") }

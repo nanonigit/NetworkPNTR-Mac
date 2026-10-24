@@ -78,9 +78,10 @@ import Foundation
                 login = try await NativeUploadCancellationDiagnostics.run(session: login, directory: directory, stopAndRestart: {
                     try await environment.stop()
                     guard environment.controller.state == .stopped, !environment.controller.hasMachine else { throw RuntimeError.integrity("transfer VM stopped") }
+                    let interrupted = environment.controller.lastStopInterruptedTransferCount
                     await environment.start()
                     guard environment.controller.guestReady, let restored = environment.authentication, restored.phase == .authenticated else { throw RuntimeError.integrity("transfer VM restart authentication") }
-                    return restored
+                    return NativeUploadRestart(session: restored, interruptedTransfers: interrupted)
                 })
                 result["native_partial_upload_task_cancel_and_vm_stop"] = true
             }

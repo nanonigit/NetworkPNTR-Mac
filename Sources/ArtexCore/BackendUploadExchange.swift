@@ -10,10 +10,12 @@ final class BackendUploadSocket: @unchecked Sendable {
     init(owning descriptor: Int32) { self.descriptor = descriptor }
     deinit { finish() }
     var isFinished: Bool { lock.lock(); defer { lock.unlock() }; return descriptor == nil }
-    func cancel() {
+    @discardableResult func cancel() -> Bool {
         lock.lock(); defer { lock.unlock() }
+        let interrupted = descriptor != nil && !cancelled
         cancelled = true
         if let descriptor { _ = shutdown(descriptor, SHUT_RDWR) }
+        return interrupted
     }
     func finish() {
         lock.lock(); defer { lock.unlock() }
