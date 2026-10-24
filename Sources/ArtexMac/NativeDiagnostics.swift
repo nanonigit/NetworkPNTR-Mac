@@ -10,6 +10,7 @@ import Foundation
         var result: [String: Any] = ["ui_click_workflow_verified": false, "visual_acceptance": "pending external native automation"]
         var userBodyIDs: [Int64] = []
         do {
+            let plan = try NativeReviewPlan(arguments: CommandLine.arguments)
             try FileManager.default.createDirectory(at: directory, withIntermediateDirectories: true)
             result["native_window_rendered"] = try capture(to: directory.appendingPathComponent("native-launch.png"))
             await environment.start()
@@ -34,8 +35,15 @@ import Foundation
                 try await NativeAttachmentHandoffDiagnostics.run(session:authentication,directory:directory)
                 result["native_attachment_handoff_recovery_and_file_preservation"] = true
             }
-            let llm = try await NativeLLMDiagnostics.run(session: authentication, directory: directory)
-            result["native_llm_three_formats_crud_key_preservation_pool_retry"] = true
+            let llm: NativeLLMDiagnostics.Snapshot?
+            if plan.noLLM {
+                try await NativeReviewPlan.requireNoLLM(client: AuthenticatedBackendClient(session: authentication))
+                llm = nil
+                result["native_review_has_no_llm_profiles"] = true
+            } else {
+                llm = try await NativeLLMDiagnostics.run(session: authentication, directory: directory)
+                result["native_llm_three_formats_crud_key_preservation_pool_retry"] = true
+            }
             if CommandLine.arguments.contains("--user-body-review") {
                 userBodyIDs = try await NativeUserBodyDiagnostics.seed(client: AuthenticatedBackendClient(session: authentication), directory: directory)
                 result["native_persisted_user_body_fixture"] = true
@@ -62,12 +70,16 @@ import Foundation
             try await environment.stop()
             await environment.start()
             guard environment.authentication?.phase == .authenticated else { throw RuntimeError.integrity(environment.authentication?.error ?? environment.error ?? "Keychain session restore") }
-            if let restored = environment.authentication { try await NativeLLMDiagnostics.verify(llm, session: restored) }
+            if let restored = environment.authentication {
+                if let llm { try await NativeLLMDiagnostics.verify(llm, session: restored) }
+                else { try await NativeReviewPlan.requireNoLLM(client: AuthenticatedBackendClient(session: restored)) }
+            }
             if CommandLine.arguments.contains("--dashboard-diagnostics"), let restored = environment.authentication {
                 try await NativeDashboardDiagnostics.collect(session: restored, directory: directory)
                 result["native_dashboard_nonempty_endpoints_and_metrics"] = true
             }
-            result["native_llm_restart_persistence"] = true
+            if llm != nil { result["native_llm_restart_persistence"] = true }
+            else { result["native_review_no_llm_after_restart"] = true }
             result["real_keychain_session_restored_after_vm_restart"] = true
             guard var login = environment.authentication else { throw RuntimeError.integrity("native login state") }
             login.logout()

@@ -75,7 +75,8 @@ struct RootView: View {
         }
         .task {
             do { catalog = try FeatureCatalog.load() } catch { catalogError = error.localizedDescription }
-            await environment.start()
+            // Diagnostic startup belongs to its validated plan, not this UI task.
+            if RuntimeFactory.diagnosticsDirectory == nil { await environment.start() }
         }
         .onChange(of: environment.authentication?.phase) { _, phase in
             if phase == .needsSetup || phase == .needsLogin || phase == .unavailable { selection = "auth" }
