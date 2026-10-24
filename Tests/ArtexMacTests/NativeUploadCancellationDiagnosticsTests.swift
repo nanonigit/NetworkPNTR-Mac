@@ -55,7 +55,7 @@ final class NativeUploadCancellationDiagnosticsTests: XCTestCase {
             stopCalls += 1
             while api.stopped == nil { await Task.yield() }
             api.stopped?.resume(throwing: CancellationError()); api.stopped = nil
-            return session
+            return NativeUploadRestart(session: session, interruptedTransfers: 1)
         })
         XCTAssertEqual(stopCalls, 1); XCTAssertEqual(api.uploads, 2)
         XCTAssertEqual(api.cleanup, ["files", "conversation"])
@@ -73,10 +73,27 @@ final class NativeUploadCancellationDiagnosticsTests: XCTestCase {
         await session.refresh()
         var stopCalls = 0
         do {
-            _ = try await NativeUploadCancellationDiagnostics.run(session: session, directory: root, stopAndRestart: { stopCalls += 1; return session })
+            _ = try await NativeUploadCancellationDiagnostics.run(session: session, directory: root, stopAndRestart: { stopCalls += 1; return NativeUploadRestart(session: session, interruptedTransfers: 1) })
             XCTFail("Pre-stop HTTP failure accepted")
         } catch { }
         XCTAssertEqual(stopCalls, 0)
+        XCTAssertEqual(api.cleanup, ["files", "conversation"])
+        XCTAssertFalse(FileManager.default.fileExists(atPath: root.appendingPathComponent("upload-cancellation-vm.json").path))
+    }
+    @MainActor func testStopWithoutActiveOwnedSocketWitnessCannotPublishSuccess() async throws {
+        let root = FileManager.default.temporaryDirectory.appendingPathComponent("artex-no-stop-witness-" + UUID().uuidString)
+        try FileManager.default.createDirectory(at: root, withIntermediateDirectories: true)
+        defer { try? FileManager.default.removeItem(at: root) }
+        let api = CancellationFixtureAPI(), session = AuthenticationSession(client: api, vault: CancellationFixtureVault(), setupToken: "fixture")
+        await session.refresh()
+        do {
+            _ = try await NativeUploadCancellationDiagnostics.run(session: session, directory: root, stopAndRestart: {
+                while api.stopped == nil { await Task.yield() }
+                api.stopped?.resume(throwing: CancellationError()); api.stopped = nil
+                return NativeUploadRestart(session: session, interruptedTransfers: 0)
+            })
+            XCTFail("Missing stop witness accepted")
+        } catch { }
         XCTAssertEqual(api.cleanup, ["files", "conversation"])
         XCTAssertFalse(FileManager.default.fileExists(atPath: root.appendingPathComponent("upload-cancellation-vm.json").path))
     }
@@ -88,7 +105,7 @@ final class NativeUploadCancellationDiagnosticsTests: XCTestCase {
         let session = AuthenticationSession(client: api, vault: CancellationFixtureVault(), setupToken: "fixture")
         await session.refresh()
         do {
-            _ = try await NativeUploadCancellationDiagnostics.run(session: session, directory: root, stopAndRestart: { XCTFail("Must not reach VM stop"); return session })
+            _ = try await NativeUploadCancellationDiagnostics.run(session: session, directory: root, stopAndRestart: { XCTFail("Must not reach VM stop"); return NativeUploadRestart(session: session, interruptedTransfers: 1) })
             XCTFail("Unexpected success accepted")
         } catch { }
         XCTAssertEqual(api.cleanup, ["files", "conversation"])

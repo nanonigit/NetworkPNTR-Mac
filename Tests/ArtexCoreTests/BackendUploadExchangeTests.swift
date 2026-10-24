@@ -100,6 +100,16 @@ final class BackendUploadExchangeTests: XCTestCase {
         XCTAssertTrue(wire.suffix(15).elementsEqual(Data("\r\n--fixture--\r\n".utf8)))
         XCTAssertTrue(socket.isFinished)
     }
+    func testCancellationWitnessCountsOnlyOpenUncancelledOwner() throws {
+        let (socket, peer) = try pair(); defer { Darwin.close(peer) }
+        XCTAssertTrue(socket.cancel())
+        XCTAssertFalse(socket.cancel())
+        socket.finish()
+        XCTAssertFalse(socket.cancel())
+        let (finished, other) = try pair(); defer { Darwin.close(other) }
+        finished.finish()
+        XCTAssertFalse(finished.cancel())
+    }
     func testProgressCountsOnlyBodyAndCanCancelActualSocketBeforeFullPayload() throws {
         let plan = try ChatMultipartPlan(files: [selectedFile(size: 120 * 1024 * 1024)])
         let header = try BackendMultipartRequest.header(conversationID: 1, plan: plan, bearer: "fixture.jwt")
