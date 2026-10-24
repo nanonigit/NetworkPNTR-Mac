@@ -120,14 +120,10 @@ struct ChatView: View {
                 Label(error, systemImage: "exclamationmark.triangle").font(.callout).foregroundStyle(.red).textSelection(.enabled)
             }
             if !store.attachments.isEmpty {
-                ChatAttachmentStrip(attachments: store.attachments) { path in
-                    store.removeAttachment(path: path, for: store.selectedID ?? 0)
-                }
+                attachmentStrip(owner: store.selectedID ?? 0)
             }
             if let upload = workspace.uploadState(for: store.selectedID) {
-                ChatAttachmentProgressView(presentation: ChatUploadPresentation(progress: upload.progress)) {
-                    workspace.cancelUpload(for: store.selectedID)
-                }
+                uploadProgress(upload, owner: store.selectedID)
             }
             if let agent = workspace.agents.first(where: { $0.key == workspace.agentKey }), store.selectedID == nil {
                 Text(agent.description).font(.caption).foregroundStyle(.secondary).lineLimit(2)
@@ -153,6 +149,16 @@ struct ChatView: View {
         guard composerAvailability.canSend else { return }
         Task { _ = await workspace.send() }
     }
+    private func attachmentStrip(owner: Int64) -> some View {
+        ChatAttachmentStrip(attachments: store.attachments(for: owner)) { path in
+            store.removeAttachment(path: path, for: owner)
+        }
+    }
+    private func uploadProgress(_ upload: ChatAttachmentUploadState, owner: Int64?) -> some View {
+        ChatAttachmentProgressView(presentation: ChatUploadPresentation(progress: upload.progress)) {
+            workspace.cancelUpload(for: owner)
+        }
+    }
     private func attachmentPicker(owner: Int64?) -> some View {
         ChatAttachmentPickerButton(enabled: composerAvailability.canPick, onChoose: { files in
             guard owner == store.selectedID, !files.isEmpty else { return }
@@ -161,7 +167,7 @@ struct ChatView: View {
             uploadTasks[id] = Task { @MainActor in
                 defer { uploadTasks.removeValue(forKey: id) }
                 do {
-                    try await ChatFileAccess().withAccess(files) { _ = await workspace.pickFiles(files) }
+                    _ = try await ChatAttachmentSelection.upload(files, owner: owner, workspace: workspace)
                 } catch is CancellationError {
                     // Cancellation is a user action; the workspace invalidates its own operation.
                 } catch {

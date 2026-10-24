@@ -1,3 +1,4 @@
+import ArtexCore
 import Foundation
 
 /// Access lasts through the awaited transfer, including its cancellation cleanup.
@@ -14,5 +15,17 @@ import Foundation
         let scoped = files.filter(start)
         defer { for file in scoped.reversed() { stop(file) } }
         return try await operation()
+    }
+}
+
+/// Selection is checked when the scheduled task actually starts, not only on click.
+@MainActor enum ChatAttachmentSelection {
+    static func upload(_ files: [URL], owner: Int64?, workspace: ChatWorkspace,
+                       access: ChatFileAccess = ChatFileAccess()) async throws -> Bool {
+        guard !files.isEmpty, !Task.isCancelled, owner == workspace.transcript.selectedID else { return false }
+        return try await access.withAccess(files) {
+            guard !Task.isCancelled, owner == workspace.transcript.selectedID else { return false }
+            return await workspace.pickFiles(files)
+        }
     }
 }
