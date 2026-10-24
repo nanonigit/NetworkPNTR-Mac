@@ -2,6 +2,40 @@ import XCTest
 @testable import ArtexCore
 
 final class ChatServiceTests: XCTestCase {
+    @MainActor func testKnownMissingProviderSend503HasStaticSetupGuidanceOnly() async throws {
+        let api = ChatTestTransport(); let service = ChatService(client: api)
+        let known = [
+            "아직 LLM 설정이 없습니다: 시스템 → LLM 설정에서 설정을 하나 추가해 주세요",
+            "No LLM configuration exists yet: add one under System → LLM settings",
+            "尚无 LLM 配置：请在 系统 → LLM 设置 中添加一个配置",
+            "Aún no existe ninguna configuración de LLM: agregue una en Sistema → Configuración de LLM",
+            "LLM 設定がまだありません: システム → LLM 設定で設定を1つ追加してください"
+        ]
+        let safe = "LLM設定がありません。システムのLLM設定で接続先を追加してください。"
+        for message in known {
+            try api.enqueue(["error": message], status: 503)
+            do { try await service.send(id: 7, message: "fixture"); XCTFail("Rejected send accepted") }
+            catch { XCTAssertEqual(error.localizedDescription, safe) }
+        }
+        for message in ["private-secret", known[0] + " private-secret", " " + known[0], known[0] + "\n"] {
+            try api.enqueue(["error": message], status: 503)
+            do { try await service.send(id: 7, message: "fixture"); XCTFail() }
+            catch { XCTAssertFalse(error.localizedDescription.contains("private-secret")); XCTAssertNotEqual(error.localizedDescription, safe) }
+        }
+        for status in [400, 401, 403, 500] {
+            try api.enqueue(["error": known[0]], status: status)
+            do { try await service.send(id: 7, message: "fixture"); XCTFail() }
+            catch { XCTAssertNotEqual(error.localizedDescription, safe) }
+        }
+        try api.enqueue(["error": known[0]], status: 503)
+        do { _ = try await service.conversations(); XCTFail() }
+        catch { XCTAssertNotEqual(error.localizedDescription, safe) }
+        for malformed in [["error": 123], ["unexpected": true]] as [[String: Any]] {
+            try api.enqueue(malformed, status: 503)
+            do { try await service.send(id: 7, message: "fixture"); XCTFail() }
+            catch { XCTAssertNotEqual(error.localizedDescription, safe) }
+        }
+    }
     @MainActor private func body(_ api: ChatTestTransport) throws -> [String: Any] {
         try XCTUnwrap(JSONSerialization.jsonObject(with: XCTUnwrap(api.calls.last?.body)) as? [String: Any])
     }

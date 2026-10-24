@@ -76,3 +76,6 @@ A6 persisted-body checkpoint: 221 Swift cases (220 pass, one explicitly skipped 
 
 
 A7 gates: plan/zero-profile validation tests RED; DEBUG fixture integration GREEN; review/full suites/signed rebuild; fresh owned native+browser no-LLM UI sends in mixed and attachment-only forms, exact draft/card restoration/history/files checks and cleanup; remoteCI. Do not infer UI restoration from earlier model tests alone.
+
+
+A7 observed-error repair: exact static no-profile mapping RED -> service boundary GREEN -> full suites/review/build -> fresh native UI retest, retaining first-run misleading-error screenshots. Draft restoration is observed, but error UX parity stays pending until that retest.

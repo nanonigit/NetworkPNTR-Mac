@@ -94,3 +94,6 @@ Lazyweb research38aa7a86-3a2a-4af4-836a-fabad477eca1 refined for sent attachment
 
 
 A7 fixture design: DEBUG-only NativeReviewPlan parses --no-llm-review only with --native-review and rejects all seeding flags that can change fixture state. NativeDiagnostics resolves plan before starting VM; no-LLM mode skips NativeLLMDiagnostics.run and its restart verification, checks LLMService.profiles remains empty before/after authenticated restart. Other normal authentication/stop/keychain checks remain. Existing standard diagnostics continue unchanged. Separate disposable browser with no provider; external CUA actions drive real composer and readonly verification API afterward. Lazyweb out of scope for fixture-only change.
+
+
+A7 observed UI defect: generic503 labels the missing-provider rejection as a database outage. At the send-only ChatService request boundary, decode a bounded Error envelope only for POST messages503 and map exact no-profile translations from pinned server/errmsg_catalog.go to one static Japanese setup instruction. Never render raw backend text. Add five-language and hostile suffix/malformed/other-status/other-route regressions. Lazyweb refinement chat failed message retry attachments had weak unrelated results; no design inference; pinned browser restoration/error remains authoritative.

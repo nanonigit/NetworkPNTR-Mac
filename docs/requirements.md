@@ -33,3 +33,6 @@ A6 persisted user messages: display full plain text and read-only attachment nam
 
 
 A7 matched restoration requirement: disposable native and pinned browser both have zero LLM profiles before and after restart. Real picker upload, mixed text/card and attachment-only sends must receive backend503, restore the original draft/cards, retain uploaded files and not create user activity. Test-only mode must reject conflicting diagnostic seed flags before VM start. No production network or UI change.
+
+
+A7 error correction: a known no-LLM send503 must show a static LLM-setup instruction, never a database diagnosis. Only exact pinned catalog strings may map to that instruction; arbitrary/malformed/extended error bodies remain hidden. Other routes/statuses retain their existing behavior.

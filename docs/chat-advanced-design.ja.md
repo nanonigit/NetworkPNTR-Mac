@@ -90,3 +90,6 @@ Lazyweb研究38aa7a86-3a2a-4af4-836a-fabad477eca1を送信済み添付で追加�
 
 
 A7比較設計: DEBUG限定NativeReviewPlanが--no-llm-reviewを--native-review付きでのみ許可し、状態を変えるseedフラグとの併用を拒否。NativeDiagnosticsはVM起動前に判定し、未設定モードではLLM作成・その再起動検証を省き、再起動前後のprofilesが空であることを確認。標準の認証・停止・Keychain検査は維持。参照側もプロバイダーなしの使い捨て環境とし、実CUAで入力・送信を操作し、後で読み取りAPIを照合する。fixtureのみでUI変更なし、Lazyweb対象外。
+
+
+A7実画面不具合: LLM未設定503を汎用マッピングがDB障害と表示。ChatServiceのPOST messages・503境界でのみerrorをデコードし、固定server/errmsg_catalog.goの未設定翻訳と完全一致する場合だけ静的な日本語LLM設定案内へ変換。生のバックエンド文字列は表示しない。5言語・悪意の追記・不正JSON・他ステータス・他ルートを回帰試験。Lazywebの追加検索は弱く無関係で、設計の根拠にせず固定ブラウザを基準とする。
