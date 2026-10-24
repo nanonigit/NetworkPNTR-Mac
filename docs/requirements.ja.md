@@ -56,3 +56,5 @@ L4b Chatエラー：storeは安全な型付きAppErrorMessageを保持し、view
 L4c移植済み画面のエラー／通知ゲート：AuthenticationSession・LLMStore・DashboardLoadStateはAppErrorMessageを保持し、日本語Stringは計算プロパティで互換。LLM完了通知はカタログキーで保持し、再取得失敗と独立させる。認証・LLM設定／編集／rotation・dashboardの現在view localeで表示。localeによる認証／変更操作／poll再起動やパスワード／APIキー保存をしない。フォーム・規約同意・世代・前回データを保持。周辺未翻訳操作／規約言語は別ゲート。検証失敗・未知エラー秘密除去・保存成功後の再取得失敗・dashboard前回データ保持を試験。Lazyweb settings inline validation errorは隣接Gopuff captchaメタデータのみ（.356）で視覚証拠としない。実native/browser比較はMac解除まで延期。
 
 L5認証／規約：ネイティブ認証ラベルを型付きカタログで日英化。AuthTerms.loadAllで固定規約の両言語を一度読み込み、既存シートの現在localeで表示。パスワード／確認／同意／focusのbinding・task同一性・送信・phase変化時の消去を保持。読了は固定browser同様、シートを開くたびリセットし、表示中の言語変更ではreadToEndを保持。言語に基づくview再作成なし。各言語28項目のauth.terms全文が固定参照と一致し、規約改変や実行時ネットワーク取得なし。自動setup-token／固定ユーザー名の案内はnativeの実動作に合わせる。resource/API RED/GREEN・レビュー／全試験／署名同梱を確認し、実native/browserの操作／scroll／読了はMac解除まで未完了。Lazyweb terms agreement modalはPostman隣接メタデータのみ（.479）で画像証拠にはしない。
+
+L5隣接読了判定修正：初期の空スクロール領域で、規約読み込み前に読了を付与しない。シート内の読了状態を型で保持し、Equatableなviewport観測にdocumentLoadedも含める。短文でatEndがtrueのままでも読込完了を別イベントとして扱う。失敗／空文書は同意ボタンを有効化せず、読込済み文書の末尾で読了を保持し、表示中の言語変更では維持、新規シートは未読。ログイン権限強化ではなく読了UIの修正で、独立した同意checkboxは変更しない。別RED/GREENと実scroll比較待ち。

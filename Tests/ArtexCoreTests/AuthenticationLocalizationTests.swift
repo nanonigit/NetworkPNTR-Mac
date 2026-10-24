@@ -49,4 +49,28 @@ final class AuthenticationLocalizationTests: XCTestCase {
         XCTAssertEqual(try AuthTerms.load(),try AuthTerms.load(language:"ja"))
         for unsupported in ["zh","ko","en-US","","../en"] {XCTAssertThrowsError(try AuthTerms.load(language:unsupported))}
     }
+    func testReadGateIgnoresEmptyGeometryAndKeepsPerOpenLatchAcrossLocale() {
+        var progress = AuthTermsReadingProgress()
+        progress.observe(.init(documentLoaded: false, atEnd: true))
+        XCTAssertFalse(progress.hasReadToEnd)
+        XCTAssertFalse(progress.canAgree(documentLoaded: false))
+        XCTAssertFalse(progress.canAgree(documentLoaded: true))
+        progress.observe(.init(documentLoaded: true, atEnd: false))
+        XCTAssertFalse(progress.canAgree(documentLoaded: true))
+        progress.observe(.init(documentLoaded: true, atEnd: true))
+        XCTAssertTrue(progress.canAgree(documentLoaded: true))
+        // A locale change can make the translated document taller; preserve the per-open latch.
+        progress.observe(.init(documentLoaded: true, atEnd: false))
+        XCTAssertTrue(progress.canAgree(documentLoaded: true))
+        XCTAssertFalse(progress.canAgree(documentLoaded: false))
+        XCTAssertFalse(AuthTermsReadingProgress().hasReadToEnd)
+    }
+    func testLoadedShortDocumentChangesObservationEvenWhenAtEndStaysTrue() {
+        let empty = AuthTermsViewport(documentLoaded: false, atEnd: true)
+        let short = AuthTermsViewport(documentLoaded: true, atEnd: true)
+        XCTAssertNotEqual(empty,short)
+        var progress = AuthTermsReadingProgress()
+        progress.observe(empty);XCTAssertFalse(progress.hasReadToEnd)
+        progress.observe(short);XCTAssertTrue(progress.canAgree(documentLoaded: true))
+    }
 }
