@@ -119,3 +119,5 @@ L4cチェックポイント：a229ee3型付き値未実装RED→7b6c8c5 GREEN4�
 L5認証／規約：ネイティブ認証ラベルを型付きカタログで日英化。AuthTerms.loadAllで固定規約の両言語を一度読み込み、既存シートの現在localeで表示。パスワード／確認／同意／focusのbinding・task同一性・送信・phase変化時の消去を保持。読了は固定browser同様、シートを開くたびリセットし、表示中の言語変更ではreadToEndを保持。言語に基づくview再作成なし。各言語28項目のauth.terms全文が固定参照と一致し、規約改変や実行時ネットワーク取得なし。自動setup-token／固定ユーザー名の案内はnativeの実動作に合わせる。resource/API RED/GREEN・レビュー／全試験／署名同梱を確認し、実native/browserの操作／scroll／読了はMac解除まで未完了。Lazyweb terms agreement modalはPostman隣接メタデータのみ（.479）で画像証拠にはしない。
 
 L5隣接読了判定修正：初期の空スクロール領域で、規約読み込み前に読了を付与しない。シート内の読了状態を型で保持し、Equatableなviewport観測にdocumentLoadedも含める。短文でatEndがtrueのままでも読込完了を別イベントとして扱う。失敗／空文書は同意ボタンを有効化せず、読込済み文書の末尾で読了を保持し、表示中の言語変更では維持、新規シートは未読。ログイン権限強化ではなく読了UIの修正で、独立した同意checkboxは変更しない。別RED/GREENと実scroll比較待ち。
+
+L5チェックポイント：b4c3172キー／loader未実装RED→3c70904 GREEN3、cc1e53c読了状態RED→a9e3fa3 GREEN5。Swift258（成功257・既存AX1スキップ）、Python52、loader／読了行100%。署名は各言語23文言・規約28項目一致。レビュー済み、実geometry／パスワード入力／browser比較はMac解除待ち。他画面／backend／runtime／全21ゲート未完了。localization-authentication-verification.ja.md参照。

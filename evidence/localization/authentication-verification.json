@@ -1,0 +1,26 @@
+{
+  "catalog_red": "b4c3172",
+  "catalog_green": "3c70904",
+  "reading_red": "cc1e53c",
+  "reading_green": "a9e3fa3",
+  "baseline": "e75ae371ad777ffd1eecdd28d2781a6519b05591",
+  "focused_tests": 5,
+  "swift_cases": 258,
+  "swift_passed": 257,
+  "swift_skipped": 1,
+  "python_passed": 52,
+  "signed_bundle_verified": {
+    "en": {
+      "auth_strings": 23,
+      "terms_entries": 28
+    },
+    "ja": {
+      "auth_strings": 23,
+      "terms_entries": 28
+    }
+  },
+  "review": "approved; actual SwiftUI geometry delivery not proven by state tests",
+  "actual_native_browser_controls_and_read_gate": "pending until user unlocks Mac",
+  "new_fixture_or_screenshot": false,
+  "whole_app_or_localization_acceptance": false
+}
