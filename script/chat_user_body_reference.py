@@ -45,6 +45,7 @@ def multipart(parts):
         output.extend(data); output.extend(b'\r\n')
         if len(output) > 65536: raise ValueError('Fixture multipart bound')
     output.extend(f'--{boundary}--\r\n'.encode())
+    if len(output) > 65536: raise ValueError('Fixture multipart bound')
     return 'multipart/form-data; boundary=' + boundary, bytes(output)
 
 
