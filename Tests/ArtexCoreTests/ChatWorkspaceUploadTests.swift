@@ -255,4 +255,26 @@ final class ChatWorkspaceUploadTests: XCTestCase {
         list?.resume(returning:try ChatTestTransport.response(["conversations":[]])); await listing.value
         XCTAssertEqual(workspace.selected?.id,17)
     }
+    @MainActor func testStaleCancelActionCannotCancelReplacementOperationForSameConversation() async throws {
+        let api = WorkspaceUploadAPI(), workspace = ChatWorkspace(client: api)
+        await workspace.select(7)
+        var replies: [CheckedContinuation<[ChatAttachment], Error>] = []
+        api.uploadHandler = { _ in try await withCheckedThrowingContinuation { replies.append($0) } }
+        let first = Task { await workspace.pickFiles(self.files) }
+        await waitFor { replies.count == 1 }
+        let oldID = try XCTUnwrap(workspace.uploadState(for: 7)?.operationID)
+        workspace.cancelUpload(for: 7, operationID: oldID)
+        replies[0].resume(returning: [try attachment()])
+        let firstAccepted = await first.value; XCTAssertFalse(firstAccepted)
+        let replacement = Task { await workspace.pickFiles(self.files) }
+        await waitFor { replies.count == 2 }
+        let newID = try XCTUnwrap(workspace.uploadState(for: 7)?.operationID)
+        XCTAssertNotEqual(oldID, newID)
+        workspace.cancelUpload(for: 7, operationID: oldID)
+        XCTAssertEqual(workspace.uploadState(for: 7)?.operationID, newID)
+        replies[1].resume(returning: [try attachment()])
+        let accepted = await replacement.value; XCTAssertTrue(accepted)
+        XCTAssertEqual(workspace.transcript.attachments, [try attachment()])
+    }
+
 }
