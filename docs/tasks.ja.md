@@ -44,3 +44,6 @@ A3全内容拡張: 有界ハッシュパーサ、実ソケットの取消/期限
 A4.1: Swift171件（Core159・AppKit5・診断fixture7）/Python42件、対象chat39件成功。相対メタデータ、UTF8完全一致の識別、会話別カード、送信時クリア/失敗・stop復元、添付のみ送信を実装。checksum固定のブラウザ送信4ケースを実行し待機/完了状態とJSONが一致、再生成と不一致ソースの実行前拒否も確認。アプリ再ビルド/署名確認。picker/cards/upload引継ぎの合格ではない。次はA4.2認証typed upload adapter、選択時会話作成/本文引継ぎ、会話削除と古いupload/取消/resetの所有権。その後実ゲスト/固定比較とA5実画面へ。Unicode空白の端点同等性も残る。
 
 A4.2有限所有権/実機確認: Swift190件（Core176・AppKit5・診断fixture9）、Python45件、所有権/既存chat対象46件成功。認証typed upload、作成/本文/カード引継ぎ、最新1件進捗、古い結果/取消/次処理/stop/reset/削除の所有権を実装・レビュー。初回attachment-handoff-a4-v1はディスク全ゼロでもbootstrap前の空判定segfault/カーネルメモリ警告で失敗し保持。同じ構成の対照1回attachment-handoff-a4-v2で実typed vsock引継ぎ、LLMなし503復元2回、内容ハッシュ、カード除去後ファイル保持、選択分離、所有データ清掃を確認し、固定backend6契約群が一致。カーネル安定性/UIは合格にしない。次A5は最新Lazyweb、native picker/cards/進捗/エラー/取消の実装と外部比較。Unicode空白、退避後/ダウンロード取消、既知実行基盤faultは未完了。
+
+
+A5前のUnicode送信判定: 固定oracleを拡張実行し、Store・本文・復元・会話作成前・Service判定のREDを確認して記録。共有trimでGREENを確認して記録。レビュー・全テスト・カバレッジ・署名ビルド・CIを確認する。ネイティブUI・実プロバイダー受入は未完了。

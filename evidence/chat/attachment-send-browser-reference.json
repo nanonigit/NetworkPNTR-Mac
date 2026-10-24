@@ -157,6 +157,151 @@
         "sending": false,
         "running": false
       }
+    },
+    {
+      "name": "bom_guard",
+      "input": "﻿",
+      "attachments": [],
+      "outcome": "none",
+      "request": null,
+      "pending": {
+        "draft": "﻿",
+        "attachments": [],
+        "sending": false,
+        "running": false
+      },
+      "final": {
+        "draft": "﻿",
+        "attachments": [],
+        "sending": false,
+        "running": false
+      }
+    },
+    {
+      "name": "nel_is_content",
+      "input": "",
+      "attachments": [],
+      "outcome": "error",
+      "request": {
+        "id": 7,
+        "message": ""
+      },
+      "pending": {
+        "draft": "",
+        "attachments": [],
+        "sending": true,
+        "running": false
+      },
+      "final": {
+        "draft": "",
+        "attachments": [],
+        "sending": false,
+        "running": false
+      }
+    },
+    {
+      "name": "zero_width_is_content",
+      "input": "​",
+      "attachments": [],
+      "outcome": "error",
+      "request": {
+        "id": 7,
+        "message": "​"
+      },
+      "pending": {
+        "draft": "",
+        "attachments": [],
+        "sending": true,
+        "running": false
+      },
+      "final": {
+        "draft": "​",
+        "attachments": [],
+        "sending": false,
+        "running": false
+      }
+    },
+    {
+      "name": "padded_text_error",
+      "input": "﻿ \t retry text \r\n",
+      "attachments": [
+        {
+          "name": "a",
+          "path": "uploads/a",
+          "size": 1
+        }
+      ],
+      "outcome": "error",
+      "request": {
+        "id": 7,
+        "message": "retry text",
+        "attachments": [
+          {
+            "name": "a",
+            "path": "uploads/a",
+            "size": 1
+          }
+        ]
+      },
+      "pending": {
+        "draft": "",
+        "attachments": [],
+        "sending": true,
+        "running": false
+      },
+      "final": {
+        "draft": "retry text",
+        "attachments": [
+          {
+            "name": "a",
+            "path": "uploads/a",
+            "size": 1
+          }
+        ],
+        "sending": false,
+        "running": false
+      }
+    },
+    {
+      "name": "bom_attachment_only_error",
+      "input": "﻿",
+      "attachments": [
+        {
+          "name": "a",
+          "path": "uploads/a",
+          "size": 1
+        }
+      ],
+      "outcome": "error",
+      "request": {
+        "id": 7,
+        "message": "",
+        "attachments": [
+          {
+            "name": "a",
+            "path": "uploads/a",
+            "size": 1
+          }
+        ]
+      },
+      "pending": {
+        "draft": "",
+        "attachments": [],
+        "sending": true,
+        "running": false
+      },
+      "final": {
+        "draft": "",
+        "attachments": [
+          {
+            "name": "a",
+            "path": "uploads/a",
+            "size": 1
+          }
+        ],
+        "sending": false,
+        "running": false
+      }
     }
   ]
 }

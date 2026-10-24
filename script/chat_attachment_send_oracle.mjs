@@ -22,6 +22,11 @@ const scenarios = [
     { name: 'attachment_only_error_distinct_unicode', input: '', attachments: [file('\u00e9.txt'), file('e\u0301.txt')], outcome: 'error' },
     { name: 'text_and_attachment_accepted', input: 'send text', attachments: [file('file.txt')], outcome: 'accepted' },
     { name: 'empty_guard', input: '', attachments: [], outcome: 'none' },
+    { name: 'bom_guard', input: '\uFEFF', attachments: [], outcome: 'none' },
+    { name: 'nel_is_content', input: '\u0085', attachments: [], outcome: 'error' },
+    { name: 'zero_width_is_content', input: '\u200B', attachments: [], outcome: 'error' },
+    { name: 'padded_text_error', input: '\uFEFF \t retry text \r\n', attachments: [file('a')], outcome: 'error' },
+    { name: 'bom_attachment_only_error', input: '\uFEFF', attachments: [file('a')], outcome: 'error' },
 ];
 const cases = [];
 for (const fixture of scenarios) {
