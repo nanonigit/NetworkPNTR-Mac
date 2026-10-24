@@ -119,6 +119,44 @@ final class ChatAttachmentStoreTests: XCTestCase {
         let accepted = await pending.value; XCTAssertFalse(accepted)
         XCTAssertTrue(store.draft.utf8.elementsEqual(newer.utf8))
     }
+    @MainActor func testStatesAndSendWireMatchExecutedPinnedBrowserSendHandler() async throws {
+        let root = URL(fileURLWithPath: #filePath).deletingLastPathComponent().deletingLastPathComponent().deletingLastPathComponent()
+        let data = try Data(contentsOf: root.appendingPathComponent("evidence/chat/attachment-send-browser-reference.json"))
+        let reference = try JSONSerialization.jsonObject(with: data) as! [String:Any]
+        let cases = try XCTUnwrap(reference["cases"] as? [[String:Any]])
+        XCTAssertEqual(cases.count, 4)
+        func equal(_ lhs: Any, _ rhs: Any) throws {
+            XCTAssertEqual(try JSONSerialization.data(withJSONObject: lhs, options: [.sortedKeys]), try JSONSerialization.data(withJSONObject: rhs, options: [.sortedKeys]))
+        }
+        for item in cases {
+            let api = ChatTestTransport(), store = try await store(api)
+            store.draft = try XCTUnwrap(item["input"] as? String)
+            let attachments = try JSONDecoder().decode([ChatAttachment].self, from: JSONSerialization.data(withJSONObject: item["attachments"] as Any))
+            try store.appendAttachments(attachments, for: 7)
+            var reply: CheckedContinuation<BackendHTTPResponse, Error>?
+            api.handler = { call in
+                if call.method == "POST" { return try await withCheckedThrowingContinuation { reply = $0 } }
+                if call.path == "/api/conversations" { return try ChatTestTransport.response(["conversations":[ChatFixture.conversation()]]) }
+                return try ChatTestTransport.response(ChatFixture.page([],cursor:0,running:true))
+            }
+            func snapshot() -> [String:Any] {
+                ["draft":store.draft, "attachments":store.attachments.map(\.json), "sending":store.isSending, "running":store.running]
+            }
+            let sending = Task { await store.sendCurrentDraft() }
+            if !(item["request"] is NSNull) {
+                await waitFor { reply != nil }
+                try equal(snapshot(), item["pending"] as Any)
+                let call = try XCTUnwrap(api.calls.first { $0.method == "POST" })
+                var body = try JSONSerialization.jsonObject(with: XCTUnwrap(call.body)) as! [String:Any]
+                body["id"] = 7
+                try equal(body, item["request"] as Any)
+                if item["outcome"] as? String == "accepted" { reply?.resume(returning: try ChatTestTransport.response(["status":"accepted"],status:202)) }
+                else { reply?.resume(returning: try ChatTestTransport.response(["error":"fixture"],status:503)) }
+            }
+            _ = await sending.value
+            try equal(snapshot(), item["final"] as Any)
+        }
+    }
     @MainActor func testEditedThenClearedDraftDoesNotGetOldMessageRestored() async throws {
         let api = ChatTestTransport(), store = try await store(api)
         store.draft = "old"
