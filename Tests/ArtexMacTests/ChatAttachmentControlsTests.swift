@@ -111,4 +111,30 @@ final class ChatAttachmentControlsTests: XCTestCase {
         XCTAssertNil(workspace.transcript.selectedID)
     }
 
+    @MainActor final class UploadTransport: BackendJSONTransport, ChatAttachmentUploading {
+        var received: (Int64, [URL])?
+        var duringUpload: () -> Void = {}
+        func send(method: String, path: String, body: Data?, bearer: String?) async throws -> BackendHTTPResponse {
+            let body = path == "/api/conversations" ? #"{"conversations":[]}"# : #"{"items":[],"cursor":0,"running":false,"hasMore":false}"#
+            return BackendHTTPResponse(status: 200, body: Data(body.utf8))
+        }
+        func uploadAttachments(conversationID: Int64, files: [URL], progress: BackendUploadProgressHandler?) async throws -> [ChatAttachment] {
+            received = (conversationID, files); duringUpload(); await Task.yield(); duringUpload()
+            return try files.map { try ChatAttachment(name: $0.lastPathComponent, path: "uploads/" + $0.lastPathComponent, size: 1) }
+        }
+    }
+    @MainActor func testCurrentSelectionTransfersTypedFilesWhileScopesRemainOpen() async throws {
+        let transport = UploadTransport(), workspace = ChatWorkspace(client: transport)
+        await workspace.select(7)
+        let files = [URL(fileURLWithPath: "/fixture/a"), URL(fileURLWithPath: "/fixture/b")]
+        var scopes = 0
+        transport.duringUpload = { XCTAssertEqual(scopes, 2) }
+        let access = ChatFileAccess(start: { _ in scopes += 1; return true }, stop: { _ in scopes -= 1 })
+        let accepted = try await ChatAttachmentSelection.upload(files, owner: 7, workspace: workspace, access: access)
+        XCTAssertTrue(accepted); XCTAssertEqual(scopes, 0)
+        XCTAssertEqual(transport.received?.0, 7); XCTAssertEqual(transport.received?.1, files)
+        XCTAssertEqual(workspace.transcript.attachments.map(\.name), ["a", "b"])
+        XCTAssertFalse(workspace.isUploading)
+    }
+
 }
