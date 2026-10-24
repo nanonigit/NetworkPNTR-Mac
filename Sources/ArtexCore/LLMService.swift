@@ -1,9 +1,16 @@
 import Foundation
 
 /// Feature clients cannot inject a separate bearer or bypass the live auth session.
-@MainActor public final class AuthenticatedBackendClient: BackendJSONTransport {
+@MainActor public final class AuthenticatedBackendClient: BackendJSONTransport, ChatAttachmentUploading {
     private let session: AuthenticationSession
     public init(session: AuthenticationSession) { self.session = session }
+    public func uploadAttachments(conversationID: Int64, files: [URL], progress: BackendUploadProgressHandler?) async throws -> [ChatAttachment] {
+        let response = try await session.authenticatedUpload(conversationID: conversationID, files: files, progress: progress)
+        guard response.status == 200 else { throw BackendAPIError.status(response.status) }
+        let attachments = try BackendJSONCoding.decode(ChatUploadResponse.self, from: response.body).attachments
+        guard attachments.count == files.count else { throw BackendAPIError.invalidResponse }
+        return attachments
+    }
     public func send(method: String, path: String, body: Data?, bearer: String?) async throws -> BackendHTTPResponse {
         guard bearer == nil else { throw BackendAPIError.invalidResponse }
         return try await session.authenticatedRequest(method: method, path: path, body: body)

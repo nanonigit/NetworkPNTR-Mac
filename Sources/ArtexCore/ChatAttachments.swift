@@ -33,3 +33,12 @@ public struct ChatUploadResponse: Decodable, Sendable {
         guard !attachments.isEmpty, Set(attachments.map(\.id)).count == attachments.count else { throw BackendAPIError.invalidResponse }
     }
 }
+
+@MainActor public protocol ChatAttachmentUploading {
+    func uploadAttachments(conversationID: Int64, files: [URL], progress: BackendUploadProgressHandler?) async throws -> [ChatAttachment]
+}
+public extension ChatAttachmentUploading {
+    func uploadAttachments(conversationID: Int64, files: [URL]) async throws -> [ChatAttachment] {
+        try await uploadAttachments(conversationID: conversationID, files: files, progress: nil)
+    }
+}
