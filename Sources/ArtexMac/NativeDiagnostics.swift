@@ -29,6 +29,10 @@ import Foundation
             await authentication.setup(password: password, confirmation: password)
             guard authentication.phase == .authenticated else { throw RuntimeError.integrity(authentication.error ?? "native setup authentication") }
             result["native_setup_authenticated"] = true
+            if CommandLine.arguments.contains("--attachment-state-diagnostics") {
+                try await NativeAttachmentHandoffDiagnostics.run(session:authentication,directory:directory)
+                result["native_attachment_handoff_recovery_and_file_preservation"] = true
+            }
             let llm = try await NativeLLMDiagnostics.run(session: authentication, directory: directory)
             result["native_llm_three_formats_crud_key_preservation_pool_retry"] = true
             if CommandLine.arguments.contains("--chat-diagnostics") {

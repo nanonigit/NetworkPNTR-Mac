@@ -54,11 +54,13 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('vm_contract', type=Path)
     parser.add_argument('output_directory', type=Path)
-    parser.add_argument('--kind', choices=['backend', 'llm', 'chat', 'chat-history', 'chat-upload'], default='backend')
+    parser.add_argument('--kind', choices=['backend', 'llm', 'chat', 'chat-history', 'chat-upload', 'chat-attachment-state'], default='backend')
     args = parser.parse_args()
     expected = json.loads(args.vm_contract.read_text())
     if args.kind == 'chat-upload':
         expected = {key: expected[key] for key in ('records', 'limit', 'owned_files_and_conversation_cleaned')}
+    if args.kind == 'chat-attachment-state':
+        expected = {key: expected[key] for key in ('records', 'failed_send_statuses', 'guest_names_after_remove', 'history_empty_after_rejections', 'owned_files_and_conversation_cleaned')}
     identity = 'artex-mac-parity-' + uuid.uuid4().hex[:12]
     network = identity + '-net'
     postgres = identity + '-db'
@@ -104,6 +106,8 @@ def main():
                      'tool_pair', 'result_usage', 'overlap_deduplication', 'final_six_idle_delta', 'detail_scope_cleanup']
         if args.kind == 'chat-upload':
             cases = ['binary_empty_duplicate_upload', 'exact_small_file_content', 'exact128MiB_body_accepted', 'persisted_large_file_size', 'full_large_file_hash', 'one_byte_over_rejected', 'original_preserved', 'owned_fixture_cleanup']
+        if args.kind == 'chat-attachment-state':
+            cases = ['typed_unicode_metadata_and_content', 'attachment_only_no_llm_rejection', 'mixed_no_llm_rejection', 'guest_files_preserved_after_card_removal', 'empty_rejected_history', 'owned_fixture_cleanup']
         (args.output_directory / 'api-contract-comparison.json').write_text(json.dumps({'baseline': 'e75ae371ad777ffd1eecdd28d2781a6519b05591', 'identical_fixture': True, 'api_contract_equal': True, 'cases': cases, 'browser_data_modified': False, 'ui_workflow_parity': 'pending'}, indent=2) + '\n')
         print('PASS VM and disposable pinned browser-backend API contracts match; existing browser data untouched.')
     finally:
