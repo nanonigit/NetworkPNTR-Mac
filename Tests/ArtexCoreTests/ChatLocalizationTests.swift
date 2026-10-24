@@ -1,4 +1,5 @@
 import XCTest
+import Foundation
 @testable import ArtexCore
 
 final class ChatLocalizationTests: XCTestCase {
@@ -8,6 +9,19 @@ final class ChatLocalizationTests: XCTestCase {
         XCTAssertEqual(AppStrings.text(.chatAttach, language: .english), "Attach files")
         XCTAssertEqual(AppStrings.text(.chatSend, language: .english), "Send")
         XCTAssertEqual(AppStrings.text(.chatNoMessages, language: .english), "No messages yet")
+    }
+    func testBuiltinTranslationsMatchCompletePinnedBrowserMessages() throws {
+        struct Expected: Decodable { let autoDescription: String; let pentestName: String; let pentestDescription: String }
+        struct Reference: Decodable { let baseline: String; let languages: [String: Expected] }
+        let url = try XCTUnwrap(Bundle.module.url(forResource: "builtin-agent-localization", withExtension: "json", subdirectory: "Fixtures"))
+        let reference = try JSONDecoder().decode(Reference.self, from: Data(contentsOf: url))
+        XCTAssertEqual(reference.baseline, "e75ae371ad777ffd1eecdd28d2781a6519b05591")
+        for language in AppLanguage.allCases {
+            let expected = try XCTUnwrap(reference.languages[language.rawValue])
+            XCTAssertEqual(AppStrings.text(.chatAutoDescription, language: language), expected.autoDescription)
+            XCTAssertEqual(AppStrings.text(.chatPentestName, language: language), expected.pentestName)
+            XCTAssertEqual(AppStrings.text(.chatPentestDescription, language: language), expected.pentestDescription)
+        }
     }
     func testOnlyExactPinnedBuiltinDefaultsArePresentedInSelectedLanguage() {
         let auto = "平台操作助手：用工具管理任务(建/看/暂停/给提示)与资产，并可创建/修改 skill、自定义工具、MCP。"

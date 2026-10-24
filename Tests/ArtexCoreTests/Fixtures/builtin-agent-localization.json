@@ -1,0 +1,19 @@
+{
+  "baseline": "e75ae371ad777ffd1eecdd28d2781a6519b05591",
+  "source_sha256": {
+    "en": "93598b2e8428c4099785b3344b5d5a43e6652912cefb324dbe937367164baf82",
+    "ja": "ccdca3c9e83a1aee2f686cdec92cd2675ecfbe0c1ca7e7722f71bc675f065480"
+  },
+  "languages": {
+    "en": {
+      "autoDescription": "Platform operations assistant: uses tools to manage tasks (create / view / pause / hint) and assets, and can create or modify skills, custom tools, and MCP.",
+      "pentestName": "Penetration Test",
+      "pentestDescription": "Standalone pentest agent: single-handedly runs the full chain from recon → attack-surface discovery → deep exploitation → verification → wrap-up, planning, executing, and adversarially verifying on its own."
+    },
+    "ja": {
+      "autoDescription": "プラットフォーム運用アシスタント: ツールで案件(作成・参照・一時停止・ヒント付与)と資産を管理し、skill・カスタムツール・MCP を作成または変更します。",
+      "pentestName": "ペネトレーションテスト",
+      "pentestDescription": "独立型ペネトレーションエージェント: 単独で偵察→攻撃面の探索→深掘りした悪用→検証→仕上げまでの全工程を実行し、自ら計画し、自ら実行し、自ら対立的に検証します。"
+    }
+  }
+}
