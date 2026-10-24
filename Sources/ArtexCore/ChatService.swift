@@ -110,9 +110,11 @@ public enum ChatStopStatus: String, Decodable, Sendable { case idle, stopping }
         guard sequence > 0 else { throw BackendAPIError.invalidResponse }
         return try await request(Detail.self, path: route(id) + "/messages/\(sequence)").detail ?? ""
     }
-    public func send(id: Int64, message: String) async throws {
-        guard !message.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty else { throw BackendAPIError.validation("メッセージを入力してください。") }
-        let result = try await request(Status.self, method: "POST", path: route(id) + "/messages", body: ["message": message])
+    public func send(id: Int64, message: String, attachments: [ChatAttachment] = []) async throws {
+        guard !message.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty || !attachments.isEmpty else { throw BackendAPIError.validation("メッセージを入力してください。") }
+        var body: [String: Any] = ["message": message]
+        if !attachments.isEmpty { body["attachments"] = attachments.map(\.json) }
+        let result = try await request(Status.self, method: "POST", path: route(id) + "/messages", body: body)
         guard result.status == "accepted" else { throw BackendAPIError.invalidResponse }
     }
     public func stop(id: Int64) async throws -> ChatStopStatus {

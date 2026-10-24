@@ -18,6 +18,14 @@ import Observation
     public private(set) var transcriptError: String?
     public private(set) var stopStatus: ChatStopStatus?
     private var drafts: [Int64: String] = [:]
+    private var attachmentDrafts: [Int64: [ChatAttachment]] = [:]
+    @ObservationIgnored private var draftRevisions: [Int64: UUID] = [:]
+    @ObservationIgnored private var pendingSends: [Int64: PendingSend] = [:]
+    private struct PendingSend {
+        let text: String?
+        let clearedTextRevision: UUID?
+        let attachments: [ChatAttachment]
+    }
     private var mutationErrors: [Int64: String] = [:]
     private var sendingIDs: Set<Int64> = []
     private var stoppingIDs: Set<Int64> = []
@@ -37,7 +45,27 @@ import Observation
         set { setDraft(newValue, for: selectedID) }
     }
     public func draft(for id: Int64?) -> String { drafts[id ?? 0] ?? "" }
-    public func setDraft(_ value: String, for id: Int64?) { drafts[id ?? 0] = value }
+    public func setDraft(_ value: String, for id: Int64?) {
+        drafts[id ?? 0] = value; draftRevisions[id ?? 0] = UUID()
+    }
+    public var attachments: [ChatAttachment] { attachments(for: selectedID) }
+    public func attachments(for id: Int64?) -> [ChatAttachment] { id.flatMap { attachmentDrafts[$0] } ?? [] }
+    public func appendAttachments(_ values: [ChatAttachment], for id: Int64) throws {
+        let current = attachments(for: id), paths = Set(values.map(\.path))
+        guard id > 0, paths.count == values.count, paths.isDisjoint(with: current.map(\.path)) else { throw BackendAPIError.invalidResponse }
+        attachmentDrafts[id] = current + values
+    }
+    /// Removing a draft card never deletes the already uploaded guest file.
+    public func removeAttachment(path: String, for id: Int64) {
+        guard id > 0 else { return }
+        attachmentDrafts[id] = attachments(for: id).filter { $0.path != path }
+    }
+    private func restorePendingSend(_ id: Int64) {
+        guard let pending = pendingSends.removeValue(forKey: id) else { return }
+        if let text = pending.text, draftRevisions[id] == pending.clearedTextRevision { setDraft(text, for: id) }
+        let current = attachments(for: id), paths = Set(current.map(\.path))
+        attachmentDrafts[id] = pending.attachments.filter { !paths.contains($0.path) } + current
+    }
     public var isSending: Bool { selectedID.map(sendingIDs.contains) ?? false }
     public var isStopping: Bool { selectedID.map(stoppingIDs.contains) ?? false }
     public var mutationError: String? { selectedID.flatMap { mutationErrors[$0] } }
@@ -81,7 +109,7 @@ import Observation
         running = id.flatMap { selected in conversations.first(where: { $0.id == selected })?.isRunning } ?? false
         needsTailReconciliation = false; stopStatus = nil; transcriptError = nil
         isLoadingHistory = false; isLoadingOlder = false; isLoadingDelta = false
-        if let draft { drafts[id ?? 0] = draft }
+        if let draft { setDraft(draft, for: id) }
         if id != nil { await loadLatest() }
     }
     private func loadLatest() async {
@@ -139,20 +167,31 @@ import Observation
 
     public func sendCurrentDraft(submittedMessage: String? = nil) async -> Bool {
         guard let id = selectedID, hasLoadedHistory, !isLoadingHistory, !sendingIDs.contains(id) else { return false }
-        let submitted = submittedMessage ?? drafts[id] ?? ""; let ticket = lifetime
+        let submitted = submittedMessage ?? drafts[id] ?? "", cards = attachments(for: id)
+        guard !submitted.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty || !cards.isEmpty else { return false }
+        let ticket = lifetime
+        let clearsText = draft(for: id) == submitted
+        if clearsText { setDraft("", for: id) }
+        pendingSends[id] = PendingSend(text: clearsText ? submitted : nil,
+            clearedTextRevision: clearsText ? draftRevisions[id] : nil, attachments: cards)
+        attachmentDrafts[id] = []
         sendingIDs.insert(id); mutationErrors[id] = nil
         defer { if ticket == lifetime { sendingIDs.remove(id) } }
         do {
-            try await service.send(id: id, message: submitted)
-            guard ticket == lifetime, !Task.isCancelled else { return false }
-            if drafts[id] == submitted { drafts[id] = nil }
+            try await service.send(id: id, message: submitted, attachments: cards)
+            guard ticket == lifetime else { return false }
+            guard !Task.isCancelled else { restorePendingSend(id); return false }
+            pendingSends.removeValue(forKey: id)
             if selectedID == id { requireTailReconciliation(newTurn: true); stopStatus = nil }
             // Confirmation stays successful even if a subsequent refresh fails.
             await refreshList()
             if ticket == lifetime, !Task.isCancelled, selectedID == id { await refreshDelta() }
             return true
         } catch {
-            if ticket == lifetime, !Task.isCancelled, !(error is CancellationError) { mutationErrors[id] = safeMessage(error) }
+            if ticket == lifetime {
+                restorePendingSend(id)
+                if !Task.isCancelled, !(error is CancellationError) { mutationErrors[id] = safeMessage(error) }
+            }
             return false
         }
     }
@@ -193,6 +232,7 @@ import Observation
     }
     /// Invalidates local work; it does not claim to cancel an already accepted server action.
     public func stop() {
+        for id in Array(pendingSends.keys) { restorePendingSend(id) }
         lifetime = UUID(); selection = UUID(); listPolling = false; tailPolling = false
         isLoadingList = false; isLoadingHistory = false; isLoadingOlder = false; isLoadingDelta = false
         sendingIDs = []; stoppingIDs = []; running = false
@@ -201,6 +241,7 @@ import Observation
     public func reset() {
         stop(); conversations = []; selectedID = nil; messages = []; cursor = 0
         hasLoadedHistory = false; hasMore = false; listError = nil; transcriptError = nil
-        drafts = [:]; mutationErrors = [:]; needsTailReconciliation = false
+        drafts = [:]; draftRevisions = [:]; attachmentDrafts = [:]; pendingSends = [:]
+        mutationErrors = [:]; needsTailReconciliation = false
     }
 }
