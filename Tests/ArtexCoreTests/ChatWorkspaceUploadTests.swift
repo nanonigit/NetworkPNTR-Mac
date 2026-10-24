@@ -86,6 +86,18 @@ final class ChatWorkspaceUploadTests: XCTestCase {
         XCTAssertEqual(workspace.transcript.attachments(for:7),[try attachment()])
         XCTAssertFalse(api.calls.contains { $0.method == "POST" && $0.path == "/api/conversations" })
     }
+    @MainActor func testEditedTargetCannotConsumeOriginalRootTextWithoutReceivingIt() async throws {
+        let api = WorkspaceUploadAPI(), workspace = ChatWorkspace(client:api)
+        workspace.agentKey = "auto"; workspace.transcript.draft = "original root"
+        var reply: CheckedContinuation<[ChatAttachment], Error>?
+        api.uploadHandler = { _ in try await withCheckedThrowingContinuation { reply = $0 } }
+        let pending = Task { await workspace.pickFiles(self.files) }; await waitFor { reply != nil }
+        await workspace.select(17); workspace.transcript.draft = "target edit"
+        reply?.resume(returning:[try attachment()])
+        let accepted = await pending.value; XCTAssertTrue(accepted)
+        XCTAssertEqual(workspace.transcript.draft,"target edit")
+        XCTAssertEqual(workspace.transcript.draft(for:nil),"original root")
+    }
     @MainActor func testNewDraftLateHandoffPreservesChangedRootAndCurrentConversation() async throws {
         let api = WorkspaceUploadAPI(), workspace = ChatWorkspace(client:api)
         workspace.agentKey = "auto"; workspace.transcript.draft = "captured"
