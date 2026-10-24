@@ -5,18 +5,20 @@ import XCTest
 final class ChatUserBodyTests: XCTestCase {
     func testParsingMatchesTwelveExecutedPinnedBrowserCases() throws {
         let root = URL(fileURLWithPath: #filePath).deletingLastPathComponent().deletingLastPathComponent().deletingLastPathComponent()
-        let reference = try JSONSerialization.jsonObject(with: Data(contentsOf: root.appendingPathComponent("evidence/chat/user-body-browser-reference.json"))) as! [String: Any]
-        let cases = try XCTUnwrap(reference["cases"] as? [[String: Any]])
+        struct Expected: Decodable { let text: String; let attachments: [ChatAttachment] }
+        struct Fixture: Decodable { let name: String; let body: String; let expected: Expected }
+        struct Reference: Decodable { let cases: [Fixture] }
+        let data = try Data(contentsOf: root.appendingPathComponent("evidence/chat/user-body-browser-reference.json"))
+        let cases = try JSONDecoder().decode(Reference.self, from: data).cases
         XCTAssertEqual(cases.count, 12)
+        XCTAssertEqual(cases.first { $0.name == "bom_prefix" }?.body.utf8.first, 239)
         for fixture in cases {
-            let name = try XCTUnwrap(fixture["name"] as? String)
-            let expected = try XCTUnwrap(fixture["expected"] as? [String: Any])
-            let body = ChatUserBody(rawBody: try XCTUnwrap(fixture["body"] as? String))
-            XCTAssertEqual(Array(body.text.utf8), Array(try XCTUnwrap(expected["text"] as? String).utf8), name)
-            let cards = try JSONDecoder().decode([ChatAttachment].self, from: JSONSerialization.data(withJSONObject: expected["attachments"] as Any))
-            XCTAssertEqual(body.attachments, cards, name)
+            let body = ChatUserBody(rawBody: fixture.body)
+            XCTAssertEqual(Array(body.text.utf8), Array(fixture.expected.text.utf8), fixture.name)
+            XCTAssertEqual(body.attachments, fixture.expected.attachments, fixture.name)
         }
     }
+
     func testInvalidMetadataFallsBackToLiteralBodyRatherThanInterpretingPaths() {
         for record in [
             #"{"name":"a","path":"/private/host/a","size":1}"#,

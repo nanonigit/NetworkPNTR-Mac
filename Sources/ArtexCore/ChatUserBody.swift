@@ -16,7 +16,7 @@ public struct ChatUserBody: Equatable, Sendable {
     }
     public init(rawBody: String) {
         // Prefix sensitivity matches startsWith("{"); do not trim user input.
-        if rawBody.hasPrefix("{"), let value = try? JSONDecoder().decode(Envelope.self, from: Data(rawBody.utf8)) {
+        if rawBody.utf8.first == 123, let value = try? JSONDecoder().decode(Envelope.self, from: Data(rawBody.utf8)) {
             text = value.text; attachments = value.attachments
         } else {
             text = rawBody; attachments = []

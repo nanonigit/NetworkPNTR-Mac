@@ -6,6 +6,11 @@ final class ChatWhitespaceTests: XCTestCase {
     @MainActor func testUnicodeSendWireAndRecoveryMatchPinnedHandler() async throws {
         let root = URL(fileURLWithPath: #filePath).deletingLastPathComponent().deletingLastPathComponent().deletingLastPathComponent()
         let data = try Data(contentsOf: root.appendingPathComponent("evidence/chat/attachment-send-browser-reference.json"))
+        struct Snapshot: Decodable { let draft: String }
+        struct TextCase: Decodable { let name: String; let input: String; let final: Snapshot }
+        struct TextReference: Decodable { let cases: [TextCase] }
+        let textCases = try JSONDecoder().decode(TextReference.self, from: data).cases
+        XCTAssertEqual(textCases.first { $0.name == "bom_guard" }?.input.utf8.first, 239)
         let reference = try XCTUnwrap(JSONSerialization.jsonObject(with: data) as? [String: Any])
         let cases = try XCTUnwrap(reference["cases"] as? [[String: Any]])
         XCTAssertEqual(cases.count, 9)
@@ -13,7 +18,8 @@ final class ChatWhitespaceTests: XCTestCase {
             let name = try XCTUnwrap(item["name"] as? String)
             let api = ChatTestTransport(), store = ChatStore(service: ChatService(client: api))
             try api.enqueue(ChatFixture.page([], cursor: 0)); await store.select(id: 7)
-            store.draft = try XCTUnwrap(item["input"] as? String)
+            let textCase = try XCTUnwrap(textCases.first { $0.name == name })
+            store.draft = textCase.input
             let cards = try JSONDecoder().decode([ChatAttachment].self, from: JSONSerialization.data(withJSONObject: item["attachments"] as Any))
             try store.appendAttachments(cards, for: 7)
             var wire: [String: Any]?
@@ -31,8 +37,7 @@ final class ChatWhitespaceTests: XCTestCase {
                 XCTAssertEqual(try JSONSerialization.data(withJSONObject: actual, options: [.sortedKeys]),
                                try JSONSerialization.data(withJSONObject: expectedWire, options: [.sortedKeys]), name)
             }
-            let final = try XCTUnwrap(item["final"] as? [String: Any])
-            XCTAssertEqual(Array(store.draft.utf8), Array(try XCTUnwrap(final["draft"] as? String).utf8), name)
+            XCTAssertEqual(Array(store.draft.utf8), Array(textCase.final.draft.utf8), name)
             XCTAssertEqual(store.attachments, cards, name)
             XCTAssertFalse(store.isSending, name)
         }
