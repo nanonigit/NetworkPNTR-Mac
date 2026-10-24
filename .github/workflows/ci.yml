@@ -9,6 +9,7 @@ jobs:
     runs-on: macos-15
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+      - run: python3 script/export_localizations.py --check
       - run: swift test
       - run: python3 -m unittest discover -s Tests/GuestArtifactTests -v
       - run: bash -n script/build_and_run.sh script/test_vm.sh script/test_backend.sh

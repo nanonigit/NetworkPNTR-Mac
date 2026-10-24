@@ -54,6 +54,7 @@ class LocalizationExportTests(unittest.TestCase):
                 {'sourceLanguage':'en','strings':{'x':{'localizations':{'ja':{'stringUnit':{'state':'translated','value':'x'}}}}}},
                 {'sourceLanguage':'en','strings':{'x':{'localizations':{'en':{'stringUnit':{'state':'new','value':'x'}}}}}},
             ]:
+                item['version'] = '1.0'
                 source.write_text(json.dumps(item))
                 with self.assertRaises(ValueError): module.export(source, root, check=False)
                 self.assertFalse((root / 'en.lproj').exists())

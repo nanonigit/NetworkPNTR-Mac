@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>feature.agents</key>
+	<string>Agents</string>
+	<key>feature.approvals</key>
+	<string>Approvals</string>
+	<key>feature.assetIntercept</key>
+	<string>Asset blocking</string>
+	<key>feature.assets</key>
+	<string>Assets</string>
+	<key>feature.chat</key>
+	<string>Chat</string>
+	<key>feature.commands</key>
+	<string>Tool runs</string>
+	<key>feature.dashboard</key>
+	<string>Dashboard</string>
+	<key>feature.findings</key>
+	<string>Findings</string>
+	<key>feature.intercept</key>
+	<string>Intercept rules</string>
+	<key>feature.llm</key>
+	<string>LLM</string>
+	<key>feature.llmRecords</key>
+	<string>LLM records</string>
+	<key>feature.logs</key>
+	<string>Logs</string>
+	<key>feature.mcp</key>
+	<string>MCP</string>
+	<key>feature.notify</key>
+	<string>Notifications</string>
+	<key>feature.settings</key>
+	<string>System settings</string>
+	<key>feature.skills</key>
+	<string>Skills</string>
+	<key>feature.sync</key>
+	<string>Asset sync</string>
+	<key>feature.tasks</key>
+	<string>Tasks</string>
+	<key>feature.tools</key>
+	<string>Tools</string>
+	<key>feature.traffic</key>
+	<string>Traffic</string>
+	<key>feature.workspace</key>
+	<string>Workspace</string>
+	<key>shell.account</key>
+	<string>Account</string>
+	<key>shell.authPreparation</key>
+	<string>The account screen opens when the runtime is ready.</string>
+	<key>shell.catalogUnavailable</key>
+	<string>Cannot load features</string>
+	<key>shell.chatLogin</key>
+	<string>Log in on the Account screen before opening chat.</string>
+	<key>shell.close</key>
+	<string>Close</string>
+	<key>shell.dashboardLogin</key>
+	<string>Log in on the Account screen before opening the dashboard.</string>
+	<key>shell.features</key>
+	<string>Features</string>
+	<key>shell.guestPrefix</key>
+	<string>Isolated Linux: </string>
+	<key>shell.guestReady</key>
+	<string>Isolated Linux: ready</string>
+	<key>shell.language</key>
+	<string>Language</string>
+	<key>shell.languageHelp</key>
+	<string>Change display language</string>
+	<key>shell.llmLogin</key>
+	<string>Log in on the Account screen before opening LLM settings.</string>
+	<key>shell.loginRequired</key>
+	<string>Login required</string>
+	<key>shell.parity</key>
+	<string>Feature comparison</string>
+	<key>shell.plannedFeature</key>
+	<string>Planned for phase %lld. We will compare functionality and UI/UX with browser route %@. This feature is not available yet.</string>
+	<key>shell.productName</key>
+	<string>ARTEX</string>
+	<key>shell.runtime</key>
+	<string>Runtime</string>
+	<key>shell.selectedTask</key>
+	<string>Selected task: </string>
+	<key>shell.startRequired</key>
+	<string>Start ARTEX</string>
+	<key>shell.system</key>
+	<string>System</string>
+	<key>shell.taskComparison</key>
+	<string>Task details will be implemented and compared with the browser version.</string>
+	<key>shell.taskPending</key>
+	<string>Task details are being migrated</string>
+</dict>
+</plist>

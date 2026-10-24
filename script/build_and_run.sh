@@ -14,6 +14,7 @@ if pgrep -x ArtexMac >/dev/null; then
   echo 'Quit ARTEX Mac normally before replacing its bundle so its VM can flush and stop.' >&2
   exit 1
 fi
+python3 "$ROOT_DIR/script/export_localizations.py" --check
 swift build
 BIN_DIR="$(swift build --show-bin-path)"
 APP="$ROOT_DIR/dist/ARTEX Mac.app"
