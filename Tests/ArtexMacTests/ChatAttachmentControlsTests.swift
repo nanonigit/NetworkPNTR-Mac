@@ -90,4 +90,25 @@ final class ChatAttachmentControlsTests: XCTestCase {
         XCTAssertFalse(chosen); XCTAssertTrue(error)
         coordinator.invalidate()
     }
+    @MainActor func testSelectionChangedBeforeScheduledUploadDoesNotOpenFilesOrCreateConversation() async throws {
+        let workspace = ChatWorkspace(client: ChatComposerTests.Transport())
+        await workspace.select(7)
+        let owner = workspace.transcript.selectedID
+        await workspace.select(8)
+        var opened = false
+        let access = ChatFileAccess(start: { _ in opened = true; return true }, stop: { _ in })
+        let accepted = try await ChatAttachmentSelection.upload([URL(fileURLWithPath: "/fixture/a")], owner: owner, workspace: workspace, access: access)
+        XCTAssertFalse(accepted); XCTAssertFalse(opened)
+        XCTAssertEqual(workspace.transcript.selectedID, 8)
+        XCTAssertNil(workspace.uploadState(for: 7)); XCTAssertNil(workspace.uploadState(for: 8))
+    }
+    @MainActor func testEmptySelectionDoesNotAcquireFileAccess() async throws {
+        let workspace = ChatWorkspace(client: ChatComposerTests.Transport())
+        var opened = false
+        let access = ChatFileAccess(start: { _ in opened = true; return true }, stop: { _ in })
+        let accepted = try await ChatAttachmentSelection.upload([], owner: nil, workspace: workspace, access: access)
+        XCTAssertFalse(accepted); XCTAssertFalse(opened)
+        XCTAssertNil(workspace.transcript.selectedID)
+    }
+
 }
