@@ -29,3 +29,5 @@ L3は既存locale環境・型付きchatキー・単一カタログと派生互�
 L3会話名の安全確認: 固定conversations.go:74/493は空／韓国語の初期名を自動命名センチネルとして扱う。作成時の翻訳名指定は最初のメッセージによる自動命名を止めるため、この案の試験は実装・checkpoint前に撤回。型未実装probeを有効な製品REDとして数えない。来歴と両立するbackend移行設計までwire／初期名／自動命名を保持し、既存独自名を一括変更しない。
 
 L4aエラー基盤：ネイティブの静的検証文字列をBackendValidation型に移し、日英エラープレゼンターを追加。store移行中は従来の日本語LocalizedError互換を保持。明示言語で取得しOS設定に依存せず、未知のエラーを文字列化しない。HTTP／Keychain数値のみ埋め込み、任意のserver本文・パス・秘密を表示しない。この基盤だけでUIエラー切替／R8を合格にしない。
+
+L4b Chatエラー：storeは安全な型付きAppErrorMessageを保持し、viewの現在localeで表示。view再作成・リクエスト発行・本文／添付／選択変更をしない。診断／旧試験向け日本語Stringは計算プロパティで互換保持。一覧／履歴／送信／停止／workspace／添付／部分削除／引用ページング／本文／詳細を対象とし、キャンセル・世代・所有者判定を維持。未知のエラーはraw情報を保持せず型付きfallbackへ縮退。store RED/GREEN・全試験・レビュー・署名・実native/browser失敗送信中の言語比較を別ゲートとする。Lazyweb検索chat error retry messageは隣接DoorDashメタデータのみ（類似度.385）で視覚証拠とせず、固定版のエラーUIを基準にする。
