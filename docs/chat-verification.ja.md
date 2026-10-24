@@ -152,3 +152,6 @@ adapterはRED372ea2b/GREENf1361eeの3件、workspaceはRED2b41865/GREENc3482cb�
 
 
 Unicode処理の中間確認: 追加5例で固定ブラウザの送信処理と一致（合計9例）。Swift193件/Python45件成功。ChatTextは行・領域・関数100%、分岐指標なし。cc3e64bから署名アプリを再ビルド・検証、未起動。UIの判定修正はA5、実プロバイダーとカーネル安定性も未完了。bugs/chat-whitespace-investigation.mdとevidence/chat/unicode-send-verification.json参照。
+
+
+A5一部の実操作確認: Macの複数選択・取消・2カードと本文引継ぎ・ローカル解除・添付のみ受理とダミーモデル失敗・容量説明・54%での実転送取消を確認。固定ブラウザは送信前の名前/サイズ/本文と解除が対応。設定なしの失敗復元はブラウザのみで、Macにはダミー設定があり同一比較は未完了。Swift205件/Python45件、追加4ファイルの最終集計は行99.19〜100%。Mac2回の診断と停止は成功、比較側の待機はタイムアウト後に片付けた。UI全体・実行安定性の完了主張なし。bugs/chat-attachment-ui-investigation.mdとattachment-ui-verification.json参照。

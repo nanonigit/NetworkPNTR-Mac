@@ -152,3 +152,6 @@ Selected full-suite LLVM line/region coverage: ChatAttachments26/26 &23/23, Chat
 
 
 Unicode core checkpoint: three regression tests now match five additional checksum-pinned browser send cases (nine total);193 Swift/45 Python pass. ChatText helper has100% line/region/function coverage, no reported branch metric. Signed bundle rebuilt/verified fromcc3e64b, not launched. UI guard still pending with A5; provider and kernel reliability gates remain open. See bugs/chat-whitespace-investigation.md and evidence/chat/unicode-send-verification.json.
+
+
+A5 partial UI checkpoint: native multiple-file sheet/cancel, two cards and text handoff, local removal, attachment-only accepted/dummy-model terminal error, explicit oversize validation and real54% upload cancellation exercised. Pinned browser matches pre-send names/sizes/text and local removal; no-LLM restoration is observed only there, since native fixture had a configured dummy profile.205 Swift/45 Python pass; new four-file final matching coverage99.19-100% lines. Two native diagnostic cleanups pass; reference outer wait timed out and was cleaned. No complete UI or runtime reliability claim. See bugs/chat-attachment-ui-investigation.md and attachment-ui-verification.json.

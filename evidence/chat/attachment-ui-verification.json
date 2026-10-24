@@ -1,0 +1,69 @@
+{
+  "baseline": "e75ae371ad777ffd1eecdd28d2781a6519b05591",
+  "source_commit": "ba85afb",
+  "tests": {
+    "swift": 205,
+    "core": 181,
+    "appkit_and_diagnostics": 24,
+    "python": 45,
+    "new_mac_control_tests": 10
+  },
+  "native_ui": {
+    "panel_cancel_without_conversation": true,
+    "multiple_files_selected_in_actual_panel": true,
+    "two_cards_name_size_and_text_handoff": true,
+    "byte_sizes": [
+      "51 B",
+      "0 B"
+    ],
+    "local_card_remove": true,
+    "attachment_only_send_accepted": true,
+    "provider_response": "terminal model_error against reserved api.example.invalid on zero-NIC VM; no live cloud call",
+    "oversize_error_reproduced_and_fixed": true,
+    "progress_observed": {
+      "text": "68.6 MB / 127.0 MB",
+      "fraction": 0.5405453758787138
+    },
+    "cancel_clicked_during_partial_upload": true,
+    "existing_card_preserved_after_cancel": true,
+    "new_card_not_appended_after_cancel": true,
+    "progress_screenshot": "Captured at116.5MB/127.0MB; following Cancel failed with elementHasNoFrame and transfer completed. Not another successful cancellation.",
+    "progress_visual_acceptance": "Pending: bar appears behind fast numeric count in captured transient frame; needs synchronization/reduced-motion/steady-state review"
+  },
+  "browser_ui": {
+    "two_cards_name_size_and_text_handoff": true,
+    "attachment_only_no_llm_rejection_restores_cards": true,
+    "local_card_remove": true,
+    "file_preservation_after_removal": "attachment-browser-preservation.json",
+    "empty_filechooser_cancel": "pending; driver requires at least one file",
+    "harness_completion": "timed out after recorded UI observations; resources cleaned; not a successful complete reference run"
+  },
+  "comparison": {
+    "identical_synthetic_files": true,
+    "matching_pre_send_name_size_text": true,
+    "send_failure_parity": "not accepted: native retained configured dummy profile, browser had no profiles",
+    "screenshots": [
+      "attachment-native-cards.png",
+      "attachment-browser-cards.png"
+    ],
+    "native_body_limit_error_layers": "native preflight; browser upper-bound UI not tested"
+  },
+  "runtime": {
+    "native_v1_and_v2_diagnostics_passed": true,
+    "temporary_keychain_items_removed": true,
+    "VMs_stopped": true,
+    "source_kernel_reliability": "still open; earlier boot faults retained",
+    "runtime_network": "zero NIC; user 8787 Docker egress unchanged"
+  },
+  "review": "Three read-only reviews; stale-cancel finding repaired and reviewed; safe error allowlist reviewed",
+  "pending": [
+    "matched no-LLM UI restoration fixtures",
+    "sent attachment rendering in transcript",
+    "progress visual screenshot and full cancellation edge comparison",
+    "full keyboard and VoiceOver",
+    "citation external retests",
+    "cloud success and running/stop",
+    "spill/download cancellation and measured memory",
+    "remaining full feature and distribution gates"
+  ]
+}

@@ -1,0 +1,161 @@
+{
+  "scope": "Four new A5 files; full205 Swift tests plus final-build instrumented native V2 external run; V1 excluded to avoid mixed-build counter mismatch",
+  "profile_merge_warnings": false,
+  "export_warnings": "",
+  "files": [
+    {
+      "file": "ChatAttachmentPickerButton.swift",
+      "summary": {
+        "branches": {
+          "count": 0,
+          "covered": 0,
+          "notcovered": 0,
+          "percent": 0
+        },
+        "functions": {
+          "count": 9,
+          "covered": 9,
+          "percent": 100
+        },
+        "instantiations": {
+          "count": 9,
+          "covered": 9,
+          "percent": 100
+        },
+        "lines": {
+          "count": 47,
+          "covered": 47,
+          "percent": 100
+        },
+        "mcdc": {
+          "count": 0,
+          "covered": 0,
+          "notcovered": 0,
+          "percent": 0
+        },
+        "regions": {
+          "count": 17,
+          "covered": 15,
+          "notcovered": 2,
+          "percent": 88.23529411764706
+        }
+      }
+    },
+    {
+      "file": "ChatAttachmentPresentation.swift",
+      "summary": {
+        "branches": {
+          "count": 0,
+          "covered": 0,
+          "notcovered": 0,
+          "percent": 0
+        },
+        "functions": {
+          "count": 17,
+          "covered": 17,
+          "percent": 100
+        },
+        "instantiations": {
+          "count": 17,
+          "covered": 17,
+          "percent": 100
+        },
+        "lines": {
+          "count": 34,
+          "covered": 34,
+          "percent": 100
+        },
+        "mcdc": {
+          "count": 0,
+          "covered": 0,
+          "notcovered": 0,
+          "percent": 0
+        },
+        "regions": {
+          "count": 31,
+          "covered": 31,
+          "notcovered": 0,
+          "percent": 100
+        }
+      }
+    },
+    {
+      "file": "ChatAttachmentViews.swift",
+      "summary": {
+        "branches": {
+          "count": 0,
+          "covered": 0,
+          "notcovered": 0,
+          "percent": 0
+        },
+        "functions": {
+          "count": 10,
+          "covered": 9,
+          "percent": 90
+        },
+        "instantiations": {
+          "count": 10,
+          "covered": 9,
+          "percent": 90
+        },
+        "lines": {
+          "count": 123,
+          "covered": 122,
+          "percent": 99.1869918699187
+        },
+        "mcdc": {
+          "count": 0,
+          "covered": 0,
+          "notcovered": 0,
+          "percent": 0
+        },
+        "regions": {
+          "count": 14,
+          "covered": 13,
+          "notcovered": 1,
+          "percent": 92.85714285714286
+        }
+      }
+    },
+    {
+      "file": "ChatFileAccess.swift",
+      "summary": {
+        "branches": {
+          "count": 0,
+          "covered": 0,
+          "notcovered": 0,
+          "percent": 0
+        },
+        "functions": {
+          "count": 6,
+          "covered": 6,
+          "percent": 100
+        },
+        "instantiations": {
+          "count": 6,
+          "covered": 6,
+          "percent": 100
+        },
+        "lines": {
+          "count": 23,
+          "covered": 23,
+          "percent": 100
+        },
+        "mcdc": {
+          "count": 0,
+          "covered": 0,
+          "notcovered": 0,
+          "percent": 0
+        },
+        "regions": {
+          "count": 11,
+          "covered": 10,
+          "notcovered": 1,
+          "percent": 90.9090909090909
+        }
+      }
+    }
+  ],
+  "branch_metric": "not reported",
+  "whole_product_coverage_claimed": false
+}

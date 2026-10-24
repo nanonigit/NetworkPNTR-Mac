@@ -1,0 +1,17 @@
+{
+  "fixture_only": true,
+  "files_preserved_after_card_removal": true,
+  "history_empty_after_no_llm_rejection": true,
+  "records": [
+    {
+      "name": "empty.txt",
+      "size": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "e\u0301.txt",
+      "size": 51,
+      "sha256": "5364609bfc76477afbd37834f77f5661b1003a339e6a94961e104fd18a74ba7c"
+    }
+  ]
+}
