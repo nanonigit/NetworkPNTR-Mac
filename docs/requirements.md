@@ -39,3 +39,6 @@ A7 error correction: a known no-LLM send503 must show a static LLM-setup instruc
 
 
 R8. Final supported application languages are English(en) and Japanese(ja) only. Provide an explicit persistent switch; changing it updates app-owned navigation, controls, accessibility labels, validation/errors, builtin default names/descriptions and newly generated backend system messages. Check first run, switch in both directions, restart, existing guest state and language fallback. No Chinese/Korean product-owned text may remain in either locale. Do not rewrite user-entered data, imported documents, existing chat transcripts, source code or model quotations to pass the UI audit; custom names remain intact. Pinned browser comparison remains fixed; intentional en/ja-only divergence must be documented.
+
+
+L1 language foundation: represent only en/ja in the public type; choose the first supported system preference for a fresh install, otherwise English. Persist explicit user selection independent of later system-language changes. Invalid or non-string saved preference normalizes to English. Preserve unrelated defaults and do not store cloud/backend credentials in language preferences. This core stage adds no UI and does not satisfy R8 alone.

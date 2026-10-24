@@ -12,3 +12,6 @@ SwiftPMの複数ターゲット、SwiftUI/AppKitのネイティブ画面、Virtu
 
 
 言語設計: en/jaの型と永続化したネイティブ設定、String Catalog共通リソース、組み込み初期値に限定した表示変換を採用する。新規バックエンドシステム出力は既存の認証付きoutput_language設定と同期し、言語フェーズでguest起動のja固定を検証済み選択値へ移行。固定比較ソース・任意のユーザー内容を保持。不明言語は英語へフォールバックし、既存backendの非対応言語は明示的に選択済み日英へ移行する。漢字だけでは日中を識別できないためCJK一括除去をせず、文言の出典・カタログ単位で監査する。localization-audit.ja.md参照。
+
+
+L1: AppLanguageはCodable/CaseIterable/Identifiable/Sendableなen/ja型で、自言語名とLocaleを提供。AppLanguagePreferencesはMainActor observableとしUserDefaultsを注入、専用の言語キーだけを読み書き。初回のOS候補はen-/ja-地域指定やアンダースコアを認識するが保存値は正規en/jaだけ。不正な保存値と未選択を区別し、前者を英語へ修復。選択APIは型で制限。UI・String Catalog・backend同期は後続ゲートで、Core設定だけの段階はLazyweb対象外。

@@ -88,3 +88,6 @@ A7 repair external retest: fresh signed native V2 at2285311 shows the static LLM
 
 
 Localization release gate (R8): audit hardcoded native strings and backend builtin/generated content; en/ja-only persistent switch and String Catalog; backend output-language synchronization; first-run/switch-both-directions/restart/existing-state tests; all21 feature/error/empty/loading/confirmation/accessibility checks in both locales against fixed browser flows. Preserve custom/user/model content, record intentional language-support divergence. Initial audit is recorded; implementation and full acceptance are pending. Do not close this goal with Japanese-only UI.
+
+
+L1 ordered gates: language/locale/default precedence/migration/persistence and unrelated-default isolation tests RED; minimal typed observable preferences GREEN; reviewer/full suites/scoped coverage/signed build/CI. Then en/ja String Catalog plus actual native switch, preserve composer/selection while switching, propagate backend output_language with failure/rollback semantics, all21 rendered audit. No UI acceptance from preferences tests.
