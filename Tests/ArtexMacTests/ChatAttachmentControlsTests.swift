@@ -137,4 +137,12 @@ final class ChatAttachmentControlsTests: XCTestCase {
         XCTAssertFalse(workspace.isUploading)
     }
 
+    @MainActor func testFileOperationKeepsActorOwnedResultOnMainActor() async throws {
+        final class LocalResult { let value = 42 }
+        let value = LocalResult()
+        let access = ChatFileAccess(start: { _ in false }, stop: { _ in XCTFail("Unscoped URL") })
+        let result = try await access.withAccess([]) { await Task.yield(); return value }
+        XCTAssertTrue(result === value)
+    }
+
 }
