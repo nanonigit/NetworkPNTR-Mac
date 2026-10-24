@@ -8,6 +8,7 @@ import Foundation
 @MainActor enum NativeDiagnostics {
     static func run(environment: DesktopRuntime, directory: URL) async {
         var result: [String: Any] = ["ui_click_workflow_verified": false, "visual_acceptance": "pending external native automation"]
+        var userBodyIDs: [Int64] = []
         do {
             try FileManager.default.createDirectory(at: directory, withIntermediateDirectories: true)
             result["native_window_rendered"] = try capture(to: directory.appendingPathComponent("native-launch.png"))
@@ -35,7 +36,6 @@ import Foundation
             }
             let llm = try await NativeLLMDiagnostics.run(session: authentication, directory: directory)
             result["native_llm_three_formats_crud_key_preservation_pool_retry"] = true
-            let userBodyIDs: [Int64]
             if CommandLine.arguments.contains("--user-body-review") {
                 userBodyIDs = try await NativeUserBodyDiagnostics.seed(client: AuthenticatedBackendClient(session: authentication), directory: directory)
                 result["native_persisted_user_body_fixture"] = true
@@ -118,6 +118,7 @@ import Foundation
             }
             if !userBodyIDs.isEmpty {
                 try await NativeUserBodyDiagnostics.cleanup(client: AuthenticatedBackendClient(session: login), ids: userBodyIDs)
+                userBodyIDs = []
                 result["native_user_body_fixture_cleaned"] = true
             }
             if !mentionIDs.isEmpty {
@@ -140,6 +141,15 @@ import Foundation
             result["cooperative_stop_during_boot"] = true
         } catch {
             result["diagnostics_failed"] = true
+            if !userBodyIDs.isEmpty {
+                let client: (any BackendJSONTransport)?
+                if let session = environment.authentication, session.phase == .authenticated {
+                    client = AuthenticatedBackendClient(session: session)
+                } else { client = nil }
+                let cleaned = await cleanupUserBodyAfterFailure(client: client, ids: userBodyIDs)
+                result["native_user_body_fixture_cleaned"] = cleaned
+                if !cleaned { result["native_user_body_cleanup_failed"] = true }
+            }
             try? Data(error.localizedDescription.utf8).write(to: directory.appendingPathComponent("error.txt"))
             environment.authentication?.logout()
             try? await environment.forceStop()
@@ -150,6 +160,12 @@ import Foundation
         if !environment.controller.hasMachine {
             NSApp.terminate(nil)
         }
+    }
+    static func cleanupUserBodyAfterFailure(client: (any BackendJSONTransport)?, ids: [Int64]) async -> Bool {
+        guard !ids.isEmpty else { return true }
+        guard let client else { return false }
+        do { try await NativeUserBodyDiagnostics.cleanup(client: client, ids: ids); return true }
+        catch { return false }
     }
     private static func capture(to url: URL) throws -> Bool {
         let candidates = NSApp.windows.filter { $0.isVisible && $0.frame.width >= 980 && $0.frame.height >= 680 }
