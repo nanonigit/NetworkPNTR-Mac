@@ -188,7 +188,7 @@ private struct WorkspaceUploadResult: Sendable {
                 if sameSelection { await transcript.select(id: result.conversationID) }
             }
             await transcript.refreshList()
-            return life == lifetime && !Task.isCancelled
+            return life == lifetime && uploadOperations[origin]?.id == identifier && !Task.isCancelled
         } catch {
             if life == lifetime, uploadOperations[origin]?.id == identifier, !Task.isCancelled, !(error is CancellationError) {
                 let text = message(error); uploadErrors[origin] = text
