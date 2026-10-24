@@ -1,0 +1,162 @@
+{
+  "baseline": "e75ae371ad777ffd1eecdd28d2781a6519b05591",
+  "source_file": "web/src/app/(main)/chat/page.tsx",
+  "source_sha256": "5f53e5667d1ff131585be7bc0ca1f3641cae49d9a98c68fb0375590788abed22",
+  "handler_sha256": "eb2a1bc296563706f335899d10c49669313c5882da027087b9fab15ebe0e6892",
+  "source_handler": "async function send() {\n    const msg = input.trim();\n    const atts = attachments;\n    if (side.handleCommand(msg, () => setInput(\"\"))) return;\n    if ((!msg && atts.length === 0) || sending || running) return;\n    setSending(true);\n    setInput(\"\");\n    setAttachments([]);\n    try {\n      await api.sendConversationMessage(conv.id, msg, atts.length ? atts : undefined);\n      // The live loop pulls the persisted human turn immediately. Sharing that\n      // fetch avoids racing a separate post-send request against the poller.\n      setRunning(true);\n    } catch (e) {\n      toast.error(t(\"toast.sendFailed\", { msg: (e as Error).message }));\n      setInput(msg); // restore so the user doesn't lose their text\n      setAttachments(atts); // and their attachments\n    } finally {\n      setSending(false);\n    }\n  }",
+  "transform": "Erase exactly one TypeScript error cast; inject bounded state/API stubs",
+  "scope": "Executed source-derived send state/wire, not rendered browser/native UI or cloud acceptance",
+  "cases": [
+    {
+      "name": "text_and_attachment_error",
+      "input": "retry text",
+      "attachments": [
+        {
+          "name": "file.txt",
+          "path": "uploads/file.txt",
+          "size": 1
+        }
+      ],
+      "outcome": "error",
+      "request": {
+        "id": 7,
+        "message": "retry text",
+        "attachments": [
+          {
+            "name": "file.txt",
+            "path": "uploads/file.txt",
+            "size": 1
+          }
+        ]
+      },
+      "pending": {
+        "draft": "",
+        "attachments": [],
+        "sending": true,
+        "running": false
+      },
+      "final": {
+        "draft": "retry text",
+        "attachments": [
+          {
+            "name": "file.txt",
+            "path": "uploads/file.txt",
+            "size": 1
+          }
+        ],
+        "sending": false,
+        "running": false
+      }
+    },
+    {
+      "name": "attachment_only_error_distinct_unicode",
+      "input": "",
+      "attachments": [
+        {
+          "name": "é.txt",
+          "path": "uploads/é.txt",
+          "size": 1
+        },
+        {
+          "name": "é.txt",
+          "path": "uploads/é.txt",
+          "size": 1
+        }
+      ],
+      "outcome": "error",
+      "request": {
+        "id": 7,
+        "message": "",
+        "attachments": [
+          {
+            "name": "é.txt",
+            "path": "uploads/é.txt",
+            "size": 1
+          },
+          {
+            "name": "é.txt",
+            "path": "uploads/é.txt",
+            "size": 1
+          }
+        ]
+      },
+      "pending": {
+        "draft": "",
+        "attachments": [],
+        "sending": true,
+        "running": false
+      },
+      "final": {
+        "draft": "",
+        "attachments": [
+          {
+            "name": "é.txt",
+            "path": "uploads/é.txt",
+            "size": 1
+          },
+          {
+            "name": "é.txt",
+            "path": "uploads/é.txt",
+            "size": 1
+          }
+        ],
+        "sending": false,
+        "running": false
+      }
+    },
+    {
+      "name": "text_and_attachment_accepted",
+      "input": "send text",
+      "attachments": [
+        {
+          "name": "file.txt",
+          "path": "uploads/file.txt",
+          "size": 1
+        }
+      ],
+      "outcome": "accepted",
+      "request": {
+        "id": 7,
+        "message": "send text",
+        "attachments": [
+          {
+            "name": "file.txt",
+            "path": "uploads/file.txt",
+            "size": 1
+          }
+        ]
+      },
+      "pending": {
+        "draft": "",
+        "attachments": [],
+        "sending": true,
+        "running": false
+      },
+      "final": {
+        "draft": "",
+        "attachments": [],
+        "sending": false,
+        "running": true
+      }
+    },
+    {
+      "name": "empty_guard",
+      "input": "",
+      "attachments": [],
+      "outcome": "none",
+      "request": null,
+      "pending": {
+        "draft": "",
+        "attachments": [],
+        "sending": false,
+        "running": false
+      },
+      "final": {
+        "draft": "",
+        "attachments": [],
+        "sending": false,
+        "running": false
+      }
+    }
+  ]
+}
