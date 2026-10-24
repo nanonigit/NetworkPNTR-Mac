@@ -85,3 +85,6 @@ A7 checkpoint: DEBUG no-provider plan implemented/reviewed; matched native/pinne
 
 
 A7 repair external retest: fresh signed native V2 at2285311 shows the static LLM setup instruction after a text-only rejected send, preserves the exact draft and empty conversation. Screenshot/AX and repaired native-results saved; process terminal0, VM stopped and temporary Keychain removed. This supersedes the pending repair-guidance check above; mixed/attachment-only restoration evidence remains from12a8a8e. Individual uploaded-file cleanup/hash/API history, long-history/accessibility/progress/kernel and all21 gates remain open.
+
+
+Localization release gate (R8): audit hardcoded native strings and backend builtin/generated content; en/ja-only persistent switch and String Catalog; backend output-language synchronization; first-run/switch-both-directions/restart/existing-state tests; all21 feature/error/empty/loading/confirmation/accessibility checks in both locales against fixed browser flows. Preserve custom/user/model content, record intentional language-support divergence. Initial audit is recorded; implementation and full acceptance are pending. Do not close this goal with Japanese-only UI.

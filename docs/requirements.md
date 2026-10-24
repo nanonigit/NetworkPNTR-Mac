@@ -36,3 +36,6 @@ A7 matched restoration requirement: disposable native and pinned browser both ha
 
 
 A7 error correction: a known no-LLM send503 must show a static LLM-setup instruction, never a database diagnosis. Only exact pinned catalog strings may map to that instruction; arbitrary/malformed/extended error bodies remain hidden. Other routes/statuses retain their existing behavior.
+
+
+R8. Final supported application languages are English(en) and Japanese(ja) only. Provide an explicit persistent switch; changing it updates app-owned navigation, controls, accessibility labels, validation/errors, builtin default names/descriptions and newly generated backend system messages. Check first run, switch in both directions, restart, existing guest state and language fallback. No Chinese/Korean product-owned text may remain in either locale. Do not rewrite user-entered data, imported documents, existing chat transcripts, source code or model quotations to pass the UI audit; custom names remain intact. Pinned browser comparison remains fixed; intentional en/ja-only divergence must be documented.
