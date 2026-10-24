@@ -32,9 +32,10 @@ import SwiftUI
 @main struct ArtexMacApp: App {
     @NSApplicationDelegateAdaptor(AppDelegate.self) private var delegate
     @State private var environment = RuntimeFactory.make()
+    @State private var language = AppLanguagePreferences()
     var body: some Scene {
         WindowGroup("ARTEX Mac") {
-            RootView(environment: environment)
+            RootView(environment: environment, language: language)
                 .onAppear { delegate.environment = environment }
                 .frame(minWidth: 980, minHeight: 680)
         }

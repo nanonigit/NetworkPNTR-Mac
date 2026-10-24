@@ -3,6 +3,7 @@ import SwiftUI
 
 struct RootView: View {
     let environment: DesktopRuntime
+    let language: AppLanguagePreferences
     private var runtime: VMController { environment.controller }
     @State private var selection: String? = "runtime"
     @State private var catalog: FeatureCatalog?
@@ -12,26 +13,26 @@ struct RootView: View {
         NavigationSplitView {
             List(selection: $selection) {
                 Section("Mac") {
-                    Label("実行環境", systemImage: "desktopcomputer").tag("runtime")
-                    Label("アカウント", systemImage: "person.crop.circle").tag("auth")
-                    Label("機能の比較状況", systemImage: "checklist").tag("parity")
+                    Label(s(.runtime), systemImage: "desktopcomputer").tag("runtime")
+                    Label(s(.account), systemImage: "person.crop.circle").tag("auth")
+                    Label(s(.parity), systemImage: "checklist").tag("parity")
                 }
                 if let catalog {
-                    Section("Features") { ForEach(Array(catalog.features.prefix(10))) { feature in featureRow(feature) } }
-                    Section("System") { ForEach(Array(catalog.features.dropFirst(10))) { feature in featureRow(feature) } }
+                    Section(s(.features)) { ForEach(Array(catalog.features.prefix(10))) { feature in featureRow(feature) } }
+                    Section(s(.system)) { ForEach(Array(catalog.features.dropFirst(10))) { feature in featureRow(feature) } }
                 }
             }
-            .navigationTitle("ARTEX")
+            .navigationTitle(s(.productName))
             .navigationSplitViewColumnWidth(min: 200, ideal: 228, max: 300)
             .safeAreaInset(edge: .bottom) {
-                Label(runtime.guestReady ? "隔離Linux：起動確認済み" : "隔離Linux：" + runtime.state.rawValue, systemImage: "shield.lefthalf.filled")
+                Label(runtime.guestReady ? s(.guestReady) : s(.guestPrefix) + runtime.state.rawValue, systemImage: "shield.lefthalf.filled")
                     .font(.caption).foregroundStyle(.secondary).padding()
             }
         } detail: {
-            if let catalogError { ContentUnavailableView("機能一覧を読み込めません", systemImage: "exclamationmark.triangle", description: Text(catalogError)) }
+            if let catalogError { ContentUnavailableView(s(.catalogUnavailable), systemImage: "exclamationmark.triangle", description: Text(catalogError)) }
             else if selection == "runtime" { RuntimeView(environment: environment) }
             else if selection == "auth", let session = environment.authentication { AuthenticationView(session: session) }
-            else if selection == "auth" { ContentUnavailableView("ARTEXを起動してください", systemImage: "power", description: Text("実行環境の準備が完了すると認証画面を開きます。")) }
+            else if selection == "auth" { ContentUnavailableView(s(.startRequired), systemImage: "power", description: Text(s(.authPreparation))) }
             else if selection == "parity", let catalog { ParityView(catalog: catalog) }
             else if selection == "dashboard", let session = environment.authentication, session.phase == .authenticated {
                 DashboardView(session: session) { destination in
@@ -42,35 +43,46 @@ struct RootView: View {
                 }.id(ObjectIdentifier(session))
             }
             else if selection == "dashboard" {
-                ContentUnavailableView("ログインが必要です", systemImage: "person.crop.circle", description: Text("アカウント画面でログインしてからダッシュボードを開いてください。"))
+                ContentUnavailableView(s(.loginRequired), systemImage: "person.crop.circle", description: Text(s(.dashboardLogin)))
             }
             else if selection == "chat", let session = environment.authentication, session.phase == .authenticated {
                 ChatView(session: session).id(ObjectIdentifier(session))
             }
             else if selection == "chat" {
-                ContentUnavailableView("ログインが必要です", systemImage: "person.crop.circle", description: Text("アカウント画面でログインしてからチャットを開いてください。"))
+                ContentUnavailableView(s(.loginRequired), systemImage: "person.crop.circle", description: Text(s(.chatLogin)))
             }
             else if selection == "llm", let session = environment.authentication, session.phase == .authenticated {
                 LLMSettingsView(session: session).id(ObjectIdentifier(session))
             }
             else if selection == "llm" {
-                ContentUnavailableView("ログインが必要です", systemImage: "person.crop.circle", description: Text("アカウント画面でログインしてからLLM設定を開いてください。"))
+                ContentUnavailableView(s(.loginRequired), systemImage: "person.crop.circle", description: Text(s(.llmLogin)))
             }
             else if let feature = catalog?.features.first(where: { $0.id == selection }) {
                 ContentUnavailableView {
-                    Label(feature.title, systemImage: "hammer")
+                    Label(title(feature), systemImage: "hammer")
                 } description: {
-                    Text("フェーズ\(feature.phase)で移植予定です。ブラウザ版の \(feature.browserPath) と機能・UI/UXを比較して実装します。現在は操作できません。")
+                    Text(AppStrings.plannedFeature(phase: feature.phase, path: feature.browserPath, language: language.language))
                 }
-                .navigationTitle(feature.title)
+                .navigationTitle(title(feature))
+            }
+        }
+        .environment(\.locale, language.language.locale)
+        .toolbar {
+            ToolbarItem(placement: .primaryAction) {
+                Picker(s(.language), selection: Binding(get: { language.language }, set: { language.select($0) })) {
+                    ForEach(AppLanguage.allCases) { value in Text(value.nativeName).tag(value) }
+                }
+                .pickerStyle(.menu)
+                .accessibilityLabel(s(.language))
+                .help(s(.languageHelp))
             }
         }
         .sheet(isPresented: Binding(get: { taskDetailID != nil }, set: { if !$0 { taskDetailID = nil } })) {
             VStack(alignment: .leading, spacing: 16) {
-                Label("タスク詳細は移植中です", systemImage: "hammer").font(.title2.bold())
-                Text("選択したタスク：" + (taskDetailID ?? "")).textSelection(.enabled)
-                Text("ブラウザ版の詳細画面と比較して実装する予定です。")
-                Button("閉じる") { taskDetailID = nil }.keyboardShortcut(.cancelAction)
+                Label(s(.taskPending), systemImage: "hammer").font(.title2.bold())
+                Text(s(.selectedTask) + (taskDetailID ?? "")).textSelection(.enabled)
+                Text(s(.taskComparison))
+                Button(s(.close)) { taskDetailID = nil }.keyboardShortcut(.cancelAction)
             }.padding(28).frame(minWidth: 440)
         }
         .task {
@@ -82,8 +94,10 @@ struct RootView: View {
             if phase == .needsSetup || phase == .needsLogin || phase == .unavailable { selection = "auth" }
         }
     }
+    private func s(_ key: AppStringKey) -> String { AppStrings.text(key, language: language.language) }
+    private func title(_ feature: BrowserFeature) -> String { AppStrings.featureTitle(feature.id, fallback: feature.title, language: language.language) }
     private func featureRow(_ feature: BrowserFeature) -> some View {
-        Label(feature.title, systemImage: feature.id == "chat" ? "bubble.left.and.bubble.right" : feature.id == "llm" ? "brain" : feature.id == "tasks" ? "checklist" : feature.id == "settings" ? "gearshape" : "square.grid.2x2")
+        Label(title(feature), systemImage: feature.id == "chat" ? "bubble.left.and.bubble.right" : feature.id == "llm" ? "brain" : feature.id == "tasks" ? "checklist" : feature.id == "settings" ? "gearshape" : "square.grid.2x2")
             .tag(feature.id)
     }
 }
