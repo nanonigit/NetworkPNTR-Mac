@@ -34,12 +34,12 @@ final class LLMUILocalizationTests: XCTestCase {
         let retryBefore = try LLMWire.encode(policy)
         XCTAssertEqual(AppStrings.formatted(.llmUIModelCandidates,language:.english,values:["count":"3"]),"Model candidates (3)")
         XCTAssertEqual(AppStrings.formatted(.llmUIRates,language:.japanese,values:["second":"1.5","minute":"30"]),"1.5/秒 · 30/分")
-        XCTAssertEqual(try canonicalJSON(draft.encoded()),canonicalJSON(before))
-        XCTAssertEqual(try canonicalJSON(LLMWire.encode(policy)),canonicalJSON(retryBefore))
+        XCTAssertEqual(try canonicalJSON(draft.encoded()),try canonicalJSON(before))
+        XCTAssertEqual(try canonicalJSON(LLMWire.encode(policy)),try canonicalJSON(retryBefore))
         let first = Data(#"{"a":1,"b":2}"#.utf8), reordered = Data(#"{"b":2,"a":1}"#.utf8)
         let changed = Data(#"{"b":3,"a":1}"#.utf8)
-        XCTAssertEqual(try canonicalJSON(first),canonicalJSON(reordered))
-        XCTAssertNotEqual(try canonicalJSON(first),canonicalJSON(changed))
+        XCTAssertEqual(try canonicalJSON(first),try canonicalJSON(reordered))
+        XCTAssertNotEqual(try canonicalJSON(first),try canonicalJSON(changed))
         XCTAssertEqual(draft.format.rawValue,"openai-responses");XCTAssertEqual(draft.name,"literal {count} 中文 한국어")
     }
 }
