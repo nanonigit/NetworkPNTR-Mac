@@ -155,3 +155,6 @@ Unicode core checkpoint: three regression tests now match five additional checks
 
 
 A5 partial UI checkpoint: native multiple-file sheet/cancel, two cards and text handoff, local removal, attachment-only accepted/dummy-model terminal error, explicit oversize validation and real54% upload cancellation exercised. Pinned browser matches pre-send names/sizes/text and local removal; no-LLM restoration is observed only there, since native fixture had a configured dummy profile.205 Swift/45 Python pass; new four-file final matching coverage99.19-100% lines. Two native diagnostic cleanups pass; reference outer wait timed out and was cleaned. No complete UI or runtime reliability claim. See bugs/chat-attachment-ui-investigation.md and attachment-ui-verification.json.
+
+
+A5 compiler follow-up: CI40068762394 exposed nonisolated generic result inference in the scoped-file helper. Explicit MainActor operation65ab676 + actor-owned identity test pass all206 Swift cases locally (181core/25Mac). Existing45 Python and UI artifacts retain their stated scope; final UI coverage is the earlier205-test/ba85afb profile, not whole-product acceptance. Current bundle rebuilt with the compatibility annotation; actual GitHub recheck required.

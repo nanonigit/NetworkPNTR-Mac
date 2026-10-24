@@ -64,3 +64,6 @@ A5 ordered gates: availability/progress/size/file-scope/native-panel configurati
 
 
 A5 partial checkpoint: native controls implemented/reviewed,205 Swift/45 Python and strict signed build pass; actual panel/cancel/cards/removal/oversize repair and partial-progress Cancel observed. Browser pre-send metadata/text match; send-error fixtures differ and reference runner timed out after observation/cleanup. Next make a fresh no-LLM native review fixture before LLM diagnostic seeding and compare failed restoration; add sent-attachment transcript rendering; complete progress visual/keyboard/VoiceOver and citation retests. Keep all21/full runtime gates open. See bugs/chat-attachment-ui-investigation.md.
+
+
+A5 compatibility check: explicit MainActor scoped-operation closure resolves the CI compile failure;206 local Swift tests pass. Check the new remote CI. Unmatched restoration/transcript attachments/progress synchronization/accessibility/runtime reliability gates remain open.

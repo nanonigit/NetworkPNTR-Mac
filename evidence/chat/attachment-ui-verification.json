@@ -1,12 +1,11 @@
 {
   "baseline": "e75ae371ad777ffd1eecdd28d2781a6519b05591",
-  "source_commit": "ba85afb",
   "tests": {
-    "swift": 205,
+    "swift": 206,
     "core": 181,
-    "appkit_and_diagnostics": 24,
+    "appkit_and_diagnostics": 25,
     "python": 45,
-    "new_mac_control_tests": 10
+    "new_mac_control_tests": 11
   },
   "native_ui": {
     "panel_cancel_without_conversation": true,
@@ -65,5 +64,19 @@
     "cloud success and running/stop",
     "spill/download cancellation and measured memory",
     "remaining full feature and distribution gates"
-  ]
+  ],
+  "ui_source_commit": "ba85afb",
+  "code_source_commit": "65ab676",
+  "compiler_compatibility": {
+    "initial_ci_failure": "https://github.com/nanonigit/artex-mac/actions/runs/40068762394",
+    "initial_head": "21cb8f7",
+    "error": "non-sendable generic Value returned from nonisolated async operation closure",
+    "test_commit": "058385e",
+    "fix_commit": "65ab676",
+    "repair": "Explicit @MainActor operation parameter; scope and transfer logic unchanged",
+    "local_control_tests": 11,
+    "local_full_swift_tests": 206,
+    "review": "approved; actual CI recheck required",
+    "current_bundle": "rebuilt from65ab676; previous actual UI runs fromba85afb; compatibility annotation only"
+  }
 }
