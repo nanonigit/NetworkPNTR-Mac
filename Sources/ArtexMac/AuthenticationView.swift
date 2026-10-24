@@ -91,7 +91,7 @@ private struct TermsView: View {
     @State private var documents: [AppLanguage: [String: String]] = [:]
     private var terms: [String: String] { documents[language] ?? [:] }
     @State private var error: AppErrorMessage?
-    @State private var readToEnd = false
+    @State private var reading = AuthTermsReadingProgress()
     var body: some View {
         VStack(alignment: .leading, spacing: 16) {
             Text(terms["title"] ?? s(.authTermsTitle)).font(.title2.bold())
@@ -110,15 +110,16 @@ private struct TermsView: View {
 
                 }
             }
-            .onScrollGeometryChange(for: Bool.self) { geometry in
-                geometry.contentOffset.y + geometry.containerSize.height >= geometry.contentSize.height - 8
-            } action: { _, atEnd in if atEnd { readToEnd = true } }
+            .onScrollGeometryChange(for: AuthTermsViewport.self) { geometry in
+                AuthTermsViewport(documentLoaded: !terms.isEmpty, atEnd:
+                    geometry.contentOffset.y + geometry.containerSize.height >= geometry.contentSize.height - 8)
+            } action: { _, viewport in reading.observe(viewport) }
             if let error { Text(error.text(language: language)).foregroundStyle(.red) }
             HStack {
                 Button(s(.close)) { dismiss() }
                 Spacer()
-                Text(readToEnd ? (terms["footerRead"] ?? "") : (terms["footerNotRead"] ?? "")).font(.caption).foregroundStyle(.secondary)
-                Button(terms["agreeButton"] ?? s(.authAcceptTerms)) { agreed = true; dismiss() }.disabled(!readToEnd || terms.isEmpty).buttonStyle(.borderedProminent)
+                Text(reading.hasReadToEnd ? (terms["footerRead"] ?? "") : (terms["footerNotRead"] ?? "")).font(.caption).foregroundStyle(.secondary)
+                Button(terms["agreeButton"] ?? s(.authAcceptTerms)) { agreed = true; dismiss() }.disabled(!reading.canAgree(documentLoaded: !terms.isEmpty)).buttonStyle(.borderedProminent)
             }
         }.padding(24).frame(width: 620, height: 600)
         .task { do { documents = try AuthTerms.loadAll() } catch { self.error = AppErrorMessage(key: .authTermsUnavailable) } }
