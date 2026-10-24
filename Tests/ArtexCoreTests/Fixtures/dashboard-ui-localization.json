@@ -1,0 +1,622 @@
+{
+  "entries": [
+    {
+      "key": "dashboard.ui.title",
+      "case": "dashboardUITitle",
+      "en": "Dashboard",
+      "ja": "ダッシュボード"
+    },
+    {
+      "key": "dashboard.ui.description",
+      "case": "dashboardUIDescription",
+      "en": "Tasks, usage, findings, and isolated runtime status",
+      "ja": "タスク・使用量・検出結果と隔離環境の状態"
+    },
+    {
+      "key": "dashboard.ui.reload",
+      "case": "dashboardUIReload",
+      "en": "Reload",
+      "ja": "再読み込み"
+    },
+    {
+      "key": "dashboard.ui.tasks",
+      "case": "dashboardUITasks",
+      "en": "Tasks",
+      "ja": "タスク"
+    },
+    {
+      "key": "dashboard.ui.activitySystem",
+      "case": "dashboardUIActivitySystem",
+      "en": "Activity and system",
+      "ja": "活動・システム"
+    },
+    {
+      "key": "dashboard.ui.modelsAssetsTraffic",
+      "case": "dashboardUIModelsAssetsTraffic",
+      "en": "Models, assets, and traffic",
+      "ja": "モデル・資産・通信"
+    },
+    {
+      "key": "dashboard.ui.invalidTitle",
+      "case": "dashboardUIInvalidTitle",
+      "en": "Unable to verify metrics",
+      "ja": "集計を確認できません"
+    },
+    {
+      "key": "dashboard.ui.invalidHelp",
+      "case": "dashboardUIInvalidHelp",
+      "en": "The loaded data is inconsistent. Reload to try again.",
+      "ja": "取得済みデータに不整合があります。再読み込みしてください。"
+    },
+    {
+      "key": "dashboard.ui.notLoaded",
+      "case": "dashboardUINotLoaded",
+      "en": "No data has been loaded yet.",
+      "ja": "まだ取得できていません。"
+    },
+    {
+      "key": "dashboard.ui.runningTasks",
+      "case": "dashboardUIRunningTasks",
+      "en": "Running tasks",
+      "ja": "実行中のタスク"
+    },
+    {
+      "key": "dashboard.ui.findings",
+      "case": "dashboardUIFindings",
+      "en": "Findings",
+      "ja": "検出結果"
+    },
+    {
+      "key": "dashboard.ui.assets",
+      "case": "dashboardUIAssets",
+      "en": "Assets",
+      "ja": "資産"
+    },
+    {
+      "key": "dashboard.ui.trafficSample",
+      "case": "dashboardUITrafficSample",
+      "en": "Traffic sample",
+      "ja": "通信サンプル"
+    },
+    {
+      "key": "dashboard.ui.tokens",
+      "case": "dashboardUITokens",
+      "en": "Tokens",
+      "ja": "トークン"
+    },
+    {
+      "key": "dashboard.ui.captureOn",
+      "case": "dashboardUICaptureOn",
+      "en": "Capture ON · Up to the latest 50 records",
+      "ja": "キャプチャ ON · 最新50件まで"
+    },
+    {
+      "key": "dashboard.ui.captureOff",
+      "case": "dashboardUICaptureOff",
+      "en": "Capture OFF · Up to the latest 50 records",
+      "ja": "キャプチャ OFF · 最新50件まで"
+    },
+    {
+      "key": "dashboard.ui.waiting",
+      "case": "dashboardUIWaiting",
+      "en": "Waiting for data",
+      "ja": "取得待ち"
+    },
+    {
+      "key": "dashboard.ui.tokenUsage",
+      "case": "dashboardUITokenUsage",
+      "en": "Token usage",
+      "ja": "トークン使用量"
+    },
+    {
+      "key": "dashboard.ui.source",
+      "case": "dashboardUISource",
+      "en": "Source",
+      "ja": "集計元"
+    },
+    {
+      "key": "dashboard.ui.legacy",
+      "case": "dashboardUILegacy",
+      "en": "Legacy totals",
+      "ja": "旧集計"
+    },
+    {
+      "key": "dashboard.ui.ledger",
+      "case": "dashboardUILedger",
+      "en": "Usage ledger",
+      "ja": "使用量台帳"
+    },
+    {
+      "key": "dashboard.ui.sourceHelp",
+      "case": "dashboardUISourceHelp",
+      "en": "Legacy totals estimate usage from task and conversation activity. The usage ledger records each call, including interrupted work. It excludes consumption before the ledger was introduced.",
+      "ja": "旧集計はタスク・会話の活動履歴に基づく概算です。使用量台帳は呼び出し単位で記録し、中断した処理の使用量も含みます。台帳導入前の消費は含みません。"
+    },
+    {
+      "key": "dashboard.ui.uncachedInput",
+      "case": "dashboardUIUncachedInput",
+      "en": "Input (excluding cache)",
+      "ja": "入力（キャッシュ除外）"
+    },
+    {
+      "key": "dashboard.ui.cacheRead",
+      "case": "dashboardUICacheRead",
+      "en": "Cache reads",
+      "ja": "キャッシュ読込"
+    },
+    {
+      "key": "dashboard.ui.output",
+      "case": "dashboardUIOutput",
+      "en": "Output",
+      "ja": "出力"
+    },
+    {
+      "key": "dashboard.ui.cacheHit",
+      "case": "dashboardUICacheHit",
+      "en": "Cache hit",
+      "ja": "キャッシュヒット"
+    },
+    {
+      "key": "dashboard.ui.noUsage",
+      "case": "dashboardUINoUsage",
+      "en": "No usage in this period.",
+      "ja": "この期間の使用量はありません。"
+    },
+    {
+      "key": "dashboard.ui.inspectDay",
+      "case": "dashboardUIInspectDay",
+      "en": "Inspect daily values",
+      "ja": "日別の値を確認"
+    },
+    {
+      "key": "dashboard.ui.selectDate",
+      "case": "dashboardUISelectDate",
+      "en": "Select a date",
+      "ja": "日付を選択"
+    },
+    {
+      "key": "dashboard.ui.dailyTable",
+      "case": "dashboardUIDailyTable",
+      "en": "View daily data as a table",
+      "ja": "日別データを表で確認"
+    },
+    {
+      "key": "dashboard.ui.date",
+      "case": "dashboardUIDate",
+      "en": "Date",
+      "ja": "日付"
+    },
+    {
+      "key": "dashboard.ui.input",
+      "case": "dashboardUIInput",
+      "en": "Input",
+      "ja": "入力"
+    },
+    {
+      "key": "dashboard.ui.cache",
+      "case": "dashboardUICache",
+      "en": "Cache",
+      "ja": "キャッシュ"
+    },
+    {
+      "key": "dashboard.ui.legacyDailyHelp",
+      "case": "dashboardUILegacyDailyHelp",
+      "en": "Legacy daily totals are estimates based on task and conversation creation dates.",
+      "ja": "旧集計の日別表示はタスク・会話の作成日に基づく概算です。"
+    },
+    {
+      "key": "dashboard.ui.ledgerDailyHelp",
+      "case": "dashboardUILedgerDailyHelp",
+      "en": "Ledger daily data uses the UTC record date. Totals include all records; daily data covers at most 365 days.",
+      "ja": "使用量台帳の日別表示はUTCの記録日を使います。合計は全記録、日別データは最大365日分です。"
+    },
+    {
+      "key": "dashboard.ui.chartHelp",
+      "case": "dashboardUIChartHelp",
+      "en": "Shows the same three series as the browser version. Input includes cache reads, so the stacked height differs from total tokens.",
+      "ja": "ブラウザ版と同じ3系列を表示します。入力にはキャッシュ読込を含むため、積み上げた高さは総トークン数とは異なります。"
+    },
+    {
+      "key": "dashboard.ui.usageLoading",
+      "case": "dashboardUIUsageLoading",
+      "en": "Loading the data required for usage metrics.",
+      "ja": "使用量の集計に必要なデータを取得しています。"
+    },
+    {
+      "key": "dashboard.ui.profiles",
+      "case": "dashboardUIProfiles",
+      "en": "Model configuration",
+      "ja": "モデル設定"
+    },
+    {
+      "key": "dashboard.ui.all",
+      "case": "dashboardUIAll",
+      "en": "All",
+      "ja": "すべて"
+    },
+    {
+      "key": "dashboard.ui.unassigned",
+      "case": "dashboardUIUnassigned",
+      "en": "Unassigned",
+      "ja": "未割当"
+    },
+    {
+      "key": "dashboard.ui.period",
+      "case": "dashboardUIPeriod",
+      "en": "Period",
+      "ja": "期間"
+    },
+    {
+      "key": "dashboard.ui.series",
+      "case": "dashboardUISeries",
+      "en": "Series",
+      "ja": "系列"
+    },
+    {
+      "key": "dashboard.ui.chartAccessibility",
+      "case": "dashboardUIChartAccessibility",
+      "en": "Daily token usage. Select a date or use the daily data table for exact values.",
+      "ja": "日別トークン使用量。正確な値は日付選択または日別データの表で確認できます。"
+    },
+    {
+      "key": "dashboard.ui.recentActivity",
+      "case": "dashboardUIRecentActivity",
+      "en": "Recent activity",
+      "ja": "最近の活動"
+    },
+    {
+      "key": "dashboard.ui.viewTasks",
+      "case": "dashboardUIViewTasks",
+      "en": "View tasks",
+      "ja": "タスクを見る"
+    },
+    {
+      "key": "dashboard.ui.noActivity",
+      "case": "dashboardUINoActivity",
+      "en": "No activity.",
+      "ja": "活動はありません。"
+    },
+    {
+      "key": "dashboard.ui.recentFindings",
+      "case": "dashboardUIRecentFindings",
+      "en": "Recent findings",
+      "ja": "最近の検出結果"
+    },
+    {
+      "key": "dashboard.ui.viewAll",
+      "case": "dashboardUIViewAll",
+      "en": "View all",
+      "ja": "すべて表示"
+    },
+    {
+      "key": "dashboard.ui.noFindings",
+      "case": "dashboardUINoFindings",
+      "en": "No findings.",
+      "ja": "検出結果はありません。"
+    },
+    {
+      "key": "dashboard.ui.recentTasks",
+      "case": "dashboardUIRecentTasks",
+      "en": "Recent tasks",
+      "ja": "最近のタスク"
+    },
+    {
+      "key": "dashboard.ui.noTasks",
+      "case": "dashboardUINoTasks",
+      "en": "No tasks.",
+      "ja": "タスクはありません。"
+    },
+    {
+      "key": "dashboard.ui.status",
+      "case": "dashboardUIStatus",
+      "en": "Status",
+      "ja": "状態"
+    },
+    {
+      "key": "dashboard.ui.engine",
+      "case": "dashboardUIEngine",
+      "en": "Engine mode",
+      "ja": "実行モード"
+    },
+    {
+      "key": "dashboard.ui.goals",
+      "case": "dashboardUIGoals",
+      "en": "Goals",
+      "ja": "目標"
+    },
+    {
+      "key": "dashboard.ui.inFlight",
+      "case": "dashboardUIInFlight",
+      "en": "In flight",
+      "ja": "処理中"
+    },
+    {
+      "key": "dashboard.ui.lastActivity",
+      "case": "dashboardUILastActivity",
+      "en": "Last activity",
+      "ja": "最終活動"
+    },
+    {
+      "key": "dashboard.ui.dataWaiting",
+      "case": "dashboardUIDataWaiting",
+      "en": "Waiting for data",
+      "ja": "データ取得待ち"
+    },
+    {
+      "key": "dashboard.ui.assetDistribution",
+      "case": "dashboardUIAssetDistribution",
+      "en": "Asset distribution",
+      "ja": "資産の分布"
+    },
+    {
+      "key": "dashboard.ui.noAssets",
+      "case": "dashboardUINoAssets",
+      "en": "No assets.",
+      "ja": "資産はありません。"
+    },
+    {
+      "key": "dashboard.ui.trafficStatus",
+      "case": "dashboardUITrafficStatus",
+      "en": "Traffic status",
+      "ja": "通信ステータス"
+    },
+    {
+      "key": "dashboard.ui.noTraffic",
+      "case": "dashboardUINoTraffic",
+      "en": "No traffic data.",
+      "ja": "通信データはありません。"
+    },
+    {
+      "key": "dashboard.ui.systemStatus",
+      "case": "dashboardUISystemStatus",
+      "en": "System status",
+      "ja": "システムの状態"
+    },
+    {
+      "key": "dashboard.ui.configured",
+      "case": "dashboardUIConfigured",
+      "en": "Configured",
+      "ja": "設定済み"
+    },
+    {
+      "key": "dashboard.ui.notConfigured",
+      "case": "dashboardUINotConfigured",
+      "en": "Not configured",
+      "ja": "未設定"
+    },
+    {
+      "key": "dashboard.ui.trafficCapture",
+      "case": "dashboardUITrafficCapture",
+      "en": "Traffic capture",
+      "ja": "通信キャプチャ"
+    },
+    {
+      "key": "dashboard.ui.activeModel",
+      "case": "dashboardUIActiveModel",
+      "en": "Active model",
+      "ja": "有効なモデル"
+    },
+    {
+      "key": "dashboard.ui.noPending",
+      "case": "dashboardUINoPending",
+      "en": "No operations awaiting approval",
+      "ja": "承認待ちの操作はありません"
+    },
+    {
+      "key": "dashboard.ui.stale",
+      "case": "dashboardUIStale",
+      "en": "Showing previously loaded data ({time})",
+      "ja": "前回取得した内容を表示中（{time}）"
+    },
+    {
+      "key": "dashboard.ui.loadingGroup",
+      "case": "dashboardUILoadingGroup",
+      "en": "Loading {group}",
+      "ja": "{group}を読み込み中"
+    },
+    {
+      "key": "dashboard.ui.failureGroup",
+      "case": "dashboardUIFailureGroup",
+      "en": "{group}: {error}",
+      "ja": "{group}：{error}"
+    },
+    {
+      "key": "dashboard.ui.taskSummary",
+      "case": "dashboardUITaskSummary",
+      "en": "Paused {paused} · Done {done}",
+      "ja": "一時停止 {paused} · 完了 {done}"
+    },
+    {
+      "key": "dashboard.ui.severitySummary",
+      "case": "dashboardUISeveritySummary",
+      "en": "Critical {critical} · High {high} · Medium {medium} · Low {low}",
+      "ja": "重大 {critical} · 高 {high} · 中 {medium} · 低 {low}"
+    },
+    {
+      "key": "dashboard.ui.typeCount",
+      "case": "dashboardUITypeCount",
+      "en": "{count} types",
+      "ja": "{count} 種類"
+    },
+    {
+      "key": "dashboard.ui.tokenSummary",
+      "case": "dashboardUITokenSummary",
+      "en": "Input {input} · Output {output}",
+      "ja": "入力 {input} · 出力 {output}"
+    },
+    {
+      "key": "dashboard.ui.usageSummary",
+      "case": "dashboardUIUsageSummary",
+      "en": "{tasks} tasks · Total {total} tokens",
+      "ja": "{tasks} タスク · 合計 {total} tokens"
+    },
+    {
+      "key": "dashboard.ui.daySummary",
+      "case": "dashboardUIDaySummary",
+      "en": "{date} · Input {input} · Output {output} · Cache {cache}",
+      "ja": "{date} · 入力 {input} · 出力 {output} · キャッシュ {cache}"
+    },
+    {
+      "key": "dashboard.ui.days",
+      "case": "dashboardUIDays",
+      "en": "{days} days",
+      "ja": "{days}日"
+    },
+    {
+      "key": "dashboard.ui.eventCount",
+      "case": "dashboardUIEventCount",
+      "en": "{count} events (from the latest 30 records)",
+      "ja": "{count} イベント（最新30件の取得結果）"
+    },
+    {
+      "key": "dashboard.ui.taskDetail",
+      "case": "dashboardUITaskDetail",
+      "en": "Task details: {description}",
+      "ja": "タスク詳細：{description}"
+    },
+    {
+      "key": "dashboard.ui.assetTotal",
+      "case": "dashboardUIAssetTotal",
+      "en": "Total {count} nodes",
+      "ja": "合計 {count} ノード"
+    },
+    {
+      "key": "dashboard.ui.requestCount",
+      "case": "dashboardUIRequestCount",
+      "en": "Sample of up to the latest 50 records · {count} requests",
+      "ja": "最新50件までのサンプル · {count} リクエスト"
+    },
+    {
+      "key": "dashboard.ui.pendingCount",
+      "case": "dashboardUIPendingCount",
+      "en": "{count} awaiting approval",
+      "ja": "承認待ち {count} 件"
+    },
+    {
+      "key": "dashboard.ui.morePending",
+      "case": "dashboardUIMorePending",
+      "en": "Show {count} more",
+      "ja": "ほか {count} 件を表示"
+    },
+    {
+      "key": "dashboard.ui.activityToolUse",
+      "case": "dashboardUIActivityToolUse",
+      "en": "Tool call",
+      "ja": "ツール実行"
+    },
+    {
+      "key": "dashboard.ui.activityToolResult",
+      "case": "dashboardUIActivityToolResult",
+      "en": "Tool result",
+      "ja": "ツール結果"
+    },
+    {
+      "key": "dashboard.ui.activityText",
+      "case": "dashboardUIActivityText",
+      "en": "Text",
+      "ja": "本文"
+    },
+    {
+      "key": "dashboard.ui.activityThinking",
+      "case": "dashboardUIActivityThinking",
+      "en": "Thinking",
+      "ja": "思考"
+    },
+    {
+      "key": "dashboard.ui.activityResult",
+      "case": "dashboardUIActivityResult",
+      "en": "Result",
+      "ja": "結果"
+    },
+    {
+      "key": "dashboard.status.task.created",
+      "case": "dashboardTaskCreated",
+      "en": "Created",
+      "ja": "作成済み"
+    },
+    {
+      "key": "dashboard.status.task.done",
+      "case": "dashboardTaskDone",
+      "en": "Done",
+      "ja": "完了"
+    },
+    {
+      "key": "dashboard.status.task.failed",
+      "case": "dashboardTaskFailed",
+      "en": "Failed",
+      "ja": "失敗"
+    },
+    {
+      "key": "dashboard.status.task.paused",
+      "case": "dashboardTaskPaused",
+      "en": "Paused",
+      "ja": "一時停止"
+    },
+    {
+      "key": "dashboard.status.task.queued",
+      "case": "dashboardTaskQueued",
+      "en": "Queued",
+      "ja": "待機中"
+    },
+    {
+      "key": "dashboard.status.task.running",
+      "case": "dashboardTaskRunning",
+      "en": "Running",
+      "ja": "実行中"
+    },
+    {
+      "key": "dashboard.status.task.timeout",
+      "case": "dashboardTaskTimeout",
+      "en": "Timed out",
+      "ja": "タイムアウト"
+    },
+    {
+      "key": "dashboard.status.engine.exploring",
+      "case": "dashboardEngineExploring",
+      "en": "Exploring",
+      "ja": "探索中"
+    },
+    {
+      "key": "dashboard.status.engine.idle",
+      "case": "dashboardEngineIdle",
+      "en": "Idle",
+      "ja": "アイドル"
+    },
+    {
+      "key": "dashboard.status.engine.paused",
+      "case": "dashboardEnginePaused",
+      "en": "Paused",
+      "ja": "一時停止"
+    },
+    {
+      "key": "dashboard.status.engine.stalled",
+      "case": "dashboardEngineStalled",
+      "en": "Stalled",
+      "ja": "停滞"
+    },
+    {
+      "key": "dashboard.status.severity.critical",
+      "case": "dashboardSeverityCritical",
+      "en": "Critical",
+      "ja": "重大"
+    },
+    {
+      "key": "dashboard.status.severity.high",
+      "case": "dashboardSeverityHigh",
+      "en": "High",
+      "ja": "高"
+    },
+    {
+      "key": "dashboard.status.severity.low",
+      "case": "dashboardSeverityLow",
+      "en": "Low",
+      "ja": "低"
+    },
+    {
+      "key": "dashboard.status.severity.medium",
+      "case": "dashboardSeverityMedium",
+      "en": "Medium",
+      "ja": "中"
+    }
+  ]
+}

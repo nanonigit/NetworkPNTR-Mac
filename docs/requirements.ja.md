@@ -60,3 +60,5 @@ L5認証／規約：ネイティブ認証ラベルを型付きカタログで日
 L5隣接読了判定修正：初期の空スクロール領域で、規約読み込み前に読了を付与しない。シート内の読了状態を型で保持し、Equatableなviewport観測にdocumentLoadedも含める。短文でatEndがtrueのままでも読込完了を別イベントとして扱う。失敗／空文書は同意ボタンを有効化せず、読込済み文書の末尾で読了を保持し、表示中の言語変更では維持、新規シートは未読。ログイン権限強化ではなく読了UIの修正で、独立した同意checkboxは変更しない。別RED/GREENと実scroll比較待ち。
 
 L6 LLM UI：設定／カード／編集／モデル選択／rotation／全体retry／数値検証／ヘルプを型付き日英カタログへ。名前付きplaceholderを一度だけ展開し、任意モデル名・マスク済みキーhint・値を再帰的にテンプレート解釈しない。tag／API列挙値／prefix／binding／不正入力／dirty／シート所有者を保持し、既存fieldGenerationは確定した再取得／保存時だけ変更。localeのid／taskや通信／変更操作は追加しない。Lazyweb AI model provider settingsはV7隣接メタデータ（.535）で画像証拠とせず、固定browserを基準にする。カタログ／format RED/GREEN・全試験／レビュー／署名を確認し、実native/browser切替はMac解除待ち。
+
+L7 Dashboard UI：見出し・群・空／前回／読込状態・選択・chart軸／系列／凡例／読み上げ・集計・期間件数・資産／通信／システムを日英化。metrics／計算／日付ID／query／poll／選択ID／tag／遷移は保持。既知task／engine／severityは固定status辞書と一致し、raw識別子完全一致だけ変換、未知文言保持。活動5コードは表示だけ翻訳し、独自tool名／worker／summaryはそのまま。chart系列と凡例scaleのキーは同じ翻訳を使い、色／選択の実一致はUI確認待ち。既存の一度だけの埋め込み展開を使用。resource／status／集計不変RED/GREEN・レビュー／全試験／署名、実native/browserは解除待ち。Lazyweb usage analytics dashboardはGoogle Analyticsメタデータ（.631）で画像証拠ではなく、固定browserを基準にする。

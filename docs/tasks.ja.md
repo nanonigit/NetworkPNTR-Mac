@@ -127,3 +127,5 @@ L6 LLM UI：設定／カード／編集／モデル選択／rotation／全体ret
 L6チェックポイント：e377f16 formatter／catalog意図したRED→c855245 GREEN3。Swift261（成功260・既存AX1スキップ）、Python52。LLM108文言／埋込11を日英化、展開ヘルパー行100%、署名両言語108項目／token一致。5ファイルCJK0／Picker tag維持、レビュー済み。モデル／独自／backend内容保持。実数値入力／layout／sheet／browser合格は解除後、全21／全体ゲート未完了。localization-llm-ui-verification.ja.md参照。
 
 L6 CI訂正：40135493632のJSON Data比較2失敗を、1da4b81の意味上比較＋対照試験で対象3件成功。コンパイル失敗中のd09e852 GREEN表示は無効証拠。製品処理は変更なし、最終hosted再実行の成功が必要。
+
+L7 Dashboard UI：見出し・群・空／前回／読込状態・選択・chart軸／系列／凡例／読み上げ・集計・期間件数・資産／通信／システムを日英化。metrics／計算／日付ID／query／poll／選択ID／tag／遷移は保持。既知task／engine／severityは固定status辞書と一致し、raw識別子完全一致だけ変換、未知文言保持。活動5コードは表示だけ翻訳し、独自tool名／worker／summaryはそのまま。chart系列と凡例scaleのキーは同じ翻訳を使い、色／選択の実一致はUI確認待ち。既存の一度だけの埋め込み展開を使用。resource／status／集計不変RED/GREEN・レビュー／全試験／署名、実native/browserは解除待ち。Lazyweb usage analytics dashboardはGoogle Analyticsメタデータ（.631）で画像証拠ではなく、固定browserを基準にする。

@@ -1,0 +1,55 @@
+{
+  "baseline": "e75ae371ad777ffd1eecdd28d2781a6519b05591",
+  "documents": {
+    "en": {
+      "task": {
+        "created": "Created",
+        "done": "Done",
+        "failed": "Failed",
+        "paused": "Paused",
+        "queued": "Queued",
+        "running": "Running",
+        "timeout": "Timed out"
+      },
+      "engine": {
+        "exploring": "Exploring",
+        "idle": "Idle",
+        "paused": "Paused",
+        "stalled": "Stalled"
+      },
+      "severity": {
+        "critical": "Critical",
+        "high": "High",
+        "low": "Low",
+        "medium": "Medium"
+      }
+    },
+    "ja": {
+      "task": {
+        "created": "作成済み",
+        "done": "完了",
+        "failed": "失敗",
+        "paused": "一時停止",
+        "queued": "待機中",
+        "running": "実行中",
+        "timeout": "タイムアウト"
+      },
+      "engine": {
+        "exploring": "探索中",
+        "idle": "アイドル",
+        "paused": "一時停止",
+        "stalled": "停滞"
+      },
+      "severity": {
+        "critical": "重大",
+        "high": "高",
+        "low": "低",
+        "medium": "中"
+      }
+    }
+  },
+  "source_sha256": {
+    "en": "93598b2e8428c4099785b3344b5d5a43e6652912cefb324dbe937367164baf82",
+    "ja": "ccdca3c9e83a1aee2f686cdec92cd2675ecfbe0c1ca7e7722f71bc675f065480"
+  }
+}
