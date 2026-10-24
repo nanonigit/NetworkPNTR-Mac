@@ -4,6 +4,8 @@ import SwiftUI
 @MainActor struct LLMSettingsView: View {
     @Environment(\.locale) private var locale
     private var language: AppLanguage { AppLanguage.preferred(in: [locale.identifier]) }
+    private func s(_ key: AppStringKey) -> String { AppStrings.text(key, language: language) }
+    private func f(_ key: AppStringKey, _ values: [String: String]) -> String { AppStrings.formatted(key, language: language, values: values) }
     @State private var store: LLMStore
     @State private var editor: LLMEditorContext?
     @State private var rotationOpen = false
@@ -19,28 +21,28 @@ import SwiftUI
             HStack(alignment: .top) {
                 VStack(alignment: .leading, spacing: 5) {
                     Text("LLM").font(.largeTitle.bold())
-                    Text("全エージェントで使うモデル・API形式・制限を管理します。有効な設定には星が付きます。")
+                    Text(s(.llmUIDescription))
                         .foregroundStyle(.secondary)
                 }
                 Spacer()
-                Button("ローテーション", systemImage: "bolt") { rotationOpen = true }
-                Button("新規", systemImage: "plus") { editor = LLMEditorContext(draft: LLMProfileDraft(), keyHint: "") }
-                Button { Task { await store.load() } } label: { Image(systemName: "arrow.clockwise") }.help("再読み込み")
+                Button(s(.llmUIRotation), systemImage: "bolt") { rotationOpen = true }
+                Button(s(.llmUINew), systemImage: "plus") { editor = LLMEditorContext(draft: LLMProfileDraft(), keyHint: "") }
+                Button { Task { await store.load() } } label: { Image(systemName: "arrow.clockwise") }.help(s(.llmUIReload))
             }.disabled(busy)
             if let error = (localError ?? store.failure)?.text(language: language) {
                 Label(error, systemImage: "exclamationmark.triangle").foregroundStyle(.red).textSelection(.enabled)
-                if store.hasLoaded { Text("前回取得した内容を表示しています。再読み込みしてください。").font(.caption).foregroundStyle(.secondary) }
+                if store.hasLoaded { Text(s(.llmUIStale)).font(.caption).foregroundStyle(.secondary) }
             }
             if let key = store.noticeKey { Text(AppStrings.text(key, language: language)).font(.callout).foregroundStyle(.green) }
-            if busy { ProgressView(store.isMutating ? "変更を保存しています" : "設定を読み込んでいます").controlSize(.small) }
-            Picker("表示", selection: $selectedTab) {
-                Text("モデル設定").tag(0)
-                Text("再試行と待機").tag(1)
+            if busy { ProgressView(store.isMutating ? s(.llmUISaving) : s(.llmUILoading)).controlSize(.small) }
+            Picker(s(.llmUIDisplay), selection: $selectedTab) {
+                Text(s(.llmUIProfiles)).tag(0)
+                Text(s(.llmUIRetryTab)).tag(1)
             }.pickerStyle(.segmented).frame(maxWidth: 360)
             if selectedTab == 0 {
                 ScrollView {
                     if store.hasLoaded && store.profiles.isEmpty {
-                        ContentUnavailableView("モデル設定がありません", systemImage: "brain", description: Text("新規設定を作成し、使う設定を有効にしてください。"))
+                        ContentUnavailableView(s(.llmUINoProfiles), systemImage: "brain", description: Text(s(.llmUICreateHint)))
                     } else {
                         LazyVGrid(columns: [GridItem(.adaptive(minimum: 300), alignment: .top)], spacing: 16) {
                             ForEach(store.profiles) { profile in profileCard(profile) }
@@ -55,12 +57,12 @@ import SwiftUI
         .task { await store.load() }
         .sheet(item: $editor) { context in LLMProfileEditor(store: store, context: context) }
         .sheet(isPresented: $rotationOpen) { LLMRotationView(store: store) }
-        .confirmationDialog("このモデル設定を削除しますか？", isPresented: Binding(get: { deleteCandidate != nil }, set: { if !$0 { deleteCandidate = nil } }), titleVisibility: .visible) {
+        .confirmationDialog(s(.llmUIDeleteConfirm), isPresented: Binding(get: { deleteCandidate != nil }, set: { if !$0 { deleteCandidate = nil } }), titleVisibility: .visible) {
             if let candidate = deleteCandidate {
-                Button("削除", role: .destructive) { Task { await store.delete(candidate); deleteCandidate = nil } }
+                Button(s(.llmUIDelete), role: .destructive) { Task { await store.delete(candidate); deleteCandidate = nil } }
             }
-            Button("キャンセル", role: .cancel) { deleteCandidate = nil }
-        } message: { Text("この設定を参照するタスク等は、ブラウザ版と同じバックエンド処理で更新されます。") }
+            Button(s(.llmUICancel), role: .cancel) { deleteCandidate = nil }
+        } message: { Text(s(.llmUIDeleteHelp)) }
     }
     private func profileCard(_ profile: LLMProfile) -> some View {
         let member = store.pool?.chain.first(where: { $0.profileId == profile.id })
@@ -73,21 +75,21 @@ import SwiftUI
                     Text(profile.format.rawValue).font(.caption).foregroundStyle(.secondary)
                 }
                 Text(profile.model).font(.system(.callout, design: .monospaced)).textSelection(.enabled)
-                Text(profile.apiKeyHint?.isEmpty == false ? (member?.state == "tripped" ? "待機中：\(member?.cooldownSecs ?? 0)秒" : member?.state == "degraded" ? "連続失敗：\(member?.fails ?? 0)" : "正常") : "APIキー未設定")
+                Text(profile.apiKeyHint?.isEmpty == false ? (member?.state == "tripped" ? f(.llmUICooldown, ["seconds": String(member?.cooldownSecs ?? 0)]) : member?.state == "degraded" ? f(.llmUIFailures, ["count": String(member?.fails ?? 0)]) : s(.llmUIHealthy)) : s(.llmUINoKey))
                     .font(.caption).foregroundStyle(profile.apiKeyHint?.isEmpty == false ? Color.secondary : Color.orange)
                 if let hint = profile.apiKeyHint, !hint.isEmpty { Text(hint).font(.caption).foregroundStyle(.secondary) }
-                Text("\(profile.ratePerSecond.formatted())/秒 · \(profile.ratePerMinute.formatted())/分").font(.caption).foregroundStyle(.secondary)
-                if profile.proxy?.isEmpty == false { Text("プロキシ設定あり").font(.caption).foregroundStyle(.secondary) }
-                if let effort = profile.reasoningEffort, !effort.isEmpty { Text("思考強度：\(effort)").font(.caption) }
-                if store.pool?.enabled == true && !profile.isDefault { Text(profile.poolExclude == true ? "ローテーション対象外" : "優先順位：\(profile.priority ?? 0)").font(.caption) }
+                Text(f(.llmUIRates, ["second": profile.ratePerSecond.formatted(), "minute": profile.ratePerMinute.formatted()])).font(.caption).foregroundStyle(.secondary)
+                if profile.proxy?.isEmpty == false { Text(s(.llmUIProxySet)).font(.caption).foregroundStyle(.secondary) }
+                if let effort = profile.reasoningEffort, !effort.isEmpty { Text(f(.llmUIEffortValue, ["value": effort])).font(.caption) }
+                if store.pool?.enabled == true && !profile.isDefault { Text(profile.poolExclude == true ? s(.llmUIExcluded) : f(.llmUIPriorityValue, ["value": String(profile.priority ?? 0)])).font(.caption) }
                 HStack {
-                    Button("編集") {
+                    Button(s(.llmUIEdit)) {
                         do { editor = LLMEditorContext(draft: try LLMProfileDraft(profile: profile), keyHint: profile.apiKeyHint ?? ""); localError = nil }
                         catch { localError = AppErrorMessage(error) }
                     }
-                    Button(profile.isDefault ? "有効" : "有効にする") { Task { await store.activate(profile) } }.disabled(profile.isDefault)
+                    Button(profile.isDefault ? s(.llmUIActive) : s(.llmUIActivate)) { Task { await store.activate(profile) } }.disabled(profile.isDefault)
                     Spacer()
-                    Button(role: .destructive) { deleteCandidate = profile } label: { Image(systemName: "trash") }.disabled(profile.isDefault).help("モデル設定を削除")
+                    Button(role: .destructive) { deleteCandidate = profile } label: { Image(systemName: "trash") }.disabled(profile.isDefault).help(s(.llmUIDeleteProfile))
                 }.disabled(busy)
             }.frame(maxWidth: .infinity, alignment: .leading).padding(8)
         }

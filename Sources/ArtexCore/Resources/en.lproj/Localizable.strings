@@ -318,6 +318,222 @@
 	<string>Rotation settings saved.</string>
 	<key>llm.noticeSaved</key>
 	<string>Model configuration saved.</string>
+	<key>llm.ui.aPIKey</key>
+	<string>API key</string>
+	<key>llm.ui.activate</key>
+	<string>Activate</string>
+	<key>llm.ui.activateHint</key>
+	<string>Creating a configuration does not activate it. Select Activate in the list.</string>
+	<key>llm.ui.active</key>
+	<string>Active</string>
+	<key>llm.ui.allowFallback</key>
+	<string>Allow fallback for explicitly selected models</string>
+	<key>llm.ui.attemptOrder</key>
+	<string>Actual attempt order</string>
+	<key>llm.ui.attempts</key>
+	<string>Attempts (-1 to 20)</string>
+	<key>llm.ui.baseURL</key>
+	<string>Base URL (optional)</string>
+	<key>llm.ui.breaker</key>
+	<string>Rotation circuit breaker</string>
+	<key>llm.ui.breakerHelp</key>
+	<string>Consecutive transient failures temporarily exclude a provider. Permanent errors, such as invalid settings or insufficient balance, trip the breaker immediately.</string>
+	<key>llm.ui.cancel</key>
+	<string>Cancel</string>
+	<key>llm.ui.close</key>
+	<string>Close</string>
+	<key>llm.ui.connectDetail</key>
+	<string>Network failures before connection, or HTTP 408, 429, or 5xx</string>
+	<key>llm.ui.connection</key>
+	<string>Connection</string>
+	<key>llm.ui.context</key>
+	<string>Context window (K)</string>
+	<key>llm.ui.cooldown</key>
+	<string>Cooldown: {seconds}s</string>
+	<key>llm.ui.createHint</key>
+	<string>Create a configuration, then activate the one you want to use.</string>
+	<key>llm.ui.createTitle</key>
+	<string>Create model configuration</string>
+	<key>llm.ui.defaultMaxTokens</key>
+	<string>max_tokens (default)</string>
+	<key>llm.ui.delete</key>
+	<string>Delete</string>
+	<key>llm.ui.deleteConfirm</key>
+	<string>Delete this model configuration?</string>
+	<key>llm.ui.deleteHelp</key>
+	<string>Tasks and other references to this configuration are updated by the same backend behavior as the browser version.</string>
+	<key>llm.ui.deleteProfile</key>
+	<string>Delete model configuration</string>
+	<key>llm.ui.description</key>
+	<string>Manage models, API formats, and limits for all agents. A star marks the active configuration.</string>
+	<key>llm.ui.disabled</key>
+	<string>Disabled (disabled)</string>
+	<key>llm.ui.discardConfirm</key>
+	<string>Discard unsaved changes and reload?</string>
+	<key>llm.ui.display</key>
+	<string>View</string>
+	<key>llm.ui.edit</key>
+	<string>Edit</string>
+	<key>llm.ui.editTitle</key>
+	<string>Edit model configuration</string>
+	<key>llm.ui.effort</key>
+	<string>Reasoning effort</string>
+	<key>llm.ui.effortValue</key>
+	<string>Reasoning effort: {value}</string>
+	<key>llm.ui.empty</key>
+	<string>Empty response</string>
+	<key>llm.ui.emptyDetail</key>
+	<string>An OpenAI-format response completes successfully with an empty body</string>
+	<key>llm.ui.enableRotation</key>
+	<string>Enable rotation</string>
+	<key>llm.ui.enabled</key>
+	<string>Enabled (enabled)</string>
+	<key>llm.ui.excludeHelp</key>
+	<string>Excluded configurations can still be selected explicitly by agents or tasks.</string>
+	<key>llm.ui.excludeRotation</key>
+	<string>Exclude from rotation</string>
+	<key>llm.ui.excluded</key>
+	<string>Excluded from rotation</string>
+	<key>llm.ui.failures</key>
+	<string>Consecutive failures: {count}</string>
+	<key>llm.ui.fallbackHelp</key>
+	<string>Use rotation when an explicitly selected model is unavailable.</string>
+	<key>llm.ui.fetchModels</key>
+	<string>Load models</string>
+	<key>llm.ui.fetching</key>
+	<string>Loading settings</string>
+	<key>llm.ui.format</key>
+	<string>API format</string>
+	<key>llm.ui.globalConnectDetail</key>
+	<string>Connection failures, timeouts, and HTTP 408, 429, or 500/502/503/504. Applies before receiving HTTP 200.</string>
+	<key>llm.ui.globalEmptyDetail</key>
+	<string>OpenAI format only. Retries successfully completed responses with an empty body.</string>
+	<key>llm.ui.globalRetry</key>
+	<string>Global retry policy</string>
+	<key>llm.ui.globalStreamDetail</key>
+	<string>Disconnections or transient failures before any output is delivered. Does not duplicate content after output starts.</string>
+	<key>llm.ui.healthy</key>
+	<string>Healthy</string>
+	<key>llm.ui.intent</key>
+	<string>Intent retry</string>
+	<key>llm.ui.intentHelp</key>
+	<string>Retries the entire intent when a worker exits with model_error.</string>
+	<key>llm.ui.interval</key>
+	<string>Interval (ms)</string>
+	<key>llm.ui.invalidNumber</key>
+	<string>Check the number and allowed range.</string>
+	<key>llm.ui.limits</key>
+	<string>Limits</string>
+	<key>llm.ui.limitsHelp</key>
+	<string>A request limit of 0 is unlimited and shared by all agents. Context 0 uses the default 200K; the maximum is 1000K.</string>
+	<key>llm.ui.loading</key>
+	<string>Loading settings</string>
+	<key>llm.ui.maxTokens</key>
+	<string>Output limit per response</string>
+	<key>llm.ui.maxTokensField</key>
+	<string>Output limit field name</string>
+	<key>llm.ui.maxTokensHelp</key>
+	<string>With 0, omits the limit field and uses the provider default. This is separate from total context capacity.</string>
+	<key>llm.ui.model</key>
+	<string>Model</string>
+	<key>llm.ui.modelCandidates</key>
+	<string>Model candidates ({count})</string>
+	<key>llm.ui.modelPriority</key>
+	<string>{model} · Priority {priority}</string>
+	<key>llm.ui.name</key>
+	<string>Name</string>
+	<key>llm.ui.new</key>
+	<string>New</string>
+	<key>llm.ui.noKey</key>
+	<string>API key not configured</string>
+	<key>llm.ui.noMatchingModels</key>
+	<string>No matching models</string>
+	<key>llm.ui.noProfiles</key>
+	<string>No model configurations</string>
+	<key>llm.ui.notEligible</key>
+	<string>Excluded</string>
+	<key>llm.ui.omit</key>
+	<string>Do not send</string>
+	<key>llm.ui.perMinute</key>
+	<string>Requests per minute</string>
+	<key>llm.ui.perSecond</key>
+	<string>Requests per second</string>
+	<key>llm.ui.priority</key>
+	<string>Priority</string>
+	<key>llm.ui.priorityHelp</key>
+	<string>Higher values have priority. The active configuration always comes first; equal priorities take turns.</string>
+	<key>llm.ui.priorityValue</key>
+	<string>Priority: {value}</string>
+	<key>llm.ui.profileRetry</key>
+	<string>Retries for this configuration</string>
+	<key>llm.ui.profiles</key>
+	<string>Model configurations</string>
+	<key>llm.ui.proxy</key>
+	<string>Proxy (optional)</string>
+	<key>llm.ui.proxyHelp</key>
+	<string>The proxy applies to outbound LLM traffic. HTTP, HTTPS, and SOCKS5 are supported; leave blank for a direct connection. Outbound networking in the dedicated VM is still awaiting verification.</string>
+	<key>llm.ui.proxySet</key>
+	<string>Proxy configured</string>
+	<key>llm.ui.rates</key>
+	<string>{second}/s · {minute}/min</string>
+	<key>llm.ui.refetch</key>
+	<string>Reload</string>
+	<key>llm.ui.reload</key>
+	<string>Reload</string>
+	<key>llm.ui.resetAll</key>
+	<string>Recover all</string>
+	<key>llm.ui.resetOne</key>
+	<string>Recover this configuration</string>
+	<key>llm.ui.retryDefaults</key>
+	<string>0: use defaults · Attempts -1: disable this layer · Interval 0: default waiting strategy</string>
+	<key>llm.ui.retryHelp</key>
+	<string>Applies connection → empty response → stream → rotation circuit breaker → intent retry in order. The first three layers can be overridden per model configuration.</string>
+	<key>llm.ui.retryTab</key>
+	<string>Retries and waiting</string>
+	<key>llm.ui.rotation</key>
+	<string>Rotation</string>
+	<key>llm.ui.rotationCooldown</key>
+	<string>Cooldown {seconds}s</string>
+	<key>llm.ui.rotationFailures</key>
+	<string>Consecutive failures {count}</string>
+	<key>llm.ui.rotationHelp</key>
+	<string>Uses the active configuration first, then switches by priority when a connection fails.</string>
+	<key>llm.ui.rotationTitle</key>
+	<string>Rotation settings</string>
+	<key>llm.ui.save</key>
+	<string>Save</string>
+	<key>llm.ui.savedKeyHint</key>
+	<string>Saved: {hint} · Leave blank to keep the existing key.</string>
+	<key>llm.ui.saving</key>
+	<string>Saving changes</string>
+	<key>llm.ui.searchModels</key>
+	<string>Search models</string>
+	<key>llm.ui.sessionHeader</key>
+	<string>Session header name (optional)</string>
+	<key>llm.ui.sessionHelp</key>
+	<string>When set, sends the session ID for the same conversation or task in this header. Leave blank to omit it.</string>
+	<key>llm.ui.stale</key>
+	<string>Showing previously loaded data. Reload to update it.</string>
+	<key>llm.ui.stream</key>
+	<string>Stream</string>
+	<key>llm.ui.streamDetail</key>
+	<string>Disconnections or transient failures before receiving any tokens</string>
+	<key>llm.ui.streaming</key>
+	<string>Streaming output</string>
+	<key>llm.ui.streamingHelp</key>
+	<string>When off, receives the entire response at once. Use this if the gateway has SSE issues.</string>
+	<key>llm.ui.test</key>
+	<string>Test connection</string>
+	<key>llm.ui.testSuccess</key>
+	<string>Connected · {model} · {latency}ms</string>
+	<key>llm.ui.thinking</key>
+	<string>Thinking</string>
+	<key>llm.ui.thinkingHelp</key>
+	<string>The thinking switch and reasoning effort are independent parameters. Select Do not send for unsupported models.</string>
+	<key>llm.ui.thinkingSwitch</key>
+	<string>Thinking switch</string>
+	<key>llm.ui.unsaved</key>
+	<string>You have unsaved changes</string>
 	<key>shell.account</key>
 	<string>Account</string>
 	<key>shell.authPreparation</key>

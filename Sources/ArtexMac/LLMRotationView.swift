@@ -4,24 +4,26 @@ import SwiftUI
 @MainActor struct LLMRotationView: View {
     @Environment(\.locale) private var locale
     private var language: AppLanguage { AppLanguage.preferred(in: [locale.identifier]) }
+    private func s(_ key: AppStringKey) -> String { AppStrings.text(key, language: language) }
+    private func f(_ key: AppStringKey, _ values: [String: String]) -> String { AppStrings.formatted(key, language: language, values: values) }
     let store: LLMStore
     @Environment(\.dismiss) private var dismiss
     private var busy: Bool { store.isLoading || store.isMutating }
     var body: some View {
         VStack(alignment: .leading, spacing: 18) {
-            Text("ローテーション設定").font(.title2.bold())
-            Text("有効な設定を最初に使い、接続障害時は優先順位に従って別の設定へ切り替えます。")
+            Text(s(.llmUIRotationTitle)).font(.title2.bold())
+            Text(s(.llmUIRotationHelp))
                 .foregroundStyle(.secondary)
-            if store.pool == nil { ProgressView("設定を取得しています") }
-            Toggle("ローテーションを有効にする", isOn: Binding(get: { store.pool?.enabled ?? false }, set: { enabled in Task { await store.setRotation(enabled: enabled) } }))
+            if store.pool == nil { ProgressView(s(.llmUIFetching)) }
+            Toggle(s(.llmUIEnableRotation), isOn: Binding(get: { store.pool?.enabled ?? false }, set: { enabled in Task { await store.setRotation(enabled: enabled) } }))
                 .disabled(busy || store.pool == nil)
             if let pool = store.pool, pool.enabled {
-                Toggle("個別指定したモデルでも代替を許可", isOn: Binding(get: { store.pool?.bindFallback ?? false }, set: { fallback in Task { await store.setRotation(bindFallback: fallback) } })).disabled(busy)
-                Text("個別指定のモデルが利用できない場合にもローテーションを使います。").font(.caption).foregroundStyle(.secondary)
+                Toggle(s(.llmUIAllowFallback), isOn: Binding(get: { store.pool?.bindFallback ?? false }, set: { fallback in Task { await store.setRotation(bindFallback: fallback) } })).disabled(busy)
+                Text(s(.llmUIFallbackHelp)).font(.caption).foregroundStyle(.secondary)
                 HStack {
-                    Text("実際の試行順").font(.headline)
+                    Text(s(.llmUIAttemptOrder)).font(.headline)
                     Spacer()
-                    Button("すべて復旧") { Task { await store.resetPool() } }.disabled(busy)
+                    Button(s(.llmUIResetAll)) { Task { await store.resetPool() } }.disabled(busy)
                 }
                 ScrollView {
                     VStack(alignment: .leading, spacing: 12) {
@@ -29,24 +31,24 @@ import SwiftUI
                             GroupBox {
                                 VStack(alignment: .leading, spacing: 7) {
                                     HStack {
-                                        Text(member.excluded && !member.active ? "対象外" : "\(pool.chain.prefix(position + 1).filter { $0.active || !$0.excluded }.count)")
+                                        Text(member.excluded && !member.active ? s(.llmUINotEligible) : "\(pool.chain.prefix(position + 1).filter { $0.active || !$0.excluded }.count)")
                                         Text(member.name).font(.headline)
-                                        if member.active { Text("有効").font(.caption).foregroundStyle(.orange) }
+                                        if member.active { Text(s(.llmUIActive)).font(.caption).foregroundStyle(.orange) }
                                         Spacer()
-                                        Text(member.state == "tripped" ? "待機 \(member.cooldownSecs)秒" : member.state == "degraded" ? "連続失敗 \(member.fails)" : "正常").font(.caption)
+                                        Text(member.state == "tripped" ? f(.llmUIRotationCooldown, ["seconds": String(member.cooldownSecs)]) : member.state == "degraded" ? f(.llmUIRotationFailures, ["count": String(member.fails)]) : s(.llmUIHealthy)).font(.caption)
                                     }
-                                    Text("\(member.model) · 優先順位 \(member.priority)").font(.caption).foregroundStyle(.secondary)
+                                    Text(f(.llmUIModelPriority, ["model": member.model, "priority": String(member.priority)])).font(.caption).foregroundStyle(.secondary)
                                     if let error = member.lastError, !error.isEmpty { Text(error).font(.caption).textSelection(.enabled) }
-                                    if member.state != "ok" { Button("この設定を復旧") { Task { await store.resetPool(id: member.profileId) } }.disabled(busy) }
+                                    if member.state != "ok" { Button(s(.llmUIResetOne)) { Task { await store.resetPool(id: member.profileId) } }.disabled(busy) }
                                 }.frame(maxWidth: .infinity, alignment: .leading).padding(6)
                             }
                         }
-                        if pool.chain.isEmpty { ContentUnavailableView("モデル設定がありません", systemImage: "brain") }
+                        if pool.chain.isEmpty { ContentUnavailableView(s(.llmUINoProfiles), systemImage: "brain") }
                     }
                 }
             } else { Spacer() }
             if let error = store.failure?.text(language: language) { Text(error).foregroundStyle(.red) }
-            HStack { if busy { ProgressView().controlSize(.small) }; Spacer(); Button("閉じる") { dismiss() }.keyboardShortcut(.cancelAction) }
+            HStack { if busy { ProgressView().controlSize(.small) }; Spacer(); Button(s(.llmUIClose)) { dismiss() }.keyboardShortcut(.cancelAction) }
         }.padding(24).frame(width: 630, height: 680)
         .task {
             await store.refreshPool()

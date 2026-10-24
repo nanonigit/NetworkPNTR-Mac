@@ -2,6 +2,9 @@ import ArtexCore
 import SwiftUI
 
 struct LLMNumberField<Value: LosslessStringConvertible & Equatable>: View {
+    @Environment(\.locale) private var locale
+    private var language: AppLanguage { AppLanguage.preferred(in: [locale.identifier]) }
+    private func s(_ key: AppStringKey) -> String { AppStrings.text(key, language: language) }
     let label: String
     @Binding var value: Value
     let valid: (Value) -> Bool
@@ -20,7 +23,7 @@ struct LLMNumberField<Value: LosslessStringConvertible & Equatable>: View {
         VStack(alignment: .leading, spacing: 4) {
             Text(label).font(.caption).foregroundStyle(.secondary)
             TextField(label, text: $text).labelsHidden()
-            if !isValid { Text("数値と許容範囲を確認してください。").font(.caption).foregroundStyle(.red) }
+            if !isValid { Text(s(.llmUIInvalidNumber)).font(.caption).foregroundStyle(.red) }
         }
         .onAppear { validity(isValid) }
         .onChange(of: text) { _, _ in
@@ -34,6 +37,9 @@ struct LLMNumberField<Value: LosslessStringConvertible & Equatable>: View {
 }
 
 struct LLMRetryRuleFields: View {
+    @Environment(\.locale) private var locale
+    private var language: AppLanguage { AppLanguage.preferred(in: [locale.identifier]) }
+    private func s(_ key: AppStringKey) -> String { AppStrings.text(key, language: language) }
     let title: String
     let detail: String
     @Binding var rule: LLMRetryRule
@@ -43,10 +49,10 @@ struct LLMRetryRuleFields: View {
             VStack(alignment: .leading, spacing: 8) {
                 Text(detail).font(.caption).foregroundStyle(.secondary)
                 HStack {
-                    LLMNumberField("回数（-1〜20）", value: $rule.attempts, valid: { (-1...20).contains($0) }) { validity("attempts", $0) }
-                    LLMNumberField("間隔（ms）", value: $rule.intervalMs, valid: { (0...3_600_000).contains($0) }) { validity("interval", $0) }
+                    LLMNumberField(s(.llmUIAttempts), value: $rule.attempts, valid: { (-1...20).contains($0) }) { validity("attempts", $0) }
+                    LLMNumberField(s(.llmUIInterval), value: $rule.intervalMs, valid: { (0...3_600_000).contains($0) }) { validity("interval", $0) }
                 }
-                Text("0：既定値を使用 · 回数 -1：この層を無効 · 間隔 0：既定の待機方法").font(.caption2).foregroundStyle(.secondary)
+                Text(s(.llmUIRetryDefaults)).font(.caption2).foregroundStyle(.secondary)
             }.padding(6)
         }
     }
