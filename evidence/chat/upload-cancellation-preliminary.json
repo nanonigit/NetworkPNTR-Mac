@@ -1,0 +1,31 @@
+{
+  "accepted_as_live_stop_gate": false,
+  "reason": "Initial witness allowed already-failed upload and signalled after multipart headers only; retained as preliminary observation, superseded by completion guard, >=1MiB threshold and atomic active-owner stop witness",
+  "observed": {
+    "owned_files_and_conversation_cleaned": true,
+    "task_cancel": {
+      "backend_usable_after_cancel": true,
+      "first_body_bytes": 162,
+      "last_body_bytes": 162,
+      "no_persisted_attachment": true,
+      "partial_body_observed": true,
+      "progress_event_count": 1,
+      "task_cancellation_error": true,
+      "total_body_bytes": 134217728
+    },
+    "ui_cancellation_controls": "pending",
+    "vm_stop": {
+      "first_body_bytes": 162,
+      "last_body_bytes": 162,
+      "no_persisted_attachment": true,
+      "partial_body_observed": true,
+      "progress_event_count": 1,
+      "restarted_authenticated": true,
+      "total_body_bytes": 134217728,
+      "transfer_failed": true
+    }
+  },
+  "false_positive_regression_red": "80ed15a",
+  "prefailed_guard_green": "f312d40",
+  "owned_stop_witness_green": "6a81f95"
+}

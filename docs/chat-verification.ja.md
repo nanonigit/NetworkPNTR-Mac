@@ -117,3 +117,13 @@ BackendJSONClientは不変Sendableのmultipart計画をMainActor外で事前検�
 Swift145件（Core137、実AppKit5、診断fixture3）/Python42件成功。ダウンロード19件で128MiB逐次ハッシュ、4MiB超の実ソケット、途中切れ/曖昧フレーム、空、期限、早期401、取消、認証世代を確認。独立レビューで要求送信前の成功受理を発見し実行REDa17b157→GREENc81b1f6。+名はRED5cfdd3a→GREEN807912c。ハッシュ不一致でも診断成功となるRED9ecc5c4から、照合必須・失敗清掃をGREENca4f3d9で確認。詳細はbugs/attachment-download-investigation.ja.md。
 
 対象LLVM行カバレッジはパーサ99/99、通信54/60、経路22/22。領域は90/93、44/57、15/16。未通過のソケットエラー処理は残り、分岐/製品全体/プロセスメモリの保証はしない。証拠はupload-hash-verification.json、upload-hash-contract-vm/reference.json、upload-hash-comparison.json、upload-hash-native-results.json。旧A3サイズのみの証拠は保持。実VZ転送中の取消/停止・進捗・A4/A5状態/UI・引用外部再テスト・クラウド/SSE・カーネル安定性・全機能完成条件は引き続き未完了。今回の起動成功で過去のpanicを取り消したり候補を昇格しない。
+
+## 進捗と実VZでの転送中断
+
+6a81f95でSwift157件（Core145、実AppKit5、診断fixture7）/Python42件成功。対象25件で時計制御の最初/間引き/最終通知、不正/逆行値、本文のみの実送信量、socket取消、通知ゲート終了、古いログイン/要求の通知、コールバック内取消、取消を無視した成功の拒否を確認。診断4件は部分転送の失敗と清掃、停止前自然失敗、稼働証拠0、不意の成功を拒否。RED/GREENは0f3ec38/da649bb、e2a9c89/3dab2d4、944592a/9068f9e、レビュー回帰80ed15a/f312d40、原子的証拠d2b7904/6a81f95。詳細はbugs/attachment-download-investigation.ja.md。
+
+署名付き候補VMのupload-cancel-a3-v2は従来の128MiB本文/全内容ハッシュ確認後、新しい大きい転送を2回開始。最初は全134,217,728バイト中17,852,806バイト通知後にTask取消し、CancellationError、保存添付なし、引き続きAPI利用可能を確認。別転送は17,579,466バイト通知後、コントローラ停止が開いていて未取消の所有接続1本を同じロック下で取消。停止前にTask未完了を確認し、CancellationErrorとなった。VM停止/再起動とKeychain認証後、未完成添付がなく、所有会話/ゲストファイル/選択ファイルを清掃。従来LLM/全内容ハッシュ/VMライフサイクル、仮Keychain除去、最終停止/プロセス終了も成功。これは実VZの結果でありfake callbackの根拠ではない。数値にはmultipartフレーミングも含み、送信通知のサンプルであって保存済み量やカーネルI/O実測ではない。
+
+新しい固定使い捨てバックエンドとも8契約群が一致。元のブラウザ4サービスは正常、比較コンテナ/ネットワークは清掃。数値通知/VM停止はネイティブ実行環境の拡張で、ブラウザのスピナー/操作無効化や取消UIの同等性の合格ではない。初回upload-cancel-a3-v1は非合格の予備証拠として保持。全体Swift実行による対象LLVM行/領域は進捗26/26・20/20、認証130/130・105/117、通信171/185・133/171。残るエラー処理、分岐/製品全体のカバレッジを推定しない。
+
+証拠はupload-progress-verification.json、upload-cancellation-vm.json、upload-cancellation-native-results.json、upload-cancellation-contract-vm/reference.json、upload-cancellation-comparison.json、upload-cancellation-preliminary.json。実ダウンロード取消、32MiB退避後の取消、プロセスメモリ実測、A4/A5添付状態/UI、全機能完成条件は未完了。過去の候補panicを保持し昇格しない。次は選択時の会話作成/下書き引継ぎ、添付のみ送信、失敗復元と除去の所有権を移植してからpicker/cardsと実画面比較を進める。

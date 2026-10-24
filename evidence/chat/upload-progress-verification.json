@@ -1,0 +1,159 @@
+{
+  "scope": "Bounded upload progress, actual signed-VM upload task cancellation and VM stop; no attachment UI acceptance",
+  "baseline": "e75ae371ad777ffd1eecdd28d2781a6519b05591",
+  "implementation_commit": "6a81f95",
+  "swift_tests": 157,
+  "swift_core_tests": 145,
+  "appkit_component_tests": 5,
+  "native_fixture_tests": 7,
+  "python_tests": 42,
+  "scoped_progress_socket_auth_tests": 25,
+  "native_interruption_fixture_tests": 4,
+  "actual_native_run": "upload-cancel-a3-v2",
+  "preliminary_run_accepted": false,
+  "progress_minimum_interval_ms": 50,
+  "first_and_final_progress_exempt_from_interval": true,
+  "progress_counts": "multipart body bytes successfully written; excludes transport credential and HTTP header; not storage acknowledgement",
+  "progress_delivery_worker": "synchronous nonblocking callback; no per-chunk UI task queue",
+  "task_cancel_last_reported_body_bytes": 17852806,
+  "vm_stop_last_reported_body_bytes": 17579466,
+  "declared_body_bytes": 134217728,
+  "minimum_observed_body_before_interruption": 1048576,
+  "owned_transfer_leases_cancelled_at_stop": 1,
+  "live_vz_upload_task_cancel_verified": true,
+  "backend_usable_after_task_cancel": true,
+  "live_vz_stop_during_partial_upload_verified": true,
+  "authenticated_restart_verified": true,
+  "no_persisted_partial_attachment": true,
+  "owned_data_cleaned": true,
+  "temporary_keychain_removed": true,
+  "final_vm_stopped_and_process_terminal": true,
+  "source_kernel_promoted": false,
+  "pinned_reference_full_upload_contract_groups": 8,
+  "pinned_reference_full_upload_contract_equal": true,
+  "browser_cancellation_ui_parity": "pending; browser has uploading spinner, native numeric counters are additional transport behavior",
+  "live_vz_download_cancellation_verified": false,
+  "cancellation_after_multipart_spill_verified": false,
+  "process_peak_memory_measured": false,
+  "attachment_state_and_ui": "pending",
+  "all21_complete_feature_gates": "open",
+  "source_kernel_reliability": "pending; prior source-candidate panic retained",
+  "line_and_region_coverage_scope": "full local Swift suite; selected source files only; branch/whole-product coverage not inferred",
+  "coverage": [
+    {
+      "file": "AuthenticationSession.swift",
+      "summary": {
+        "branches": {
+          "count": 0,
+          "covered": 0,
+          "notcovered": 0,
+          "percent": 0
+        },
+        "functions": {
+          "count": 20,
+          "covered": 20,
+          "percent": 100
+        },
+        "instantiations": {
+          "count": 20,
+          "covered": 20,
+          "percent": 100
+        },
+        "lines": {
+          "count": 130,
+          "covered": 130,
+          "percent": 100
+        },
+        "mcdc": {
+          "count": 0,
+          "covered": 0,
+          "notcovered": 0,
+          "percent": 0
+        },
+        "regions": {
+          "count": 117,
+          "covered": 105,
+          "notcovered": 12,
+          "percent": 89.74358974358975
+        }
+      }
+    },
+    {
+      "file": "BackendUploadExchange.swift",
+      "summary": {
+        "branches": {
+          "count": 0,
+          "covered": 0,
+          "notcovered": 0,
+          "percent": 0
+        },
+        "functions": {
+          "count": 26,
+          "covered": 22,
+          "percent": 84.61538461538461
+        },
+        "instantiations": {
+          "count": 26,
+          "covered": 22,
+          "percent": 84.61538461538461
+        },
+        "lines": {
+          "count": 185,
+          "covered": 171,
+          "percent": 92.43243243243244
+        },
+        "mcdc": {
+          "count": 0,
+          "covered": 0,
+          "notcovered": 0,
+          "percent": 0
+        },
+        "regions": {
+          "count": 171,
+          "covered": 133,
+          "notcovered": 38,
+          "percent": 77.77777777777779
+        }
+      }
+    },
+    {
+      "file": "BackendUploadProgress.swift",
+      "summary": {
+        "branches": {
+          "count": 0,
+          "covered": 0,
+          "notcovered": 0,
+          "percent": 0
+        },
+        "functions": {
+          "count": 12,
+          "covered": 12,
+          "percent": 100
+        },
+        "instantiations": {
+          "count": 12,
+          "covered": 12,
+          "percent": 100
+        },
+        "lines": {
+          "count": 26,
+          "covered": 26,
+          "percent": 100
+        },
+        "mcdc": {
+          "count": 0,
+          "covered": 0,
+          "notcovered": 0,
+          "percent": 0
+        },
+        "regions": {
+          "count": 20,
+          "covered": 20,
+          "notcovered": 0,
+          "percent": 100
+        }
+      }
+    }
+  ],
+  "review": "Independent read-only review found prefailed stop false positive; executed RED/GREEN and atomic stop witness reviewed and approved"
+}

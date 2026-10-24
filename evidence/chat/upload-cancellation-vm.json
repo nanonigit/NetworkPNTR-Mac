@@ -1,0 +1,27 @@
+{
+  "owned_files_and_conversation_cleaned": true,
+  "task_cancel": {
+    "backend_usable_after_cancel": true,
+    "first_body_bytes": 162,
+    "last_body_bytes": 17852806,
+    "no_persisted_attachment": true,
+    "partial_body_observed": true,
+    "progress_event_count": 2,
+    "task_cancellation_error": true,
+    "total_body_bytes": 134217728
+  },
+  "ui_cancellation_controls": "pending",
+  "vm_stop": {
+    "first_body_bytes": 162,
+    "in_flight_before_stop": true,
+    "last_body_bytes": 17579466,
+    "no_persisted_attachment": true,
+    "owned_transfer_leases_cancelled_at_stop": 1,
+    "partial_body_observed": true,
+    "progress_event_count": 2,
+    "restarted_authenticated": true,
+    "total_body_bytes": 134217728,
+    "transfer_failed": true,
+    "transfer_failure_kind": "cancellation"
+  }
+}
