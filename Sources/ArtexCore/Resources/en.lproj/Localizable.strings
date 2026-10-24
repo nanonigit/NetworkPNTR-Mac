@@ -2,6 +2,52 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
+	<key>auth.acceptTerms</key>
+	<string>Agree</string>
+	<key>auth.agree</key>
+	<string>I agree to the terms of use</string>
+	<key>auth.checking</key>
+	<string>Checking authentication status</string>
+	<key>auth.confirm</key>
+	<string>Confirm password</string>
+	<key>auth.connected</key>
+	<string>Connected to ARTEX in the dedicated VM. Features are being migrated after comparison testing.</string>
+	<key>auth.loggedIn</key>
+	<string>Logged in</string>
+	<key>auth.login</key>
+	<string>Log in</string>
+	<key>auth.loginHelp</key>
+	<string>The username is ARTEX. Enter your configured password.</string>
+	<key>auth.logout</key>
+	<string>Log out</string>
+	<key>auth.newPassword</key>
+	<string>New password</string>
+	<key>auth.password</key>
+	<string>Password</string>
+	<key>auth.passwordHint</key>
+	<string>At least 8 characters, at most 72 UTF-8 bytes</string>
+	<key>auth.readTerms</key>
+	<string>Read terms of use</string>
+	<key>auth.recovery</key>
+	<string>Try again after the database or connection recovers.</string>
+	<key>auth.repeat</key>
+	<string>Re-enter password</string>
+	<key>auth.retry</key>
+	<string>Retry</string>
+	<key>auth.setPassword</key>
+	<string>Set password</string>
+	<key>auth.setupHelp</key>
+	<string>Set a password for this Mac’s dedicated ARTEX environment. The app securely passes the setup token.</string>
+	<key>auth.setupTitle</key>
+	<string>Set administrator password</string>
+	<key>auth.termsTitle</key>
+	<string>Terms of use</string>
+	<key>auth.termsUnavailable</key>
+	<string>Could not load the terms of use. Close this window and try again.</string>
+	<key>auth.unavailable</key>
+	<string>Unable to confirm authentication status</string>
+	<key>auth.username</key>
+	<string>Username</string>
 	<key>chat.ActionsPrefix</key>
 	<string>Conversation actions: </string>
 	<key>chat.Agent</key>

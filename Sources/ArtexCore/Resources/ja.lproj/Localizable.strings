@@ -2,6 +2,52 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
+	<key>auth.acceptTerms</key>
+	<string>同意する</string>
+	<key>auth.agree</key>
+	<string>利用条件に同意する</string>
+	<key>auth.checking</key>
+	<string>認証状態を確認しています</string>
+	<key>auth.confirm</key>
+	<string>パスワードを確認</string>
+	<key>auth.connected</key>
+	<string>専用VMのARTEXに接続しています。各機能は比較テストを通したものから順に移植します。</string>
+	<key>auth.loggedIn</key>
+	<string>ログイン済み</string>
+	<key>auth.login</key>
+	<string>ログイン</string>
+	<key>auth.loginHelp</key>
+	<string>ユーザー名はARTEXです。設定したパスワードを入力してください。</string>
+	<key>auth.logout</key>
+	<string>ログアウト</string>
+	<key>auth.newPassword</key>
+	<string>新しいパスワード</string>
+	<key>auth.password</key>
+	<string>パスワード</string>
+	<key>auth.passwordHint</key>
+	<string>8文字以上、UTF-8で72バイト以内</string>
+	<key>auth.readTerms</key>
+	<string>利用条件を読む</string>
+	<key>auth.recovery</key>
+	<string>データベースまたは通信の復旧後に再試行してください。</string>
+	<key>auth.repeat</key>
+	<string>もう一度入力</string>
+	<key>auth.retry</key>
+	<string>再試行</string>
+	<key>auth.setPassword</key>
+	<string>パスワードを設定</string>
+	<key>auth.setupHelp</key>
+	<string>このMacの専用ARTEX環境にパスワードを設定します。初期設定トークンはアプリが安全に受け渡します。</string>
+	<key>auth.setupTitle</key>
+	<string>管理者パスワードを設定</string>
+	<key>auth.termsTitle</key>
+	<string>利用条件</string>
+	<key>auth.termsUnavailable</key>
+	<string>利用条件を読み込めませんでした。閉じてから、もう一度お試しください。</string>
+	<key>auth.unavailable</key>
+	<string>認証状態を確認できません</string>
+	<key>auth.username</key>
+	<string>ユーザー名</string>
 	<key>chat.ActionsPrefix</key>
 	<string>会話の操作：</string>
 	<key>chat.Agent</key>
