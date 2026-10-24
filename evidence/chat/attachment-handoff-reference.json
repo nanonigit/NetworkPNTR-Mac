@@ -1,0 +1,33 @@
+{
+  "failed_send_statuses": [
+    503,
+    503
+  ],
+  "guest_names_after_remove": [
+    "empty.txt",
+    "é.txt",
+    "other.bin"
+  ],
+  "history_empty_after_rejections": true,
+  "owned_files_and_conversation_cleaned": true,
+  "records": [
+    {
+      "name": "é.txt",
+      "path": "uploads/é.txt",
+      "sha256": "4bf5122f344554c53bde2ebb8cd2b7e3d1600ad631c385a5d7cce23c7785459a",
+      "size": 1
+    },
+    {
+      "name": "other.bin",
+      "path": "uploads/other.bin",
+      "sha256": "dbc1b4c900ffe48d575b5da5c638040125f65db0fe3e24494b76ea986457d986",
+      "size": 1
+    },
+    {
+      "name": "empty.txt",
+      "path": "uploads/empty.txt",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size": 0
+    }
+  ]
+}

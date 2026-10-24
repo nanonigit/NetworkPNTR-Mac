@@ -137,3 +137,15 @@ REDcfb9327は添付API未実装、GREEN5e22964で対象34件。レビューのUn
 script/chat_attachment_send_oracle.mjsは固定chat/page.tsx全体SHA2565f53e5667d1ff131585be7bc0ca1f3641cae49d9a98c68fb0375590788abed22を確認後、ChatView.sendを抽出、TypeScriptのエラーcast1箇所だけ除去し限定API/状態スタブで実行。本文+添付失敗、NFC/NFD別名添付のみ失敗、本文+添付成功、空の拒否の4ケースでSwiftの要求JSONと待機/完了状態が一致。再生成一致と不一致ソースの実行前拒否も確認。実ブラウザ操作、ゲスト送信/LLM結果、添付UI全体の根拠ではない。新しい編集/stop/resetは別のSwift回帰で確認。
 
 全体実行による対象LLVM行/領域: モデル23/23・21/21、service110/114・108/115、store249/257・184/213、workspace104/109・91/108。分岐/製品全体の保証はしない。証拠はattachment-send-browser-reference.jsonとattachment-state-core-verification.json。開発.app再ビルド/署名成功、カーネルの既知faultと未完了の安定性ゲートは保持。A4.2認証upload adapter/会話作成/本文引継ぎ/削除/取消、Unicode空白の端点、A4実ゲスト/固定比較、A5 picker/cards実操作比較が必須で、全機能完成ゲートは未完了。
+
+## A4.2型付きupload/会話作成引継ぎと所有処理
+
+Swift190件（Core176・実AppKit5・診断fixture9）、Python45件、所有権/既存chat対象46件成功。feature adapterはJWT/任意経路を受けず、生きた認証、成功status、厳密なメタデータ応答と選択数一致を要求。Workspaceのworker/pumpは起点/解決先ID、処理UUID、世代、最新1件の進捗、親/明示取消、stop/reset、部分削除、本文改訂を守る。新しい行登録で古い一覧を失効。削除成功IDだけキャッシュを消し、遅い送信/停止応答も失効する。取消で受理済みファイルを黙って削除しない。
+
+adapterはRED372ea2b/GREENf1361eeの3件、workspaceはRED2b41865/GREENc3482cbの10件。一覧await後の古い成功をRED2219e94/GREENb0d16e6、対象編集でroot消失をREDc296b78/GREEN7be783cで修正。現在14workspace件とレビューで未解決createの削除、遅いsend、進捗、次処理、選択、古い一覧も確認。実fixture欠落REDb96d724/GREEN3d89cafでnative2件/Python45件成功。比較fixtureはhost/UID/markerをHTTP前に拒否。既存のブラウザ送信ソース実行比較も成功。
+
+新しい署名付きattachment-handoff-a4-v1はsetup/添付前に空判定がsegfaultし、Bad rss-counter state/non-zero pgtables_bytes警告を出した。停止後のホスト全走査で2GiB全ゼロの未変更sparseディスクと確認。nonblank-state-diskはデータ拒否と実行失敗を同じ名前で示すため、走査やformatを迂回せず証拠を保持。同じ構成の対照1回attachment-handoff-a4-v2では実認証typed vsockの作成/本文/添付引継ぎ、3内容ハッシュ、LLM設定前の添付のみ/本文あり503復元、拒否履歴なし、カード除去後のゲスト保持、選択分離、所有データ清掃に成功。Keychain復元/最終停止/プロセス終了も成功。対照成功で今回の異常や過去panic、安定性ゲートを取り消さない。
+
+実fixture名は明示NFD名、other.bin、empty.txt（1/1/0バイト）。Darwin URL分解形変換を別に実測し、実native転送でNFC/NFD別URL名を送れたとは主張しない。別名受信はモデル/store/ソース実行で保持。新しい固定Go比較ではUnicodeメタデータ/内容、添付のみ503、本文あり503、カード除去後保持、拒否履歴なし、清掃の6群が一致。nativeだけの状態フラグは比較から除外しAPIとUIを混同しない。元のブラウザ4サービスは正常、比較容器/ネットワークは清掃。
+
+対象LLVM行/領域: ChatAttachments26/26・23/23、ChatStore273/282・202/232、ChatWorkspace247/257・172/197、LLMService81/87・65/80。分岐/製品全体を推定しない。証拠はattachment-handoff-verification.json、attachment-handoff-vm/reference/comparison/native-results.json、attachment-handoff-boot-red.json、attachment-handoff-failed-native-results.json、attachment-darwin-url-reference.json。picker/cards/外部UX、実プロバイダ成功、Unicode空白端点、退避後/ダウンロード取消、メモリ実測、カーネル安定性と全機能合格は未完了。開発.appを再ビルド/adhoc検証した段階で公証配布版ではない。

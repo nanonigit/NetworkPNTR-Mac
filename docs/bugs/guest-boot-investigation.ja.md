@@ -47,3 +47,9 @@ Docker.app由来の既存診断用カーネルは保持し、別のレシピでL
 ## ソースビルド候補の添付検証: 1vCPUでも新しい障害
 
 新規の署名アプリ実行upload-a2-v1はbootstrap／readyより前、添付処理へ到達する前に失敗した。同じソースビルド6.12.114-artex・direct-root・1vCPU、Image SHA2568e57308787c420cb42e4c4ea80e6def6438a52232692c010dc4609bb9bf21879でanon_vma_clone／__split_vma／munmapのpanicを確認。アプリは異常を検知しVMを強制停止して終了し、正規化結果もdiagnostics_failedである。添付成功とはしない。機密情報を除いた証拠はevidence/chat/upload-a2-boot-red.jsonで、元ログと状態は無視対象に保つ。1vCPUのソース候補なら全般的に安定するという推論は、この結果で否定される。過去の成功は履歴として保持し、ホスト／ハードウェア原因は断定しない。同一条件・新規状態の2回目は再現確認であり、今回の失敗を取り消す根拠にはしない。正式採用、起動・復旧の安定性、配布の受け入れは未完了。
+
+## A4引継ぎ候補: 空ディスク確認プロセスの異常終了
+
+新しい署名付きattachment-handoff-a4-v1はsetup/bootstrapや添付操作の前に失敗。stage=nonblank-state-diskだが、非公開serialにはMM_FILEPAGES/MM_ANONPAGESのBad rss-counter state、mm解放時のnon-zero pgtables_bytes、Python空判定のSegmentation faultがある。アプリ/VM終了後にホストから読み取りだけで2GiB全体を走査し、全ゼロ・割当block0・SHA256a7c744c13cc101ed66c29f672f92455547889cc586ce6d44fe76ae824958ea51を確認した。stage名は非ゼロデータの証拠ではなく、backend-initが確認プロセスの異常終了も同じ拒否段階へまとめている。フォーマットは実行されていない。非機密の証拠はattachment-handoff-boot-red.jsonとattachment-handoff-failed-native-results.json。
+
+同じ1vCPU候補の追加の不安定性証拠であり、ホスト/ハードウェア/Python/カーネルの根本原因は確定しない。走査を省略したり失敗ディスクを初期化しない。再現性分類と新機能検証のため、同じ構成の新しい対照実行を1回だけ行い、成功まで繰り返したり安定性合格としない。失敗raw/stateはignoredのまま保持。将来の起動診断では、非空の正当な終了と実行失敗を区別しつつ拒否を維持する必要がある。

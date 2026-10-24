@@ -1,0 +1,10 @@
+{
+  "scope": "Host read-only verification of the failed fresh fixture disk after VM termination",
+  "byte_count": 2147483648,
+  "entire_disk_zero": true,
+  "sha256": "a7c744c13cc101ed66c29f672f92455547889cc586ce6d44fe76ae824958ea51",
+  "allocated_blocks": 0,
+  "guest_failure": "blank checker process segfault before formatting/bootstrap; Bad rss-counter state and non-zero pgtables_bytes warnings",
+  "attachment_workflow_reached": false,
+  "kernel_reliability_accepted": false
+}

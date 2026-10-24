@@ -1,0 +1,44 @@
+{
+  "samples" : [
+    {
+      "input_utf8" : [
+        195,
+        169,
+        46,
+        116,
+        120,
+        116
+      ],
+      "last_component_utf8" : [
+        101,
+        204,
+        129,
+        46,
+        116,
+        120,
+        116
+      ]
+    },
+    {
+      "input_utf8" : [
+        101,
+        204,
+        129,
+        46,
+        116,
+        120,
+        116
+      ],
+      "last_component_utf8" : [
+        101,
+        204,
+        129,
+        46,
+        116,
+        120,
+        116
+      ]
+    }
+  ],
+  "scope" : "Executed Darwin Foundation URL component probe; synthetic paths only"
+}

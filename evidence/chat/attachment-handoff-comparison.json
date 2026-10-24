@@ -1,0 +1,15 @@
+{
+  "baseline": "e75ae371ad777ffd1eecdd28d2781a6519b05591",
+  "identical_fixture": true,
+  "api_contract_equal": true,
+  "cases": [
+    "typed_unicode_metadata_and_content",
+    "attachment_only_no_llm_rejection",
+    "mixed_no_llm_rejection",
+    "guest_files_preserved_after_card_removal",
+    "empty_rejected_history",
+    "owned_fixture_cleanup"
+  ],
+  "browser_data_modified": false,
+  "ui_workflow_parity": "pending"
+}

@@ -1,0 +1,209 @@
+{
+  "scope": "A4.2 typed upload/create/text handoff and finite failure/file-preservation contracts; not native picker/cards or successful AI turn acceptance",
+  "baseline": "e75ae371ad777ffd1eecdd28d2781a6519b05591",
+  "implementation_commit": "7be783c",
+  "swift_tests": 190,
+  "swift_core_tests": 176,
+  "appkit_component_tests": 5,
+  "native_diagnostic_fixture_tests": 9,
+  "python_tests": 45,
+  "scoped_ownership_and_existing_chat_tests": 46,
+  "new_adapter_tests": 3,
+  "new_workspace_ownership_tests": 14,
+  "new_handoff_fixture_tests": 2,
+  "new_reference_fixture_tests": 3,
+  "actual_vm_attempts": [
+    "attachment-handoff-a4-v1",
+    "attachment-handoff-a4-v2"
+  ],
+  "first_attempt_reached_attachment_workflow": false,
+  "first_attempt_accepted": false,
+  "first_attempt_counter_evidence": "attachment-handoff-boot-red.json; blank-check process segfault with kernel memory-accounting warnings; full host disk verified zero",
+  "same_profile_control_attempt_reached_workflow": true,
+  "kernel_sha256": "8e57308787c420cb42e4c4ea80e6def6438a52232692c010dc4609bb9bf21879",
+  "virtual_cpu_count": 1,
+  "network_devices": 0,
+  "host_shares": 0,
+  "typed_adapter_actual_authenticated_vsock_verified": true,
+  "native_create_text_handoff": true,
+  "native_selection_isolation": true,
+  "attachment_only_and_mixed_failure_restoration": true,
+  "observed_failed_send_statuses": [
+    503,
+    503
+  ],
+  "actual_small_contents_downloaded_and_hashed": true,
+  "card_removal_preserves_guest_files": true,
+  "rejected_sends_append_no_history": true,
+  "pinned_backend_contract_equal": true,
+  "matching_contract_groups": 6,
+  "owned_files_conversations_and_local_selections_cleaned": true,
+  "temporary_keychain_removed": true,
+  "final_vm_stopped_and_process_terminal": true,
+  "existing_browser_services_healthy": true,
+  "source_candidate_promoted": false,
+  "runtime_reliability": "not accepted; first attempt retained as counter-evidence",
+  "darwin_filename_probe": "attachment-darwin-url-reference.json; Foundation URL component decomposition verified; actual fixture uses explicit NFD and ASCII names",
+  "exact_nfc_nfd_metadata_identity": "separate core/source-oracle tests retained, not claimed as two distinct Mac file-URL upload names",
+  "progress_and_stale_cancel_ownership": "controlled continuation and latest-one stream tests; base transport actual VZ cancellation evidence is historical separate checkpoint",
+  "coverage_scope": "full local Swift suite, selected source line/region coverage; no branch or whole-product claim",
+  "coverage": [
+    {
+      "file": "ChatAttachments.swift",
+      "summary": {
+        "branches": {
+          "count": 0,
+          "covered": 0,
+          "notcovered": 0,
+          "percent": 0
+        },
+        "functions": {
+          "count": 10,
+          "covered": 10,
+          "percent": 100
+        },
+        "instantiations": {
+          "count": 10,
+          "covered": 10,
+          "percent": 100
+        },
+        "lines": {
+          "count": 26,
+          "covered": 26,
+          "percent": 100
+        },
+        "mcdc": {
+          "count": 0,
+          "covered": 0,
+          "notcovered": 0,
+          "percent": 0
+        },
+        "regions": {
+          "count": 23,
+          "covered": 23,
+          "notcovered": 0,
+          "percent": 100
+        }
+      }
+    },
+    {
+      "file": "ChatStore.swift",
+      "summary": {
+        "branches": {
+          "count": 0,
+          "covered": 0,
+          "notcovered": 0,
+          "percent": 0
+        },
+        "functions": {
+          "count": 93,
+          "covered": 88,
+          "percent": 94.6236559139785
+        },
+        "instantiations": {
+          "count": 95,
+          "covered": 90,
+          "percent": 94.73684210526315
+        },
+        "lines": {
+          "count": 282,
+          "covered": 273,
+          "percent": 96.80851063829788
+        },
+        "mcdc": {
+          "count": 0,
+          "covered": 0,
+          "notcovered": 0,
+          "percent": 0
+        },
+        "regions": {
+          "count": 232,
+          "covered": 202,
+          "notcovered": 30,
+          "percent": 87.06896551724138
+        }
+      }
+    },
+    {
+      "file": "ChatWorkspace.swift",
+      "summary": {
+        "branches": {
+          "count": 0,
+          "covered": 0,
+          "notcovered": 0,
+          "percent": 0
+        },
+        "functions": {
+          "count": 78,
+          "covered": 71,
+          "percent": 91.02564102564102
+        },
+        "instantiations": {
+          "count": 78,
+          "covered": 71,
+          "percent": 91.02564102564102
+        },
+        "lines": {
+          "count": 257,
+          "covered": 247,
+          "percent": 96.10894941634241
+        },
+        "mcdc": {
+          "count": 0,
+          "covered": 0,
+          "notcovered": 0,
+          "percent": 0
+        },
+        "regions": {
+          "count": 197,
+          "covered": 172,
+          "notcovered": 25,
+          "percent": 87.30964467005076
+        }
+      }
+    },
+    {
+      "file": "LLMService.swift",
+      "summary": {
+        "branches": {
+          "count": 0,
+          "covered": 0,
+          "notcovered": 0,
+          "percent": 0
+        },
+        "functions": {
+          "count": 21,
+          "covered": 18,
+          "percent": 85.71428571428571
+        },
+        "instantiations": {
+          "count": 21,
+          "covered": 18,
+          "percent": 85.71428571428571
+        },
+        "lines": {
+          "count": 87,
+          "covered": 81,
+          "percent": 93.10344827586206
+        },
+        "mcdc": {
+          "count": 0,
+          "covered": 0,
+          "notcovered": 0,
+          "percent": 0
+        },
+        "regions": {
+          "count": 80,
+          "covered": 65,
+          "notcovered": 15,
+          "percent": 81.25
+        }
+      }
+    }
+  ],
+  "native_picker_cards_and_external_ui_comparison": "pending",
+  "unicode_whitespace_edge_parity": "pending",
+  "successful_real_provider_turn": "pending",
+  "complete_feature_gates_closed": 0,
+  "review": "Read-only review approved adapter/ownership/fixtures and post-refresh identity/source-text repairs"
+}
