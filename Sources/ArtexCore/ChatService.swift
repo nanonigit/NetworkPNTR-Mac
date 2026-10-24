@@ -111,7 +111,7 @@ public enum ChatStopStatus: String, Decodable, Sendable { case idle, stopping }
         return try await request(Detail.self, path: route(id) + "/messages/\(sequence)").detail ?? ""
     }
     public func send(id: Int64, message: String, attachments: [ChatAttachment] = []) async throws {
-        guard !message.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty || !attachments.isEmpty else { throw BackendAPIError.validation("メッセージを入力してください。") }
+        guard !ChatText.trim(message).isEmpty || !attachments.isEmpty else { throw BackendAPIError.validation("メッセージを入力してください。") }
         var body: [String: Any] = ["message": message]
         if !attachments.isEmpty { body["attachments"] = attachments.map(\.json) }
         let result = try await request(Status.self, method: "POST", path: route(id) + "/messages", body: body)

@@ -36,31 +36,21 @@ public enum ChatMentionEditing {
         guard queryUnits.count <= 220, !queryUnits.contains(where: { [91,93,13,10,64].contains($0) }) else { return nil }
         return ChatMentionActive(range: NSRange(location: start, length: caret - start), query: String(decoding: queryUnits, as: UTF16.self))
     }
-    private static func trimJS(_ input: String, end: Bool = true) -> String {
-        func space(_ value: Unicode.Scalar) -> Bool {
-            let n = value.value
-            return (9...13).contains(n) || [32,0xA0,0x1680,0x2028,0x2029,0x202F,0x205F,0x3000,0xFEFF].contains(n) || (0x2000...0x200A).contains(n)
-        }
-        var values = input.unicodeScalars
-        while let first = values.first, space(first) { values.removeFirst() }
-        if end { while let last = values.last, space(last) { values.removeLast() } }
-        return String(values)
-    }
     private static func alias(_ kind: ChatMentionKind) -> String {
         switch kind { case .endpoint: "api"; case .rootDomain: "domain"; default: kind.rawValue }
     }
     public static func search(_ input: String) -> ChatMentionSearchInput {
-        let trimmed = trimJS(input, end: false)
+        let trimmed = ChatText.trim(input, end: false)
         let text = trimmed.lowercased()
         for kind in ChatMentionKind.allCases {
             for alias in [kind.wireLabel.lowercased(), alias(kind)] {
                 let nonLatin = alias.unicodeScalars.contains { !(97...122).contains($0.value) }
                 if text == alias || text.utf16.starts(with: (alias + " ").utf16) || (nonLatin && text.utf16.starts(with: alias.utf16)) {
-                    return .init(kind: kind, query: trimJS(String(decoding: trimmed.utf16.dropFirst(alias.utf16.count), as: UTF16.self)), categories: [])
+                    return .init(kind: kind, query: ChatText.trim(String(decoding: trimmed.utf16.dropFirst(alias.utf16.count), as: UTF16.self)), categories: [])
                 }
             }
         }
-        return .init(kind: nil, query: trimJS(input), categories: ChatMentionKind.allCases.filter { $0.wireLabel.lowercased().utf16.starts(with: text.utf16) || alias($0).utf16.starts(with: text.utf16) })
+        return .init(kind: nil, query: ChatText.trim(input), categories: ChatMentionKind.allCases.filter { $0.wireLabel.lowercased().utf16.starts(with: text.utf16) || alias($0).utf16.starts(with: text.utf16) })
     }
     public static func replace(in value: String, active expected: ChatMentionActive, with text: String) -> ChatMentionEdit? {
         let (end, overflow) = expected.range.location.addingReportingOverflow(expected.range.length)

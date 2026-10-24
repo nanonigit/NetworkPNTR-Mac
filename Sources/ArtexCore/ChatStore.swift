@@ -188,10 +188,11 @@ import Observation
 
     public func sendCurrentDraft(submittedMessage: String? = nil) async -> Bool {
         guard let id = selectedID, hasLoadedHistory, !isLoadingHistory, !sendingIDs.contains(id) else { return false }
-        let submitted = submittedMessage ?? drafts[id] ?? "", cards = attachments(for: id)
-        guard !submitted.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty || !cards.isEmpty else { return false }
+        let rawSubmitted = submittedMessage ?? drafts[id] ?? "", cards = attachments(for: id)
+        let submitted = ChatText.trim(rawSubmitted)
+        guard !submitted.isEmpty || !cards.isEmpty else { return false }
         let ticket = lifetime, owner = ownerRevisions[id]
-        let clearsText = draft(for: id).utf8.elementsEqual(submitted.utf8)
+        let clearsText = draft(for: id).utf8.elementsEqual(rawSubmitted.utf8)
         if clearsText { setDraft("", for: id) }
         pendingSends[id] = PendingSend(text: clearsText ? submitted : nil,
             clearedTextRevision: clearsText ? draftRevisions[id] : nil, attachments: cards)

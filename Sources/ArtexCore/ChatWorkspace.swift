@@ -86,7 +86,7 @@ private struct WorkspaceUploadResult: Sendable {
         await transcript.select(id: id)
     }
     public func send() async -> Bool {
-        guard !busy, !isUploading, !transcript.draft.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty || !transcript.attachments.isEmpty else { return false }
+        guard !busy, !isUploading, !ChatText.trim(transcript.draft).isEmpty || !transcript.attachments.isEmpty else { return false }
         if transcript.selectedID != nil { return await transcript.sendCurrentDraft() }
         guard !agentKey.isEmpty else { return false }
         let life = lifetime; let ticket = selection; let submitted = transcript.draft
