@@ -60,7 +60,7 @@ import Foundation
             }
             result["native_llm_restart_persistence"] = true
             result["real_keychain_session_restored_after_vm_restart"] = true
-            guard let login = environment.authentication else { throw RuntimeError.integrity("native login state") }
+            guard var login = environment.authentication else { throw RuntimeError.integrity("native login state") }
             login.logout()
             guard login.phase == .needsLogin else { throw RuntimeError.integrity("Keychain logout") }
             await login.login(password: password, agreed: false)
@@ -73,6 +73,16 @@ import Foundation
             if CommandLine.arguments.contains("--upload-diagnostics") || CommandLine.arguments.contains("--upload-limit-diagnostics") {
                 try await NativeUploadDiagnostics.run(session: login, directory: directory, includeLimit: CommandLine.arguments.contains("--upload-limit-diagnostics"))
                 result["native_authenticated_upload_and_content"] = true
+            }
+            if CommandLine.arguments.contains("--upload-cancellation-diagnostics") {
+                login = try await NativeUploadCancellationDiagnostics.run(session: login, directory: directory, stopAndRestart: {
+                    try await environment.stop()
+                    guard environment.controller.state == .stopped, !environment.controller.hasMachine else { throw RuntimeError.integrity("transfer VM stopped") }
+                    await environment.start()
+                    guard environment.controller.guestReady, let restored = environment.authentication, restored.phase == .authenticated else { throw RuntimeError.integrity("transfer VM restart authentication") }
+                    return restored
+                })
+                result["native_partial_upload_task_cancel_and_vm_stop"] = true
             }
             if CommandLine.arguments.contains("--chat-review") {
                 _ = try await NativeChatHistoryDiagnostics.run(session: login, directory: directory)
