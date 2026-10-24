@@ -9,7 +9,7 @@ import Foundation
          stop: @escaping (URL) -> Void = { $0.stopAccessingSecurityScopedResource() }) {
         self.start = start; self.stop = stop
     }
-    func withAccess<Value>(_ files: [URL], operation: () async throws -> Value) async throws -> Value {
+    func withAccess<Value>(_ files: [URL], operation: @MainActor () async throws -> Value) async throws -> Value {
         try Task.checkCancellation()
         // An unscoped readable URL can return false; release only successful scopes.
         let scoped = files.filter(start)
