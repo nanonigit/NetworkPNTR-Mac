@@ -1,0 +1,119 @@
+{
+  "scope": "Core store files only; not UI/terms/browser acceptance",
+  "files": [
+    {
+      "file": "AuthenticationSession.swift",
+      "summary": {
+        "branches": {
+          "count": 0,
+          "covered": 0,
+          "notcovered": 0,
+          "percent": 0
+        },
+        "functions": {
+          "count": 21,
+          "covered": 21,
+          "percent": 100
+        },
+        "instantiations": {
+          "count": 21,
+          "covered": 21,
+          "percent": 100
+        },
+        "lines": {
+          "count": 131,
+          "covered": 131,
+          "percent": 100
+        },
+        "mcdc": {
+          "count": 0,
+          "covered": 0,
+          "notcovered": 0,
+          "percent": 0
+        },
+        "regions": {
+          "count": 118,
+          "covered": 107,
+          "notcovered": 11,
+          "percent": 90.67796610169492
+        }
+      }
+    },
+    {
+      "file": "DashboardStore.swift",
+      "summary": {
+        "branches": {
+          "count": 0,
+          "covered": 0,
+          "notcovered": 0,
+          "percent": 0
+        },
+        "functions": {
+          "count": 33,
+          "covered": 25,
+          "percent": 75.75757575757575
+        },
+        "instantiations": {
+          "count": 33,
+          "covered": 25,
+          "percent": 75.75757575757575
+        },
+        "lines": {
+          "count": 91,
+          "covered": 77,
+          "percent": 84.61538461538461
+        },
+        "mcdc": {
+          "count": 0,
+          "covered": 0,
+          "notcovered": 0,
+          "percent": 0
+        },
+        "regions": {
+          "count": 80,
+          "covered": 63,
+          "notcovered": 17,
+          "percent": 78.75
+        }
+      }
+    },
+    {
+      "file": "LLMStore.swift",
+      "summary": {
+        "branches": {
+          "count": 0,
+          "covered": 0,
+          "notcovered": 0,
+          "percent": 0
+        },
+        "functions": {
+          "count": 24,
+          "covered": 24,
+          "percent": 100
+        },
+        "instantiations": {
+          "count": 24,
+          "covered": 24,
+          "percent": 100
+        },
+        "lines": {
+          "count": 65,
+          "covered": 65,
+          "percent": 100
+        },
+        "mcdc": {
+          "count": 0,
+          "covered": 0,
+          "notcovered": 0,
+          "percent": 0
+        },
+        "regions": {
+          "count": 51,
+          "covered": 46,
+          "notcovered": 5,
+          "percent": 90.19607843137256
+        }
+      }
+    }
+  ]
+}

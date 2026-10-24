@@ -113,3 +113,5 @@ L4b Chatエラー：storeは安全な型付きAppErrorMessageを保持し、view
 L4bチェックポイント：96eae3e型付きstore未実装RED→0796897 GREEN3。Swift246（成功245・既存AX1スキップ）、Python52、安全な値の行13/13・領域11/11。署名アプリと各言語33エラー項目一致、レビュー済み。ユーザーはMac解除を後で行うため、実native/browser失敗送信中の言語UIゲートは未完了。新規runtime fixtureは未開始。localization-chat-errors-verification.ja.md参照。
 
 L4c移植済み画面のエラー／通知ゲート：AuthenticationSession・LLMStore・DashboardLoadStateはAppErrorMessageを保持し、日本語Stringは計算プロパティで互換。LLM完了通知はカタログキーで保持し、再取得失敗と独立させる。認証・LLM設定／編集／rotation・dashboardの現在view localeで表示。localeによる認証／変更操作／poll再起動やパスワード／APIキー保存をしない。フォーム・規約同意・世代・前回データを保持。周辺未翻訳操作／規約言語は別ゲート。検証失敗・未知エラー秘密除去・保存成功後の再取得失敗・dashboard前回データ保持を試験。Lazyweb settings inline validation errorは隣接Gopuff captchaメタデータのみ（.356）で視覚証拠としない。実native/browser比較はMac解除まで延期。
+
+L4cチェックポイント：a229ee3型付き値未実装RED→7b6c8c5 GREEN4、4cbb734操作／poll回帰追加GREEN7。最終Swift253（成功252・既存AX1スキップ）、Python52、署名エラー／通知は各言語39項目一致。認証／LLM／Dashboard安全なエラーと通知6種類を接続、レビュー済み。実native/browser、周辺ラベル／規約とruntime／backend／全体ゲートは未完了。localization-screen-errors-verification.ja.md参照。

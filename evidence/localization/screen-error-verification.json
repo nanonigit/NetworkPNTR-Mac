@@ -1,0 +1,18 @@
+{
+  "red": "a229ee3",
+  "production": "7b6c8c5",
+  "additional_regression": "4cbb734",
+  "swift_cases": 253,
+  "swift_passed": 252,
+  "swift_skipped": 1,
+  "python_passed": 52,
+  "focused_screen_tests": 7,
+  "signed_bundle_error_and_notice_entries_verified": {
+    "en": 39,
+    "ja": 39
+  },
+  "review": "approved after coalescing compile fix; additional regression tests approved",
+  "actual_native_browser_switch": "pending; user deferred Mac unlock",
+  "runtime_fixture_started": false,
+  "whole_app_or_language_acceptance": false
+}
