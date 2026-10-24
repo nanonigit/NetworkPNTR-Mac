@@ -63,7 +63,8 @@ private struct WorkspaceUploadResult: Sendable {
     public var selected: ChatConversation? { transcript.conversations.first { $0.id == transcript.selectedID } }
     public func name(for key: String) -> String { agents.first { $0.key == key }?.name ?? key }
     private func message(_ error: any Error) -> String {
-        (error as? BackendAPIError)?.localizedDescription ?? "実行環境との通信を確認してください。"
+        if let bodyError = error as? ChatUploadBodyError { return bodyError.localizedDescription }
+        return (error as? BackendAPIError)?.localizedDescription ?? "実行環境との通信を確認してください。"
     }
     public func load() async {
         guard !loading else { return }
