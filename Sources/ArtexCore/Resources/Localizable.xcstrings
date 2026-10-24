@@ -432,7 +432,7 @@
         "ja": {
           "stringUnit": {
             "state": "translated",
-            "value": "検出結果"
+            "value": "脆弱性"
           }
         }
       }
@@ -449,7 +449,7 @@
         "ja": {
           "stringUnit": {
             "state": "translated",
-            "value": "通信"
+            "value": "トラフィック"
           }
         }
       }
@@ -483,7 +483,7 @@
         "ja": {
           "stringUnit": {
             "state": "translated",
-            "value": "LLM記録"
+            "value": "LLM 履歴"
           }
         }
       }
@@ -636,7 +636,7 @@
         "ja": {
           "stringUnit": {
             "state": "translated",
-            "value": "通知"
+            "value": "通知配信"
           }
         }
       }
@@ -653,7 +653,7 @@
         "ja": {
           "stringUnit": {
             "state": "translated",
-            "value": "介入ルール"
+            "value": "インターセプトルール"
           }
         }
       }
@@ -687,7 +687,7 @@
         "ja": {
           "stringUnit": {
             "state": "translated",
-            "value": "承認"
+            "value": "承認履歴"
           }
         }
       }
