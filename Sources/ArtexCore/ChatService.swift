@@ -44,8 +44,26 @@ public enum ChatStopStatus: String, Decodable, Sendable { case idle, stopping }
     private func request<T: Decodable>(_ type: T.Type, method: String = "GET", path: String, body: [String: Any]? = nil) async throws -> T {
         let bytes = try body.map { try JSONSerialization.data(withJSONObject: $0, options: [.sortedKeys]) }
         let response = try await client.send(method: method, path: path, body: bytes, bearer: nil)
-        guard (200..<300).contains(response.status) else { throw BackendAPIError.status(response.status) }
+        guard (200..<300).contains(response.status) else {
+            if method == "POST", path.hasSuffix("/messages"), response.status == 503,
+               Self.isMissingProvider(response.body) {
+                throw BackendAPIError.validation("LLM設定がありません。システムのLLM設定で接続先を追加してください。")
+            }
+            throw BackendAPIError.status(response.status)
+        }
         return try BackendJSONCoding.decode(type, from: response.body)
+    }
+    private struct SendFailure: Decodable { let error: String }
+    private static func isMissingProvider(_ body: Data) -> Bool {
+        // Exact pinned catalog values only; never surface arbitrary server error text.
+        guard body.count <= 4096, let failure = try? BackendJSONCoding.decode(SendFailure.self, from: body) else { return false }
+        return [
+            "아직 LLM 설정이 없습니다: 시스템 → LLM 설정에서 설정을 하나 추가해 주세요",
+            "No LLM configuration exists yet: add one under System → LLM settings",
+            "尚无 LLM 配置：请在 系统 → LLM 设置 中添加一个配置",
+            "Aún no existe ninguna configuración de LLM: agregue una en Sistema → Configuración de LLM",
+            "LLM 設定がまだありません: システム → LLM 設定で設定を1つ追加してください"
+        ].contains(failure.error)
     }
     private func route(_ id: Int64) throws -> String {
         guard id > 0 else { throw BackendAPIError.invalidResponse }
