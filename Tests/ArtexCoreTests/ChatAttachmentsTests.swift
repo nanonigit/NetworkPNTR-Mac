@@ -12,6 +12,19 @@ final class ChatAttachmentsTests: XCTestCase {
         XCTAssertEqual(Set(encoded.keys), ["name","path","size"])
         XCTAssertEqual(encoded["path"] as? String, "uploads/日本語 +?.txt")
     }
+    func testCanonicalEquivalentGuestFilenamesRemainDistinctAndRequireExactPathBytes() throws {
+        let nfc = "\u{E9}.txt", nfd = "e\u{301}.txt"
+        let first = try ChatAttachment(name: nfc, path: "uploads/" + nfc, size: 1)
+        let second = try ChatAttachment(name: nfd, path: "uploads/" + nfd, size: 1)
+        XCTAssertNotEqual(first, second)
+        XCTAssertEqual(Set([first.id,second.id]).count, 2)
+        XCTAssertThrowsError(try ChatAttachment(name: nfc, path: "uploads/" + nfd, size: 1))
+        let wire = try JSONSerialization.data(withJSONObject: ["attachments":[first.json,second.json]])
+        let decoded = try JSONDecoder().decode(ChatUploadResponse.self, from: wire).attachments
+        XCTAssertEqual(decoded.count, 2)
+        XCTAssertTrue(decoded[0].name.utf8.elementsEqual(nfc.utf8))
+        XCTAssertTrue(decoded[1].name.utf8.elementsEqual(nfd.utf8))
+    }
     func testInvalidMetadataAndMissingEmptyOrDuplicateEnvelopeFail() throws {
         for name in ["", ".", "..", "a/b", "a\\b", "x\n", "x\0", String(repeating: "a", count: 256)] {
             XCTAssertThrowsError(try ChatAttachment(name: name, path: "uploads/" + name, size: 0))

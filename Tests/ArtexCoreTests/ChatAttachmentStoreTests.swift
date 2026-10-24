@@ -30,6 +30,21 @@ final class ChatAttachmentStoreTests: XCTestCase {
         XCTAssertEqual(store.attachments(for: 7), [second])
         XCTAssertEqual(store.attachments(for: 8), [first])
     }
+    @MainActor func testCanonicalEquivalentPathsAppendRestoreAndRemoveOnlyExactGuestFile() async throws {
+        let api = ChatTestTransport(), store = try await store(api)
+        let first = try attachment("\u{E9}.txt"), second = try attachment("e\u{301}.txt")
+        try store.appendAttachments([first,second], for: 7)
+        var reply: CheckedContinuation<BackendHTTPResponse, Error>?
+        api.handler = { _ in try await withCheckedThrowingContinuation { reply = $0 } }
+        let pending = Task { await store.sendCurrentDraft() }; await waitFor { reply != nil }
+        try store.appendAttachments([second], for: 7)
+        reply?.resume(returning: try ChatTestTransport.response(["error":"private"],status:503))
+        let accepted = await pending.value; XCTAssertFalse(accepted)
+        XCTAssertEqual(store.attachments.count, 2)
+        store.removeAttachment(path: first.path, for: 7)
+        XCTAssertEqual(store.attachments.count, 1)
+        XCTAssertTrue(store.attachments[0].path.utf8.elementsEqual(second.path.utf8))
+    }
     @MainActor func testOptimisticClearRestoresBodyAndCardsOnFailure() async throws {
         let api = ChatTestTransport(), store = try await store(api), file = try attachment("a")
         store.draft = "retry me"; try store.appendAttachments([file], for: 7)
