@@ -1,0 +1,43 @@
+{
+  "scope": "Finite Unicode send guards, wire and recovery; native UI/provider acceptance not claimed",
+  "baseline": "e75ae371ad777ffd1eecdd28d2781a6519b05591",
+  "red": {
+    "commit": "54a1e26",
+    "tests": 3,
+    "assertion_failures": 13
+  },
+  "green": {
+    "commit": "cc3e64b",
+    "regression_tests": 3,
+    "swift_total": 193,
+    "swift_core": 179,
+    "swift_appkit_and_diagnostics": 14,
+    "python_total": 45
+  },
+  "oracle": {
+    "cases": 9,
+    "regeneration_identical": true,
+    "modified_source_rejected": true
+  },
+  "coverage": {
+    "file": "ChatText.swift",
+    "lines": "16/16",
+    "regions": "10/10",
+    "functions": "4/4",
+    "branch_coverage": "not reported"
+  },
+  "review": "Independent read-only reviewer found no concrete defects",
+  "bundle": {
+    "rebuilt_from": "cc3e64b",
+    "guest_profile": ".build-cache/backend-source",
+    "strict_adhoc_signature_verified": true,
+    "launched": false
+  },
+  "pending": [
+    "A5 picker/cards/progress/cancel/error native UI and browser comparison",
+    "UI send guard still uses Foundation whitespace and does not allow attachment-only; resolve with A5",
+    "real cloud send/running/stop",
+    "source-kernel startup reliability",
+    "remaining complete feature gates"
+  ]
+}

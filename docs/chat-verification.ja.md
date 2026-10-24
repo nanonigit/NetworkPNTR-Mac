@@ -149,3 +149,6 @@ adapterはRED372ea2b/GREENf1361eeの3件、workspaceはRED2b41865/GREENc3482cb�
 実fixture名は明示NFD名、other.bin、empty.txt（1/1/0バイト）。Darwin URL分解形変換を別に実測し、実native転送でNFC/NFD別URL名を送れたとは主張しない。別名受信はモデル/store/ソース実行で保持。新しい固定Go比較ではUnicodeメタデータ/内容、添付のみ503、本文あり503、カード除去後保持、拒否履歴なし、清掃の6群が一致。nativeだけの状態フラグは比較から除外しAPIとUIを混同しない。元のブラウザ4サービスは正常、比較容器/ネットワークは清掃。
 
 対象LLVM行/領域: ChatAttachments26/26・23/23、ChatStore273/282・202/232、ChatWorkspace247/257・172/197、LLMService81/87・65/80。分岐/製品全体を推定しない。証拠はattachment-handoff-verification.json、attachment-handoff-vm/reference/comparison/native-results.json、attachment-handoff-boot-red.json、attachment-handoff-failed-native-results.json、attachment-darwin-url-reference.json。picker/cards/外部UX、実プロバイダ成功、Unicode空白端点、退避後/ダウンロード取消、メモリ実測、カーネル安定性と全機能合格は未完了。開発.appを再ビルド/adhoc検証した段階で公証配布版ではない。
+
+
+Unicode処理の中間確認: 追加5例で固定ブラウザの送信処理と一致（合計9例）。Swift193件/Python45件成功。ChatTextは行・領域・関数100%、分岐指標なし。cc3e64bから署名アプリを再ビルド・検証、未起動。UIの判定修正はA5、実プロバイダーとカーネル安定性も未完了。bugs/chat-whitespace-investigation.mdとevidence/chat/unicode-send-verification.json参照。
