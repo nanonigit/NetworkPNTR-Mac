@@ -91,3 +91,6 @@ Localization release gate (R8): audit hardcoded native strings and backend built
 
 
 L1 ordered gates: language/locale/default precedence/migration/persistence and unrelated-default isolation tests RED; minimal typed observable preferences GREEN; reviewer/full suites/scoped coverage/signed build/CI. Then en/ja String Catalog plus actual native switch, preserve composer/selection while switching, propagate backend output_language with failure/rollback semantics, all21 rendered audit. No UI acceptance from preferences tests.
+
+
+L1 checkpoint:690c4e1 implements only typed persisted en/ja preferences. Five focused tests pass, both new files100% line/region coverage; full229Swift cases(228pass/oneAXskip) and49Python pass; reviewer approved. Saved-value precedence, invalid-to-English repair and isolated suites/unrelated defaults verified across new instances. Actual UI switch/catalog/backend sync and app-process restart remain unverified. Next L2: current Lazyweb evidence before UI, String Catalog/resources, native switch without rebuilding/resetting chat state, rendered two-locale comparisons; then backend synchronization with explicit failure semantics. Full goal stays open.

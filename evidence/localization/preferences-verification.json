@@ -1,0 +1,31 @@
+{
+  "source_commit": "690c4e1",
+  "scope": "Typed persisted language foundation only; not integrated into native views",
+  "supported_codes": [
+    "en",
+    "ja"
+  ],
+  "unit_tests": 5,
+  "swift_total": 229,
+  "swift_passed": 228,
+  "swift_skipped": 1,
+  "python_passed": 49,
+  "fresh_choice": "first supported system preference, otherwise English",
+  "saved_choice": "canonical exact en or ja; invalid/non-string repaired to English",
+  "tests_cover": [
+    "Codable supported and rejected values",
+    "regional system locale order and unsupported fallback",
+    "bidirectional explicit selection across new store instances",
+    "unrelated settings preserved",
+    "separate suites independent"
+  ],
+  "review": "approved read-only reviewer; no concrete issue found",
+  "pending": [
+    "native switch and String Catalog",
+    "real app restart persistence",
+    "backend output_language synchronization and recovery",
+    "builtin default presentation preserving custom content",
+    "both-locale rendered/accessibility audit across all21 features",
+    "remaining runtime and functional parity gates"
+  ]
+}
