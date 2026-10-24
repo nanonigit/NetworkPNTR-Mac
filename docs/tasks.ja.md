@@ -123,3 +123,5 @@ L5隣接読了判定修正：初期の空スクロール領域で、規約読み
 L5チェックポイント：b4c3172キー／loader未実装RED→3c70904 GREEN3、cc1e53c読了状態RED→a9e3fa3 GREEN5。Swift258（成功257・既存AX1スキップ）、Python52、loader／読了行100%。署名は各言語23文言・規約28項目一致。レビュー済み、実geometry／パスワード入力／browser比較はMac解除待ち。他画面／backend／runtime／全21ゲート未完了。localization-authentication-verification.ja.md参照。
 
 L6 LLM UI：設定／カード／編集／モデル選択／rotation／全体retry／数値検証／ヘルプを型付き日英カタログへ。名前付きplaceholderを一度だけ展開し、任意モデル名・マスク済みキーhint・値を再帰的にテンプレート解釈しない。tag／API列挙値／prefix／binding／不正入力／dirty／シート所有者を保持し、既存fieldGenerationは確定した再取得／保存時だけ変更。localeのid／taskや通信／変更操作は追加しない。Lazyweb AI model provider settingsはV7隣接メタデータ（.535）で画像証拠とせず、固定browserを基準にする。カタログ／format RED/GREEN・全試験／レビュー／署名を確認し、実native/browser切替はMac解除待ち。
+
+L6チェックポイント：e377f16 formatter／catalog意図したRED→c855245 GREEN3。Swift261（成功260・既存AX1スキップ）、Python52。LLM108文言／埋込11を日英化、展開ヘルパー行100%、署名両言語108項目／token一致。5ファイルCJK0／Picker tag維持、レビュー済み。モデル／独自／backend内容保持。実数値入力／layout／sheet／browser合格は解除後、全21／全体ゲート未完了。localization-llm-ui-verification.ja.md参照。

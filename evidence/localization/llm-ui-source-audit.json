@@ -1,0 +1,26 @@
+{
+  "scope": "Source scan and Picker tag comparison; not runtime acceptance. Raw model/user/backend content intentionally preserved.",
+  "source": "c855245",
+  "files": {
+    "LLMSettingsView.swift": {
+      "picker_tags_unchanged": true,
+      "CJK_source_lines": 0
+    },
+    "LLMProfileEditor.swift": {
+      "picker_tags_unchanged": true,
+      "CJK_source_lines": 0
+    },
+    "LLMRotationView.swift": {
+      "picker_tags_unchanged": true,
+      "CJK_source_lines": 0
+    },
+    "LLMRetryView.swift": {
+      "picker_tags_unchanged": true,
+      "CJK_source_lines": 0
+    },
+    "LLMFormFields.swift": {
+      "picker_tags_unchanged": true,
+      "CJK_source_lines": 0
+    }
+  }
+}

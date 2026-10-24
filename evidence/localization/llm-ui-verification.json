@@ -1,0 +1,18 @@
+{
+  "red": "e377f16",
+  "green": "c855245",
+  "swift_cases": 261,
+  "swift_passed": 260,
+  "swift_skipped": 1,
+  "python_passed": 52,
+  "focused_tests": 3,
+  "signed_bundle_matrix_entries_verified": {
+    "en": 108,
+    "ja": 108
+  },
+  "parameterized_templates": 11,
+  "placeholder_names_match_between_locales": true,
+  "review": "approved",
+  "actual_native_browser_layout_state": "pending until Mac unlock; no new UI attempt/fixture",
+  "whole_app_or_localization_acceptance": false
+}
