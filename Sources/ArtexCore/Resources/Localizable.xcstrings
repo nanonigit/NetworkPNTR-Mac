@@ -1956,13 +1956,13 @@
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "Platform operations assistant: manages tasks and assets with tools, and can create or modify skills, custom tools and MCP."
+            "value": "Platform operations assistant: uses tools to manage tasks (create / view / pause / hint) and assets, and can create or modify skills, custom tools, and MCP."
           }
         },
         "ja": {
           "stringUnit": {
             "state": "translated",
-            "value": "プラットフォーム操作アシスタント：ツールでタスクと資産を管理し、スキル・カスタムツール・MCPを作成、変更できます。"
+            "value": "プラットフォーム運用アシスタント: ツールで案件(作成・参照・一時停止・ヒント付与)と資産を管理し、skill・カスタムツール・MCP を作成または変更します。"
           }
         }
       }
@@ -1973,13 +1973,13 @@
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "Penetration testing"
+            "value": "Penetration Test"
           }
         },
         "ja": {
           "stringUnit": {
             "state": "translated",
-            "value": "侵入テスト"
+            "value": "ペネトレーションテスト"
           }
         }
       }
@@ -1990,13 +1990,13 @@
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "Independent testing agent: plans, executes and verifies the workflow from reconnaissance through validation and wrap-up."
+            "value": "Standalone pentest agent: single-handedly runs the full chain from recon → attack-surface discovery → deep exploitation → verification → wrap-up, planning, executing, and adversarially verifying on its own."
           }
         },
         "ja": {
           "stringUnit": {
             "state": "translated",
-            "value": "独立したテストエージェント：偵察から検証、まとめまでの手順を計画、実行し、自ら結果を確認します。"
+            "value": "独立型ペネトレーションエージェント: 単独で偵察→攻撃面の探索→深掘りした悪用→検証→仕上げまでの全工程を実行し、自ら計画し、自ら実行し、自ら対立的に検証します。"
           }
         }
       }

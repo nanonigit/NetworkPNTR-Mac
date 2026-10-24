@@ -17,7 +17,7 @@
 	<key>chat.AttachPrompt</key>
 	<string>添付</string>
 	<key>chat.AutoDescription</key>
-	<string>プラットフォーム操作アシスタント：ツールでタスクと資産を管理し、スキル・カスタムツール・MCPを作成、変更できます。</string>
+	<string>プラットフォーム運用アシスタント: ツールで案件(作成・参照・一時停止・ヒント付与)と資産を管理し、skill・カスタムツール・MCP を作成または変更します。</string>
 	<key>chat.Cancel</key>
 	<string>キャンセル</string>
 	<key>chat.CancelUpload</key>
@@ -97,9 +97,9 @@
 	<key>chat.OutputTokens</key>
 	<string>出力</string>
 	<key>chat.PentestDescription</key>
-	<string>独立したテストエージェント：偵察から検証、まとめまでの手順を計画、実行し、自ら結果を確認します。</string>
+	<string>独立型ペネトレーションエージェント: 単独で偵察→攻撃面の探索→深掘りした悪用→検証→仕上げまでの全工程を実行し、自ら計画し、自ら実行し、自ら対立的に検証します。</string>
 	<key>chat.PentestName</key>
-	<string>侵入テスト</string>
+	<string>ペネトレーションテスト</string>
 	<key>chat.PickerFailure</key>
 	<string>ファイル選択を開けませんでした。もう一度お試しください。</string>
 	<key>chat.Pinned</key>

@@ -17,7 +17,7 @@
 	<key>chat.AttachPrompt</key>
 	<string>Attach</string>
 	<key>chat.AutoDescription</key>
-	<string>Platform operations assistant: manages tasks and assets with tools, and can create or modify skills, custom tools and MCP.</string>
+	<string>Platform operations assistant: uses tools to manage tasks (create / view / pause / hint) and assets, and can create or modify skills, custom tools, and MCP.</string>
 	<key>chat.Cancel</key>
 	<string>Cancel</string>
 	<key>chat.CancelUpload</key>
@@ -97,9 +97,9 @@
 	<key>chat.OutputTokens</key>
 	<string>Output</string>
 	<key>chat.PentestDescription</key>
-	<string>Independent testing agent: plans, executes and verifies the workflow from reconnaissance through validation and wrap-up.</string>
+	<string>Standalone pentest agent: single-handedly runs the full chain from recon → attack-surface discovery → deep exploitation → verification → wrap-up, planning, executing, and adversarially verifying on its own.</string>
 	<key>chat.PentestName</key>
-	<string>Penetration testing</string>
+	<string>Penetration Test</string>
 	<key>chat.PickerFailure</key>
 	<string>Cannot open the file picker. Try again.</string>
 	<key>chat.Pinned</key>
