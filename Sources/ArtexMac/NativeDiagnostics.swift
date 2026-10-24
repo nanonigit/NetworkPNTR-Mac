@@ -35,6 +35,11 @@ import Foundation
             }
             let llm = try await NativeLLMDiagnostics.run(session: authentication, directory: directory)
             result["native_llm_three_formats_crud_key_preservation_pool_retry"] = true
+            let userBodyIDs: [Int64]
+            if CommandLine.arguments.contains("--user-body-review") {
+                userBodyIDs = try await NativeUserBodyDiagnostics.seed(client: AuthenticatedBackendClient(session: authentication), directory: directory)
+                result["native_persisted_user_body_fixture"] = true
+            } else { userBodyIDs = [] }
             if CommandLine.arguments.contains("--chat-diagnostics") {
                 try await NativeChatDiagnostics.run(session: authentication, directory: directory)
                 result["native_chat_finite_crud"] = true
@@ -110,6 +115,10 @@ import Foundation
                     try await Task.sleep(for: .seconds(1))
                 }
                 guard FileManager.default.fileExists(atPath: finish.path) else { throw RuntimeError.timeout("external native fixture review") }
+            }
+            if !userBodyIDs.isEmpty {
+                try await NativeUserBodyDiagnostics.cleanup(client: AuthenticatedBackendClient(session: login), ids: userBodyIDs)
+                result["native_user_body_fixture_cleaned"] = true
             }
             if !mentionIDs.isEmpty {
                 try await NativeMentionDiagnostics.cleanup(mentionIDs, session: login)
