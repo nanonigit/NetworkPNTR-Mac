@@ -3,6 +3,9 @@ import SwiftUI
 
 struct ChatView: View {
     @State private var workspace: ChatWorkspace
+    @State private var pickingFiles = false
+    @State private var pickerError: String?
+    @State private var uploadTasks: [UUID: Task<Void, Never>] = [:]
     @State private var filter = ""
     @State private var visibleCount = 100
     @State private var batchMode = false
@@ -67,7 +70,11 @@ struct ChatView: View {
         .navigationTitle("Chat")
         .task { await workspace.load(); await store.pollList() }
         .task(id: store.selectedID) { await store.pollSelected() }
-        .onDisappear { workspace.stop() }
+        .onDisappear {
+            for task in uploadTasks.values { task.cancel() }
+            uploadTasks.removeAll(); pickingFiles = false; workspace.stop()
+        }
+        .onChange(of: store.selectedID) { _, _ in pickingFiles = false; pickerError = nil }
         .onChange(of: filter) { _, _ in visibleCount = 100 }
         .onChange(of: batchMode) { _, active in if !active { checked = [] } }
         .confirmationDialog("選択した会話を削除しますか？", isPresented: Binding(get: { !deletion.isEmpty }, set: { if !$0 { deletion = [] } }), titleVisibility: .visible) {
@@ -100,15 +107,35 @@ struct ChatView: View {
             }.frame(maxWidth: 250).disabled(workspace.busy || store.running)
         }
     }
+    private var composerAvailability: ChatComposerAvailability {
+        ChatComposerAvailability(draft: store.draft, attachmentCount: store.attachments.count,
+            isNewConversation: store.selectedID == nil, hasAgent: !workspace.agentKey.isEmpty,
+            historyReady: store.hasLoadedHistory && !store.isLoadingHistory,
+            busy: workspace.busy, sending: store.isSending, running: store.running,
+            uploading: workspace.isUploading, picking: pickingFiles)
+    }
     private var composer: some View {
         VStack(alignment: .leading, spacing: 8) {
-            if let error = workspace.error ?? store.mutationError { Text(error).font(.callout).foregroundStyle(.red).textSelection(.enabled) }
+            if let error = pickerError ?? workspace.uploadError ?? workspace.error ?? store.mutationError {
+                Label(error, systemImage: "exclamationmark.triangle").font(.callout).foregroundStyle(.red).textSelection(.enabled)
+            }
+            if !store.attachments.isEmpty {
+                ChatAttachmentStrip(attachments: store.attachments) { path in
+                    store.removeAttachment(path: path, for: store.selectedID ?? 0)
+                }
+            }
+            if let upload = workspace.uploadState(for: store.selectedID) {
+                ChatAttachmentProgressView(presentation: ChatUploadPresentation(progress: upload.progress)) {
+                    workspace.cancelUpload(for: store.selectedID)
+                }
+            }
             if let agent = workspace.agents.first(where: { $0.key == workspace.agentKey }), store.selectedID == nil {
                 Text(agent.description).font(.caption).foregroundStyle(.secondary).lineLimit(2)
             }
-            ChatMentionComposer(text: ChatComposer.draftBinding(store: store, conversationID: store.selectedID), service: workspace.mentionService, mode: sendMode, disabled: store.isSending || workspace.busy, send: send)
+            ChatMentionComposer(text: ChatComposer.draftBinding(store: store, conversationID: store.selectedID), service: workspace.mentionService, mode: sendMode, disabled: composerAvailability.editorDisabled, send: send)
                 .id(store.selectedID ?? 0)
             HStack {
+                attachmentPicker(owner: store.selectedID)
                 Picker("送信キー", selection: $sendMode) { Text("Enterで送信").tag("enter"); Text("Ctrl / ⌘ + Enterで送信").tag("ctrl-enter") }
                     .labelsHidden().frame(maxWidth: 220).accessibilityLabel("送信キー")
                 Spacer()
@@ -117,14 +144,36 @@ struct ChatView: View {
                 } else {
                     Button { send() } label: { Label(store.isSending || workspace.busy ? "送信中…" : "送信", systemImage: "arrow.up") }
                         .buttonStyle(.borderedProminent)
-                        .disabled(workspace.busy || store.isSending || store.isLoadingHistory || store.draft.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty || (store.selectedID == nil && workspace.agentKey.isEmpty))
+                        .disabled(!composerAvailability.canSend)
                 }
             }
         }
     }
     private func send() {
-        guard !store.running else { return }
+        guard composerAvailability.canSend else { return }
         Task { _ = await workspace.send() }
+    }
+    private func attachmentPicker(owner: Int64?) -> some View {
+        ChatAttachmentPickerButton(enabled: composerAvailability.canPick, onChoose: { files in
+            guard owner == store.selectedID, !files.isEmpty else { return }
+            pickerError = nil
+            let id = UUID(), workspace = workspace
+            uploadTasks[id] = Task { @MainActor in
+                defer { uploadTasks.removeValue(forKey: id) }
+                do {
+                    try await ChatFileAccess().withAccess(files) { _ = await workspace.pickFiles(files) }
+                } catch is CancellationError {
+                    // Cancellation is a user action; the workspace invalidates its own operation.
+                } catch {
+                    if owner == store.selectedID { pickerError = "ファイルを読み取れませんでした。もう一度選択してください。" }
+                }
+            }
+        }, onPresentation: { presented in
+            if owner == store.selectedID { pickingFiles = presented; if presented { pickerError = nil } }
+        }, onError: {
+            if owner == store.selectedID { pickerError = "ファイル選択を開けませんでした。もう一度お試しください。" }
+        })
+        .id(owner ?? 0).frame(width: 128, height: 28)
     }
     private func conversationRow(_ conversation: ChatConversation) -> some View {
         HStack(spacing: 5) {

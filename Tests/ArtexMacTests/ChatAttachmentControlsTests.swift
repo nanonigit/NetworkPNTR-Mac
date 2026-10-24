@@ -46,7 +46,7 @@ final class ChatAttachmentControlsTests: XCTestCase {
         XCTAssertNil(invalid.fraction)
     }
     func testByteSizesMatchPinnedBrowserThresholds() {
-        for (bytes, expected): (Int64, String) in [(0,"0 B"),(1023,"1023 B"),(1024,"1.0 KB"),(1536,"1.5 KB"),(1048576,"1.0 MB"),(134217728,"128.0 MB")] {
+        for (bytes, expected): (Int64, String) in [(0,"0 B"),(1023,"1023 B"),(1024,"1.0 KB"),(1280,"1.3 KB"),(1536,"1.5 KB"),(1048576,"1.0 MB"),(134217728,"128.0 MB")] {
             XCTAssertEqual(ChatAttachmentPresentation.bytes(bytes), expected)
         }
     }
