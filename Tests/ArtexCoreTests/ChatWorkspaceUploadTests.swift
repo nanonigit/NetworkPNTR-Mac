@@ -277,4 +277,16 @@ final class ChatWorkspaceUploadTests: XCTestCase {
         XCTAssertEqual(workspace.transcript.attachments, [try attachment()])
     }
 
+    @MainActor func testKnownLocalUploadFailuresKeepActionableSafeDescription() async throws {
+        for error in [ChatUploadBodyError.invalidFile, .invalidFraming, .tooLarge, .changedFile, .readFailure] {
+            let api = WorkspaceUploadAPI(), workspace = ChatWorkspace(client: api)
+            await workspace.select(7)
+            api.uploadHandler = { _ in throw error }
+            let accepted = await workspace.pickFiles(files)
+            XCTAssertFalse(accepted)
+            XCTAssertEqual(workspace.uploadError, error.localizedDescription)
+            XCTAssertFalse(workspace.isUploading)
+        }
+    }
+
 }
