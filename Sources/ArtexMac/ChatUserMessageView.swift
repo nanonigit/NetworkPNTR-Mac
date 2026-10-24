@@ -24,7 +24,7 @@ struct ChatUserMessageView: View {
                 Text(model.body.text).textSelection(.enabled).frame(maxWidth: .infinity, alignment: .leading)
             }
             if model.isLoading { ProgressView(s(.chatLoadingBody)).controlSize(.small) }
-            if let error = model.error {
+            if let error = model.failure?.text(language: language) {
                 HStack {
                     Label(error, systemImage: "exclamationmark.triangle").foregroundStyle(.red)
                     Button(s(.chatRetry)) { retry += 1 }.accessibilityLabel(s(.chatReloadBody))

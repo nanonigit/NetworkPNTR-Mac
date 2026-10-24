@@ -17,7 +17,8 @@ public struct ChatUserBodyKey: Hashable, Sendable {
 @MainActor @Observable public final class ChatUserBodyStore {
     public private(set) var body: ChatUserBody
     public private(set) var isLoading = false
-    public private(set) var error: String?
+    public var error: String? { failure?.text(language: .japanese) }
+    public private(set) var failure: AppErrorMessage?
     @ObservationIgnored private var key: ChatUserBodyKey?
     @ObservationIgnored private var generation = UUID()
     public init(summary: String, detail: String? = nil) {
@@ -32,7 +33,7 @@ public struct ChatUserBodyKey: Hashable, Sendable {
         if key != next {
             key = next; body = ChatUserBody(rawBody: inline ?? activity.summary)
         }
-        error = nil; isLoading = false
+        failure = nil; isLoading = false
         guard conversationID > 0, activity.seq > 0, activity.kind == "user" else { return }
         if let inline { body = ChatUserBody(rawBody: inline); return }
         isLoading = true
@@ -44,7 +45,7 @@ public struct ChatUserBodyKey: Hashable, Sendable {
         } catch {
             guard generation == ticket, !Task.isCancelled, !(error is CancellationError) else { return }
             body = ChatUserBody(rawBody: activity.summary)
-            self.error = "メッセージ本文を取得できませんでした。"
+            self.failure = AppErrorMessage(key: .errorMessageBody)
         }
     }
     public func stop() { generation = UUID(); isLoading = false }

@@ -2464,6 +2464,70 @@
           }
         }
       }
+    },
+    "error.uploadUnavailable": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "This connection cannot transfer attachments."
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "この接続では添付ファイルを転送できません。"
+          }
+        }
+      }
+    },
+    "error.partialDelete": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Some conversations could not be deleted. Check the remaining conversations."
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "一部の会話を削除できませんでした。残った会話を確認してください。"
+          }
+        }
+      }
+    },
+    "error.mentionSearch": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Could not load reference suggestions. Search again."
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "引用候補を取得できませんでした。もう一度検索してください。"
+          }
+        }
+      }
+    },
+    "error.messageBody": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Could not load the message body."
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "メッセージ本文を取得できませんでした。"
+          }
+        }
+      }
     }
   },
   "version": "1.0"

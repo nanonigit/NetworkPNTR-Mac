@@ -112,13 +112,13 @@ struct ChatMentionComposer: View {
                                 candidate(index: index, label: title(kind), detail: "@" + kind.wireLabel)
                             }
                         } else if loading { HStack { ProgressView().controlSize(.small); Text(s(.chatSearchingMentions)) } }
-                        else if let error = results.error { Text(error).foregroundStyle(.red); Button(s(.chatSearchAgain)) { retry = UUID() } }
+                        else if let error = results.failure?.text(language: language) { Text(error).foregroundStyle(.red); Button(s(.chatSearchAgain)) { retry = UUID() } }
                         else {
                             ForEach(Array(items.enumerated()), id: \.element.identity) { index, item in
                                 candidate(index: index, label: item.label, detail: item.kind + "#" + String(item.id) + " · " + item.description)
                             }
                             if items.isEmpty { Text(s(.chatNoMatches)).foregroundStyle(.secondary) }
-                            if let error = results.pageError { Text(error).foregroundStyle(.red) }
+                            if let error = results.pageFailure?.text(language: language) { Text(error).foregroundStyle(.red) }
                             if results.nextCursor != nil {
                                 Button(results.loadingMore ? s(.chatLoading) : (results.pageError == nil ? s(.chatLoadMore) : s(.chatRetryMore))) { Task { await results.loadMore() } }.disabled(results.loadingMore)
                             }

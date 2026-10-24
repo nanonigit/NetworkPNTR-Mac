@@ -166,6 +166,12 @@
 	<string>The runtime response could not be verified.</string>
 	<key>error.keychain</key>
 	<string>Keychain operation failed ({code}).</string>
+	<key>error.mentionSearch</key>
+	<string>Could not load reference suggestions. Search again.</string>
+	<key>error.messageBody</key>
+	<string>Could not load the message body.</string>
+	<key>error.partialDelete</key>
+	<string>Some conversations could not be deleted. Check the remaining conversations.</string>
 	<key>error.rateLimited</key>
 	<string>Too many attempts. Wait a while and try again.</string>
 	<key>error.uploadChangedFile</key>
@@ -178,6 +184,8 @@
 	<string>The attachment could not be read. Select it again.</string>
 	<key>error.uploadTooLarge</key>
 	<string>Attachments and transfer metadata must total at most 128 MiB.</string>
+	<key>error.uploadUnavailable</key>
+	<string>This connection cannot transfer attachments.</string>
 	<key>error.validation.activeProfile</key>
 	<string>You cannot delete the active model configuration. Activate another configuration first.</string>
 	<key>error.validation.connectionTest</key>

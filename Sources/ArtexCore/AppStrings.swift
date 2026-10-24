@@ -1,6 +1,11 @@
 import Foundation
 
 public enum AppStringKey: String, CaseIterable, Sendable {
+    case errorUploadUnavailable = "error.uploadUnavailable"
+    case errorPartialDelete = "error.partialDelete"
+    case errorMentionSearch = "error.mentionSearch"
+    case errorMessageBody = "error.messageBody"
+
     case errorCredentials = "error.credentials"
     case errorForbidden = "error.forbidden"
     case errorRateLimited = "error.rateLimited"

@@ -166,6 +166,12 @@
 	<string>実行環境からの応答を確認できませんでした。</string>
 	<key>error.keychain</key>
 	<string>Keychainの操作に失敗しました（{code}）。</string>
+	<key>error.mentionSearch</key>
+	<string>引用候補を取得できませんでした。もう一度検索してください。</string>
+	<key>error.messageBody</key>
+	<string>メッセージ本文を取得できませんでした。</string>
+	<key>error.partialDelete</key>
+	<string>一部の会話を削除できませんでした。残った会話を確認してください。</string>
 	<key>error.rateLimited</key>
 	<string>試行回数が多いため、しばらく待ってから再試行してください。</string>
 	<key>error.uploadChangedFile</key>
@@ -178,6 +184,8 @@
 	<string>添付ファイルの読み取りに失敗しました。選び直してください。</string>
 	<key>error.uploadTooLarge</key>
 	<string>添付ファイルと転送情報の合計は128MiB以内にしてください。</string>
+	<key>error.uploadUnavailable</key>
+	<string>この接続では添付ファイルを転送できません。</string>
 	<key>error.validation.activeProfile</key>
 	<string>有効なモデル設定は削除できません。先に別の設定を有効にしてください。</string>
 	<key>error.validation.connectionTest</key>

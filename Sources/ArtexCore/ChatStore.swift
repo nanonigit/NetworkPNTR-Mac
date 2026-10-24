@@ -14,8 +14,10 @@ import Observation
     public private(set) var isLoadingHistory = false
     public private(set) var isLoadingOlder = false
     public private(set) var isLoadingDelta = false
-    public private(set) var listError: String?
-    public private(set) var transcriptError: String?
+    public var listError: String? { listFailure?.text(language: .japanese) }
+    public private(set) var listFailure: AppErrorMessage?
+    public var transcriptError: String? { transcriptFailure?.text(language: .japanese) }
+    public private(set) var transcriptFailure: AppErrorMessage?
     public private(set) var stopStatus: ChatStopStatus?
     private var drafts: [Int64: String] = [:]
     private var attachmentDrafts: [Int64: [ChatAttachment]] = [:]
@@ -28,7 +30,7 @@ import Observation
         let clearedTextRevision: UUID?
         let attachments: [ChatAttachment]
     }
-    private var mutationErrors: [Int64: String] = [:]
+    private var mutationErrors: [Int64: AppErrorMessage] = [:]
     private var sendingIDs: Set<Int64> = []
     private var stoppingIDs: Set<Int64> = []
     @ObservationIgnored private let service: ChatService
@@ -88,10 +90,9 @@ import Observation
     }
     public var isSending: Bool { selectedID.map(sendingIDs.contains) ?? false }
     public var isStopping: Bool { selectedID.map(stoppingIDs.contains) ?? false }
-    public var mutationError: String? { selectedID.flatMap { mutationErrors[$0] } }
-    private func safeMessage(_ error: any Error) -> String {
-        (error as? BackendAPIError)?.localizedDescription ?? "実行環境との通信を確認してください。"
-    }
+    public var mutationFailure: AppErrorMessage? { selectedID.flatMap { mutationErrors[$0] } }
+    public var mutationError: String? { mutationFailure?.text(language: .japanese) }
+    private func safeMessage(_ error: any Error) -> AppErrorMessage { AppErrorMessage(error) }
     private func current(_ life: UUID, _ ticket: UUID, _ id: Int64) -> Bool {
         life == lifetime && ticket == selection && id == selectedID && !Task.isCancelled
     }
@@ -110,13 +111,13 @@ import Observation
             let items = try await service.conversations()
             guard ticket == lifetime, !Task.isCancelled else { return }
             guard revision == listRevision else { return }
-            conversations = items; listError = nil
+            conversations = items; listFailure = nil
             // A stale false list snapshot must not terminate the selected transcript tail.
             if let id = selectedID, !running, items.first(where: { $0.id == id })?.isRunning == true {
                 requireTailReconciliation(newTurn: true)
             }
         } catch {
-            if ticket == lifetime, !Task.isCancelled, !(error is CancellationError) { listError = safeMessage(error) }
+            if ticket == lifetime, !Task.isCancelled, !(error is CancellationError) { listFailure = safeMessage(error) }
         }
     }
     public func select(id: Int64?, draft: String? = nil) async {
@@ -128,7 +129,7 @@ import Observation
         selection = UUID(); tailPolling = false
         selectedID = id; messages = []; cursor = 0; hasMore = false; hasLoadedHistory = false
         running = id.flatMap { selected in conversations.first(where: { $0.id == selected })?.isRunning } ?? false
-        needsTailReconciliation = false; stopStatus = nil; transcriptError = nil
+        needsTailReconciliation = false; stopStatus = nil; transcriptFailure = nil
         isLoadingHistory = false; isLoadingOlder = false; isLoadingDelta = false
         if let draft { setDraft(draft, for: id) }
         if id != nil { await loadLatest() }
@@ -141,9 +142,9 @@ import Observation
             let page = try await service.history(id: id)
             guard current(life, ticket, id) else { return }
             messages = ChatTranscript.merge([], incoming: page.items); advanceCursor(page)
-            hasMore = page.hasMore; running = running || page.running; hasLoadedHistory = true; transcriptError = nil
+            hasMore = page.hasMore; running = running || page.running; hasLoadedHistory = true; transcriptFailure = nil
         } catch {
-            if current(life, ticket, id), !(error is CancellationError) { transcriptError = safeMessage(error) }
+            if current(life, ticket, id), !(error is CancellationError) { transcriptFailure = safeMessage(error) }
         }
     }
     public func loadOlder() async {
@@ -155,9 +156,9 @@ import Observation
             let page = try await service.history(id: id, before: before)
             guard current(life, ticket, id) else { return }
             messages = ChatTranscript.merge(page.items, incoming: messages)
-            hasMore = page.hasMore; advanceCursor(page); transcriptError = nil
+            hasMore = page.hasMore; advanceCursor(page); transcriptFailure = nil
         } catch {
-            if current(life, ticket, id), !(error is CancellationError) { transcriptError = safeMessage(error) }
+            if current(life, ticket, id), !(error is CancellationError) { transcriptFailure = safeMessage(error) }
         }
     }
     public func refreshDelta() async {
@@ -171,7 +172,7 @@ import Observation
                 let page = try await service.delta(id: id, since: cursor)
                 guard current(life, ticket, id) else { return }
                 messages = ChatTranscript.merge(messages, incoming: page.items); advanceCursor(page)
-                transcriptError = nil
+                transcriptFailure = nil
                 // A response begun before an accepted mutation cannot settle its newer tail.
                 // Keep the single request slot and fetch again after that response completes.
                 if revision != tailRevision { continue }
@@ -182,7 +183,7 @@ import Observation
                 return
             }
         } catch {
-            if current(life, ticket, id), !(error is CancellationError) { transcriptError = safeMessage(error) }
+            if current(life, ticket, id), !(error is CancellationError) { transcriptFailure = safeMessage(error) }
         }
     }
 
@@ -262,7 +263,7 @@ import Observation
     }
     public func reset() {
         stop(); conversations = []; selectedID = nil; messages = []; cursor = 0
-        hasLoadedHistory = false; hasMore = false; listError = nil; transcriptError = nil
+        hasLoadedHistory = false; hasMore = false; listFailure = nil; transcriptFailure = nil
         drafts = [:]; draftRevisions = [:]; ownerRevisions = [:]; listRevision = UUID()
         attachmentDrafts = [:]; pendingSends = [:]
         mutationErrors = [:]; needsTailReconciliation = false

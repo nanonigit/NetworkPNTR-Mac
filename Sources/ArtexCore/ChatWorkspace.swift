@@ -47,9 +47,10 @@ private struct WorkspaceUploadResult: Sendable {
     public var draftProfileID: Int64?
     public private(set) var busy = false
     public private(set) var loading = false
-    public private(set) var error: String?
+    public var error: String? { failure?.text(language: .japanese) }
+    public private(set) var failure: AppErrorMessage?
     private var uploadStates: [Int64: ChatAttachmentUploadState] = [:]
-    private var uploadErrors: [Int64: String] = [:]
+    private var uploadErrors: [Int64: AppErrorMessage] = [:]
     @ObservationIgnored private var uploadOperations: [Int64: WorkspaceUploadOperation] = [:]
     @ObservationIgnored private var deletingIDs: Set<Int64> = []
     @ObservationIgnored private let client: any BackendJSONTransport
@@ -62,10 +63,7 @@ private struct WorkspaceUploadResult: Sendable {
     }
     public var selected: ChatConversation? { transcript.conversations.first { $0.id == transcript.selectedID } }
     public func name(for key: String) -> String { agents.first { $0.key == key }?.name ?? key }
-    private func message(_ error: any Error) -> String {
-        if let bodyError = error as? ChatUploadBodyError { return bodyError.localizedDescription }
-        return (error as? BackendAPIError)?.localizedDescription ?? "実行環境との通信を確認してください。"
-    }
+    private func message(_ error: any Error) -> AppErrorMessage { AppErrorMessage(error) }
     public func load() async {
         guard !loading else { return }
         let ticket = lifetime; loading = true
@@ -78,12 +76,12 @@ private struct WorkspaceUploadResult: Sendable {
             guard loaded.allSatisfy({ !$0.key.isEmpty }), Set(loaded.map(\.key)).count == loaded.count else { throw BackendAPIError.invalidResponse }
             let profiles = try await LLMService(client: client).profiles()
             guard ticket == lifetime, !Task.isCancelled else { return }
-            agents = loaded.filter(\.isChatEligible); self.profiles = profiles; error = nil
+            agents = loaded.filter(\.isChatEligible); self.profiles = profiles; failure = nil
             if agentKey.isEmpty, agents.contains(where: { $0.key == "auto" }) { agentKey = "auto" }
-        } catch { if ticket == lifetime, !Task.isCancelled { self.error = message(error) } }
+        } catch { if ticket == lifetime, !Task.isCancelled { self.failure = message(error) } }
     }
     public func select(_ id: Int64?) async {
-        selection = UUID(); error = nil
+        selection = UUID(); failure = nil
         await transcript.select(id: id)
     }
     public func send() async -> Bool {
@@ -91,7 +89,7 @@ private struct WorkspaceUploadResult: Sendable {
         if transcript.selectedID != nil { return await transcript.sendCurrentDraft() }
         guard !agentKey.isEmpty else { return false }
         let life = lifetime; let ticket = selection; let submitted = transcript.draft
-        busy = true; error = nil
+        busy = true; failure = nil
         defer { if life == lifetime { busy = false } }
         do {
             let created = try await service.create(agentKey: agentKey, profileID: draftProfileID)
@@ -104,12 +102,13 @@ private struct WorkspaceUploadResult: Sendable {
             if life == lifetime, !Task.isCancelled { await transcript.refreshList() }
             return result
         } catch {
-            if life == lifetime, ticket == selection, !Task.isCancelled { self.error = message(error) }
+            if life == lifetime, ticket == selection, !Task.isCancelled { self.failure = message(error) }
             return false
         }
     }
     public var isUploading: Bool { uploadState(for: transcript.selectedID) != nil }
-    public var uploadError: String? { uploadErrors[transcript.selectedID ?? 0] }
+    public var uploadFailure: AppErrorMessage? { uploadErrors[transcript.selectedID ?? 0] }
+    public var uploadError: String? { uploadFailure?.text(language: .japanese) }
     public func uploadState(for id: Int64?) -> ChatAttachmentUploadState? {
         let key = id ?? 0
         return uploadStates[key] ?? uploadStates.values.first { $0.conversationID == id && id != nil }
@@ -145,7 +144,7 @@ private struct WorkspaceUploadResult: Sendable {
         guard !Task.isCancelled, !files.isEmpty, !busy, !isUploading, !transcript.isSending,
               !deletingIDs.contains(origin), originID != nil || !agentKey.isEmpty else { return false }
         guard let uploader = client as? any ChatAttachmentUploading else {
-            uploadErrors[origin] = "この接続では添付ファイルを転送できません。"; return false
+            uploadErrors[origin] = AppErrorMessage(key: .errorUploadUnavailable); return false
         }
         let life = lifetime, selected = selection, capturedText = transcript.draft(for: nil)
         let capturedRevision = transcript.draftRevision(for: nil), agent = agentKey, profile = draftProfileID
@@ -201,20 +200,20 @@ private struct WorkspaceUploadResult: Sendable {
     }
     private func mutate(_ operation: () async throws -> Void) async {
         guard !busy else { return }
-        let ticket = lifetime; busy = true; error = nil
+        let ticket = lifetime; busy = true; failure = nil
         defer { if ticket == lifetime { busy = false } }
         do {
             try await operation()
             guard ticket == lifetime, !Task.isCancelled else { return }
             await transcript.refreshList()
-        } catch { if ticket == lifetime, !Task.isCancelled { self.error = message(error) } }
+        } catch { if ticket == lifetime, !Task.isCancelled { self.failure = message(error) } }
     }
     public func rename(id: Int64, title: String) async { await mutate { _ = try await service.rename(id: id, title: title) } }
     public func pin(id: Int64, pinned: Bool) async { await mutate { _ = try await service.pin(id: id, pinned: pinned) } }
     public func changeProfile(id: Int64, profileID: Int64?) async { await mutate { try await service.setProfile(id: id, profileID: profileID) } }
     public func delete(ids: [Int64]) async -> [ChatDeleteResult] {
         guard !busy else { return [] }
-        let ticket = lifetime; busy = true; error = nil
+        let ticket = lifetime; busy = true; failure = nil
         deletingIDs.formUnion(ids)
         for id in ids { cancelUpload(for: id) }
         defer { if ticket == lifetime { busy = false; deletingIDs.subtract(ids) } }
@@ -224,15 +223,15 @@ private struct WorkspaceUploadResult: Sendable {
             let removedSelection = result.contains { $0.ok && $0.id == transcript.selectedID }
             for item in result where item.ok { transcript.forgetConversation(item.id); uploadErrors[item.id] = nil }
             if removedSelection { await select(nil) }
-            if result.contains(where: { !$0.ok }) { error = "一部の会話を削除できませんでした。残った会話を確認してください。" }
+            if result.contains(where: { !$0.ok }) { failure = AppErrorMessage(key: .errorPartialDelete) }
             await transcript.refreshList()
             return result
-        } catch { if ticket == lifetime, !Task.isCancelled { self.error = message(error) }; return [] }
+        } catch { if ticket == lifetime, !Task.isCancelled { self.failure = message(error) }; return [] }
     }
     public func detail(id: Int64, sequence: Int64) async throws -> String { try await service.detail(id: id, sequence: sequence) }
     public func stop() {
         for operation in Array(uploadOperations.values) { operation.cancel(); finishUpload(origin: operation.origin, id: operation.id) }
         lifetime = UUID(); selection = UUID(); deletingIDs = []; busy = false; loading = false; transcript.stop()
     }
-    public func reset() { stop(); transcript.reset(); uploadErrors = [:]; error = nil }
+    public func reset() { stop(); transcript.reset(); uploadErrors = [:]; failure = nil }
 }

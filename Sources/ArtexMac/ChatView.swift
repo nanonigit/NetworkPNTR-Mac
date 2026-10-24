@@ -46,7 +46,7 @@ struct ChatView: View {
                     }.font(.caption)
                 }.padding(12)
                 Divider()
-                if let error = store.listError { Text(error).font(.caption).foregroundStyle(.red).padding(8) }
+                if let error = store.listFailure?.text(language: language) { Text(error).font(.caption).foregroundStyle(.red).padding(8) }
                 List {
                     if !visible.filter(\.isPinned).isEmpty {
                         Section(s(.chatPinned)) { ForEach(visible.filter(\.isPinned)) { conversationRow($0) } }
@@ -121,7 +121,7 @@ struct ChatView: View {
     }
     private var composer: some View {
         VStack(alignment: .leading, spacing: 8) {
-            if let error = pickerError.map({ s($0) }) ?? workspace.uploadError ?? workspace.error ?? store.mutationError {
+            if let error = pickerError.map({ s($0) }) ?? workspace.uploadFailure?.text(language: language) ?? workspace.failure?.text(language: language) ?? store.mutationFailure?.text(language: language) {
                 Label(error, systemImage: "exclamationmark.triangle").font(.callout).foregroundStyle(.red).textSelection(.enabled)
             }
             if !store.attachments.isEmpty {

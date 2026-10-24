@@ -6,20 +6,20 @@ import Observation
     public private(set) var nextCursor: String?
     public private(set) var loading = false
     public private(set) var loadingMore = false
-    public private(set) var error: String?
-    public private(set) var pageError: String?
+    public var error: String? { failure?.text(language: .japanese) }
+    public private(set) var failure: AppErrorMessage?
+    public var pageError: String? { pageFailure?.text(language: .japanese) }
+    public private(set) var pageFailure: AppErrorMessage?
     @ObservationIgnored private let service: ChatMentionService
     @ObservationIgnored private var generation = UUID()
     @ObservationIgnored private var kind: ChatMentionKind?
     @ObservationIgnored private var query = ""
     @ObservationIgnored private var usedCursors: Set<String> = []
     public init(service: ChatMentionService) { self.service = service }
-    private func message(_ error: any Error) -> String {
-        (error as? BackendAPIError)?.localizedDescription ?? "引用候補を取得できませんでした。もう一度検索してください。"
-    }
+    private func message(_ error: any Error) -> AppErrorMessage { AppErrorMessage(error, fallback: .errorMentionSearch) }
     public func cancel() {
         generation = UUID(); loading = false; loadingMore = false
-        items = []; nextCursor = nil; error = nil; pageError = nil; usedCursors = []
+        items = []; nextCursor = nil; failure = nil; pageFailure = nil; usedCursors = []
     }
     public func search(kind: ChatMentionKind? = nil, query: String) async {
         cancel(); self.kind = kind; self.query = query
@@ -30,12 +30,12 @@ import Observation
             guard ticket == generation, !Task.isCancelled else { return }
             items = page.items; nextCursor = page.nextCursor
         } catch {
-            if ticket == generation, !Task.isCancelled { self.error = message(error) }
+            if ticket == generation, !Task.isCancelled { self.failure = message(error) }
         }
     }
     public func loadMore() async {
         guard !loading, !loadingMore, let cursor = nextCursor else { return }
-        let ticket = generation; loadingMore = true; pageError = nil
+        let ticket = generation; loadingMore = true; pageFailure = nil
         defer { if ticket == generation { loadingMore = false } }
         do {
             let page = try await service.search(kind: kind, query: query, cursor: cursor)
@@ -45,7 +45,7 @@ import Observation
             items.append(contentsOf: page.items.filter { !seen.contains($0.identity) })
             usedCursors.insert(cursor); nextCursor = page.nextCursor
         } catch {
-            if ticket == generation, !Task.isCancelled { pageError = message(error) }
+            if ticket == generation, !Task.isCancelled { pageFailure = message(error) }
         }
     }
 }

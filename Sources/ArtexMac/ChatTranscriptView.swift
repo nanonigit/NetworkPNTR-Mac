@@ -15,7 +15,7 @@ struct ChatTranscriptView: View {
     var body: some View {
         ScrollViewReader { proxy in
             VStack(spacing: 0) {
-                if let error = store.transcriptError {
+                if let error = store.transcriptFailure?.text(language: language) {
                     HStack { Text(error).foregroundStyle(.red); Button(s(.chatRetry)) { Task { await workspace.select(store.selectedID); await store.refreshDelta() } } }
                         .font(.callout).padding(10)
                 }
@@ -88,18 +88,18 @@ private struct ChatDetailView: View {
     let event: ChatActivity
     @Environment(\.dismiss) private var dismiss
     @State private var text: String?
-    @State private var error: String?
+    @State private var error: AppErrorMessage?
     var body: some View {
         VStack(alignment: .leading, spacing: 14) {
             HStack { Text(s(.chatEventDetails) + " · " + event.kind).font(.headline); Spacer(); Button(s(.close)) { dismiss() }.keyboardShortcut(.cancelAction) }
-            if let error { Text(error).foregroundStyle(.red) }
+            if let error { Text(error.text(language: language)).foregroundStyle(.red) }
             else if let text { ScrollView { Text(text.isEmpty ? s(.chatNoDetails) : text).font(.system(.body, design: .monospaced)).textSelection(.enabled).frame(maxWidth: .infinity, alignment: .leading) } }
             else { ProgressView(s(.chatLoadingDetails)) }
         }.padding(24).frame(minWidth: 560, minHeight: 380)
         .task {
             guard let id = conversationID else { return }
             do { text = try await workspace.detail(id: id, sequence: event.seq) }
-            catch { self.error = (error as? BackendAPIError)?.localizedDescription ?? s(.chatDetailsFailed) }
+            catch { self.error = AppErrorMessage(error, fallback: .chatDetailsFailed) }
         }
     }
 }
