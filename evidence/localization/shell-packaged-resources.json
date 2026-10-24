@@ -1,0 +1,12 @@
+{
+  "source": "ad9a7fe",
+  "signature_verified": true,
+  "compiled_resource_locales": [
+    "en",
+    "ja"
+  ],
+  "english_runtime_label": "Runtime",
+  "japanese_runtime_label": "実行環境",
+  "six_final_japanese_browser_names_verified": true,
+  "scope": "Signed bundle compiled resources; earlier live screenshots remain5a66610"
+}

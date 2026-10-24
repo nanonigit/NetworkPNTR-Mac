@@ -1,0 +1,126 @@
+Browser tab: 8, Title: "ARTEX: Autonomous Penetration Testing Console", URL: "http://127.0.0.1:8789/system/settings/".
+1 AXWebArea ARTEX: Autonomous Penetration Testing Console, URL: 127.0.0.1:8789/system/settings/
+	2 container
+		124 content list
+			125 link Description: ARTEX ARTEX, Value: 127.0.0.1:8789/function/tasks/
+		126 container
+			127 text Features
+			128 content list
+				129 link Description: Dashboard, Value: 127.0.0.1:8789/dashboard/
+				130 link Description: Chat, Value: 127.0.0.1:8789/chat/
+				131 link Description: Tasks, Value: 127.0.0.1:8789/function/tasks/
+				132 link Description: Findings, Value: 127.0.0.1:8789/function/findings/
+				133 link Description: Traffic, Value: 127.0.0.1:8789/function/traffic/
+				134 link Description: Tool runs, Value: 127.0.0.1:8789/function/commands/
+				135 link Description: LLM records, Value: 127.0.0.1:8789/function/llm-records/
+				136 link Description: Assets, Value: 127.0.0.1:8789/function/assets/
+				137 link Description: Asset sync, Value: 127.0.0.1:8789/function/sync/
+				138 link Description: Workspace, Value: 127.0.0.1:8789/function/workspace/
+			139 text System
+			140 content list
+				141 link Description: LLM, Value: 127.0.0.1:8789/system/llm/
+				142 link Description: Agents, Value: 127.0.0.1:8789/system/agents/
+				143 link Description: MCP, Value: 127.0.0.1:8789/system/mcp/
+				144 link Description: Skills, Value: 127.0.0.1:8789/system/skills/
+				145 link Description: Tools, Value: 127.0.0.1:8789/system/tools/
+				146 link Description: Notifications, Value: 127.0.0.1:8789/system/notify/
+				147 link Description: Intercept rules, Value: 127.0.0.1:8789/system/intercept/
+				148 link Description: Asset blocking, Value: 127.0.0.1:8789/system/intercept/assets/
+				149 link Description: Approvals, Value: 127.0.0.1:8789/system/intercept/approvals/
+				150 link Description: Logs, Value: 127.0.0.1:8789/system/logs/
+				151 link Description: System settings, Value: 127.0.0.1:8789/system/settings/
+		152 content list
+			153 pop up button (collapsed) A ARTEX, ID: radix-_r_l_, Secondary Actions: Expand
+		154 container
+			155 button Toggle Sidebar
+			156 button Search ⌘ J
+				157 text Search
+				158 text ⌘
+				159 text J
+			160 heading Command Palette, Value: 2, ID: radix-_r_r_
+				161 text Command Palette
+			162 text Search for a command to run...
+			163 text Version · local-e75ae371ad777ffd1eecdd28d2781a6519b05591
+			164 pop up button (collapsed) Secondary Actions: Expand
+			165 button Current theme: dark. Click to cycle themes
+			166 text A
+		167 heading System Settings, Value: 1
+			168 text System Settings
+		169 text Global runtime switches
+		170 text Version and Updates
+		171 text Check for and install new versions from GitHub. Updating restarts the program and interrupts running tasks.
+		172 text Current version local-e75ae371ad777ffd1eecdd28d2781a6519b05591 linux / arm64 Docker Can't connect to GitHub: GitHub 에 접속하지 못했습니다(시스템 설정에서 전역 프록시를 설정할 수 있습니다): Get "https://api.github.com/repos/Autumn-27/artex/releases/latest": dial tcp: lookup api.github.com on 127.0.0.11:53: server misbehaving You can set the global proxy above and try again.
+		173 button Check for updates
+		174 button (disabled) Update now
+		175 container
+			176 text One-click update relies on the daemon script restarting the program. Start ARTEX with  start.sh  ( start.bat  on Windows). If you run the artex binary directly, it won't restart automatically after the program exits.
+		177 text Traffic Capture
+		178 container
+			179 text When on, all agents' HTTP traffic passes through the recording proxy and is fully saved, and the traffic_search / traffic_get tools and proxy settings are injected into the agents (the prompt includes a proxy description).
+			180 text When off (default), no traffic is recorded. Agents  do not receive  the proxy settings or traffic tools, and the prompt  does not include  any proxy-related content. Toggling regenerates the agents immediately to apply the change.
+		181 text Off · No recording or proxy injection
+		182 switch Description: Off · No recording or proxy injection, Value: 0, ID: traffic-capture
+		183 text Automatic Agent Traffic Binding
+		184 container agent-traffic-binding-description
+			185 text Off by default. When on, the report agent that runs when a finding is recorded cross-checks existing HTTP requests/responses, links the relevant traffic, and then writes the report.  Inspecting packets and making extra tool calls increases token usage.
+			186 text It can still report normally when the traffic is TCP, no packets were captured, or there is no matching traffic. This switch does not affect traffic capture, manual linking, or viewing saved evidence. It applies starting from the next round of agents, and turning it off immediately rejects new automatic links.
+		187 text Off · Manual linking still available
+		188 switch Description: Off · Manual linking still available, Value: 0, ID: agent-traffic-binding
+		189 text Global Proxy
+		190 container
+			191 text All agents'  destination traffic  goes out through this proxy (hides the source IP / uses a relay server). It supports  http / https / socks5  and can include  user:pass  authentication. Leave empty for a direct connection.
+			192 text When  Traffic Capture  is on, this proxy becomes the  upstream  of the recording proxy (traffic is still fully saved and then goes out through this proxy again). When capture is off, it is injected directly into the agents' bash / WebFetch output. It is independent of the web search proxy and the LLM proxy.
+			193 text Note : With  capture off , socks5 depends on whether each command-line tool supports  ALL_PROXY  (curl does, but some tools may ignore it). If you mainly use socks5, it's better to turn on Traffic Capture. On that path the MITM makes the connection directly, so it applies reliably even if a tool doesn't notice.
+		194 text Proxy address
+		195 text field (settable) Proxy address, ID: global-proxy
+		196 button Save
+		197 text Not configured · Destination traffic goes out via direct connection
+		198 text Behavior Constraint Injection
+		199 container
+			200 text When on, each task's  behavior constraints  (the allow/deny items managed under “Behavior Constraints” in the task overview) are appended to that agent's system prompt to limit the exploration scope (e.g., “Test the current port only”, “No brute forcing”).
+			201 text You can control injection separately for the  planner  and the  worker ; both default to on. Changes apply immediately (read on the next round) with no need to regenerate the agents. When off, that agent no longer sees the constraints.
+		202 container
+			203 text Inject into the planner  · On
+		204 switch Description: Inject into the planner · On, Value: 1, ID: inject-planner
+		205 container
+			206 text Inject into the worker  · On
+		207 switch Description: Inject into the worker · On, Value: 1, ID: inject-worker
+		208 text Experimental Features
+		209 container
+			210 text These features are still under validation and default to off. They may change agent behavior or affect stability, so turn them on only after you understand the impact.
+			211 text noa context compression : the model compresses long conversation history directly (norma v0.4.0). When on, the four kinds of agents connected to the platform ( planner / worker / main agent / conversation ) hand off context to noa instead of using the built-in compression, and the raw compression output is kept in the task's working directory for easy review. Changes apply immediately (to runs started afterward) with no need to regenerate the agents. Turning it off restores the built-in compression immediately.
+		212 container
+			213 text noa context compression  · Off
+		214 switch Description: noa context compression · Off, Value: 0, ID: noa-compaction
+		215 text Web Search
+		216 container
+			217 text The  master switch + source settings  for web search. Only when it is on can you choose  web_search  usage individually in  each agent's settings  (it returns only the title/link/summary and does not fetch the body; body collection is handled by WebFetch). Web search  does not go through  the recording proxy and is independent of Traffic Capture.
+			218 text For the source, you can choose among  DuckDuckGo (ddgs)  (no Key needed),  Brave (free tier)  (requires a Brave API Key),  Tavily  (requires a Tavily API Key), and  DeepSeek  (reuses the current LLM settings). When the master switch is off, each agent's web search switch is unavailable.
+		219 text Off · Web search can't be enabled for any agent
+		220 switch Description: Off · Web search can't be enabled for any agent, Value: 0, ID: web-search
+		221 text Custom scripts · Python interpreter
+		222 container
+			223 text Custom  script -type tools run Python with this interpreter. It is auto-detected at startup (python3 preferred); you can enter an absolute path to a venv or a specific version here, and if left empty it is auto-detected at run time.
+		224 text field (settable) /usr/bin/python3
+		225 button Detect again
+		226 button Save
+		227 text Task parallelism · Worker agent count
+		228 container
+			229 text The number of worker agents that run in parallel in each task (default 3). A higher value explores more concurrently and consumes more. Changes  apply to tasks started afterward ; running tasks are unaffected.
+		230 stepper (settable, integer) 3
+		231 button Save
+		232 text Display language
+		233 text The language of on-screen text and of the reports, summaries and chat replies the agents write. It takes effect immediately with no need to save. The on-screen language is stored in this browser only, so you will need to pick it again if you switch browsers or clear site data. The agent output language is stored on the server and applies from any browser.
+		234 text Language
+		235 combo box (collapsed) Language, Value: English, ID: ui-language, Secondary Actions: Expand
+			236 text English
+		237 text Session input box send key
+		238 container
+			239 text The conversation page and the main agent session input box in the task details share this setting; selecting it applies immediately with no need to save.
+			240 text This setting is  saved only in this browser  and is not synced to your account, so if you change browsers or clear site data you'll need to set it again.
+		241 text Send method
+		242 combo box (collapsed) Send method, Value: Enter to send, Shift+Enter for newline, ID: chat-send-mode, Secondary Actions: Expand
+			243 text Enter to send, Shift+Enter for newline
+		123 container Notifications alt+T
+
+The focused UI element is 235 combo box (collapsed) Language, Value: English, ID: ui-language, Secondary Actions: Expand

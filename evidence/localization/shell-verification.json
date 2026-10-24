@@ -1,0 +1,55 @@
+{
+  "runtime_source": "5a66610",
+  "final_catalog_source": "ad9a7fe",
+  "baseline": "e75ae371ad777ffd1eecdd28d2781a6519b05591",
+  "swift_total": 234,
+  "swift_passed": 233,
+  "swift_skipped": 1,
+  "python_passed": 49,
+  "catalog_tests": 5,
+  "cold_scratch_catalog_tests_passed": 3,
+  "initial_incremental_lookup_failure": "93 assertions failed; next probe and cold build passed; exact root cause unproven, retained counterevidence",
+  "native_switch_sequence": [
+    "ja",
+    "en",
+    "ja",
+    "en"
+  ],
+  "original_language_restored_after_restart": "ja",
+  "only_two_native_language_options": true,
+  "exact_draft_preserved": "L2 draft **literal**\n日本語 中文 한국어",
+  "attachment_preserved": {
+    "name": "locale-l2.txt",
+    "bytes": 23
+  },
+  "chat_selection_and_conversation_preserved": true,
+  "runtime_ready_remained_visible": true,
+  "runtime_object_identity": "source review only; per-switch VZ object identity not instrumented",
+  "new_process_persisted_english": true,
+  "browser_settings_switch_sequence": [
+    "en",
+    "ja",
+    "en"
+  ],
+  "browser_supported_languages": 5,
+  "native_supported_languages": 2,
+  "six_japanese_navigation_terms": "aligned after screenshots via6RED assertions and5GREEN catalog tests",
+  "native_diagnostics_exit": [
+    0,
+    0
+  ],
+  "reference_exit": 0,
+  "native_vms_stopped_and_keychain_removed": true,
+  "reference_resources_removed": true,
+  "selected_tmp_files_removed": true,
+  "guest_upload_individual_cleanup": "not independently checked; private disposable fixture disk retained locally",
+  "live_cloud_call": false,
+  "pending": [
+    "feature interiors and static error localization",
+    "Chinese builtin descriptions/Korean default titles",
+    "backend output_language synchronization/recovery",
+    "system menus/raw lifecycle state labels",
+    "full two-locale accessibility and all21 function parity",
+    "runtime kernel reliability"
+  ]
+}

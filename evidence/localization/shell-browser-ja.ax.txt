@@ -1,0 +1,126 @@
+Browser tab: 8, Title: "ARTEX: Autonomous Penetration Testing Console", URL: "http://127.0.0.1:8789/system/settings/".
+1 AXWebArea ARTEX: Autonomous Penetration Testing Console, URL: 127.0.0.1:8789/system/settings/
+	2 container
+		124 content list
+			125 link Description: ARTEX ARTEX, Value: 127.0.0.1:8789/function/tasks/
+		126 container
+			127 text 機能
+			128 content list
+				129 link Description: ダッシュボード, Value: 127.0.0.1:8789/dashboard/
+				130 link Description: チャット, Value: 127.0.0.1:8789/chat/
+				131 link Description: タスク, Value: 127.0.0.1:8789/function/tasks/
+				132 link Description: 脆弱性, Value: 127.0.0.1:8789/function/findings/
+				133 link Description: トラフィック, Value: 127.0.0.1:8789/function/traffic/
+				134 link Description: ツール実行, Value: 127.0.0.1:8789/function/commands/
+				135 link Description: LLM 履歴, Value: 127.0.0.1:8789/function/llm-records/
+				136 link Description: 資産, Value: 127.0.0.1:8789/function/assets/
+				137 link Description: 資産同期, Value: 127.0.0.1:8789/function/sync/
+				138 link Description: ワークスペース, Value: 127.0.0.1:8789/function/workspace/
+			139 text システム
+			140 content list
+				141 link Description: LLM, Value: 127.0.0.1:8789/system/llm/
+				142 link Description: エージェント, Value: 127.0.0.1:8789/system/agents/
+				143 link Description: MCP, Value: 127.0.0.1:8789/system/mcp/
+				144 link Description: スキル, Value: 127.0.0.1:8789/system/skills/
+				145 link Description: ツール, Value: 127.0.0.1:8789/system/tools/
+				146 link Description: 通知配信, Value: 127.0.0.1:8789/system/notify/
+				147 link Description: インターセプトルール, Value: 127.0.0.1:8789/system/intercept/
+				148 link Description: 資産ブロック, Value: 127.0.0.1:8789/system/intercept/assets/
+				149 link Description: 承認履歴, Value: 127.0.0.1:8789/system/intercept/approvals/
+				150 link Description: ログ, Value: 127.0.0.1:8789/system/logs/
+				151 link Description: システム設定, Value: 127.0.0.1:8789/system/settings/
+		152 content list
+			153 pop up button (collapsed) A ARTEX, ID: radix-_r_l_, Secondary Actions: Expand
+		154 container
+			155 button Toggle Sidebar
+			156 button 検索 ⌘ J
+				157 text 検索
+				158 text ⌘
+				159 text J
+			160 heading Command Palette, Value: 2, ID: radix-_r_r_
+				161 text Command Palette
+			162 text Search for a command to run...
+			163 text バージョン · local-e75ae371ad777ffd1eecdd28d2781a6519b05591
+			164 pop up button (collapsed) Secondary Actions: Expand
+			165 button Current theme: dark. Click to cycle themes
+			166 text A
+		167 heading システム設定, Value: 1
+			168 text システム設定
+		169 text グローバルなランタイムスイッチ
+		170 text バージョンとアップデート
+		171 text GitHub で新しいバージョンを確認してインストールします。アップデートするとプログラムが再起動し、実行中のタスクが中断されます。
+		172 text 現在のバージョン local-e75ae371ad777ffd1eecdd28d2781a6519b05591 linux / arm64 Docker GitHub に接続できません: GitHub 에 접속하지 못했습니다(시스템 설정에서 전역 프록시를 설정할 수 있습니다): Get "https://api.github.com/repos/Autumn-27/artex/releases/latest": dial tcp: lookup api.github.com on 127.0.0.11:53: server misbehaving 上でグローバルプロキシを設定してから、もう一度お試しください。
+		173 button アップデートを確認
+		174 button (disabled) 今すぐアップデート
+		175 container
+			176 text ワンクリックアップデートは、デーモンスクリプトがプログラムを再起動する機能に依存しています。 start.sh  (Windows は  start.bat ) で ARTEX を起動してください。artex 本体を直接実行すると、プログラムの終了後に自動で再起動されません。
+		177 text トラフィックキャプチャ
+		178 container
+			179 text オンにすると、すべてのエージェントの HTTP トラフィックが記録プロキシを経由してすべて保存され、エージェントに traffic_search / traffic_get ツールとプロキシ設定が注入されます (プロンプトにプロキシの説明が含まれます)。
+			180 text オフ (デフォルト) の場合、トラフィックは一切記録しません。エージェントはプロキシ設定とトラフィックツールを 受け取らず 、プロンプトにもプロキシ関連の内容は 含まれません 。切り替えるとエージェントが即座に再生成されて反映されます。
+		181 text オフ · 記録・プロキシ注入なし
+		182 switch Description: オフ · 記録・プロキシ注入なし, Value: 0, ID: traffic-capture
+		183 text エージェントのトラフィック自動紐付け
+		184 container agent-traffic-binding-description
+			185 text デフォルトはオフです。オンにすると、脆弱性が記録されたときに実行されるレポートエージェントが既存の HTTP リクエスト/レスポンスを照合し、該当トラフィックを紐付けてからレポートを作成します。 パケットの参照やツールの追加呼び出しによりトークン消費が増えます。
+			186 text TCP の場合、パケットをキャプチャしていない場合、一致するトラフィックがない場合でも、正常に報告できます。このスイッチは、トラフィックキャプチャ、手動紐付け、保存済み証拠の参照には影響しません。次回以降のエージェントから適用され、オフにすると新たな自動紐付けは直ちに拒否されます。
+		187 text オフ · 手動紐付けは引き続き可能
+		188 switch Description: オフ · 手動紐付けは引き続き可能, Value: 0, ID: agent-traffic-binding
+		189 text グローバルプロキシ
+		190 container
+			191 text すべてのエージェントの 対象トラフィック がこのプロキシを経由して送出されます (送信元 IP の秘匿 / 踏み台サーバーの利用)。 http / https / socks5  に対応し、 user:pass  認証を付けられます。空にすると直接接続になります。
+			192 text トラフィックキャプチャ をオンにすると、このプロキシは記録プロキシの 上流 になります (トラフィックは引き続きすべて保存され、再びこのプロキシを経由して送出されます)。キャプチャをオフにすると、エージェントの bash / WebFetch の出力に直接注入されます。Web 検索プロキシ、LLM プロキシとは互いに独立しています。
+			193 text 注意 : socks5 は、 キャプチャをオフにした 状態では、各コマンドラインツールが  ALL_PROXY  に対応しているかどうかに依存します (curl は対応していますが、一部のツールは無視する場合があります)。主に socks5 を使う場合は、トラフィックキャプチャをオンにすることをお勧めします。この経路では MITM が直接接続を確立するため、ツールが認識しなくても安定して適用されます。
+		194 text プロキシアドレス
+		195 text field (settable) プロキシアドレス, ID: global-proxy
+		196 button 保存
+		197 text 未設定 · 対象トラフィックは直接接続で送出されます
+		198 text 動作制約の注入
+		199 container
+			200 text オンにすると、各タスクの 動作制約  (タスク概要の「動作制約」で管理する allow/deny 項目) を該当エージェントのシステムプロンプトに追加し、探索スコープを限定します (例: 「現在のポートのみテスト」「ブルートフォース禁止」)。
+			201 text プランナー(planner) と ワーカー(worker) のそれぞれについて注入の可否を制御でき、デフォルトはいずれもオンです。切り替えると即座に反映され (次回以降に読み込み)、エージェントを再生成する必要はありません。オフにすると、該当エージェントは制約を参照しなくなります。
+		202 container
+			203 text プランナー(planner)への注入  · オン
+		204 switch Description: プランナー(planner)への注入 · オン, Value: 1, ID: inject-planner
+		205 container
+			206 text ワーカー(worker)への注入  · オン
+		207 switch Description: ワーカー(worker)への注入 · オン, Value: 1, ID: inject-worker
+		208 text 実験的機能
+		209 container
+			210 text まだ検証中の機能で、デフォルトはオフです。エージェントの動作を変えたり安定性に影響したりする可能性があるため、影響を把握したうえでオンにしてください。
+			211 text noa コンテキスト圧縮 : モデルが長い会話履歴を自ら圧縮します (norma v0.4.0)。オンにすると、プラットフォームに接続された 4 種類のエージェント ( プランナー / ワーカー / メインエージェント / 会話 ) が、内蔵圧縮の代わりに noa でコンテキストを引き継ぎ、圧縮前の原文は該当タスクの作業ディレクトリに保管されるため、後から振り返りやすくなります。切り替えると即座に反映され (以降に開始する実行に適用)、エージェントを再生成する必要はありません。オフにすると内蔵圧縮に即座に戻ります。
+		212 container
+			213 text noa コンテキスト圧縮  · オフ
+		214 switch Description: noa コンテキスト圧縮 · オフ, Value: 0, ID: noa-compaction
+		215 text Web 検索
+		216 container
+			217 text Web 検索の マスタースイッチ + ソース設定 です。オンにしたときのみ、 各エージェントの設定 で  web_search  を使うかどうかを個別に選択できます (タイトル/リンク/要約のみを返し、本文は取得しません。本文の収集は WebFetch が担当します)。Web 検索は記録プロキシを 経由せず 、トラフィックキャプチャとは独立しています。
+			218 text ソースは  DuckDuckGo(ddgs)  (Key 不要)、 Brave(無料版)  (Brave API Key の入力が必要)、 Tavily  (Tavily API Key の入力が必要)、 DeepSeek  (現在の LLM 設定を再利用) から選べます。マスタースイッチがオフの間は、各エージェントの Web 検索スイッチを使えません。
+		219 text オフ · 各エージェントで Web 検索をオンにできません
+		220 switch Description: オフ · 各エージェントで Web 検索をオンにできません, Value: 0, ID: web-search
+		221 text カスタムスクリプト · Python インタプリタ
+		222 container
+			223 text カスタムの  script  タイプのツールは、このインタプリタで Python を実行します。起動時に自動検出し (python3 を優先)、ここに venv や特定バージョンの絶対パスを直接入力できます。空にすると実行時に自動検出します。
+		224 text field (settable) /usr/bin/python3
+		225 button 再検出
+		226 button 保存
+		227 text タスクの並列度 · ワークエージェント数
+		228 container
+			229 text 各タスクで並列に実行されるワークエージェントの数です (デフォルト 3)。値が大きいほど同時により多く探索し、消費も大きくなります。変更は 以降に開始するタスクに適用 され、実行中のタスクには影響しません。
+		230 stepper (settable, integer) 3
+		231 button 保存
+		232 text 表示言語
+		233 text 画面の文言と、エージェントが書くレポート・要約・会話応答の言語です。選択すると即座に反映され、別途保存する必要はありません。画面の文言の言語はこのブラウザにのみ保存されるため、ブラウザを変更したりサイトデータを消去したりした場合は選び直す必要があります。エージェントの出力言語はサーバーに保存されるため、別のブラウザからアクセスしてもそのまま適用されます。
+		234 text 言語
+		235 combo box (collapsed) 言語, Value: 日本語, ID: ui-language, Secondary Actions: Expand
+			236 text 日本語
+		237 text セッション入力欄の送信キー
+		238 container
+			239 text 会話ページとタスク詳細のメインエージェントセッション入力欄がこの設定を共有します。選択すると即座に反映され、保存は不要です。
+			240 text この設定は このブラウザにのみ保存 され、アカウントとは同期されないため、ブラウザを変更したりサイトデータを消去したりした場合は再設定が必要です。
+		241 text 送信方式
+		242 combo box (collapsed) 送信方式, Value: Enter で送信、Shift+Enter で改行, ID: chat-send-mode, Secondary Actions: Expand
+			243 text Enter で送信、Shift+Enter で改行
+		123 container Notifications alt+T
+
+The focused UI element is 235 combo box (collapsed) 言語, Value: 日本語, ID: ui-language, Secondary Actions: Expand
