@@ -67,3 +67,6 @@ A5 partial checkpoint: native controls implemented/reviewed,205 Swift/45 Python 
 
 
 A5 compatibility check: explicit MainActor scoped-operation closure resolves the CI compile failure;206 local Swift tests pass. Check the new remote CI. Unmatched restoration/transcript attachments/progress synchronization/accessibility/runtime reliability gates remain open.
+
+
+A6 ordered gates: checksum-pinned parser fixtures and model RED/GREEN; MainActor row loading ownership/inline/error/empty/retry/cancel/stale/defer tests RED/GREEN; read-only native cards and user text UI, reviewer; full suites/coverage/build and actual persisted attachment VM/browser fixture with screenshots, owner isolation and cleanup. Keep other A5 and full-product gates open.

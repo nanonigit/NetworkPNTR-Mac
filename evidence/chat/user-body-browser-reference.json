@@ -1,0 +1,146 @@
+{
+  "baseline": "e75ae371ad777ffd1eecdd28d2781a6519b05591",
+  "source_file": "web/src/components/transcript.tsx",
+  "source_sha256": "c735ebddab7f790f967a42e54fc993b9dd817a44eea5532bb461fb52dfe17952",
+  "parser_sha256": "38b83152b130b1774fe1a03e98fc80903ee8d4f26ddb239e6bc15534b2839a7d",
+  "transform": "Erase exactly one inspected TypeScript signature; execute parser with inert string fixtures",
+  "scope": "Source parser execution with validated metadata projection, not rendered UI or malformed metadata parity",
+  "cases": [
+    {
+      "name": "plain",
+      "body": "literal **text**\nnext line",
+      "expected": {
+        "text": "literal **text**\nnext line",
+        "attachments": []
+      }
+    },
+    {
+      "name": "malformed",
+      "body": "{ literal not JSON",
+      "expected": {
+        "text": "{ literal not JSON",
+        "attachments": []
+      }
+    },
+    {
+      "name": "structured",
+      "body": "{\"text\":\"hello\\nworld\",\"attachments\":[{\"name\":\"é.txt\",\"path\":\"uploads/é.txt\",\"size\":1},{\"name\":\"é.txt\",\"path\":\"uploads/é.txt\",\"size\":1}]}",
+      "expected": {
+        "text": "hello\nworld",
+        "attachments": [
+          {
+            "name": "é.txt",
+            "path": "uploads/é.txt",
+            "size": 1
+          },
+          {
+            "name": "é.txt",
+            "path": "uploads/é.txt",
+            "size": 1
+          }
+        ]
+      }
+    },
+    {
+      "name": "empty_list",
+      "body": "{\"text\":\"plain\",\"attachments\":[]}",
+      "expected": {
+        "text": "plain",
+        "attachments": []
+      }
+    },
+    {
+      "name": "number_text",
+      "body": "{\"text\":42,\"attachments\":[{\"name\":\"a\",\"path\":\"uploads/a\",\"size\":1}]}",
+      "expected": {
+        "text": "",
+        "attachments": [
+          {
+            "name": "a",
+            "path": "uploads/a",
+            "size": 1
+          }
+        ]
+      }
+    },
+    {
+      "name": "missing_text",
+      "body": "{\"attachments\":[{\"name\":\"a\",\"path\":\"uploads/a\",\"size\":1}]}",
+      "expected": {
+        "text": "",
+        "attachments": [
+          {
+            "name": "a",
+            "path": "uploads/a",
+            "size": 1
+          }
+        ]
+      }
+    },
+    {
+      "name": "leading_space",
+      "body": " {\"text\":\"not parsed\",\"attachments\":[{\"name\":\"a\",\"path\":\"uploads/a\",\"size\":1}]}",
+      "expected": {
+        "text": " {\"text\":\"not parsed\",\"attachments\":[{\"name\":\"a\",\"path\":\"uploads/a\",\"size\":1}]}",
+        "attachments": []
+      }
+    },
+    {
+      "name": "bom_prefix",
+      "body": "﻿{\"text\":\"not parsed\",\"attachments\":[{\"name\":\"a\",\"path\":\"uploads/a\",\"size\":1}]}",
+      "expected": {
+        "text": "﻿{\"text\":\"not parsed\",\"attachments\":[{\"name\":\"a\",\"path\":\"uploads/a\",\"size\":1}]}",
+        "attachments": []
+      }
+    },
+    {
+      "name": "array_root",
+      "body": "[{\"attachments\":[{\"name\":\"a\",\"path\":\"uploads/a\",\"size\":1}]}]",
+      "expected": {
+        "text": "[{\"attachments\":[{\"name\":\"a\",\"path\":\"uploads/a\",\"size\":1}]}]",
+        "attachments": []
+      }
+    },
+    {
+      "name": "no_attachments",
+      "body": "{\"text\":\"not parsed\"}",
+      "expected": {
+        "text": "{\"text\":\"not parsed\"}",
+        "attachments": []
+      }
+    },
+    {
+      "name": "duplicate_paths",
+      "body": "{\"text\":\"two references\",\"attachments\":[{\"name\":\"a\",\"path\":\"uploads/a\",\"size\":1},{\"name\":\"a\",\"path\":\"uploads/a\",\"size\":1}]}",
+      "expected": {
+        "text": "two references",
+        "attachments": [
+          {
+            "name": "a",
+            "path": "uploads/a",
+            "size": 1
+          },
+          {
+            "name": "a",
+            "path": "uploads/a",
+            "size": 1
+          }
+        ]
+      }
+    },
+    {
+      "name": "ignore_guest_abs",
+      "body": "{\"text\":\"\",\"attachments\":[{\"name\":\"a\",\"path\":\"uploads/a\",\"size\":1,\"abs\":\"/guest/fixture/a\"}]}",
+      "expected": {
+        "text": "",
+        "attachments": [
+          {
+            "name": "a",
+            "path": "uploads/a",
+            "size": 1
+          }
+        ]
+      }
+    }
+  ]
+}
