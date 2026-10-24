@@ -27,6 +27,12 @@ final class AppStringsTests: XCTestCase {
         XCTAssertEqual(AppStrings.featureTitle("chat", fallback: "original", language: .japanese), "チャット")
         XCTAssertEqual(AppStrings.featureTitle("custom", fallback: "自定义 사용자 **literal**", language: .japanese), "自定义 사용자 **literal**")
     }
+    func testJapaneseFeatureNamesMatchObservedPinnedBrowserNavigation() {
+        let expected = ["findings":"脆弱性", "traffic":"トラフィック", "llm-records":"LLM 履歴", "notify":"通知配信", "intercept":"インターセプトルール", "approvals":"承認履歴"]
+        for (id, title) in expected {
+            XCTAssertEqual(AppStrings.featureTitle(id, fallback: "untranslated", language: .japanese), title)
+        }
+    }
     func testPlannedFeatureKeepsVariableContentLiteralInBothLanguages() {
         for language in AppLanguage.allCases {
             let value = AppStrings.plannedFeature(phase: 4, path: "/fixture/%@/中文/한국어", language: language)
