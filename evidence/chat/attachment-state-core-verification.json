@@ -1,0 +1,193 @@
+{
+  "scope": "A4.1 typed metadata, keyed draft/send core and four executed pinned-source state/wire comparisons; not native attachment UI or end-to-end upload handoff",
+  "baseline": "e75ae371ad777ffd1eecdd28d2781a6519b05591",
+  "implementation_commit": "e93f575",
+  "swift_tests": 171,
+  "swift_core_tests": 159,
+  "appkit_component_tests": 5,
+  "native_diagnostic_fixture_tests": 7,
+  "python_tests": 42,
+  "scoped_chat_tests": 39,
+  "new_attachment_core_cases": 14,
+  "executed_browser_send_cases": 4,
+  "browser_source_sha256": "5f53e5667d1ff131585be7bc0ca1f3641cae49d9a98c68fb0375590788abed22",
+  "node_oracle_runtime": "v26.12.1",
+  "source_hash_guard_before_handler_execution_verified": true,
+  "oracle_regeneration_identical": true,
+  "attachment_identity": "exact UTF-8 bytes, including Codable path agreement, equality, Data-based Identifiable key, duplicate detection, merge and removal",
+  "host_and_guest_abs_in_send_metadata": false,
+  "metadata_fields": [
+    "name",
+    "path",
+    "size"
+  ],
+  "source_send_state_and_wire_match": true,
+  "failure_restoration_preserves_newer_edits": true,
+  "stop_restores_unconfirmed_send": true,
+  "reset_rejects_late_accepted_reply": true,
+  "card_removal_calls_guest_delete": false,
+  "developer_app_rebuilt": true,
+  "strict_ad_hoc_signature_verified": true,
+  "coverage_scope": "full local Swift suite, selected source line/region coverage; not branch or whole-product coverage",
+  "coverage": [
+    {
+      "file": "ChatAttachments.swift",
+      "summary": {
+        "branches": {
+          "count": 0,
+          "covered": 0,
+          "notcovered": 0,
+          "percent": 0
+        },
+        "functions": {
+          "count": 9,
+          "covered": 9,
+          "percent": 100
+        },
+        "instantiations": {
+          "count": 9,
+          "covered": 9,
+          "percent": 100
+        },
+        "lines": {
+          "count": 23,
+          "covered": 23,
+          "percent": 100
+        },
+        "mcdc": {
+          "count": 0,
+          "covered": 0,
+          "notcovered": 0,
+          "percent": 0
+        },
+        "regions": {
+          "count": 21,
+          "covered": 21,
+          "notcovered": 0,
+          "percent": 100
+        }
+      }
+    },
+    {
+      "file": "ChatService.swift",
+      "summary": {
+        "branches": {
+          "count": 0,
+          "covered": 0,
+          "notcovered": 0,
+          "percent": 0
+        },
+        "functions": {
+          "count": 40,
+          "covered": 36,
+          "percent": 90
+        },
+        "instantiations": {
+          "count": 40,
+          "covered": 36,
+          "percent": 90
+        },
+        "lines": {
+          "count": 114,
+          "covered": 110,
+          "percent": 96.49122807017544
+        },
+        "mcdc": {
+          "count": 0,
+          "covered": 0,
+          "notcovered": 0,
+          "percent": 0
+        },
+        "regions": {
+          "count": 115,
+          "covered": 108,
+          "notcovered": 7,
+          "percent": 93.91304347826087
+        }
+      }
+    },
+    {
+      "file": "ChatStore.swift",
+      "summary": {
+        "branches": {
+          "count": 0,
+          "covered": 0,
+          "notcovered": 0,
+          "percent": 0
+        },
+        "functions": {
+          "count": 84,
+          "covered": 80,
+          "percent": 95.23809523809523
+        },
+        "instantiations": {
+          "count": 86,
+          "covered": 82,
+          "percent": 95.34883720930233
+        },
+        "lines": {
+          "count": 257,
+          "covered": 249,
+          "percent": 96.88715953307393
+        },
+        "mcdc": {
+          "count": 0,
+          "covered": 0,
+          "notcovered": 0,
+          "percent": 0
+        },
+        "regions": {
+          "count": 213,
+          "covered": 184,
+          "notcovered": 29,
+          "percent": 86.3849765258216
+        }
+      }
+    },
+    {
+      "file": "ChatWorkspace.swift",
+      "summary": {
+        "branches": {
+          "count": 0,
+          "covered": 0,
+          "notcovered": 0,
+          "percent": 0
+        },
+        "functions": {
+          "count": 41,
+          "covered": 39,
+          "percent": 95.1219512195122
+        },
+        "instantiations": {
+          "count": 41,
+          "covered": 39,
+          "percent": 95.1219512195122
+        },
+        "lines": {
+          "count": 109,
+          "covered": 104,
+          "percent": 95.41284403669725
+        },
+        "mcdc": {
+          "count": 0,
+          "covered": 0,
+          "notcovered": 0,
+          "percent": 0
+        },
+        "regions": {
+          "count": 108,
+          "covered": 91,
+          "notcovered": 17,
+          "percent": 84.25925925925925
+        }
+      }
+    }
+  ],
+  "native_attachment_picker_and_cards": "pending",
+  "native_upload_adapter_and_create_handoff": "pending",
+  "actual_a4_state_guest_reference_fixture": "pending",
+  "browser_unicode_whitespace_trimming_edge_cases": "pending",
+  "completed_feature_gates": "none closed by this core checkpoint",
+  "runtime_source_candidate_reliability": "pending, previous panic retained",
+  "review": "Independent read-only review found Unicode identity collision; executed RED/GREEN and followup review approved"
+}

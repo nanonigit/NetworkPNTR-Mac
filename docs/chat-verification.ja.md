@@ -127,3 +127,13 @@ Swift145件（Core137、実AppKit5、診断fixture3）/Python42件成功。ダ�
 新しい固定使い捨てバックエンドとも8契約群が一致。元のブラウザ4サービスは正常、比較コンテナ/ネットワークは清掃。数値通知/VM停止はネイティブ実行環境の拡張で、ブラウザのスピナー/操作無効化や取消UIの同等性の合格ではない。初回upload-cancel-a3-v1は非合格の予備証拠として保持。全体Swift実行による対象LLVM行/領域は進捗26/26・20/20、認証130/130・105/117、通信171/185・133/171。残るエラー処理、分岐/製品全体のカバレッジを推定しない。
 
 証拠はupload-progress-verification.json、upload-cancellation-vm.json、upload-cancellation-native-results.json、upload-cancellation-contract-vm/reference.json、upload-cancellation-comparison.json、upload-cancellation-preliminary.json。実ダウンロード取消、32MiB退避後の取消、プロセスメモリ実測、A4/A5添付状態/UI、全機能完成条件は未完了。過去の候補panicを保持し昇格しない。次は選択時の会話作成/下書き引継ぎ、添付のみ送信、失敗復元と除去の所有権を移植してからpicker/cardsと実画面比較を進める。
+
+## A4.1添付メタデータと会話別下書き復元
+
+Swift171件（Core159、実AppKit5、診断fixture7）、Python42件、対象chat39件成功。ChatAttachmentはname/path/sizeを検証し任意のabsを捨て、UTF8 DataでUnicodeの別バイト名をcoding/比較/追加/除去/復元まで区別する。カード除去はゲスト削除を呼ばない。service/workspaceは添付のみ送信を許可し、両方なしは通信前に拒否。送信snapshotで一旦クリアし、未確定失敗/stopで復元、新しい編集/添付を維持してreset後の古い応答を拒否。本文改訂で編集後クリアのABAも検出し、accepted後の再取得失敗で送信済みを戻さない。
+
+REDcfb9327は添付API未実装、GREEN5e22964で対象34件。レビューのUnicode衝突を実行RED25c877aの5失敗で再現しGREEN512d9c0で36件。古い本文のバイト不一致とworkspace本文必須条件は31e4daaの5アサーションRED→5ae3434の38件GREEN。固定ブラウザ証拠の欠落RED173676c→GREENe93f575で39件、最終レビュー承認。bugs/chat-attachment-state-investigation.ja.mdを参照。
+
+script/chat_attachment_send_oracle.mjsは固定chat/page.tsx全体SHA2565f53e5667d1ff131585be7bc0ca1f3641cae49d9a98c68fb0375590788abed22を確認後、ChatView.sendを抽出、TypeScriptのエラーcast1箇所だけ除去し限定API/状態スタブで実行。本文+添付失敗、NFC/NFD別名添付のみ失敗、本文+添付成功、空の拒否の4ケースでSwiftの要求JSONと待機/完了状態が一致。再生成一致と不一致ソースの実行前拒否も確認。実ブラウザ操作、ゲスト送信/LLM結果、添付UI全体の根拠ではない。新しい編集/stop/resetは別のSwift回帰で確認。
+
+全体実行による対象LLVM行/領域: モデル23/23・21/21、service110/114・108/115、store249/257・184/213、workspace104/109・91/108。分岐/製品全体の保証はしない。証拠はattachment-send-browser-reference.jsonとattachment-state-core-verification.json。開発.app再ビルド/署名成功、カーネルの既知faultと未完了の安定性ゲートは保持。A4.2認証upload adapter/会話作成/本文引継ぎ/削除/取消、Unicode空白の端点、A4実ゲスト/固定比較、A5 picker/cards実操作比較が必須で、全機能完成ゲートは未完了。

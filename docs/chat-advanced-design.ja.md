@@ -49,3 +49,11 @@ A3の正式な添付契約: compare_backendにchat-uploadを追加し、mainガ�
 認証は要求ごとのロック付き通知ゲートを持ち、要求終了・Task取消・認証世代変更で閉じる。コールバックからTask取消しても再入デッドロックしないよう再帰ロックを使う。UIへ非同期更新する利用側は会話/要求世代も確認する。コールバック内でMainActorを同期的に待つことは禁止。実VM診断は1MiB以上の通知後に中断し、Task終了前を確認、VM停止時は同じ記述子所有権ロック下で開いた接続を取り消した数が1であることとCancellationErrorを要求する。初期の162バイト通知だけの観測は合格証拠とせず保持する。
 
 順序は時計制御の頻度/単調性テスト→実socket取消→認証の古い進捗/未協調成功破棄→署名付きVMでTask取消後の利用継続と別転送のVM停止→再起動/認証/未完成ファイル確認/所有データ清掃。停止前の自然失敗と停止時の取り消しを区別する回帰を維持する。今回はUI変更なしでLazyweb対象外。
+
+## A4メタデータと送信状態
+
+固定chatupload.goの応答name/path/size/absのうち、sessionのcomposeAgentMessageはbaseDir+pathから絶対パスを作るためabsは不要。ChatAttachmentはname/path/sizeだけをCodableで扱い、単一basename255UTF8以下、pathがuploads/nameにバイト一致、size0...128MiBを要求。応答は必須・空でなく・パス重複なし。Linuxと同じ名前識別のためData(path.utf8)をIdentifiable/集合キーにし、比較もUTF8完全一致、表示/送信文字列は正規化しない。sendは添付があれば空本文を許可、なければ従来どおりattachmentsキーを省略しacceptedを確認する。
+
+ChatStoreは正の会話IDごとに添付を保持し、追加/除去はローカルだけ。送信時に本文/カードをsnapshotし、現在本文が送信対象とバイト一致ならクリア、カードも先にクリアする。失敗時は本文の編集改訂が変わっていなければ戻し、カードは新しい添付と重複なしで復元。新しい編集を消さず、stopで未確定snapshotを戻してから世代失効、resetでは全消去する。accepted後の再取得エラーで送信済みを復元しない。新しい会話に選択が移っても元の会話だけを更新する。
+
+順序: A4.1モデル/JSON/状態RED/GREEN→A4.2認証upload adapterと選択時会話作成/本文引継ぎ、削除/取消/古い応答テスト→A4.3実VM/固定比較→A5最新Lazywebを確認してpicker/cardsと実操作比較。A4.1は有限サービス/状態でUI設計を行わずLazyweb対象外。固定送信ハンドラー4ケースの実行比較は実画面の合格ではなく、空白端点やcloudは別ゲート。
