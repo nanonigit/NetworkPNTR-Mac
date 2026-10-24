@@ -59,8 +59,13 @@ struct ChatTranscriptView: View {
                 if let date = ISO8601DateFormatter().date(from: event.ts) { Text(date, format: .dateTime.month().day().hour().minute()).font(.caption2).foregroundStyle(.secondary) }
                 Button("詳細") { detail = event }.font(.caption).help("イベントの詳細を取得")
             }
-            Text((try? AttributedString(markdown: event.summary, options: .init(interpretedSyntax: .inlineOnlyPreservingWhitespace))) ?? AttributedString(event.summary))
-                .textSelection(.enabled).frame(maxWidth: .infinity, alignment: .leading)
+            if event.kind == "user", let owner = store.selectedID {
+                ChatUserMessageView(workspace: workspace, conversationID: owner, activity: event)
+                    .id(ChatUserBodyKey(conversationID: owner, activity: event))
+            } else {
+                Text((try? AttributedString(markdown: event.summary, options: .init(interpretedSyntax: .inlineOnlyPreservingWhitespace))) ?? AttributedString(event.summary))
+                    .textSelection(.enabled).frame(maxWidth: .infinity, alignment: .leading)
+            }
             if let pair = event.toolUseId { Text("Call: " + pair).font(.caption.monospaced()).foregroundStyle(.secondary).textSelection(.enabled) }
             if let input = event.inputTokens, input > 0 {
                 Text("入力 \(input) · 出力 \(event.outputTokens ?? 0) tokens").font(.caption).foregroundStyle(.secondary)

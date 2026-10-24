@@ -3,27 +3,35 @@ import SwiftUI
 
 struct ChatAttachmentStrip: View {
     let attachments: [ChatAttachment]
-    let remove: (String) -> Void
+    var remove: ((String) -> Void)? = nil
     var body: some View {
         LazyVGrid(columns: [GridItem(.adaptive(minimum: 190), spacing: 6)], alignment: .leading, spacing: 6) {
-            ForEach(attachments) { file in
-                HStack(spacing: 6) {
-                    Image(systemName: "paperclip").foregroundStyle(.tint).accessibilityHidden(true)
-                    Text(file.name).lineLimit(1).truncationMode(.tail)
-                    Spacer(minLength: 0)
-                    Text(ChatAttachmentPresentation.bytes(file.size)).foregroundStyle(.secondary).fixedSize()
-                    Button { remove(file.path) } label: {
-                        Image(systemName: "xmark").frame(minWidth: 24, minHeight: 24).contentShape(Rectangle())
-                    }
-                    .buttonStyle(.borderless)
-                    .accessibilityLabel("添付を外す：" + file.name)
-                    .help("このメッセージの添付から外す")
-                }
-                .font(.caption).padding(.leading, 8).padding(.trailing, 2).padding(.vertical, 3)
-                .background(.quaternary, in: RoundedRectangle(cornerRadius: 6))
-                .help(file.path).accessibilityElement(children: .contain)
+            if remove != nil {
+                ForEach(attachments) { card($0) }
+            } else {
+                // Persisted messages may repeat a reference; preserve wire order.
+                ForEach(Array(attachments.enumerated()), id: \.offset) { card($0.element) }
             }
         }
+    }
+    private func card(_ file: ChatAttachment) -> some View {
+        HStack(spacing: 6) {
+            Image(systemName: "paperclip").foregroundStyle(.tint).accessibilityHidden(true)
+            Text(file.name).lineLimit(1).truncationMode(.tail)
+            Spacer(minLength: 0)
+            Text(ChatAttachmentPresentation.bytes(file.size)).foregroundStyle(.secondary).fixedSize()
+            if let remove {
+                Button { remove(file.path) } label: {
+                    Image(systemName: "xmark").frame(minWidth: 24, minHeight: 24).contentShape(Rectangle())
+                }
+                .buttonStyle(.borderless)
+                .accessibilityLabel("添付を外す：" + file.name)
+                .help("このメッセージの添付から外す")
+            }
+        }
+        .font(.caption).padding(.leading, 8).padding(.trailing, 2).padding(.vertical, 3)
+        .background(.quaternary, in: RoundedRectangle(cornerRadius: 6))
+        .help(file.path).accessibilityElement(children: .contain)
     }
 }
 
