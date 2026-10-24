@@ -20,6 +20,8 @@ import Observation
     private var drafts: [Int64: String] = [:]
     private var attachmentDrafts: [Int64: [ChatAttachment]] = [:]
     @ObservationIgnored private var draftRevisions: [Int64: UUID] = [:]
+    @ObservationIgnored private var ownerRevisions: [Int64: UUID] = [:]
+    @ObservationIgnored private var listRevision = UUID()
     @ObservationIgnored private var pendingSends: [Int64: PendingSend] = [:]
     private struct PendingSend {
         let text: String?
@@ -66,6 +68,22 @@ import Observation
         let current = attachments(for: id), paths = Set(current.map(\.id))
         attachmentDrafts[id] = pending.attachments.filter { !paths.contains($0.id) } + current
     }
+    func draftRevision(for id: Int64?) -> UUID? { draftRevisions[id ?? 0] }
+    func handoffDraft(_ text: String, to id: Int64, sourceRevision: UUID?) {
+        if draftRevisions[id] == nil { setDraft(text, for: id) }
+        if draftRevisions[0] == sourceRevision { setDraft("", for: nil) }
+    }
+    func registerCreatedConversation(_ conversation: ChatConversation) {
+        listRevision = UUID()
+        if !conversations.contains(where: { $0.id == conversation.id }) { conversations.insert(conversation, at: 0) }
+    }
+    func forgetConversation(_ id: Int64) {
+        ownerRevisions[id] = UUID(); listRevision = UUID()
+        drafts.removeValue(forKey: id); draftRevisions.removeValue(forKey: id)
+        attachmentDrafts.removeValue(forKey: id); pendingSends.removeValue(forKey: id)
+        mutationErrors.removeValue(forKey: id); sendingIDs.remove(id); stoppingIDs.remove(id)
+        conversations.removeAll { $0.id == id }
+    }
     public var isSending: Bool { selectedID.map(sendingIDs.contains) ?? false }
     public var isStopping: Bool { selectedID.map(stoppingIDs.contains) ?? false }
     public var mutationError: String? { selectedID.flatMap { mutationErrors[$0] } }
@@ -84,11 +102,12 @@ import Observation
     }
     public func refreshList() async {
         guard !isLoadingList else { return }
-        let ticket = lifetime; isLoadingList = true
+        let ticket = lifetime, revision = listRevision; isLoadingList = true
         defer { if ticket == lifetime { isLoadingList = false } }
         do {
             let items = try await service.conversations()
             guard ticket == lifetime, !Task.isCancelled else { return }
+            guard revision == listRevision else { return }
             conversations = items; listError = nil
             // A stale false list snapshot must not terminate the selected transcript tail.
             if let id = selectedID, !running, items.first(where: { $0.id == id })?.isRunning == true {
@@ -169,17 +188,17 @@ import Observation
         guard let id = selectedID, hasLoadedHistory, !isLoadingHistory, !sendingIDs.contains(id) else { return false }
         let submitted = submittedMessage ?? drafts[id] ?? "", cards = attachments(for: id)
         guard !submitted.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty || !cards.isEmpty else { return false }
-        let ticket = lifetime
+        let ticket = lifetime, owner = ownerRevisions[id]
         let clearsText = draft(for: id).utf8.elementsEqual(submitted.utf8)
         if clearsText { setDraft("", for: id) }
         pendingSends[id] = PendingSend(text: clearsText ? submitted : nil,
             clearedTextRevision: clearsText ? draftRevisions[id] : nil, attachments: cards)
         attachmentDrafts[id] = []
         sendingIDs.insert(id); mutationErrors[id] = nil
-        defer { if ticket == lifetime { sendingIDs.remove(id) } }
+        defer { if ticket == lifetime, owner == ownerRevisions[id] { sendingIDs.remove(id) } }
         do {
             try await service.send(id: id, message: submitted, attachments: cards)
-            guard ticket == lifetime else { return false }
+            guard ticket == lifetime, owner == ownerRevisions[id] else { return false }
             guard !Task.isCancelled else { restorePendingSend(id); return false }
             pendingSends.removeValue(forKey: id)
             if selectedID == id { requireTailReconciliation(newTurn: true); stopStatus = nil }
@@ -188,7 +207,7 @@ import Observation
             if ticket == lifetime, !Task.isCancelled, selectedID == id { await refreshDelta() }
             return true
         } catch {
-            if ticket == lifetime {
+            if ticket == lifetime, owner == ownerRevisions[id] {
                 restorePendingSend(id)
                 if !Task.isCancelled, !(error is CancellationError) { mutationErrors[id] = safeMessage(error) }
             }
@@ -197,15 +216,15 @@ import Observation
     }
     public func requestStop() async -> Bool {
         guard let id = selectedID, !stoppingIDs.contains(id) else { return false }
-        let ticket = lifetime; stoppingIDs.insert(id); mutationErrors[id] = nil
-        defer { if ticket == lifetime { stoppingIDs.remove(id) } }
+        let ticket = lifetime, owner = ownerRevisions[id]; stoppingIDs.insert(id); mutationErrors[id] = nil
+        defer { if ticket == lifetime, owner == ownerRevisions[id] { stoppingIDs.remove(id) } }
         do {
             let status = try await service.stop(id: id)
-            guard ticket == lifetime, !Task.isCancelled else { return false }
+            guard ticket == lifetime, owner == ownerRevisions[id], !Task.isCancelled else { return false }
             if selectedID == id { stopStatus = status; requireTailReconciliation(); await refreshDelta() }
             return true
         } catch {
-            if ticket == lifetime, !Task.isCancelled, !(error is CancellationError) { mutationErrors[id] = safeMessage(error) }
+            if ticket == lifetime, owner == ownerRevisions[id], !Task.isCancelled, !(error is CancellationError) { mutationErrors[id] = safeMessage(error) }
             return false
         }
     }
@@ -241,7 +260,8 @@ import Observation
     public func reset() {
         stop(); conversations = []; selectedID = nil; messages = []; cursor = 0
         hasLoadedHistory = false; hasMore = false; listError = nil; transcriptError = nil
-        drafts = [:]; draftRevisions = [:]; attachmentDrafts = [:]; pendingSends = [:]
+        drafts = [:]; draftRevisions = [:]; ownerRevisions = [:]; listRevision = UUID()
+        attachmentDrafts = [:]; pendingSends = [:]
         mutationErrors = [:]; needsTailReconciliation = false
     }
 }

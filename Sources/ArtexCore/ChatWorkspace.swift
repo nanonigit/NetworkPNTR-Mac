@@ -17,6 +17,27 @@ public enum ChatSendPolicy {
     }
 }
 
+private struct WorkspaceUploadResult: Sendable {
+    let conversationID: Int64
+    let created: ChatConversation?
+    let attachments: [ChatAttachment]
+}
+@MainActor private final class WorkspaceUploadOperation {
+    let id = UUID()
+    let origin: Int64
+    var target: Int64?
+    var worker: Task<WorkspaceUploadResult, Error>?
+    var pump: Task<Void, Never>?
+    let stream: AsyncStream<BackendUploadProgress>
+    let continuation: AsyncStream<BackendUploadProgress>.Continuation
+    init(origin: Int64, target: Int64?) {
+        self.origin = origin; self.target = target
+        let channel = AsyncStream<BackendUploadProgress>.makeStream(bufferingPolicy: .bufferingNewest(1))
+        stream = channel.stream; continuation = channel.continuation
+    }
+    func cancel() { worker?.cancel(); pump?.cancel(); continuation.finish() }
+}
+
 @MainActor @Observable public final class ChatWorkspace {
     public let transcript: ChatStore
     public let mentionService: ChatMentionService
@@ -27,6 +48,10 @@ public enum ChatSendPolicy {
     public private(set) var busy = false
     public private(set) var loading = false
     public private(set) var error: String?
+    private var uploadStates: [Int64: ChatAttachmentUploadState] = [:]
+    private var uploadErrors: [Int64: String] = [:]
+    @ObservationIgnored private var uploadOperations: [Int64: WorkspaceUploadOperation] = [:]
+    @ObservationIgnored private var deletingIDs: Set<Int64> = []
     @ObservationIgnored private let client: any BackendJSONTransport
     @ObservationIgnored private let service: ChatService
     @ObservationIgnored private var lifetime = UUID()
@@ -61,7 +86,7 @@ public enum ChatSendPolicy {
         await transcript.select(id: id)
     }
     public func send() async -> Bool {
-        guard !busy, !transcript.draft.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty || !transcript.attachments.isEmpty else { return false }
+        guard !busy, !isUploading, !transcript.draft.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty || !transcript.attachments.isEmpty else { return false }
         if transcript.selectedID != nil { return await transcript.sendCurrentDraft() }
         guard !agentKey.isEmpty else { return false }
         let life = lifetime; let ticket = selection; let submitted = transcript.draft
@@ -82,6 +107,96 @@ public enum ChatSendPolicy {
             return false
         }
     }
+    public var isUploading: Bool { uploadState(for: transcript.selectedID) != nil }
+    public var uploadError: String? { uploadErrors[transcript.selectedID ?? 0] }
+    public func uploadState(for id: Int64?) -> ChatAttachmentUploadState? {
+        let key = id ?? 0
+        return uploadStates[key] ?? uploadStates.values.first { $0.conversationID == id && id != nil }
+    }
+    public func cancelUpload(for id: Int64?) {
+        let key = id ?? 0
+        for operation in Array(uploadOperations.values) where operation.origin == key || operation.target == id && id != nil {
+            operation.cancel(); finishUpload(origin: operation.origin, id: operation.id)
+        }
+    }
+    private func finishUpload(origin: Int64, id: UUID) {
+        guard let operation = uploadOperations[origin], operation.id == id else { return }
+        operation.pump?.cancel(); operation.continuation.finish()
+        uploadOperations.removeValue(forKey: origin); uploadStates.removeValue(forKey: origin)
+    }
+    private func noteCreatedUpload(_ conversation: ChatConversation, origin: Int64, id: UUID, life: UUID) -> Bool {
+        guard life == lifetime, let operation = uploadOperations[origin], operation.id == id,
+              !deletingIDs.contains(conversation.id), operation.worker?.isCancelled != true else { return false }
+        operation.target = conversation.id
+        uploadStates[origin] = ChatAttachmentUploadState(operationID: id, conversationID: conversation.id, progress: uploadStates[origin]?.progress)
+        uploadErrors[conversation.id] = nil
+        transcript.registerCreatedConversation(conversation)
+        return true
+    }
+    private func receiveUploadProgress(_ value: BackendUploadProgress, origin: Int64, id: UUID, life: UUID) {
+        guard life == lifetime, let operation = uploadOperations[origin], operation.id == id,
+              operation.worker?.isCancelled != true, !Task.isCancelled else { return }
+        uploadStates[origin] = ChatAttachmentUploadState(operationID: id, conversationID: operation.target, progress: value)
+    }
+    public func pickFiles(_ files: [URL]) async -> Bool {
+        let originID = transcript.selectedID, origin = originID ?? 0
+        guard !Task.isCancelled, !files.isEmpty, !busy, !isUploading, !transcript.isSending,
+              !deletingIDs.contains(origin), originID != nil || !agentKey.isEmpty else { return false }
+        guard let uploader = client as? any ChatAttachmentUploading else {
+            uploadErrors[origin] = "この接続では添付ファイルを転送できません。"; return false
+        }
+        let life = lifetime, selected = selection, capturedText = transcript.draft(for: nil)
+        let capturedRevision = transcript.draftRevision(for: nil), agent = agentKey, profile = draftProfileID
+        let operation = WorkspaceUploadOperation(origin: origin, target: originID)
+        let identifier = operation.id, stream = operation.stream, continuation = operation.continuation
+        uploadOperations[origin] = operation; uploadErrors[origin] = nil
+        uploadStates[origin] = ChatAttachmentUploadState(operationID: identifier, conversationID: originID, progress: nil)
+        let createdCallback: @MainActor @Sendable (ChatConversation) -> Bool = { [weak self] conversation in
+            self?.noteCreatedUpload(conversation, origin: origin, id: identifier, life: life) ?? false
+        }
+        let service = service
+        let worker = Task { @MainActor in
+            try Task.checkCancellation()
+            let created: ChatConversation?
+            if originID == nil {
+                let conversation = try await service.create(agentKey: agent, profileID: profile)
+                try Task.checkCancellation()
+                guard createdCallback(conversation) else { throw CancellationError() }
+                created = conversation
+            } else { created = nil }
+            guard let target = originID ?? created?.id else { throw BackendAPIError.invalidResponse }
+            let attachments = try await uploader.uploadAttachments(conversationID: target, files: files, progress: { continuation.yield($0) })
+            try Task.checkCancellation()
+            guard !attachments.isEmpty, attachments.count == files.count else { throw BackendAPIError.invalidResponse }
+            return WorkspaceUploadResult(conversationID: target, created: created, attachments: attachments)
+        }
+        operation.worker = worker
+        operation.pump = Task { @MainActor [weak self] in
+            for await value in stream { self?.receiveUploadProgress(value, origin: origin, id: identifier, life: life) }
+        }
+        defer { finishUpload(origin: origin, id: identifier) }
+        do {
+            let result = try await withTaskCancellationHandler { try await worker.value } onCancel: { worker.cancel(); continuation.finish() }
+            guard life == lifetime, uploadOperations[origin]?.id == identifier, !Task.isCancelled,
+                  !deletingIDs.contains(result.conversationID) else { return false }
+            try transcript.appendAttachments(result.attachments, for: result.conversationID)
+            if result.created != nil {
+                let sameSelection = selected == selection && transcript.selectedID == nil
+                let text = sameSelection ? transcript.draft(for: nil) : capturedText
+                let revision = sameSelection ? transcript.draftRevision(for: nil) : capturedRevision
+                transcript.handoffDraft(text, to: result.conversationID, sourceRevision: revision)
+                if sameSelection { await transcript.select(id: result.conversationID) }
+            }
+            await transcript.refreshList()
+            return life == lifetime && !Task.isCancelled
+        } catch {
+            if life == lifetime, uploadOperations[origin]?.id == identifier, !Task.isCancelled, !(error is CancellationError) {
+                let text = message(error); uploadErrors[origin] = text
+                if let target = operation.target { uploadErrors[target] = text }
+            }
+            return false
+        }
+    }
     private func mutate(_ operation: () async throws -> Void) async {
         guard !busy else { return }
         let ticket = lifetime; busy = true; error = nil
@@ -98,16 +213,24 @@ public enum ChatSendPolicy {
     public func delete(ids: [Int64]) async -> [ChatDeleteResult] {
         guard !busy else { return [] }
         let ticket = lifetime; busy = true; error = nil
-        defer { if ticket == lifetime { busy = false } }
+        deletingIDs.formUnion(ids)
+        for id in ids { cancelUpload(for: id) }
+        defer { if ticket == lifetime { busy = false; deletingIDs.subtract(ids) } }
         do {
             let result = try await service.deleteBatch(ids: ids)
             guard ticket == lifetime, !Task.isCancelled else { return [] }
-            if result.contains(where: { $0.ok && $0.id == transcript.selectedID }) { await select(nil) }
+            let removedSelection = result.contains { $0.ok && $0.id == transcript.selectedID }
+            for item in result where item.ok { transcript.forgetConversation(item.id); uploadErrors[item.id] = nil }
+            if removedSelection { await select(nil) }
             if result.contains(where: { !$0.ok }) { error = "一部の会話を削除できませんでした。残った会話を確認してください。" }
             await transcript.refreshList()
             return result
         } catch { if ticket == lifetime, !Task.isCancelled { self.error = message(error) }; return [] }
     }
     public func detail(id: Int64, sequence: Int64) async throws -> String { try await service.detail(id: id, sequence: sequence) }
-    public func stop() { lifetime = UUID(); selection = UUID(); busy = false; loading = false; transcript.stop() }
+    public func stop() {
+        for operation in Array(uploadOperations.values) { operation.cancel(); finishUpload(origin: operation.origin, id: operation.id) }
+        lifetime = UUID(); selection = UUID(); deletingIDs = []; busy = false; loading = false; transcript.stop()
+    }
+    public func reset() { stop(); transcript.reset(); uploadErrors = [:]; error = nil }
 }

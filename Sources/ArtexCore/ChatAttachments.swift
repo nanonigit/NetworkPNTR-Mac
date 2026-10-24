@@ -42,3 +42,9 @@ public extension ChatAttachmentUploading {
         try await uploadAttachments(conversationID: conversationID, files: files, progress: nil)
     }
 }
+
+public struct ChatAttachmentUploadState: Sendable {
+    public let operationID: UUID
+    public let conversationID: Int64?
+    public let progress: BackendUploadProgress?
+}
