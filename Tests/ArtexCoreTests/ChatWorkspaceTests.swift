@@ -106,6 +106,20 @@ final class ChatWorkspaceTests: XCTestCase {
         XCTAssertEqual(workspace.transcript.selectedID,7); XCTAssertNotNil(workspace.error)
         XCTAssertFalse(workspace.busy)
     }
+    @MainActor func testExistingConversationAttachmentOnlySendReachesServer() async throws {
+        let api = ChatTestTransport(), workspace = ChatWorkspace(client: api)
+        try api.enqueue(ChatFixture.page([],cursor:0)); await workspace.select(7)
+        try workspace.transcript.appendAttachments([ChatAttachment(name:"a",path:"uploads/a",size:1)], for:7)
+        api.handler = { call in
+            if call.method == "POST" { return try ChatTestTransport.response(["status":"accepted"],status:202) }
+            if call.path == "/api/conversations" { return try ChatTestTransport.response(["conversations":[ChatFixture.conversation()]]) }
+            return try ChatTestTransport.response(ChatFixture.page([],cursor:0))
+        }
+        let accepted = await workspace.send()
+        XCTAssertTrue(accepted)
+        XCTAssertTrue(workspace.transcript.attachments.isEmpty)
+        XCTAssertTrue(api.calls.contains { $0.method == "POST" && $0.path == "/api/conversations/7/messages" })
+    }
     func testSendKeyPolicyPreservesIMEAndBothModes() {
         XCTAssertTrue(ChatSendPolicy.shouldSend(mode: "enter", shift: false, control: false, command: false, composing: false))
         XCTAssertFalse(ChatSendPolicy.shouldSend(mode: "enter", shift: true, control: false, command: false, composing: false))

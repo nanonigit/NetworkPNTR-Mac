@@ -107,6 +107,18 @@ final class ChatAttachmentStoreTests: XCTestCase {
             XCTAssertEqual(store.attachments(for: 7), reset ? [] : [file])
         }
     }
+    @MainActor func testCanonicallyEquivalentNewDraftIsNotClearedByOlderSubmittedText() async throws {
+        let api = ChatTestTransport(), store = try await store(api)
+        let older = "\u{E9}", newer = "e\u{301}"
+        store.draft = newer
+        var reply: CheckedContinuation<BackendHTTPResponse, Error>?
+        api.handler = { _ in try await withCheckedThrowingContinuation { reply = $0 } }
+        let pending = Task { await store.sendCurrentDraft(submittedMessage: older) }; await waitFor { reply != nil }
+        XCTAssertTrue(store.draft.utf8.elementsEqual(newer.utf8))
+        reply?.resume(returning: try ChatTestTransport.response(["error":"private"],status:503))
+        let accepted = await pending.value; XCTAssertFalse(accepted)
+        XCTAssertTrue(store.draft.utf8.elementsEqual(newer.utf8))
+    }
     @MainActor func testEditedThenClearedDraftDoesNotGetOldMessageRestored() async throws {
         let api = ChatTestTransport(), store = try await store(api)
         store.draft = "old"
