@@ -109,3 +109,5 @@ L4aエラー基盤：ネイティブの静的検証文字列をBackendValidation
 L4a検証済み：ea39007の意図した未実装表示／理由RED→a3f7681 GREEN3。全Swift243（成功242・既存AX1スキップ）、Python52、表示ヘルパー行26/26・領域21/21。最終署名同梱は各言語29項目一致、レビュー済み。store／UI言語接続は未完了。bugs/error-localization-investigation.ja.mdを参照。
 
 L4b Chatエラー：storeは安全な型付きAppErrorMessageを保持し、viewの現在localeで表示。view再作成・リクエスト発行・本文／添付／選択変更をしない。診断／旧試験向け日本語Stringは計算プロパティで互換保持。一覧／履歴／送信／停止／workspace／添付／部分削除／引用ページング／本文／詳細を対象とし、キャンセル・世代・所有者判定を維持。未知のエラーはraw情報を保持せず型付きfallbackへ縮退。store RED/GREEN・全試験・レビュー・署名・実native/browser失敗送信中の言語比較を別ゲートとする。Lazyweb検索chat error retry messageは隣接DoorDashメタデータのみ（類似度.385）で視覚証拠とせず、固定版のエラーUIを基準にする。
+
+L4bチェックポイント：96eae3e型付きstore未実装RED→0796897 GREEN3。Swift246（成功245・既存AX1スキップ）、Python52、安全な値の行13/13・領域11/11。署名アプリと各言語33エラー項目一致、レビュー済み。ユーザーはMac解除を後で行うため、実native/browser失敗送信中の言語UIゲートは未完了。新規runtime fixtureは未開始。localization-chat-errors-verification.ja.md参照。

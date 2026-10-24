@@ -1,0 +1,16 @@
+{
+  "red": "96eae3e",
+  "source": "0796897",
+  "swift_cases": 246,
+  "swift_passed": 245,
+  "swift_skipped": 1,
+  "python_passed": 52,
+  "signed_bundle_error_entries_verified": {
+    "en": 33,
+    "ja": 33
+  },
+  "review": "approved",
+  "actual_native_browser_error_switch": "pending; Mac locked and user chose later unlock",
+  "new_runtime_fixture_started": false,
+  "whole_app_or_language_acceptance": false
+}
