@@ -10,6 +10,7 @@ import XCTest
 }
 @MainActor private final class CancellationFixtureAPI: BackendJSONTransport, BackendMultipartTransport {
     var acceptsCancelledUpload = false
+    var failsBeforeStop = false
     var uploads = 0
     var stopped: CheckedContinuation<BackendHTTPResponse, Error>?
     var cleanup: [String] = []
@@ -32,12 +33,13 @@ import XCTest
     func upload(conversationID: Int64, files: [URL], bearer: String, progress: BackendUploadProgressHandler?) async throws -> BackendHTTPResponse {
         uploads += 1
         let plan = try ChatMultipartPlan(files: files)
-        progress?(BackendUploadProgress(sentBodyBytes: 65536, totalBodyBytes: plan.contentLength))
+        progress?(BackendUploadProgress(sentBodyBytes: 1024 * 1024, totalBodyBytes: plan.contentLength))
         if acceptsCancelledUpload { return try json(["attachments":[]]) }
         if uploads == 1 {
             try await Task.sleep(for: .seconds(30))
             throw BackendAPIError.invalidResponse
         }
+        if failsBeforeStop { throw BackendAPIError.status(503) }
         return try await withCheckedThrowingContinuation { stopped = $0 }
     }
 }
@@ -61,6 +63,22 @@ final class NativeUploadCancellationDiagnosticsTests: XCTestCase {
         XCTAssertEqual(report["owned_files_and_conversation_cleaned"] as? Bool, true)
         XCTAssertNotNil(report["task_cancel"]); XCTAssertNotNil(report["vm_stop"])
         XCTAssertFalse(FileManager.default.fileExists(atPath: root.appendingPathComponent("upload-cancellation-selected").path))
+    }
+    @MainActor func testPreStopTransferFailureCannotBeCountedAsVMInterruption() async throws {
+        let root = FileManager.default.temporaryDirectory.appendingPathComponent("artex-pre-stop-failure-" + UUID().uuidString)
+        try FileManager.default.createDirectory(at: root, withIntermediateDirectories: true)
+        defer { try? FileManager.default.removeItem(at: root) }
+        let api = CancellationFixtureAPI(); api.failsBeforeStop = true
+        let session = AuthenticationSession(client: api, vault: CancellationFixtureVault(), setupToken: "fixture")
+        await session.refresh()
+        var stopCalls = 0
+        do {
+            _ = try await NativeUploadCancellationDiagnostics.run(session: session, directory: root, stopAndRestart: { stopCalls += 1; return session })
+            XCTFail("Pre-stop HTTP failure accepted")
+        } catch { }
+        XCTAssertEqual(stopCalls, 0)
+        XCTAssertEqual(api.cleanup, ["files", "conversation"])
+        XCTAssertFalse(FileManager.default.fileExists(atPath: root.appendingPathComponent("upload-cancellation-vm.json").path))
     }
     @MainActor func testUnexpectedUploadSuccessFailsAndStillCleansOwnedFixture() async throws {
         let root = FileManager.default.temporaryDirectory.appendingPathComponent("artex-cancel-failure-" + UUID().uuidString)
