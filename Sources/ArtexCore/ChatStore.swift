@@ -71,6 +71,8 @@ import Observation
     func draftRevision(for id: Int64?) -> UUID? { draftRevisions[id ?? 0] }
     func handoffDraft(_ text: String, to id: Int64, sourceRevision: UUID?) {
         if draftRevisions[id] == nil { setDraft(text, for: id) }
+        // Clear the source only when its text is actually represented at the target.
+        guard draft(for: id).utf8.elementsEqual(text.utf8) else { return }
         if draftRevisions[0] == sourceRevision { setDraft("", for: nil) }
     }
     func registerCreatedConversation(_ conversation: ChatConversation) {
