@@ -260,6 +260,18 @@
 	<string>Traffic</string>
 	<key>feature.workspace</key>
 	<string>Workspace</string>
+	<key>llm.noticeActivated</key>
+	<string>Active model configuration changed.</string>
+	<key>llm.noticeDeleted</key>
+	<string>Model configuration deleted.</string>
+	<key>llm.noticePoolReset</key>
+	<string>Rotation state recovered.</string>
+	<key>llm.noticeRetrySaved</key>
+	<string>Retry settings saved.</string>
+	<key>llm.noticeRotationSaved</key>
+	<string>Rotation settings saved.</string>
+	<key>llm.noticeSaved</key>
+	<string>Model configuration saved.</string>
 	<key>shell.account</key>
 	<string>Account</string>
 	<key>shell.authPreparation</key>

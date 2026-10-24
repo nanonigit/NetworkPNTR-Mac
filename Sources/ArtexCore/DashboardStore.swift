@@ -4,7 +4,8 @@ import Observation
 public struct DashboardLoadState<Value: Sendable>: Sendable {
     public var value: Value?
     public var isLoading = false
-    public var error: String?
+    public var error: String? { failure?.text(language: .japanese) }
+    public var failure: AppErrorMessage?
     public var updatedAt: Date?
 }
 
@@ -33,9 +34,9 @@ public struct DashboardLoadState<Value: Sendable>: Sendable {
         do {
             let value = try await service.tasks()
             guard ticket == generation, !Task.isCancelled else { return }
-            tasks.value = value; tasks.error = nil; tasks.updatedAt = Date()
+            tasks.value = value; tasks.failure = nil; tasks.updatedAt = Date()
         } catch {
-            if ticket == generation, !Task.isCancelled { tasks.error = error.localizedDescription }
+            if ticket == generation, !Task.isCancelled { tasks.failure = AppErrorMessage(error) }
         }
     }
     public func refreshFast() async {
@@ -45,9 +46,9 @@ public struct DashboardLoadState<Value: Sendable>: Sendable {
         do {
             let value = try await service.fast()
             guard ticket == generation, !Task.isCancelled else { return }
-            fast.value = value; fast.error = nil; fast.updatedAt = Date()
+            fast.value = value; fast.failure = nil; fast.updatedAt = Date()
         } catch {
-            if ticket == generation, !Task.isCancelled { fast.error = error.localizedDescription }
+            if ticket == generation, !Task.isCancelled { fast.failure = AppErrorMessage(error) }
         }
     }
     public func refreshSlow() async {
@@ -57,9 +58,9 @@ public struct DashboardLoadState<Value: Sendable>: Sendable {
         do {
             let value = try await service.slow()
             guard ticket == generation, !Task.isCancelled else { return }
-            slow.value = value; slow.error = nil; slow.updatedAt = Date()
+            slow.value = value; slow.failure = nil; slow.updatedAt = Date()
         } catch {
-            if ticket == generation, !Task.isCancelled { slow.error = error.localizedDescription }
+            if ticket == generation, !Task.isCancelled { slow.failure = AppErrorMessage(error) }
         }
     }
     public func refreshAll() async {

@@ -1,6 +1,13 @@
 import Foundation
 
 public enum AppStringKey: String, CaseIterable, Sendable {
+    case llmNoticeSaved = "llm.noticeSaved"
+    case llmNoticeActivated = "llm.noticeActivated"
+    case llmNoticeDeleted = "llm.noticeDeleted"
+    case llmNoticeRotationSaved = "llm.noticeRotationSaved"
+    case llmNoticePoolReset = "llm.noticePoolReset"
+    case llmNoticeRetrySaved = "llm.noticeRetrySaved"
+
     case errorUploadUnavailable = "error.uploadUnavailable"
     case errorPartialDelete = "error.partialDelete"
     case errorMentionSearch = "error.mentionSearch"

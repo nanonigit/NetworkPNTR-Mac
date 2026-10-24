@@ -2528,6 +2528,102 @@
           }
         }
       }
+    },
+    "llm.noticeSaved": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Model configuration saved."
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "モデル設定を保存しました。"
+          }
+        }
+      }
+    },
+    "llm.noticeActivated": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Active model configuration changed."
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "有効なモデル設定を変更しました。"
+          }
+        }
+      }
+    },
+    "llm.noticeDeleted": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Model configuration deleted."
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "モデル設定を削除しました。"
+          }
+        }
+      }
+    },
+    "llm.noticeRotationSaved": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Rotation settings saved."
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ローテーション設定を保存しました。"
+          }
+        }
+      }
+    },
+    "llm.noticePoolReset": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Rotation state recovered."
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ローテーションの状態を復旧しました。"
+          }
+        }
+      }
+    },
+    "llm.noticeRetrySaved": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Retry settings saved."
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "再試行の設定を保存しました。"
+          }
+        }
+      }
     }
   },
   "version": "1.0"

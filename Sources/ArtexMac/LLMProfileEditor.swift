@@ -2,12 +2,14 @@ import ArtexCore
 import SwiftUI
 
 @MainActor struct LLMProfileEditor: View {
+    @Environment(\.locale) private var locale
+    private var language: AppLanguage { AppLanguage.preferred(in: [locale.identifier]) }
     let store: LLMStore
     let context: LLMEditorContext
     @Environment(\.dismiss) private var dismiss
     @State private var draft: LLMProfileDraft
     @State private var numberErrors: Set<String> = []
-    @State private var error: String?
+    @State private var error: AppErrorMessage?
     @State private var testing = false
     @State private var loadingModels = false
     @State private var models: [String] = []
@@ -88,7 +90,7 @@ import SwiftUI
                 }
             }.formStyle(.grouped).disabled(busy)
             VStack(alignment: .leading, spacing: 10) {
-                if let error { Text(error).foregroundStyle(.red).textSelection(.enabled) }
+                if let error { Text(error.text(language: language)).foregroundStyle(.red).textSelection(.enabled) }
                 if let result = testResult {
                     Text("接続成功 · \(result.model ?? draft.model) · \((result.latencyMs ?? 0).formatted(.number.precision(.fractionLength(0))))ms").foregroundStyle(.green)
                     if let reply = result.reply { Text(reply).font(.caption).lineLimit(5).textSelection(.enabled) }
@@ -116,7 +118,7 @@ import SwiftUI
         Task {
             defer { loadingModels = false }
             do { models = try await store.service.models(snapshot); modelsOpen = true }
-            catch { self.error = error.localizedDescription }
+            catch { self.error = AppErrorMessage(error) }
         }
     }
     private func test() {
@@ -126,18 +128,20 @@ import SwiftUI
         Task {
             defer { testing = false }
             do { testResult = try await store.service.test(snapshot) }
-            catch { self.error = error.localizedDescription }
+            catch { self.error = AppErrorMessage(error) }
         }
     }
     private func save() {
         guard !busy, numberErrors.isEmpty else { return }
         let snapshot = draft
         error = nil
-        Task { if await store.save(snapshot) { draft.apiKey = ""; dismiss() } else { error = store.error } }
+        Task { if await store.save(snapshot) { draft.apiKey = ""; dismiss() } else { error = store.failure } }
     }
 }
 
 private struct LLMModelPicker: View {
+    @Environment(\.locale) private var locale
+    private var language: AppLanguage { AppLanguage.preferred(in: [locale.identifier]) }
     let models: [String]
     let select: (String) -> Void
     @State private var search = ""

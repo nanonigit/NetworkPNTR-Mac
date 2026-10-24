@@ -2,6 +2,8 @@ import ArtexCore
 import SwiftUI
 
 struct AuthenticationView: View {
+    @Environment(\.locale) private var locale
+    private var language: AppLanguage { AppLanguage.preferred(in: [locale.identifier]) }
     let session: AuthenticationSession
     @State private var password = ""
     @State private var confirmation = ""
@@ -19,13 +21,13 @@ struct AuthenticationView: View {
                 } else if session.phase == .unavailable {
                     Text("認証状態を確認できません").font(.title2.bold())
                     Text("データベースまたは通信の復旧後に再試行してください。").foregroundStyle(.secondary)
-                    if let error = session.error { Text(error).foregroundStyle(.red).textSelection(.enabled) }
+                    if let error = session.failure?.text(language: language) { Text(error).foregroundStyle(.red).textSelection(.enabled) }
                     Button("再試行") { Task { await session.refresh() } }.buttonStyle(.borderedProminent)
                 } else if session.phase == .authenticated {
                     Label("ログイン済み", systemImage: "checkmark.shield.fill").font(.title2).foregroundStyle(.green)
                     Text("専用VMのARTEXに接続しています。各機能は比較テストを通したものから順に移植します。").foregroundStyle(.secondary)
                     Button("ログアウト") { session.logout(); agreed = false }
-                    if let error = session.error { Text(error).foregroundStyle(.red) }
+                    if let error = session.failure?.text(language: language) { Text(error).foregroundStyle(.red) }
                 } else {
                     Text(setup ? "管理者パスワードを設定" : "ログイン").font(.title2.bold())
                     Text(setup ? "このMacの専用ARTEX環境にパスワードを設定します。初期設定トークンはアプリが安全に受け渡します。" : "ユーザー名はARTEXです。設定したパスワードを入力してください。")
@@ -49,7 +51,7 @@ struct AuthenticationView: View {
                                 Button("利用条件を読む") { showTerms = true }
                             }
                         }
-                        if let error = session.error { Text(error).foregroundStyle(.red).textSelection(.enabled).accessibilityIdentifier("auth-error") }
+                        if let error = session.failure?.text(language: language) { Text(error).foregroundStyle(.red).textSelection(.enabled).accessibilityIdentifier("auth-error") }
                         HStack {
                             Button(setup ? "パスワードを設定" : "ログイン", action: submit)
                                 .buttonStyle(.borderedProminent)
@@ -80,10 +82,12 @@ struct AuthenticationView: View {
 }
 
 private struct TermsView: View {
+    @Environment(\.locale) private var locale
+    private var language: AppLanguage { AppLanguage.preferred(in: [locale.identifier]) }
     @Binding var agreed: Bool
     @Environment(\.dismiss) private var dismiss
     @State private var terms: [String: String] = [:]
-    @State private var error: String?
+    @State private var error: AppErrorMessage?
     @State private var readToEnd = false
     var body: some View {
         VStack(alignment: .leading, spacing: 16) {
@@ -106,7 +110,7 @@ private struct TermsView: View {
             .onScrollGeometryChange(for: Bool.self) { geometry in
                 geometry.contentOffset.y + geometry.containerSize.height >= geometry.contentSize.height - 8
             } action: { _, atEnd in if atEnd { readToEnd = true } }
-            if let error { Text(error).foregroundStyle(.red) }
+            if let error { Text(error.text(language: language)).foregroundStyle(.red) }
             HStack {
                 Button("閉じる") { dismiss() }
                 Spacer()
@@ -114,6 +118,6 @@ private struct TermsView: View {
                 Button(terms["agreeButton"] ?? "同意する") { agreed = true; dismiss() }.disabled(!readToEnd || terms.isEmpty).buttonStyle(.borderedProminent)
             }
         }.padding(24).frame(width: 620, height: 600)
-        .task { do { terms = try AuthTerms.load() } catch { self.error = error.localizedDescription } }
+        .task { do { terms = try AuthTerms.load() } catch { self.error = AppErrorMessage(error) } }
     }
 }

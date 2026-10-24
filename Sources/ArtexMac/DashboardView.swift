@@ -2,6 +2,8 @@ import ArtexCore
 import SwiftUI
 
 struct DashboardView: View {
+    @Environment(\.locale) private var locale
+    private var language: AppLanguage { AppLanguage.preferred(in: [locale.identifier]) }
     @State private var store: DashboardStore
     let navigate: (DashboardDestination) -> Void
     init(session: AuthenticationSession, navigate: @escaping (DashboardDestination) -> Void) {
@@ -46,7 +48,7 @@ struct DashboardView: View {
         .onDisappear { store.stop() }
     }
     @ViewBuilder private func loadStatus<T>(_ title: String, state: DashboardLoadState<T>) -> some View {
-        if let error = state.error {
+        if let error = state.failure?.text(language: language) {
             VStack(alignment: .leading, spacing: 4) {
                 Label(title + "：" + error, systemImage: "exclamationmark.triangle").foregroundStyle(.red)
                 if let updatedAt = state.updatedAt {
@@ -76,6 +78,8 @@ struct DashboardView: View {
 
 enum DashboardDestination { case feature(String), task(String) }
 struct DashboardSummaryCard: View {
+    @Environment(\.locale) private var locale
+    private var language: AppLanguage { AppLanguage.preferred(in: [locale.identifier]) }
     let title: String
     let value: String?
     let detail: String?

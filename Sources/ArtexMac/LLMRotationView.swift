@@ -2,6 +2,8 @@ import ArtexCore
 import SwiftUI
 
 @MainActor struct LLMRotationView: View {
+    @Environment(\.locale) private var locale
+    private var language: AppLanguage { AppLanguage.preferred(in: [locale.identifier]) }
     let store: LLMStore
     @Environment(\.dismiss) private var dismiss
     private var busy: Bool { store.isLoading || store.isMutating }
@@ -43,7 +45,7 @@ import SwiftUI
                     }
                 }
             } else { Spacer() }
-            if let error = store.error { Text(error).foregroundStyle(.red) }
+            if let error = store.failure?.text(language: language) { Text(error).foregroundStyle(.red) }
             HStack { if busy { ProgressView().controlSize(.small) }; Spacer(); Button("閉じる") { dismiss() }.keyboardShortcut(.cancelAction) }
         }.padding(24).frame(width: 630, height: 680)
         .task {

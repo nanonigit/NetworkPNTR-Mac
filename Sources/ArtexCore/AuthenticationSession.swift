@@ -5,7 +5,8 @@ public enum AuthenticationPhase: String, Sendable { case checking, needsSetup, n
 
 @MainActor @Observable public final class AuthenticationSession {
     public private(set) var phase: AuthenticationPhase = .checking
-    public private(set) var error: String?
+    public var error: String? { failure?.text(language: .japanese) }
+    public private(set) var failure: AppErrorMessage?
     public private(set) var isBusy = false
     @ObservationIgnored private let client: any BackendJSONTransport
     @ObservationIgnored private let vault: any SessionVault
@@ -20,7 +21,7 @@ public enum AuthenticationPhase: String, Sendable { case checking, needsSetup, n
     }
     public func refresh() async {
         guard !isBusy else { return }
-        isBusy = true; error = nil; token = nil; advanceRevision(); phase = .checking
+        isBusy = true; failure = nil; token = nil; advanceRevision(); phase = .checking
         defer { isBusy = false }
         do {
             let status: Status = try await request(method: "GET", path: "/api/auth/status")
@@ -34,7 +35,7 @@ public enum AuthenticationPhase: String, Sendable { case checking, needsSetup, n
                 else if response.status == 401 { try vault.remove(); phase = .needsLogin }
                 else { throw BackendAPIError.status(response.status) }
             } else { phase = .needsLogin }
-        } catch { phase = .unavailable; self.error = error.localizedDescription }
+        } catch { phase = .unavailable; self.failure = AppErrorMessage(error) }
     }
     public func setup(password: String, confirmation: String) async {
         guard !isBusy, phase == .needsSetup else { return }
@@ -42,31 +43,31 @@ public enum AuthenticationPhase: String, Sendable { case checking, needsSetup, n
             guard password == confirmation else { throw BackendAPIError.validation(.passwordMismatch) }
             guard password.unicodeScalars.count >= 8 else { throw BackendAPIError.validation(.passwordShort) }
             guard password.utf8.count <= 72 else { throw BackendAPIError.validation(.passwordBytes) }
-            isBusy = true; error = nil
+            isBusy = true; failure = nil
             defer { isBusy = false }
             let body = try JSONSerialization.data(withJSONObject: ["password": password, "setup_token": setupToken])
             let session: Session = try await request(method: "POST", path: "/api/auth/init", body: body)
             // The server has created the account even if secure storage subsequently fails.
             phase = .needsLogin
             try accept(session.token)
-        } catch { self.error = error.localizedDescription }
+        } catch { self.failure = AppErrorMessage(error) }
     }
     public func login(password: String, agreed: Bool) async {
         guard !isBusy, phase == .needsLogin else { return }
         do {
             guard agreed else { throw BackendAPIError.validation(.termsRequired) }
             guard !password.isEmpty else { throw BackendAPIError.validation(.passwordRequired) }
-            isBusy = true; error = nil
+            isBusy = true; failure = nil
             defer { isBusy = false }
             let body = try JSONSerialization.data(withJSONObject: ["username": "ARTEX", "password": password])
             let session: Session = try await request(method: "POST", path: "/api/auth/login", body: body)
             try accept(session.token)
-        } catch { self.error = error.localizedDescription }
+        } catch { self.failure = AppErrorMessage(error) }
     }
     public func logout() {
         guard !isBusy else { return }
-        do { try vault.remove(); token = nil; advanceRevision(); phase = .needsLogin; error = nil }
-        catch { self.error = error.localizedDescription }
+        do { try vault.remove(); token = nil; advanceRevision(); phase = .needsLogin; failure = nil }
+        catch { self.failure = AppErrorMessage(error) }
     }
     public func authenticatedRequest(method: String, path: String, body: Data? = nil) async throws -> BackendHTTPResponse {
         guard phase == .authenticated, let token else { throw BackendAPIError.status(401) }
@@ -123,7 +124,7 @@ public enum AuthenticationPhase: String, Sendable { case checking, needsSetup, n
     private func accept(_ value: String) throws {
         _ = try BackendHTTPRequest.make(method: "GET", path: "/api/auth/status", body: nil, bearer: value)
         try vault.save(value)
-        token = value; advanceRevision(); phase = .authenticated; error = nil
+        token = value; advanceRevision(); phase = .authenticated; failure = nil
     }
     private func request<T: Decodable>(method: String, path: String, body: Data? = nil) async throws -> T {
         let response = try await client.send(method: method, path: path, body: body, bearer: nil)

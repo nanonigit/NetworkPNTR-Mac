@@ -260,6 +260,18 @@
 	<string>トラフィック</string>
 	<key>feature.workspace</key>
 	<string>ワークスペース</string>
+	<key>llm.noticeActivated</key>
+	<string>有効なモデル設定を変更しました。</string>
+	<key>llm.noticeDeleted</key>
+	<string>モデル設定を削除しました。</string>
+	<key>llm.noticePoolReset</key>
+	<string>ローテーションの状態を復旧しました。</string>
+	<key>llm.noticeRetrySaved</key>
+	<string>再試行の設定を保存しました。</string>
+	<key>llm.noticeRotationSaved</key>
+	<string>ローテーション設定を保存しました。</string>
+	<key>llm.noticeSaved</key>
+	<string>モデル設定を保存しました。</string>
 	<key>shell.account</key>
 	<string>アカウント</string>
 	<key>shell.authPreparation</key>

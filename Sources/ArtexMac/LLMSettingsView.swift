@@ -2,12 +2,14 @@ import ArtexCore
 import SwiftUI
 
 @MainActor struct LLMSettingsView: View {
+    @Environment(\.locale) private var locale
+    private var language: AppLanguage { AppLanguage.preferred(in: [locale.identifier]) }
     @State private var store: LLMStore
     @State private var editor: LLMEditorContext?
     @State private var rotationOpen = false
     @State private var selectedTab = 0
     @State private var deleteCandidate: LLMProfile?
-    @State private var localError: String?
+    @State private var localError: AppErrorMessage?
     init(session: AuthenticationSession) {
         _store = State(initialValue: LLMStore(service: LLMService(client: AuthenticatedBackendClient(session: session))))
     }
@@ -25,11 +27,11 @@ import SwiftUI
                 Button("新規", systemImage: "plus") { editor = LLMEditorContext(draft: LLMProfileDraft(), keyHint: "") }
                 Button { Task { await store.load() } } label: { Image(systemName: "arrow.clockwise") }.help("再読み込み")
             }.disabled(busy)
-            if let error = localError ?? store.error {
+            if let error = (localError ?? store.failure)?.text(language: language) {
                 Label(error, systemImage: "exclamationmark.triangle").foregroundStyle(.red).textSelection(.enabled)
                 if store.hasLoaded { Text("前回取得した内容を表示しています。再読み込みしてください。").font(.caption).foregroundStyle(.secondary) }
             }
-            if let notice = store.notice { Text(notice).font(.callout).foregroundStyle(.green) }
+            if let key = store.noticeKey { Text(AppStrings.text(key, language: language)).font(.callout).foregroundStyle(.green) }
             if busy { ProgressView(store.isMutating ? "変更を保存しています" : "設定を読み込んでいます").controlSize(.small) }
             Picker("表示", selection: $selectedTab) {
                 Text("モデル設定").tag(0)
@@ -81,7 +83,7 @@ import SwiftUI
                 HStack {
                     Button("編集") {
                         do { editor = LLMEditorContext(draft: try LLMProfileDraft(profile: profile), keyHint: profile.apiKeyHint ?? ""); localError = nil }
-                        catch { localError = error.localizedDescription }
+                        catch { localError = AppErrorMessage(error) }
                     }
                     Button(profile.isDefault ? "有効" : "有効にする") { Task { await store.activate(profile) } }.disabled(profile.isDefault)
                     Spacer()
