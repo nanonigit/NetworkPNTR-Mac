@@ -45,6 +45,4 @@ VM内ARTEX/DB、永続化・認証付き通信、ネイティブ認証を実装�
 
 チャットの有限API・状態管理、基本CRUD 10グループ、データ入り履歴10グループを検証しました。署名付きアプリのVM再起動後も211件の履歴と詳細が復元できました。チャット基本画面を実装し一部比較済みですが、AI応答・実行中停止と全面的な合格は未完了です。[検証記録](docs/chat-verification.ja.md)を参照してください。
 
-添付バックエンドの最新確認: 署名付きネイティブVMと固定比較バックエンドで134,217,517バイト全内容のSHAが一致し、8契約群・Swift145件/Python42件が成功。添付UI、実VM転送中の取消/進捗、実行基盤の安定性は未完了。docs/chat-verification.ja.mdとevidence/chat/upload-hash-verification.jsonを参照。
-
-転送中断の確認: 署名付き実VMで大きい本文の途中取消/VM停止、停止時の稼働接続の原子的証拠、再起動認証、所有データ清掃に成功。Swift157件/Python42件と固定した全送信8契約群が成功。添付状態/picker/cards、ダウンロード取消、メモリ実測、起動安定性は未完了。docs/chat-verification.ja.mdを参照。
+添付の最新確認: 署名付きネイティブVMと固定比較バックエンドで134,217,517バイト全内容のSHAが一致。実VZで途中取消/VM停止、稼働接続の証拠、再起動認証、所有データ清掃も成功しました。Swift157件/Python42件と固定した全送信8契約群が成功。添付状態/picker/cards、ダウンロード取消、multipart退避後の取消、メモリ実測、起動安定性は未完了です。[検証記録](docs/chat-verification.ja.md)とevidence/chat/upload-progress-verification.jsonを参照してください。
