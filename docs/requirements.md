@@ -48,3 +48,5 @@ L2 shell gate: expose exactly English/日本語 in an always-accessible native p
 
 
 L3 Chat controls: localize native Chat list/header/composer, attachment card actions/progress/native file panel, transcript empty/loading/detail actions and mention controls in en/ja. Keep text/caret/IME, selected IDs, async generations and files unchanged on locale changes. Translate only byte-exact pinned builtin Auto/pentest names/descriptions under their known agent keys; preserve customized/unknown content. Existing conversation titles retain source data until provenance-aware new-title handling. Core error strings and backend output sync remain separate explicit gates.
+
+L4a error foundation: replace native static validation payload strings with typed BackendValidation values and a bilingual error presenter. Preserve existing Japanese LocalizedError compatibility during staged store migration. Explicit language lookup must not inspect OS preferences or stringify unknown errors. Status/Keychain numeric codes may be interpolated, but arbitrary server bodies/paths/secrets must never be presented. This infrastructure stage does not close UI error switching or R8.

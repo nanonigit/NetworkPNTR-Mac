@@ -27,3 +27,5 @@ L3 uses existing locale environment, typed AppStringKey chat entries in the sing
 
 
 L3 title safety discovery: pinned conversations.go:74/493 treats empty/Korean default title as the auto-title sentinel. Explicit localized creation titles would suppress first-message auto-naming. The proposed creation-title tests were withdrawn before any production implementation/checkpoint; do not count that missing-API probe as a valid product RED. Keep wire/default/auto-title semantics unchanged until a backend provenance-compatible migration is designed; never bulk-rewrite existing custom titles.
+
+L4a error foundation: replace native static validation payload strings with typed BackendValidation values and a bilingual error presenter. Preserve existing Japanese LocalizedError compatibility during staged store migration. Explicit language lookup must not inspect OS preferences or stringify unknown errors. Status/Keychain numeric codes may be interpolated, but arbitrary server bodies/paths/secrets must never be presented. This infrastructure stage does not close UI error switching or R8.
