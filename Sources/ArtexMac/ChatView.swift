@@ -121,7 +121,7 @@ struct ChatView: View {
     }
     private var composer: some View {
         VStack(alignment: .leading, spacing: 8) {
-            if let error = pickerError.map { s($0) } ?? workspace.uploadError ?? workspace.error ?? store.mutationError {
+            if let error = pickerError.map({ s($0) }) ?? workspace.uploadError ?? workspace.error ?? store.mutationError {
                 Label(error, systemImage: "exclamationmark.triangle").font(.callout).foregroundStyle(.red).textSelection(.enabled)
             }
             if !store.attachments.isEmpty {

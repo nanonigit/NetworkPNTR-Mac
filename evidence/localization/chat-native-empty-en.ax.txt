@@ -1,0 +1,76 @@
+Window: "Chat", App: ARTEX Mac.
+0 standard window Chat, Secondary Actions: Raise, ID: SwiftUI.WindowGroup<SwiftUI.ModifiedContent<SwiftUI.ModifiedContent<ArtexMac.RootView, SwiftUI._AppearanceActionModifier>, SwiftUI._FlexFrameLayout>>-1-AppWindow-1
+	1 split group SwiftUI.WindowGroup<SwiftUI.ModifiedContent<SwiftUI.ModifiedContent<ArtexMac.RootView, SwiftUI._AppearanceActionModifier>, SwiftUI._FlexFrameLayout>>-1-AppWindow-1, SidebarNavigationSplitView
+		2 container
+			3 scroll area
+				4 list Sidebar
+					5 row (selectable, expanded) Description: Mac, Secondary Actions: Collapse
+					6 row (selectable) Runtime
+					7 row (selectable) Account
+					8 row (selectable) Feature comparison
+					9 row (selectable, expanded) Description: Features, Secondary Actions: Collapse
+					10 row (selectable) Dashboard
+					11 row (selected) Chat
+					12 row (selectable) Tasks
+					13 row (selectable) Findings
+					14 row (selectable) Traffic
+					15 row (selectable) Tool runs
+					16 row (selectable) LLM records
+					17 row (selectable) Assets
+					18 row (selectable) Asset sync
+					19 row (selectable) Workspace
+					20 row (selectable, expanded) Description: System, Secondary Actions: Collapse
+					21 row (selectable) LLM
+					22 row (selectable) Agents
+					23 row (selectable) MCP
+					24 row (selectable) Skills
+					25 row (selectable) Tools
+					26 row (selectable) Notifications
+					27 row (selectable) Intercept rules
+					28 row (selectable) Asset blocking
+					29 row (selectable) Approvals
+					30 row (selectable) Logs
+					31 row (selectable) System settings
+			32 text Isolated Linux: ready
+		33 splitter (disabled, settable, float) 228
+		34 split group
+			35 container
+				36 button New conversation
+				37 pop up button Description: Filter conversations by agent, Filter conversations by agent, Value: All agents
+				38 toggle button Description: Multi-select, Value: off
+				39 scroll area
+					40 list Sidebar
+						41 row (selectable) No conversations yet
+			42 splitter (disabled, settable, float) 360
+			43 container
+				44 text New conversation
+				45 pop up button Model, Value: Default model
+				46 pop up button Agent, Value: Auto
+				47 scroll area
+					48 list Secondary Actions: AXScrollToTop, AXScrollToBottom
+						49 text New conversation Choose an agent and model, then enter a message.
+				50 text Platform operations assistant: manages tasks and assets with tools, and can create or modify skills, custom tools and MCP.
+				51 scroll area Secondary Actions: Scroll Up, Scroll Down
+					52 text entry area (settable) Message
+					53 scroll bar (disabled, settable, float) 0
+				54 button Attach files
+				55 pop up button Description: Send key, Send key, Value: Enter to send
+				56 button (disabled) Send
+	57 toolbar
+		58 button Description: Hide Sidebar, Secondary Actions: Increment, Decrement, Delete, Cancel
+		59 pop up button Description: Language, Help: Change display language, Value: English
+	60 close button
+	61 full screen button Help: this button also has an action to zoom the window, Secondary Actions: zoom the window
+	62 minimize button
+	63 text Chat
+64 menu bar
+	65 ARTEX Mac
+	66 Edit
+	67 View
+	68 Window
+	69 Help
+
+Selected:
+	11 row (selected)
+
+Note: Pay special attention to the content selected by the user. If the user asks a question or refers to the content they are looking at on-screen, they might be referring to the selected content (but they might be referring to something else that's visible, too).

@@ -109,3 +109,5 @@ L2 portability checkpoint: initial hosted40110609236 failed because legacy Swift
 
 
 L3 gates: builtin default/custom preservation and chat catalog tests RED/GREEN; localized AppKit button/panel/editor/progress tests RED/GREEN; controls/empty states integration, reviewer/full tests/coverage/signed build; actual en/ja Chat with literal draft/file/caret preservation and pinned browser comparison. No whole Chat/R8 acceptance until remaining errors/default-title/backend/accessibility gates pass.
+
+L3 checkpoint: localized Chat controls/defaults verified with240Swift cases(239pass/one existingAXskip),52Python and clean signed build. Actual native/browser en->ja retained literal mixed-language draft and21B card. Screenshots at2a62b55 precede complete builtin wording at5232876; final resources separately verified. Korean default title remains pending because explicit localized creation breaks backend automatic naming. Whole-state fixture cleanup complete; individual file hashes not claimed. See [Chat localization verification](localization-chat-verification.md). R8/Chat/all21 gates remain open.

@@ -1,0 +1,9 @@
+{
+  "fixture": "localization-l3-v1",
+  "native_process_exit": 0,
+  "native_vm_stopped": true,
+  "temporary_keychain_removed": true,
+  "entire_owned_native_state_removed": true,
+  "reference_process_exit": 0,
+  "individual_guest_file_hashes_or_api_cleanup": "not separately measured; whole stopped native fixture State discarded"
+}

@@ -1,0 +1,73 @@
+Browser tab: 9, Title: "ARTEX: Autonomous Penetration Testing Console", URL: "http://127.0.0.1:8789/chat".
+1 AXWebArea ARTEX: Autonomous Penetration Testing Console, URL: 127.0.0.1:8789/chat
+	2 container
+		3 content list
+			4 link Description: ARTEX ARTEX, Value: 127.0.0.1:8789/function/tasks/
+		5 container
+			42 text 機能
+			6 content list
+				7 link Description: ダッシュボード, Value: 127.0.0.1:8789/dashboard/
+				8 link Description: チャット, Value: 127.0.0.1:8789/chat/
+				9 link Description: タスク, Value: 127.0.0.1:8789/function/tasks/
+				10 link Description: 脆弱性, Value: 127.0.0.1:8789/function/findings/
+				11 link Description: トラフィック, Value: 127.0.0.1:8789/function/traffic/
+				12 link Description: ツール実行, Value: 127.0.0.1:8789/function/commands/
+				13 link Description: LLM 履歴, Value: 127.0.0.1:8789/function/llm-records/
+				14 link Description: 資産, Value: 127.0.0.1:8789/function/assets/
+				15 link Description: 資産同期, Value: 127.0.0.1:8789/function/sync/
+				16 link Description: ワークスペース, Value: 127.0.0.1:8789/function/workspace/
+			43 text システム
+			17 content list
+				18 link Description: LLM, Value: 127.0.0.1:8789/system/llm/
+				19 link Description: エージェント, Value: 127.0.0.1:8789/system/agents/
+				20 link Description: MCP, Value: 127.0.0.1:8789/system/mcp/
+				21 link Description: スキル, Value: 127.0.0.1:8789/system/skills/
+				22 link Description: ツール, Value: 127.0.0.1:8789/system/tools/
+				23 link Description: 通知配信, Value: 127.0.0.1:8789/system/notify/
+				24 link Description: インターセプトルール, Value: 127.0.0.1:8789/system/intercept/
+				25 link Description: 資産ブロック, Value: 127.0.0.1:8789/system/intercept/assets/
+				26 link Description: 承認履歴, Value: 127.0.0.1:8789/system/intercept/approvals/
+				27 link Description: ログ, Value: 127.0.0.1:8789/system/logs/
+				28 link Description: システム設定, Value: 127.0.0.1:8789/system/settings/
+		29 content list
+			30 pop up button (collapsed) A ARTEX, ID: radix-_r_51_, Secondary Actions: Expand
+		31 container
+			32 button Toggle Sidebar
+			33 button 検索 ⌘ J
+				44 text 検索
+				45 text ⌘
+				46 text J
+			34 heading Command Palette, Value: 2, ID: radix-_r_57_
+				47 text Command Palette
+			48 text Search for a command to run...
+			49 text バージョン · local-e75ae371ad777ffd1eecdd28d2781a6519b05591
+			35 pop up button (collapsed) Secondary Actions: Expand
+			36 button Current theme: dark. Click to cycle themes
+			50 text A
+		37 button 新しい会話
+		38 combo box (collapsed) Description: エージェント別に会話を絞り込み, Value: すべてのエージェント, Secondary Actions: Expand
+			51 text すべてのエージェント
+		52 text 合計 1件
+		53 button 複数選択
+		54 container
+			55 button (expanded) Auto 1, Help: 「Auto」を折りたたむ, Secondary Actions: Collapse
+				56 text Auto
+				57 text 1
+			58 button 새 대화 10/24 23:43 #1, Help: ダブルクリックで名前を変更
+				59 text 새 대화
+				60 text 10/24 23:43
+				61 text #
+				62 text 1
+			63 pop up button (collapsed) Description: 会話「새 대화」を管理, ID: radix-_r_62_, Secondary Actions: Expand
+		64 text 「Auto」との会話を始めましょう
+		65 text プラットフォーム運用アシスタント: ツールで案件(作成・参照・一時停止・ヒント付与)と資産を管理し、skill・カスタムツール・MCP を作成または変更します。
+		66 combo box (collapsed) Value: Auto, Secondary Actions: Expand
+			67 text Auto
+		68 button ファイルをアップロード
+		69 text entry area (settable) メッセージ。@ を入力して記録を引用できます
+		70 button (disabled) メッセージを送信
+		71 text デフォルト
+		72 pop up button (collapsed) 変更, Secondary Actions: Expand
+		41 container Notifications alt+T
+
+The focused UI element is 37 button 新しい会話

@@ -24,3 +24,6 @@ L2 CI訂正:40110609236はCIのSwiftPMがxcstringsを未コンパイルのまま
 
 
 L3は既存locale環境・型付きchatキー・単一カタログと派生互換リソースを使用。表示だけを変え言語.idは使わない。AppKitは同じコントロールのtitle/help/読み上げを更新し、エディタの本文・選択・marked textに触れない。パネルは作成時localeで案内し所有者callbackを維持。ChatUploadPresentationに言語引数を追加し従来callerは日本語既定、製品UIは明示指定。BuiltinAgentTextは固定db/db.goの既知キーと既定UTF8全文一致だけで表示変換し、server書込みや文字種一括置換をしない。任意エラー・初期会話名来歴・backendテンプレートは未完了。Lazyweb38aa7a86のSkypeはメタデータのみで、固定composerとA5/A6画像を基準にする。
+
+
+L3会話名の安全確認: 固定conversations.go:74/493は空／韓国語の初期名を自動命名センチネルとして扱う。作成時の翻訳名指定は最初のメッセージによる自動命名を止めるため、この案の試験は実装・checkpoint前に撤回。型未実装probeを有効な製品REDとして数えない。来歴と両立するbackend移行設計までwire／初期名／自動命名を保持し、既存独自名を一括変更しない。
