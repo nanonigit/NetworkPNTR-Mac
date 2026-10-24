@@ -170,6 +170,65 @@ final class ChatWorkspaceUploadTests: XCTestCase {
         XCTAssertTrue(workspace.transcript.attachments(for:7).isEmpty); XCTAssertEqual(workspace.transcript.draft(for:7),"")
         XCTAssertEqual(workspace.transcript.attachments(for:8),[try attachment("b")]); XCTAssertEqual(workspace.transcript.draft,"eight")
     }
+    @MainActor func testCancelledCompletionWaitingForListCannotReportSuccessForReplacement() async throws {
+        let api = WorkspaceUploadAPI(), workspace = ChatWorkspace(client:api)
+        await workspace.select(7)
+        var list: CheckedContinuation<BackendHTTPResponse, Error>?
+        api.handler = { call in
+            if call.path == "/api/conversations" { return try await withCheckedThrowingContinuation { list = $0 } }
+            return try ChatTestTransport.response(ChatFixture.page([],cursor:0))
+        }
+        let old = Task { await workspace.pickFiles(self.files) }; await waitFor { list != nil }
+        XCTAssertEqual(workspace.transcript.attachments,[try attachment()])
+        workspace.cancelUpload(for:7)
+        var replacement: CheckedContinuation<[ChatAttachment], Error>?
+        api.uploadHandler = { _ in try await withCheckedThrowingContinuation { replacement = $0 } }
+        let next = Task { await workspace.pickFiles([URL(fileURLWithPath:"/synthetic/new.txt")]) }; await waitFor { replacement != nil }
+        list?.resume(returning:try ChatTestTransport.response(["conversations":[ChatFixture.conversation(7)]]))
+        let oldAccepted = await old.value; XCTAssertFalse(oldAccepted)
+        XCTAssertTrue(workspace.isUploading)
+        api.handler = nil
+        replacement?.resume(returning:[try attachment("new.txt")])
+        let accepted = await next.value; XCTAssertTrue(accepted)
+        XCTAssertEqual(workspace.transcript.attachments,[try attachment(),try attachment("new.txt")])
+    }
+    @MainActor func testConfirmedDeleteInvalidatesAnUnconfirmedSendWithoutRestoringCards() async throws {
+        let api = WorkspaceUploadAPI(), workspace = ChatWorkspace(client:api)
+        await workspace.select(7); workspace.transcript.draft = "discard on delete"
+        try workspace.transcript.appendAttachments([attachment()],for:7)
+        var send: CheckedContinuation<BackendHTTPResponse, Error>?
+        api.handler = { call in
+            if call.path == "/api/conversations/7/messages", call.method == "POST" { return try await withCheckedThrowingContinuation { send = $0 } }
+            if call.path == "/api/conversations/delete/batch" { return try ChatTestTransport.response(["items":[["id":7,"ok":true]]]) }
+            if call.path == "/api/conversations" { return try ChatTestTransport.response(["conversations":[]]) }
+            return try ChatTestTransport.response(ChatFixture.page([],cursor:0))
+        }
+        let pending = Task { await workspace.send() }; await waitFor { send != nil }
+        _ = await workspace.delete(ids:[7])
+        send?.resume(returning:try ChatTestTransport.response(["status":"accepted"],status:202))
+        let accepted = await pending.value; XCTAssertFalse(accepted)
+        XCTAssertEqual(workspace.transcript.draft(for:7),""); XCTAssertTrue(workspace.transcript.attachments(for:7).isEmpty)
+        XCTAssertNil(workspace.transcript.selectedID)
+    }
+    @MainActor func testDeletingNewlyCreatedIDBeforeCreateReplyPreventsUpload() async throws {
+        let api = WorkspaceUploadAPI(), workspace = ChatWorkspace(client:api)
+        workspace.agentKey = "auto"; workspace.transcript.draft = "keep root"
+        var create: CheckedContinuation<BackendHTTPResponse, Error>?
+        var deletion: CheckedContinuation<BackendHTTPResponse, Error>?
+        api.handler = { call in
+            if call.path == "/api/conversations", call.method == "POST" { return try await withCheckedThrowingContinuation { create = $0 } }
+            if call.path == "/api/conversations/delete/batch" { return try await withCheckedThrowingContinuation { deletion = $0 } }
+            return try ChatTestTransport.response(["conversations":[]])
+        }
+        let picking = Task { await workspace.pickFiles(self.files) }; await waitFor { create != nil }
+        let deleting = Task { await workspace.delete(ids:[17]) }; await waitFor { deletion != nil }
+        create?.resume(returning:try ChatTestTransport.response(ChatFixture.conversation(17)))
+        let accepted = await picking.value; XCTAssertFalse(accepted)
+        XCTAssertTrue(api.uploads.isEmpty)
+        deletion?.resume(returning:try ChatTestTransport.response(["items":[["id":17,"ok":true]]]))
+        _ = await deleting.value
+        XCTAssertEqual(workspace.transcript.draft,"keep root")
+    }
     @MainActor func testOldListCannotRemoveJustCreatedUploadOwner() async throws {
         let api = WorkspaceUploadAPI(), workspace = ChatWorkspace(client:api)
         workspace.agentKey = "auto"
