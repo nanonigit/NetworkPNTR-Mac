@@ -1,0 +1,29 @@
+{
+  "source_commit": "12a8a8e",
+  "baseline": "e75ae371ad777ffd1eecdd28d2781a6519b05591",
+  "profiles": "zero on both; native verified before/after restart",
+  "native_actual_picker_multiple_files": true,
+  "mixed_text_and_two_cards_restored": true,
+  "attachment_only_two_cards_restored": true,
+  "native_empty_history_ui": true,
+  "browser_empty_history_ui": true,
+  "attachment_bytes": [
+    36,
+    0
+  ],
+  "native_error_ux": "FAIL: missing-provider503 mislabeled database unavailable; preserved screenshots precede2285311 repair",
+  "browser_error_ux": "Explicit no-LLM setup instruction observed",
+  "repair": "2285311 exact catalog static mapping; fresh signed native text-only send externally retested with correct setup instruction and text restoration",
+  "native_process_exit": 0,
+  "reference_process_exit": 0,
+  "native_vm_stopped_and_keychain_removed": true,
+  "reference_containers_and_networks_removed": true,
+  "local_tmp_selected_files_removed": true,
+  "native_owned_files_api_cleanup": "not separately verified; disposable private VM disk retained as local fixture, never committed",
+  "files_retained_after_rejection": "cards observed; persisted content hashes not measured in this UI run",
+  "live_cloud_call": false,
+  "all_product_complete": false,
+  "repaired_native_process_exit": 0,
+  "repaired_native_vm_stopped_and_keychain_removed": true,
+  "repaired_external_scope": "text-only missing-provider guidance; attachment restoration observed on12a8a8e before mapping-only repair"
+}

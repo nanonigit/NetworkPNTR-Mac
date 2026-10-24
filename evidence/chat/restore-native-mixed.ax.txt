@@ -1,0 +1,85 @@
+Window: "Chat", App: ARTEX Mac.
+0 standard window Chat, Secondary Actions: Raise, ID: SwiftUI.WindowGroup<SwiftUI.ModifiedContent<SwiftUI.ModifiedContent<ArtexMac.RootView, SwiftUI._AppearanceActionModifier>, SwiftUI._FlexFrameLayout>>-1-AppWindow-1
+	1 split group SwiftUI.WindowGroup<SwiftUI.ModifiedContent<SwiftUI.ModifiedContent<ArtexMac.RootView, SwiftUI._AppearanceActionModifier>, SwiftUI._FlexFrameLayout>>-1-AppWindow-1, SidebarNavigationSplitView
+		2 container
+			3 scroll area
+				4 list Sidebar
+					5 row (selectable, expanded) Description: Mac, Secondary Actions: Collapse
+					6 row (selectable) 実行環境
+					7 row (selectable) アカウント
+					8 row (selectable) 機能の比較状況
+					9 row (selectable, expanded) Description: Features, Secondary Actions: Collapse
+					10 row (selectable) Dashboard
+					11 row (selected) Chat
+					12 row (selectable) Tasks
+					13 row (selectable) Findings
+					14 row (selectable) Traffic
+					15 row (selectable) Tool runs
+					16 row (selectable) LLM records
+					17 row (selectable) Assets
+					18 row (selectable) Asset sync
+					19 row (selectable) Workspace
+					20 row (selectable, expanded) Description: System, Secondary Actions: Collapse
+					21 row (selectable) LLM
+					22 row (selectable) Agents
+					23 row (selectable) MCP
+					24 row (selectable) Skills
+					25 row (selectable) Tools
+					26 row (selectable) Notifications
+					27 row (selectable) Intercept rules
+					28 row (selectable) Asset blocking
+					29 row (selectable) Approvals
+					30 row (selectable) Logs
+					31 row (selectable) System settings
+			32 text 隔離Linux：起動確認済み
+		33 splitter (disabled, settable, float) 228
+		34 split group
+			35 container
+				36 button 新しい会話
+				37 pop up button Description: エージェントで絞り込み, エージェントで絞り込み, Value: すべてのエージェント
+				38 toggle button Description: 複数選択, Value: off
+				39 scroll area
+					40 list Sidebar
+						41 row (selectable, expanded) Description: Auto, Secondary Actions: Collapse
+							42 disclosure triangle 1
+						43 row (selectable) さらに表示, Description: 会話：새 대화
+More
+			44 splitter (disabled, settable, float) 360
+			45 container
+				46 text 새 대화
+				47 pop up button モデル, Value: 既定のモデル
+				48 text Auto
+				49 scroll area
+					50 list Secondary Actions: AXScrollToTop, AXScrollToBottom
+						51 text メッセージはまだありません エージェントとモデルを選び、メッセージを入力してください。
+				52 text データベースを利用できません。復旧後に再試行してください。
+				53 collection Secondary Actions: AXScrollToTop, AXScrollToBottom
+					54 container
+						55 text Help: uploads/é-a7.txt, Value: é-a7.txt
+						56 text Help: uploads/é-a7.txt, Value: 36 B
+						57 button Description: 添付を外す：é-a7.txt, Help: uploads/é-a7.txt
+					58 container
+						59 text Help: uploads/empty-a7.txt, Value: empty-a7.txt
+						60 text Help: uploads/empty-a7.txt, Value: 0 B
+						61 button Description: 添付を外す：empty-a7.txt, Help: uploads/empty-a7.txt
+				62 scroll area Secondary Actions: Scroll Up, Scroll Down
+					63 text entry area (settable) Description: メッセージ, Value: A7 restore **literal**
+Owned fixture
+					64 scroll bar (disabled, settable, float) 0
+				65 button ファイルを添付
+				66 pop up button Description: 送信キー, 送信キー, Value: Enterで送信
+				67 button 送信
+	68 toolbar
+		69 button Description: Hide Sidebar, Secondary Actions: Increment, Decrement, Delete, Cancel
+	70 close button
+	71 full screen button Help: this button also has an action to zoom the window, Secondary Actions: zoom the window
+	72 minimize button
+	73 text Chat
+74 menu bar
+	75 ARTEX Mac
+	76 Edit
+	77 View
+	78 Window
+	79 Help
+
+The focused UI element is 0 standard window Chat, Secondary Actions: Raise, ID: SwiftUI.WindowGroup<SwiftUI.ModifiedContent<SwiftUI.ModifiedContent<ArtexMac.RootView, SwiftUI._AppearanceActionModifier>, SwiftUI._FlexFrameLayout>>-1-AppWindow-1

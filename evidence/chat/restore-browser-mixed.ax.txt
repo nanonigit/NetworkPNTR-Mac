@@ -1,0 +1,81 @@
+Browser tab: 7, Title: "ARTEX: Autonomous Penetration Testing Console", URL: "http://127.0.0.1:8789/chat?c=1".
+1 AXWebArea ARTEX: Autonomous Penetration Testing Console, URL: 127.0.0.1:8789/chat?c=1
+	2 container
+		3 content list
+			4 link Description: ARTEX ARTEX, Value: 127.0.0.1:8789/function/tasks/
+		5 container
+			6 text Features
+			7 content list
+				8 link Description: Dashboard, Value: 127.0.0.1:8789/dashboard/
+				9 link Description: Chat, Value: 127.0.0.1:8789/chat/
+				10 link Description: Tasks, Value: 127.0.0.1:8789/function/tasks/
+				11 link Description: Findings, Value: 127.0.0.1:8789/function/findings/
+				12 link Description: Traffic, Value: 127.0.0.1:8789/function/traffic/
+				13 link Description: Tool runs, Value: 127.0.0.1:8789/function/commands/
+				14 link Description: LLM records, Value: 127.0.0.1:8789/function/llm-records/
+				15 link Description: Assets, Value: 127.0.0.1:8789/function/assets/
+				16 link Description: Asset sync, Value: 127.0.0.1:8789/function/sync/
+				17 link Description: Workspace, Value: 127.0.0.1:8789/function/workspace/
+			18 text System
+			19 content list
+				20 link Description: LLM, Value: 127.0.0.1:8789/system/llm/
+				21 link Description: Agents, Value: 127.0.0.1:8789/system/agents/
+				22 link Description: MCP, Value: 127.0.0.1:8789/system/mcp/
+				23 link Description: Skills, Value: 127.0.0.1:8789/system/skills/
+				24 link Description: Tools, Value: 127.0.0.1:8789/system/tools/
+				25 link Description: Notifications, Value: 127.0.0.1:8789/system/notify/
+				26 link Description: Intercept rules, Value: 127.0.0.1:8789/system/intercept/
+				27 link Description: Asset blocking, Value: 127.0.0.1:8789/system/intercept/assets/
+				28 link Description: Approvals, Value: 127.0.0.1:8789/system/intercept/approvals/
+				29 link Description: Logs, Value: 127.0.0.1:8789/system/logs/
+				30 link Description: System settings, Value: 127.0.0.1:8789/system/settings/
+		31 content list
+			32 pop up button (collapsed) A ARTEX, ID: radix-_r_l_, Secondary Actions: Expand
+		33 container
+			34 button Toggle Sidebar
+			35 button Search ⌘ J
+				36 text Search
+				37 text ⌘
+				38 text J
+			39 heading Command Palette, Value: 2, ID: radix-_r_r_
+				40 text Command Palette
+			41 text Search for a command to run...
+			42 text Version · local-e75ae371ad777ffd1eecdd28d2781a6519b05591
+			43 pop up button (collapsed) Secondary Actions: Expand
+			44 button Current theme: dark. Click to cycle themes
+			45 text A
+		46 button New conversation
+		47 combo box (collapsed) Description: Filter conversations by agent, Value: All agents, Secondary Actions: Expand
+			48 text All agents
+		59 text 1 total
+		60 button Multi-select
+		61 container
+			62 button (expanded) Auto 1, Help: Collapse "Auto", Secondary Actions: Collapse
+				63 text Auto
+				64 text 1
+			65 button 새 대화 10/24, 06:56 PM #1, Help: Double-click to rename
+				66 text 새 대화
+				67 text 10/24, 06:56 PM
+				68 text #
+				69 text 1
+			70 pop up button (collapsed) Description: Manage conversation "새 대화", ID: radix-_r_1m_, Secondary Actions: Expand
+		71 container main-conversation
+			72 text Auto auto 平台操作助手：用工具管理任务(建/看/暂停/给提示)与资产，并可创建/修改 skill、自定义工具、MCP。
+			73 button Side question, Help: /btw Side question
+			74 text Start a conversation with "Auto"
+			87 container uploads/é-a7.txt
+				88 text é-a7.txt 36 B
+				89 button Remove
+			90 container uploads/empty-a7.txt
+				91 text empty-a7.txt 0 B
+				92 button Remove
+			81 button Upload file
+			82 text entry area (settable) Description: Message. Type @ to cite a record, Value: A7 restore **literal**
+Owned fixture
+			83 button Send message
+			84 text Default
+			85 pop up button (collapsed) Change, Secondary Actions: Expand
+			86 pop up button (disabled, collapsed) Todo, Help: No Todo in this conversation, Secondary Actions: Expand
+		58 container Notifications alt+T
+
+The focused UI element is 1 AXWebArea ARTEX: Autonomous Penetration Testing Console, URL: 127.0.0.1:8789/chat?c=1

@@ -79,3 +79,9 @@ A7 gates: plan/zero-profile validation tests RED; DEBUG fixture integration GREE
 
 
 A7 observed-error repair: exact static no-profile mapping RED -> service boundary GREEN -> full suites/review/build -> fresh native UI retest, retaining first-run misleading-error screenshots. Draft restoration is observed, but error UX parity stays pending until that retest.
+
+
+A7 checkpoint: DEBUG no-provider plan implemented/reviewed; matched native/pinned-browser mixed and attachment-only failed sends restore original text/two36B+0B cards in actual UI. Native zero profiles verified before/after restart. First-run error UX failed: native called no-profile503 a database outage. Exact five-catalog static mapping repaired by RED5assertions/GREEN7service tests;224Swift cases(223pass/oneAXskip),49Python. New plan100% lines, ChatService96.95%. Both processes exited0; VM stopped/keychain removed and reference resources removed. Native private disposable disk retains fixture files; individual guest file cleanup/content hashes not reverified. Next fresh signed native UI retest of2285311 error guidance, rejected-history/files inspection/cleanup, then remaining A5 progress/accessibility and long-history/all21 gates. See restore-verification.json.
+
+
+A7 repair external retest: fresh signed native V2 at2285311 shows the static LLM setup instruction after a text-only rejected send, preserves the exact draft and empty conversation. Screenshot/AX and repaired native-results saved; process terminal0, VM stopped and temporary Keychain removed. This supersedes the pending repair-guidance check above; mixed/attachment-only restoration evidence remains from12a8a8e. Individual uploaded-file cleanup/hash/API history, long-history/accessibility/progress/kernel and all21 gates remain open.
