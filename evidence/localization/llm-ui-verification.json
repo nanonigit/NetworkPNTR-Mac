@@ -14,5 +14,12 @@
   "placeholder_names_match_between_locales": true,
   "review": "approved",
   "actual_native_browser_layout_state": "pending until Mac unlock; no new UI attempt/fixture",
-  "whole_app_or_localization_acceptance": false
+  "whole_app_or_localization_acceptance": false,
+  "initial_hosted_ci_failure": 40135493632,
+  "initial_failure": "Two raw Data JSON equality assertions; key ordering not guaranteed",
+  "invalid_checkpoint": "d09e852 mislabeled GREEN despite missing try compile failure; not valid passing evidence",
+  "corrected_test_green": "1da4b81",
+  "corrected_focused_tests_passed": 3,
+  "wire_comparison": "Canonical parsed JSON with reordered equality and changed-value inequality controls",
+  "hosted_retry": "must pass before remote success claim"
 }

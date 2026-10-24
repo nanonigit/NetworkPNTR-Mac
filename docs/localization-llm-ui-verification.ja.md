@@ -21,3 +21,5 @@ service／model／認証情報・言語に基づくview同一性／task・新規
 Swift261件（成功260・既存AX1件スキップ）、Python52件成功。文字列展開ヘルパーは行coverage100%。読み取り専用レビューで文言／状態／API値の具体的な不具合なし。最終署名ビルド・厳格署名・exporter検査成功、両言語各108項目が署名同梱でも対応表と一致。ソース監査／coverage／結果は`evidence/localization/llm-ui-*`に記録しました。
 
 ユーザーがMac解除を延期しているため、新規runtime fixture・UI試行・画像・クラウド呼出しはありません。実際の日英レイアウト／選択／シート・不正な数値入力の保持・retry未保存欄・接続試験／モデル選択・VoiceOver／IME・固定native/browser比較は未完了。Dashboard／runtimeラベル・backend言語／初期名の出所・未実装18画面・全21機能／runtime／配布の受け入れも残り、全体目標は継続中です。
+
+CI訂正：31d8fadのhosted40135493632は、送信値保持試験のData直接比較2件だけが失敗。BackendJSONCodingのJSONEncoderはキー順を固定せず、byte順は送信値の不変条件ではありません。解析後にキー順を正規化して比較し、順序違いは一致・値違いは不一致の対照試験を追加。製品のencode処理は変更していません。同じbyte長だけで値の一致を断定せず、hosted再実行の成功が必要です。d09e852は第2引数のtry不足でコンパイル失敗中にGREEN名で誤コミットしたため、無効なcheckpointとして成功証拠から除外。1da4b81で構文を修正後、対象3件の実成功を確認。意味上の比較／対照試験はレビュー済みです。失敗runと誤表示commitの反証を保持し、最終CI成功前にリモート成功と主張しません。
