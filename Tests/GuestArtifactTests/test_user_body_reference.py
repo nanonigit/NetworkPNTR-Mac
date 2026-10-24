@@ -24,6 +24,14 @@ class UserBodyReferenceTests(unittest.TestCase):
         with self.assertRaises(ValueError):
             fixture.multipart([('../escape', b'')])
 
+    def test_multipart_limit_includes_closing_boundary(self):
+        content_type, empty = fixture.multipart([('a', b'')])
+        closing_size = len(('--' + content_type.split('boundary=', 1)[1] + '--\r\n').encode())
+        _, exact = fixture.multipart([('a', b'x' * (65536 - len(empty)))])
+        self.assertEqual(len(exact), 65536)
+        with self.assertRaises(ValueError):
+            fixture.multipart([('a', b'x' * (65536 - len(empty) + closing_size))])
+
     def test_cleanup_attempts_files_and_other_owners_after_one_db_failure(self):
         class Client:
             def __init__(self): self.paths = []
