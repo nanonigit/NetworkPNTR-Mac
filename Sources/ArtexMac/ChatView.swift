@@ -156,7 +156,7 @@ struct ChatView: View {
     }
     private func uploadProgress(_ upload: ChatAttachmentUploadState, owner: Int64?) -> some View {
         ChatAttachmentProgressView(presentation: ChatUploadPresentation(progress: upload.progress)) {
-            workspace.cancelUpload(for: owner)
+            workspace.cancelUpload(for: owner, operationID: upload.operationID)
         }
     }
     private func attachmentPicker(owner: Int64?) -> some View {

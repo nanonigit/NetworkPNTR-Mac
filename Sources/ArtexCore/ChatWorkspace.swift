@@ -113,9 +113,10 @@ private struct WorkspaceUploadResult: Sendable {
         let key = id ?? 0
         return uploadStates[key] ?? uploadStates.values.first { $0.conversationID == id && id != nil }
     }
-    public func cancelUpload(for id: Int64?) {
+    public func cancelUpload(for id: Int64?, operationID: UUID? = nil) {
         let key = id ?? 0
         for operation in Array(uploadOperations.values) where operation.origin == key || operation.target == id && id != nil {
+            guard operationID == nil || operationID == operation.id else { continue }
             operation.cancel(); finishUpload(origin: operation.origin, id: operation.id)
         }
     }
