@@ -189,3 +189,5 @@ T8 checkpoint: Core contract4 and manager/integration12 cases pass. Final379Swif
 T9 implement category Core CRUD/single/batch assignment from task-category-core-design.md; RED/GREEN, Unicode/IDs/schema/null/partial/status/cancel tests, review/regression/coverage/signed build. Category manager/inline create/filter/move UI and actual VM/browser parity remain open.
 
 T9 checkpoint: RED1f3ad33 -> GREEN334935a7cases, expanded8cases. Full387Swift (386pass/1existingAXskip),60Python pass; category service100%lines/regions/functions. Reviewed finite CRUD/assignment/partial/null/Unicode/bounds; signed build/catalog3en-ja entries verified. Fixed baseline hashes retained in evidence/tasks/t9-core-verification.json. Actual category UI/state integration/inlinecreate/filter/moves/livecomparison remain required; full21/runtime/cloud/release gates stay open. See task-category-core-verification.md.
+
+T10 implement native category state, confirmed projections and filter, UI and inline integration with TDD ownership/unknown/read-reset tests, en/ja offscreen checks, review/full regression/signed build. Real Mac comparison remains deferred by user unlock.

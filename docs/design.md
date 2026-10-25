@@ -65,3 +65,5 @@ T7 follows task-staging-runtime-design.md: bounded one-boot actual staging/uploa
 T8 follows task-template-management-design.md: full native template manager (list/new/create/edit/delete, category and interception rules), save-as seed from creation, safe uncertainty and captured ownership, en/ja labels. Source contract/negative tests RED/GREEN, review/full regression/signed resources; actual OS/UI/live workflow comparison stays open. Fixed baseline and VM isolation unchanged.
 
 T9 follows task-category-core-design.md: finite category CRUD and assignment service; explicit null, validated schema/ownership/partial receipts, no agent activation. Native manager and full UI/runtime comparison remain required.
+
+T10 follows task-category-ui-design.md with a retained per-window category workspace, typed receipts into task store and creation, context/editor/decision/lifetime tickets. No locale-driven reconstruction.
