@@ -14,9 +14,9 @@ public enum TaskInputError: String, CaseIterable, LocalizedError, Sendable {
     public var errorDescription: String? { AppStrings.text(key, language: .japanese) }
 }
 
-public struct TaskInterceptRuleDraft: Encodable, Sendable {
-    public enum Action: String, Encodable, Sendable { case allow, block }
-    public enum Kind: String, Encodable, Sendable {
+public struct TaskInterceptRuleDraft: Codable, Sendable {
+    public enum Action: String, Codable, CaseIterable, Sendable { case allow, block }
+    public enum Kind: String, Codable, CaseIterable, Sendable {
         case exactDomain = "exact_domain", exactIp = "exact_ip", exactUrl = "exact_url"
         case fuzzyDomain = "fuzzy_domain", fuzzyIp = "fuzzy_ip", fuzzyUrl = "fuzzy_url", cidr
     }
