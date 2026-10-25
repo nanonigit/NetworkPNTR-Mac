@@ -82,4 +82,21 @@ final class TaskStagingExerciseTests: XCTestCase {
         }
         XCTAssertEqual(api.uploads,0); XCTAssertEqual(api.reads,0)
     }
+    @MainActor func testTerminalFailureCannotReportPassAfterCompletedBootAndTransfer() async throws {
+        let api = StagingExerciseAPI()
+        let completed = try await TaskStagingExercise.run(files:files,draftID:draft,client:api,uploader:api)
+        let audit = GuestBootLogAudit(diagnostics:[],credentialsAbsent:true,isolationWitnessesPresent:true,formatStageObserved:true,complete:true)
+        let boot = BackendPreflightReport(reachedReady:true,freshAuth:true,protectedStatus:401,cooperativeStop:true,machineStopped:true,audit:audit)
+        XCTAssertTrue(boot.passed)
+        for stage in [TaskStagingRunStage.preparing,.boot,.authentication,.transfer,.shutdown] {
+            XCTAssertFalse(TaskStagingRunReport(stage:stage,boot:boot,exercise:completed,terminalSuccess:true).passed)
+        }
+        let failed = TaskStagingRunReport(stage:.complete,boot:boot,exercise:completed,terminalSuccess:false)
+        XCTAssertFalse(failed.passed)
+        XCTAssertFalse(TaskStagingRunReport(stage:.complete,boot:boot,exercise:nil,terminalSuccess:true).passed)
+        XCTAssertTrue(TaskStagingRunReport(stage:.complete,boot:boot,exercise:completed,terminalSuccess:true).passed)
+        let json = try JSONSerialization.jsonObject(with:JSONEncoder().encode(failed)) as! [String:Any]
+        XCTAssertEqual(json["passed"] as? Bool,false); XCTAssertEqual(json["terminalSuccess"] as? Bool,false)
+    }
+
 }
