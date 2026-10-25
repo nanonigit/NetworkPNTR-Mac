@@ -144,4 +144,20 @@ final class TaskStagingUploadTests: XCTestCase {
         XCTAssertThrowsError(try JSONDecoder().decode(TaskStagedAttachment.self,from:Data(#"{"name":"a","path":"uploads/a","size":0,"abs":"/x"}"#.utf8)))
     }
 
+    @MainActor func testConcreteClientRejectsInvalidFilesAndNeverStartsVMImplicitly() async throws {
+        let runtime = VMController()
+        let client = BackendJSONClient(runtime:runtime,provisioning:try GuestProvisioning.generate())
+        let file = FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString)
+        try Data("selected file".utf8).write(to:file); defer { try? FileManager.default.removeItem(at:file) }
+        for selection in [[], [URL(string:"https://example.invalid/file")!]] {
+            do { _ = try await client.uploadStaging(draftID:draft,files:selection,bearer:"safe.jwt",progress:nil); XCTFail("Invalid file accepted") }
+            catch { XCTAssertTrue(error is ChatUploadBodyError) }
+        }
+        do { _ = try await client.uploadStaging(draftID:draft,files:[file],bearer:"bad\r\nheader",progress:nil); XCTFail("Invalid bearer") }
+        catch { guard case RuntimeError.integrity("authenticated attachment request") = error else { return XCTFail("Wrong validation boundary") } }
+        do { _ = try await client.uploadStaging(draftID:draft,files:[file],bearer:"safe.jwt",progress:nil); XCTFail("Unstarted runtime") }
+        catch { guard case RuntimeError.integrity("backend not ready") = error else { return XCTFail("Wrong runtime boundary") } }
+        XCTAssertFalse(runtime.hasMachine); XCTAssertEqual(runtime.state,.idle)
+    }
+
 }
