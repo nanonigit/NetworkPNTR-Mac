@@ -14,7 +14,7 @@ import SwiftUI
                 Text(context.task.name).font(.headline).textSelection(.enabled)
                 Text(context.task.id).font(.caption.monospaced()).textSelection(.enabled)
                 if context.kind == .rename {
-                    TextField(s(.taskUIName), text: Binding(get: { model.renameDraft }, set: { model.renameDraft = $0 }))
+                    TextField(s(.taskUIName), text: TaskDialogBindings.rename(model: model, dialogID: contextID))
                         .textFieldStyle(.roundedBorder).disabled(model.busy || model.dialogUncertain)
                 } else {
                     Text(s(.taskUIDeleteHelp))
@@ -38,7 +38,7 @@ import SwiftUI
         }.padding(24).frame(width: 440).interactiveDismissDisabled(model.busy)
     }
     private func option(_ key: WritableKeyPath<TaskDeletionOptions, Bool>) -> Binding<Bool> {
-        Binding(get: { model.deletionOptions[keyPath: key] }, set: { if !model.busy && !model.dialogUncertain { model.deletionOptions[keyPath: key] = $0 } })
+        TaskDialogBindings.cleanup(model: model, dialogID: contextID, key: key)
     }
 }
 
@@ -64,5 +64,21 @@ import SwiftUI
                 }
             }
         }.font(.callout).textSelection(.enabled)
+    }
+}
+
+/// Already-issued AppKit/IME callbacks must retain the dialog that created them.
+@MainActor enum TaskDialogBindings {
+    static func rename(model: TaskScreenModel, dialogID: UUID) -> Binding<String> {
+        Binding(get: { model.dialog?.id == dialogID ? model.renameDraft : "" }, set: { value in
+            guard model.dialog?.id == dialogID, !model.busy, !model.dialogUncertain else { return }
+            model.renameDraft = value
+        })
+    }
+    static func cleanup(model: TaskScreenModel, dialogID: UUID, key: WritableKeyPath<TaskDeletionOptions, Bool>) -> Binding<Bool> {
+        Binding(get: { model.dialog?.id == dialogID && model.deletionOptions[keyPath: key] }, set: { value in
+            guard model.dialog?.id == dialogID, !model.busy, !model.dialogUncertain else { return }
+            model.deletionOptions[keyPath: key] = value
+        })
     }
 }
