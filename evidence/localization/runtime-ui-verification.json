@@ -1,0 +1,19 @@
+{
+  "red": "346f7b4",
+  "green": "a4e9c7b",
+  "swift_cases": 268,
+  "swift_passed": 267,
+  "swift_skipped": 1,
+  "python_passed": 52,
+  "focused_tests": 4,
+  "signed_bundle_entries_verified": {
+    "en": 34,
+    "ja": 34
+  },
+  "parameterized_templates": 3,
+  "review": "approved",
+  "new_tests_create_VM_or_guest_disk": false,
+  "real_runtime_and_native_menu_acceptance": "pending",
+  "raw_diagnostics_preserved": true,
+  "whole_app_or_language_acceptance": false
+}

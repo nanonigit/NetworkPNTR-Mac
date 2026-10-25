@@ -1,0 +1,23 @@
+{
+  "before": "346f7b4",
+  "source": "a4e9c7b",
+  "scope": "Source invariants only; no new real guest boot or OS-menu validation",
+  "runtime_storage": {
+    "VMController.swift": {
+      "only_parallel_failure_storage_added": true,
+      "existing_source_restored_exactly_after_removing_new_storage": true
+    },
+    "DesktopRuntime.swift": {
+      "only_parallel_failure_storage_added": true,
+      "existing_source_restored_exactly_after_removing_new_storage": true
+    }
+  },
+  "unchanged_sha256": {
+    "Sources/ArtexCore/LifecycleState.swift": "1db16fc19dfd647f75469cd4781444d022108e1a4829b81085e5caac56f23f0e",
+    "Sources/ArtexCore/VMConfiguration.swift": "bca1cf688476349e0d6cb0d85ccaf561e1f5cde76a7fd46b500308b1053a415a",
+    "Sources/ArtexCore/GuestArtifacts.swift": "1ab7ad0974172121df96ae3e811787e9293f5631fc527df9ae64638493f2260c",
+    "Sources/ArtexCore/PersistentGuestDisk.swift": "28785928d113959c0173436ff847f7a9f7ceca2e97089ed12913fadee04a2549",
+    "Sources/ArtexCore/GuestProvisioning.swift": "e22eb5c52de51cf504606a5c8c62fcabb5d2d964fab10fa195a55f7ce27446d7",
+    "Sources/ArtexCore/Resources/feature-map.json": "ddc824a81d9402446e11dc15bc56d412b77f96d4a8bfc17d65b2e221fcc570ab"
+  }
+}

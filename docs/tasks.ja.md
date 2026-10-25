@@ -133,3 +133,5 @@ L7 Dashboard UI：見出し・群・空／前回／読込状態・選択・chart
 L7チェックポイント：9a2e383表示未実装RED→a41c2fa GREEN3。Swift264（成功263・既存AX1スキップ）、Python52、helper行100%。署名両言語103項目／埋込16一致、固定status15・未知／tool保持。Core集計／model／service／store不変、tag／色をソース監査、レビュー済み。実native/browser chart／layout／選択／VoiceOverは解除後、全21／runtime／backendゲート未完了。localization-dashboard-ui-verification.ja.md参照。
 
 L8 runtime／比較画面：操作・lifecycle6状態・sidebar・機能比較表／件数を現在localeで表示。nativeStatusゲート・機能ID／browserパス・未知機能名を保持。VMController／DesktopRuntimeは既存raw診断に安全なAppErrorMessageを並行保持し、同じ起動境界で消去、既存fail／catchだけで設定。RuntimeError種類をカタログキーへ変換し、任意stage／path／detailは埋め込まず、未知frameworkエラーはruntime用fallback。VM構成／権限／protocol／状態遷移／認証／disk／pollは変更なし。ゲストログ／CLI診断はraw保持。VMを起動しないresource／状態／失敗境界RED/GREEN・レビュー／全試験／署名。実native操作とOS標準メニューは未完了で、SwiftUI localeだけでは標準AppKitメニューは変わらない。Lazyweb virtual machine status settingsはHeight隣接メタデータ（.383）で画像証拠ではない。
+
+L8チェックポイント：346f7b4表示未実装RED→a4e9c7b GREEN4。Swift268（成功267・既存AX1スキップ）、Python52、runtime／error helper行100%。署名両言語34文言／埋込3一致。安全な並行errorはraw診断とguard／resetを保持、ソース復元／hash監査で状態／構成／protocol／disk／認証flow不変。レビュー済み、新規試験はVM／disk前で停止。実native／標準menu／Rootcatalog／backend／出所／全21は未完了。localization-runtime-ui-verification.ja.md参照。
