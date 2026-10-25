@@ -129,3 +129,5 @@ L6チェックポイント：e377f16 formatter／catalog意図したRED→c85524
 L6 CI訂正：40135493632のJSON Data比較2失敗を、1da4b81の意味上比較＋対照試験で対象3件成功。コンパイル失敗中のd09e852 GREEN表示は無効証拠。製品処理は変更なし、最終hosted再実行の成功が必要。
 
 L7 Dashboard UI：見出し・群・空／前回／読込状態・選択・chart軸／系列／凡例／読み上げ・集計・期間件数・資産／通信／システムを日英化。metrics／計算／日付ID／query／poll／選択ID／tag／遷移は保持。既知task／engine／severityは固定status辞書と一致し、raw識別子完全一致だけ変換、未知文言保持。活動5コードは表示だけ翻訳し、独自tool名／worker／summaryはそのまま。chart系列と凡例scaleのキーは同じ翻訳を使い、色／選択の実一致はUI確認待ち。既存の一度だけの埋め込み展開を使用。resource／status／集計不変RED/GREEN・レビュー／全試験／署名、実native/browserは解除待ち。Lazyweb usage analytics dashboardはGoogle Analyticsメタデータ（.631）で画像証拠ではなく、固定browserを基準にする。
+
+L7チェックポイント：9a2e383表示未実装RED→a41c2fa GREEN3。Swift264（成功263・既存AX1スキップ）、Python52、helper行100%。署名両言語103項目／埋込16一致、固定status15・未知／tool保持。Core集計／model／service／store不変、tag／色をソース監査、レビュー済み。実native/browser chart／layout／選択／VoiceOverは解除後、全21／runtime／backendゲート未完了。localization-dashboard-ui-verification.ja.md参照。

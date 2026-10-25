@@ -1,0 +1,43 @@
+{
+  "scope": "Display-only status helper, not rendered chart/state/VoiceOver acceptance",
+  "files": [
+    {
+      "file": "DashboardLabels.swift",
+      "summary": {
+        "branches": {
+          "count": 0,
+          "covered": 0,
+          "notcovered": 0,
+          "percent": 0
+        },
+        "functions": {
+          "count": 4,
+          "covered": 4,
+          "percent": 100
+        },
+        "instantiations": {
+          "count": 4,
+          "covered": 4,
+          "percent": 100
+        },
+        "lines": {
+          "count": 20,
+          "covered": 20,
+          "percent": 100
+        },
+        "mcdc": {
+          "count": 0,
+          "covered": 0,
+          "notcovered": 0,
+          "percent": 0
+        },
+        "regions": {
+          "count": 19,
+          "covered": 19,
+          "notcovered": 0,
+          "percent": 100
+        }
+      }
+    }
+  ]
+}

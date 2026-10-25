@@ -1,0 +1,20 @@
+{
+  "red": "9a2e383",
+  "green": "a41c2fa",
+  "baseline": "e75ae371ad777ffd1eecdd28d2781a6519b05591",
+  "swift_cases": 264,
+  "swift_passed": 263,
+  "swift_skipped": 1,
+  "python_passed": 52,
+  "focused_tests": 3,
+  "signed_bundle_entries_verified": {
+    "en": 103,
+    "ja": 103
+  },
+  "parameterized_templates": 16,
+  "pinned_status_entries": 15,
+  "review": "approved",
+  "actual_native_browser_chart_and_state": "pending until Mac unlock",
+  "new_runtime_fixture_or_UI_attempt": false,
+  "whole_app_or_language_acceptance": false
+}

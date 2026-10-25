@@ -1,0 +1,34 @@
+{
+  "source": "a41c2fa",
+  "before": "9a2e383",
+  "scope": "Source audit only; not runtime language/selection/chart acceptance",
+  "unchanged_Core_sha256": {
+    "DashboardMetrics.swift": "3b7c768e555d827d1eb50fb4792504c1c2fbb070a68b47c00ea5e50939481d7b",
+    "DashboardModels.swift": "a72dede00c263ca42c9cd681813cdab2080187cc0322ff9a34ec9487dadcd969",
+    "DashboardService.swift": "e0f8cf6bd04e293253a5b31fa9cd8ea546f21526cc4f8df1ad86fb1f5c10b47e",
+    "DashboardStore.swift": "7d16e1cffad08ef3089c832b94e1f01c15e441ddecbc519ae7beaddbe775f4d2"
+  },
+  "views": {
+    "DashboardView.swift": {
+      "picker_tags_unchanged": true,
+      "CJK_source_lines": 0
+    },
+    "DashboardTokensView.swift": {
+      "picker_tags_unchanged": true,
+      "CJK_source_lines": 0
+    },
+    "DashboardActivityPanels.swift": {
+      "picker_tags_unchanged": true,
+      "CJK_source_lines": 0
+    },
+    "DashboardSystemPanels.swift": {
+      "picker_tags_unchanged": true,
+      "CJK_source_lines": 0
+    }
+  },
+  "chart_scale_color_sequence": [
+    "blue",
+    "green",
+    "purple"
+  ]
+}
