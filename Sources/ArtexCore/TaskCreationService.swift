@@ -3,6 +3,7 @@ import Foundation
 public struct TaskNamedOption: Decodable, Identifiable, Sendable {
     public let id: Int64
     public let name: String
+    public init(id: Int64, name: String) { self.id = id; self.name = name }
 }
 public struct TaskProfileOption: Decodable, Identifiable, Sendable {
     public let id: Int64

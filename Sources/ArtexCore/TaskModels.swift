@@ -5,8 +5,8 @@ public struct TaskRecord: Decodable, Sendable, Equatable, Identifiable {
     public let id: String
     public let explorationId: Int64
     public let name: String
-    public let categoryId: Int64?
-    public let categoryName: String?
+    public internal(set) var categoryId: Int64?
+    public internal(set) var categoryName: String?
     public let pinned: Bool
     public let pinnedAt: String?
     public let description: String

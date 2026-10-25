@@ -1,5 +1,7 @@
 import Foundation
 
+public enum TaskCategoryFilter: Hashable, Sendable { case all, uncategorized, category(Int64) }
+
 public enum TaskSortField: String, CaseIterable, Sendable { case id, created, duration, status }
 
 /// Pinned browser semantics, without changing stored task text or numeric precision.
@@ -8,11 +10,13 @@ public enum TaskPresentation {
     public static func controlAction(_ status: String) -> TaskControlAction? {
         switch status { case "created", "queued", "running": .pause; case "paused": .resume; default: nil }
     }
-    public static func rows(_ tasks: [TaskRecord], query: String, status: String?, sort: TaskSortField,
+    public static func rows(_ tasks: [TaskRecord], query: String, status: String?, category: TaskCategoryFilter = .all, sort: TaskSortField,
                             ascending: Bool, now: Int64) -> [TaskRecord] {
         let query = ChatText.trim(query).lowercased()
         return tasks.filter { item in
-            (status == nil || item.status == status) && (query.isEmpty ||
+            let matchesCategory: Bool
+            switch category { case .all: matchesCategory = true; case .uncategorized: matchesCategory = item.categoryId == nil; case .category(let id): matchesCategory = item.categoryId == id }
+            return matchesCategory && (status == nil || item.status == status) && (query.isEmpty ||
                 [item.id, item.name, item.categoryName ?? "", item.description, item.goal].contains { $0.lowercased().contains(query) })
         }.sorted { a, b in
             if a.pinned != b.pinned { return a.pinned }

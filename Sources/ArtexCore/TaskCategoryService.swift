@@ -48,6 +48,7 @@ public struct TaskCategoryBatchResult: Decodable, Sendable {
 @MainActor public final class TaskCategoryService {
     private let client: any BackendJSONTransport
     public init(client: any BackendJSONTransport) { self.client = client }
+    public func tasks() async throws -> [TaskRecord] { try await TaskService(client:client).list().tasks }
     public func list() async throws -> [TaskCategoryRecord] {
         struct Reply: Decodable {
             let categories: [TaskCategoryRecord]

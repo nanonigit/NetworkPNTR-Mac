@@ -12,7 +12,7 @@ final class TaskCategoryProjectionTests: XCTestCase {
     @MainActor func testConfirmedCategoryProjectionKeepsTaskIdentityAndUnrelatedData() async throws {
         let api = ChatTestTransport(); var first = try fixture(); first["id"] = "7"; first["category_id"] = 8; first["category_name"] = "before"
         var second = first; second["id"] = "9"; second["category_id"] = NSNull(); second["category_name"] = NSNull()
-        try api.enqueue(["tasks":[first,second],"active_id":"7"])
+        try api.enqueue(["tasks":[first,second],"active":"7"])
         let store = TaskStore(service:TaskService(client:api)); await store.refreshList()
         let original = try XCTUnwrap(store.list.value?.first)
         let ticket = try XCTUnwrap(store.beginCategoryMutation()); XCTAssertTrue(store.isMutating)
@@ -34,10 +34,11 @@ final class TaskCategoryProjectionTests: XCTestCase {
         for _ in 0..<1000 { if continuation != nil { break }; await Task.yield() }
         let ticket = try XCTUnwrap(store.beginCategoryMutation())
         store.finishCategoryMutation(ticket:ticket,change:.deleted(8))
-        continuation?.resume(returning:try ChatTestTransport.response(["tasks":[fixture()],"active_id":""]))
+        continuation?.resume(returning:try ChatTestTransport.response(["tasks":[fixture()],"active":""]))
         await pending.value; XCTAssertNil(store.list.value)
         let old = try XCTUnwrap(store.beginCategoryMutation()); store.reset(); XCTAssertTrue(store.isMutating)
         store.finishCategoryMutation(ticket:old,change:.saved(try category())); XCTAssertNil(store.list.value); XCTAssertFalse(store.isMutating)
-        XCTAssertNil(store.beginCategoryMutation().flatMap { _ in store.beginCategoryMutation() })
+        let final = try XCTUnwrap(store.beginCategoryMutation()); XCTAssertNil(store.beginCategoryMutation())
+        store.finishCategoryMutation(ticket:final,change:nil)
     }
 }

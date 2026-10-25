@@ -15,7 +15,8 @@ import XCTest
         calls.append((method,path,body))
         if method == "GET" {
             if holdReads { return try await withCheckedThrowingContinuation { reads[path] = $0 } }
-            return try response(path == "/api/task-categories" ? ["categories":[row(8),row(9)]] : ["tasks":[],"active":""])
+            if path == "/api/task-categories" { return try response(["categories":[row(8),row(9)]]) }
+            return try response(["tasks":[],"active":""])
         }
         if hold { return try await withCheckedThrowingContinuation { pending.append($0) } }
         if status != 200 { return try response(["error":"private error"],status:status) }

@@ -31,6 +31,7 @@ public enum TaskMutationConfirmation: Sendable {
     public private(set) var isPolling = false
     @ObservationIgnored private let service: TaskService
     @ObservationIgnored private let sleep: @MainActor (Duration) async throws -> Void
+    @ObservationIgnored private var categoryTicket: (id: UUID, life: UUID)?
     @ObservationIgnored private var lifetime = UUID()
     @ObservationIgnored private var activity = UUID()
     @ObservationIgnored private var listTicket = UUID()
@@ -80,6 +81,23 @@ public enum TaskMutationConfirmation: Sendable {
             guard detailTicket == ticket, selectedID == id, !Task.isCancelled else { return }
             detail.failure = AppErrorMessage(error); detail.isStale = true
         }
+    }
+
+    public func beginCategoryMutation() -> UUID? {
+        guard !isMutating else { return nil }
+        let id = UUID(); categoryTicket = (id,lifetime); isMutating = true; invalidateReads()
+        mutationFailure = nil; mutationUncertain = false; lastConfirmation = nil
+        return id
+    }
+    public func finishCategoryMutation(ticket: UUID, change: TaskCategoryChange?) {
+        guard let owner = categoryTicket, owner.id == ticket else { return }
+        categoryTicket = nil; isMutating = false; invalidateReads()
+        guard owner.life == lifetime else { return }
+        if let change {
+            if let tasks = list.value { list.value = change.applying(to:tasks) }
+            if let task = detail.value { detail.value = change.applying(to:[task]).first }
+        }
+        list.isStale = true; detail.isStale = true
     }
 
     public func create(_ draft: TaskCreateDraft) async -> TaskMutationOutcome<TaskRecord> {
