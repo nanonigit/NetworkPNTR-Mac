@@ -740,6 +740,74 @@
 	<string>思考スイッチ</string>
 	<key>llm.ui.unsaved</key>
 	<string>未保存の変更があります</string>
+	<key>runtime.ui.aRTEXStarting</key>
+	<string>ARTEXを起動しています</string>
+	<key>runtime.ui.environment</key>
+	<string>専用実行環境</string>
+	<key>runtime.ui.forceStop</key>
+	<string>強制停止</string>
+	<key>runtime.ui.guestLog</key>
+	<string>ゲスト起動ログ</string>
+	<key>runtime.ui.help</key>
+	<string>認証はアカウント画面から操作できます。クラウドAPI向け通信は現在オフです。サイドバーの各機能は、比較検証を経て順に接続します。</string>
+	<key>runtime.ui.integrity</key>
+	<string>起動前にカーネル・初期RAM・OSディスクのSHA-256を照合</string>
+	<key>runtime.ui.integrityError</key>
+	<string>実行環境の検証に失敗しました。実行環境のファイルとゲストログを確認してください。</string>
+	<key>runtime.ui.isolation</key>
+	<string>Docker不要 · ホスト共有なし · ネットワークなし</string>
+	<key>runtime.ui.parityBaseline</key>
+	<string>基準：{commit} · {features}主要機能 / {routes}画面 / {endpoints} APIハンドラー</string>
+	<key>runtime.ui.parityBrowser</key>
+	<string>ブラウザ版の画面</string>
+	<key>runtime.ui.parityFeature</key>
+	<string>機能</string>
+	<key>runtime.ui.parityHelp</key>
+	<string>同じデータ・操作・エラー・保存状態を比較します。LLM設定・ダッシュボード・チャットは実装・検証中です。全機能の受け入れ条件を満たすまで移植完了にはしません。</string>
+	<key>runtime.ui.parityInProgress</key>
+	<string>実装・検証中</string>
+	<key>runtime.ui.parityStatus</key>
+	<string>状態</string>
+	<key>runtime.ui.parityTitle</key>
+	<string>ブラウザ版との機能比較</string>
+	<key>runtime.ui.parityWaiting</key>
+	<string>フェーズ{phase}・移植待ち</string>
+	<key>runtime.ui.persistence</key>
+	<string>設定と認証情報を専用ディスクに保持</string>
+	<key>runtime.ui.ready</key>
+	<string>ARTEXとDBの起動を確認しました</string>
+	<key>runtime.ui.start</key>
+	<string>隔離Linuxを起動</string>
+	<key>runtime.ui.state</key>
+	<string>状態：{state}</string>
+	<key>runtime.ui.stateFailed</key>
+	<string>失敗</string>
+	<key>runtime.ui.stateIdle</key>
+	<string>未起動</string>
+	<key>runtime.ui.stateRunning</key>
+	<string>実行中</string>
+	<key>runtime.ui.stateStarting</key>
+	<string>起動中</string>
+	<key>runtime.ui.stateStopped</key>
+	<string>停止済み</string>
+	<key>runtime.ui.stateStopping</key>
+	<string>停止中</string>
+	<key>runtime.ui.stop</key>
+	<string>停止</string>
+	<key>runtime.ui.subtitle</key>
+	<string>専用VM内でARTEXとPostgreSQLを実行</string>
+	<key>runtime.ui.timeoutError</key>
+	<string>実行環境の応答が時間内に届きませんでした。再試行前にゲストログを確認してください。</string>
+	<key>runtime.ui.title</key>
+	<string>専用Linux実行環境</string>
+	<key>runtime.ui.transitionError</key>
+	<string>現在の実行環境の状態では、この操作を実行できません。</string>
+	<key>runtime.ui.unexpected</key>
+	<string>実行環境の操作に失敗しました。ゲストログを確認して再試行してください。</string>
+	<key>runtime.ui.unsupported</key>
+	<string>このMacではハードウェア仮想化を利用できません。</string>
+	<key>runtime.ui.virtualization</key>
+	<string>AppleのVirtualization.frameworkで実際のLinuxを実行</string>
 	<key>shell.account</key>
 	<string>アカウント</string>
 	<key>shell.authPreparation</key>

@@ -740,6 +740,74 @@
 	<string>Thinking switch</string>
 	<key>llm.ui.unsaved</key>
 	<string>You have unsaved changes</string>
+	<key>runtime.ui.aRTEXStarting</key>
+	<string>Starting ARTEX</string>
+	<key>runtime.ui.environment</key>
+	<string>Dedicated runtime</string>
+	<key>runtime.ui.forceStop</key>
+	<string>Force stop</string>
+	<key>runtime.ui.guestLog</key>
+	<string>Guest boot log</string>
+	<key>runtime.ui.help</key>
+	<string>Manage authentication from Account. Cloud API networking is currently off. Sidebar features are connected progressively after comparison testing.</string>
+	<key>runtime.ui.integrity</key>
+	<string>Verify kernel, initial RAM disk, and OS disk SHA-256 before boot</string>
+	<key>runtime.ui.integrityError</key>
+	<string>Runtime validation failed. Check the runtime files and guest log.</string>
+	<key>runtime.ui.isolation</key>
+	<string>No Docker required · No host shares · No network</string>
+	<key>runtime.ui.parityBaseline</key>
+	<string>Baseline: {commit} · {features} main features / {routes} screens / {endpoints} API handlers</string>
+	<key>runtime.ui.parityBrowser</key>
+	<string>Browser screen</string>
+	<key>runtime.ui.parityFeature</key>
+	<string>Feature</string>
+	<key>runtime.ui.parityHelp</key>
+	<string>Compare the same data, actions, errors, and saved state. LLM settings, Dashboard, and Chat are under implementation and verification. Migration remains incomplete until every feature meets its acceptance criteria.</string>
+	<key>runtime.ui.parityInProgress</key>
+	<string>Implementation and verification in progress</string>
+	<key>runtime.ui.parityStatus</key>
+	<string>Status</string>
+	<key>runtime.ui.parityTitle</key>
+	<string>Feature comparison with the browser version</string>
+	<key>runtime.ui.parityWaiting</key>
+	<string>Phase {phase} · Awaiting migration</string>
+	<key>runtime.ui.persistence</key>
+	<string>Keep settings and credentials on a dedicated disk</string>
+	<key>runtime.ui.ready</key>
+	<string>ARTEX and the database are ready</string>
+	<key>runtime.ui.start</key>
+	<string>Start isolated Linux</string>
+	<key>runtime.ui.state</key>
+	<string>State: {state}</string>
+	<key>runtime.ui.stateFailed</key>
+	<string>Failed</string>
+	<key>runtime.ui.stateIdle</key>
+	<string>Not started</string>
+	<key>runtime.ui.stateRunning</key>
+	<string>Running</string>
+	<key>runtime.ui.stateStarting</key>
+	<string>Starting</string>
+	<key>runtime.ui.stateStopped</key>
+	<string>Stopped</string>
+	<key>runtime.ui.stateStopping</key>
+	<string>Stopping</string>
+	<key>runtime.ui.stop</key>
+	<string>Stop</string>
+	<key>runtime.ui.subtitle</key>
+	<string>Run ARTEX and PostgreSQL in a dedicated VM</string>
+	<key>runtime.ui.timeoutError</key>
+	<string>The runtime did not respond in time. Check the guest log before retrying.</string>
+	<key>runtime.ui.title</key>
+	<string>Dedicated Linux runtime</string>
+	<key>runtime.ui.transitionError</key>
+	<string>This operation is unavailable in the current runtime state.</string>
+	<key>runtime.ui.unexpected</key>
+	<string>The runtime operation failed. Check the guest log and try again.</string>
+	<key>runtime.ui.unsupported</key>
+	<string>Hardware virtualization is unavailable on this Mac.</string>
+	<key>runtime.ui.virtualization</key>
+	<string>Run real Linux with Apple Virtualization.framework</string>
 	<key>shell.account</key>
 	<string>Account</string>
 	<key>shell.authPreparation</key>

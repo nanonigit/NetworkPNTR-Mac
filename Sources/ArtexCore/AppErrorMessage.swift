@@ -9,6 +9,7 @@ public struct AppErrorMessage: Sendable {
     public init(_ error: any Error, fallback: AppStringKey = .errorCommunication) {
         if let error = error as? BackendAPIError { reason = .backend(error) }
         else if let error = error as? ChatUploadBodyError { reason = .upload(error) }
+        else if let error = error as? RuntimeError { reason = .catalog(RuntimeLabels.errorKey(error)) }
         else { reason = .catalog(fallback) }
     }
     public init(key: AppStringKey) { reason = .catalog(key) }

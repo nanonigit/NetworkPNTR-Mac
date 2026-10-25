@@ -1,17 +1,21 @@
 import ArtexCore
 import SwiftUI
 struct ParityView: View {
+    @Environment(\.locale) private var locale
+    private var language: AppLanguage { AppLanguage.preferred(in: [locale.identifier]) }
+    private func s(_ key: AppStringKey) -> String { AppStrings.text(key, language: language) }
+    private func f(_ key: AppStringKey, _ values: [String: String]) -> String { AppStrings.formatted(key, language: language, values: values) }
     let catalog: FeatureCatalog
     var body: some View {
         VStack(alignment: .leading, spacing: 16) {
-            Text("ブラウザ版との機能比較").font(.largeTitle.bold())
-            Text("基準：" + String(catalog.baseline.prefix(12)) + " · 21主要機能 / 27画面 / 243 APIハンドラー").foregroundStyle(.secondary)
-            Text("同じデータ・操作・エラー・保存状態を比較します。LLM設定とダッシュボードは実装・検証中です。全機能の受け入れ条件を満たすまで移植完了にはしません。")
+            Text(s(.runtimeUIParityTitle)).font(.largeTitle.bold())
+            Text(f(.runtimeUIParityBaseline, ["commit": String(catalog.baseline.prefix(12)), "features": String(catalog.features.count), "routes": String(catalog.routes.count), "endpoints": String(catalog.endpoints.count)])).foregroundStyle(.secondary)
+            Text(s(.runtimeUIParityHelp))
             Table(catalog.features) {
-                TableColumn("機能", value: \.title)
-                TableColumn("ブラウザ版の画面", value: \.browserPath)
-                TableColumn("状態") { feature in Text(feature.nativeStatus == "in_progress" ? "実装・検証中" : "フェーズ\(feature.phase)・移植待ち") }
+                TableColumn(s(.runtimeUIParityFeature)) { feature in Text(AppStrings.featureTitle(feature.id, fallback: feature.title, language: language)) }
+                TableColumn(s(.runtimeUIParityBrowser), value: \.browserPath)
+                TableColumn(s(.runtimeUIParityStatus)) { feature in Text(feature.nativeStatus == "in_progress" ? s(.runtimeUIParityInProgress) : f(.runtimeUIParityWaiting, ["phase": String(feature.phase)])) }
             }
-        }.padding(28).navigationTitle("機能の比較状況")
+        }.padding(28).navigationTitle(s(.parity))
     }
 }

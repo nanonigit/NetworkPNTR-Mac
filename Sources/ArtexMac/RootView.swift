@@ -25,7 +25,7 @@ struct RootView: View {
             .navigationTitle(s(.productName))
             .navigationSplitViewColumnWidth(min: 200, ideal: 228, max: 300)
             .safeAreaInset(edge: .bottom) {
-                Label(runtime.guestReady ? s(.guestReady) : s(.guestPrefix) + runtime.state.rawValue, systemImage: "shield.lefthalf.filled")
+                Label(runtime.guestReady ? s(.guestReady) : s(.guestPrefix) + RuntimeLabels.state(runtime.state, language: language.language), systemImage: "shield.lefthalf.filled")
                     .font(.caption).foregroundStyle(.secondary).padding()
             }
         } detail: {

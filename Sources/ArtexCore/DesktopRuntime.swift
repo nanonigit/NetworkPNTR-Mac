@@ -29,6 +29,7 @@ public struct ManagedRuntimePaths: Sendable {
     public private(set) var authentication: AuthenticationSession?
     public private(set) var isStarting = false
     public private(set) var error: String?
+    public private(set) var failure: AppErrorMessage?
     public let paths: ManagedRuntimePaths
     @ObservationIgnored private let artifacts: URL
     @ObservationIgnored private let vault: any SessionVault
@@ -38,7 +39,7 @@ public struct ManagedRuntimePaths: Sendable {
     }
     public func start() async {
         guard !isStarting, controller.mayStart else { return }
-        isStarting = true; error = nil; authentication = nil
+        isStarting = true; error = nil; failure = nil; authentication = nil
         let operation = UUID(); generation = operation
         defer { if generation == operation { isStarting = false } }
         do {
@@ -57,7 +58,7 @@ public struct ManagedRuntimePaths: Sendable {
             authentication = session
             await session.refresh()
         } catch {
-            if generation == operation { self.error = error.localizedDescription }
+            if generation == operation { self.error = error.localizedDescription; failure = AppErrorMessage(error, fallback: .runtimeUIUnexpected) }
         }
     }
     public func stop() async throws {

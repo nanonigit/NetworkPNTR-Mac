@@ -6368,6 +6368,550 @@
           }
         }
       }
+    },
+    "runtime.ui.title": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Dedicated Linux runtime"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "専用Linux実行環境"
+          }
+        }
+      }
+    },
+    "runtime.ui.subtitle": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Run ARTEX and PostgreSQL in a dedicated VM"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "専用VM内でARTEXとPostgreSQLを実行"
+          }
+        }
+      }
+    },
+    "runtime.ui.ready": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ARTEX and the database are ready"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ARTEXとDBの起動を確認しました"
+          }
+        }
+      }
+    },
+    "runtime.ui.aRTEXStarting": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Starting ARTEX"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ARTEXを起動しています"
+          }
+        }
+      }
+    },
+    "runtime.ui.isolation": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "No Docker required · No host shares · No network"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Docker不要 · ホスト共有なし · ネットワークなし"
+          }
+        }
+      }
+    },
+    "runtime.ui.start": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Start isolated Linux"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "隔離Linuxを起動"
+          }
+        }
+      }
+    },
+    "runtime.ui.stop": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Stop"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "停止"
+          }
+        }
+      }
+    },
+    "runtime.ui.forceStop": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Force stop"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "強制停止"
+          }
+        }
+      }
+    },
+    "runtime.ui.environment": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Dedicated runtime"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "専用実行環境"
+          }
+        }
+      }
+    },
+    "runtime.ui.virtualization": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Run real Linux with Apple Virtualization.framework"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "AppleのVirtualization.frameworkで実際のLinuxを実行"
+          }
+        }
+      }
+    },
+    "runtime.ui.integrity": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Verify kernel, initial RAM disk, and OS disk SHA-256 before boot"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "起動前にカーネル・初期RAM・OSディスクのSHA-256を照合"
+          }
+        }
+      }
+    },
+    "runtime.ui.persistence": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Keep settings and credentials on a dedicated disk"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "設定と認証情報を専用ディスクに保持"
+          }
+        }
+      }
+    },
+    "runtime.ui.help": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Manage authentication from Account. Cloud API networking is currently off. Sidebar features are connected progressively after comparison testing."
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "認証はアカウント画面から操作できます。クラウドAPI向け通信は現在オフです。サイドバーの各機能は、比較検証を経て順に接続します。"
+          }
+        }
+      }
+    },
+    "runtime.ui.guestLog": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Guest boot log"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ゲスト起動ログ"
+          }
+        }
+      }
+    },
+    "runtime.ui.state": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "State: {state}"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "状態：{state}"
+          }
+        }
+      }
+    },
+    "runtime.ui.stateIdle": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Not started"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "未起動"
+          }
+        }
+      }
+    },
+    "runtime.ui.stateStarting": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Starting"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "起動中"
+          }
+        }
+      }
+    },
+    "runtime.ui.stateRunning": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Running"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "実行中"
+          }
+        }
+      }
+    },
+    "runtime.ui.stateStopping": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Stopping"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "停止中"
+          }
+        }
+      }
+    },
+    "runtime.ui.stateStopped": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Stopped"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "停止済み"
+          }
+        }
+      }
+    },
+    "runtime.ui.stateFailed": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Failed"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "失敗"
+          }
+        }
+      }
+    },
+    "runtime.ui.unexpected": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The runtime operation failed. Check the guest log and try again."
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "実行環境の操作に失敗しました。ゲストログを確認して再試行してください。"
+          }
+        }
+      }
+    },
+    "runtime.ui.transitionError": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "This operation is unavailable in the current runtime state."
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "現在の実行環境の状態では、この操作を実行できません。"
+          }
+        }
+      }
+    },
+    "runtime.ui.integrityError": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Runtime validation failed. Check the runtime files and guest log."
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "実行環境の検証に失敗しました。実行環境のファイルとゲストログを確認してください。"
+          }
+        }
+      }
+    },
+    "runtime.ui.timeoutError": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The runtime did not respond in time. Check the guest log before retrying."
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "実行環境の応答が時間内に届きませんでした。再試行前にゲストログを確認してください。"
+          }
+        }
+      }
+    },
+    "runtime.ui.unsupported": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Hardware virtualization is unavailable on this Mac."
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "このMacではハードウェア仮想化を利用できません。"
+          }
+        }
+      }
+    },
+    "runtime.ui.parityTitle": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Feature comparison with the browser version"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ブラウザ版との機能比較"
+          }
+        }
+      }
+    },
+    "runtime.ui.parityBaseline": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Baseline: {commit} · {features} main features / {routes} screens / {endpoints} API handlers"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "基準：{commit} · {features}主要機能 / {routes}画面 / {endpoints} APIハンドラー"
+          }
+        }
+      }
+    },
+    "runtime.ui.parityHelp": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Compare the same data, actions, errors, and saved state. LLM settings, Dashboard, and Chat are under implementation and verification. Migration remains incomplete until every feature meets its acceptance criteria."
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "同じデータ・操作・エラー・保存状態を比較します。LLM設定・ダッシュボード・チャットは実装・検証中です。全機能の受け入れ条件を満たすまで移植完了にはしません。"
+          }
+        }
+      }
+    },
+    "runtime.ui.parityFeature": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Feature"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "機能"
+          }
+        }
+      }
+    },
+    "runtime.ui.parityBrowser": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Browser screen"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ブラウザ版の画面"
+          }
+        }
+      }
+    },
+    "runtime.ui.parityStatus": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Status"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "状態"
+          }
+        }
+      }
+    },
+    "runtime.ui.parityInProgress": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Implementation and verification in progress"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "実装・検証中"
+          }
+        }
+      }
+    },
+    "runtime.ui.parityWaiting": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Phase {phase} · Awaiting migration"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "フェーズ{phase}・移植待ち"
+          }
+        }
+      }
     }
   },
   "version": "1.0"

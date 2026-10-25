@@ -7,6 +7,7 @@ import Virtualization
     public private(set) var state: LifecycleState = .idle
     public private(set) var guestReady = false
     public private(set) var lastError: String?
+    public private(set) var failure: AppErrorMessage?
     public private(set) var guestLog = ""
     public private(set) var configuredCPUCount = 0
     public private(set) var lastStopInterruptedTransferCount = 0
@@ -23,7 +24,7 @@ import Virtualization
     public func start(artifacts directory: URL, logs: URL, readinessTimeout: Duration = .seconds(60), dataDisk: URL? = nil, provisioning: GuestProvisioning? = nil) async throws {
         guard mayStart else { throw RuntimeError.invalidTransition(state.rawValue, "starting") }
         try state.transition(to: .starting)
-        lastError = nil; guestReady = false; guestLog = ""; lastStopInterruptedTransferCount = 0
+        lastError = nil; failure = nil; guestReady = false; guestLog = ""; lastStopInterruptedTransferCount = 0
         do {
             guard VZVirtualMachine.isSupported else { throw RuntimeError.unsupported }
             let manifest = try GuestArtifacts.load(from: directory)
@@ -132,7 +133,7 @@ import Virtualization
             fail(RuntimeError.integrity(String(failure.prefix(160))))
         }
     }
-    private func fail(_ error: Error) { cancelBackendUploads(); lastError = error.localizedDescription; if state != .failed { try? state.transition(to: .failed) } }
+    private func fail(_ error: Error) { cancelBackendUploads(); lastError = error.localizedDescription; failure = AppErrorMessage(error, fallback: .runtimeUIUnexpected); if state != .failed { try? state.transition(to: .failed) } }
     // Completion-handler calls stay on our MainActor. Older SDK async overlays treat
     // VZVirtualMachine as a non-Sendable value crossing isolation during `await`.
     private func startMachine(_ vm: VZVirtualMachine) async throws {
