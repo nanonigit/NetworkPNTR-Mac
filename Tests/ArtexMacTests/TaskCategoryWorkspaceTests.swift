@@ -101,7 +101,8 @@ final class TaskCategoryWorkspaceTests: XCTestCase {
         let draft = creation.draftID, text = Data(creation.form.draft.description.utf8)
         XCTAssertTrue(creation.openCategoryCreator(contextID:owner))
         let workspace = try XCTUnwrap(screen.categories), categoryOwner = try XCTUnwrap(workspace.context).id
-        XCTAssertTrue(screen.busy); creation.discard(contextID:owner); creation.close(contextID:owner)
+        XCTAssertTrue(screen.busy); creation.setPickerPresented(true,contextID:owner); XCTAssertFalse(creation.isPicking)
+        creation.discard(contextID:owner); creation.close(contextID:owner)
         XCTAssertEqual(creation.context?.id,owner); XCTAssertEqual(creation.draftID,draft)
         XCTAssertFalse(creation.openTemplateManager(asSeed:false,contextID:owner))
         let forbidden = await creation.submit(contextID:owner); XCTAssertFalse(forbidden)
@@ -195,6 +196,36 @@ final class TaskCategoryWorkspaceTests: XCTestCase {
         let manager = TaskCategoryBindings.presentation(model:model,contextID:next)
         XCTAssertNil(manager.wrappedValue); manager.wrappedValue = nil
         XCTAssertEqual(model.context?.id,next)
+    }
+
+    @MainActor func testInlineExactExistingNameSelectsWithoutDuplicateCreate() async throws {
+        let (api,model,_) = make(); let parent = UUID(), owner = try XCTUnwrap(model.open(tasks:[],inlineOwner:parent))
+        await model.load(contextID:owner)
+        var selected: Int64?; model.onChange = { change,context in
+            XCTAssertEqual(context,parent); if case .saved(let row) = change { selected = row.id }
+        }
+        model.setName("  CATEGORY 8  ",contextID:owner,editorID:model.editorID)
+        let saved = await model.save(contextID:owner,editorID:model.editorID)
+        XCTAssertTrue(saved); XCTAssertEqual(selected,8); XCTAssertNil(model.context)
+        XCTAssertFalse(api.calls.contains { $0.0 == "POST" })
+    }
+    @MainActor func testCatalogReceiptDoesNotCancelOtherCreationOptionReads() async throws {
+        let api = CategoryWorkspaceAPI(), store = TaskStore(service:TaskService(client:CategoryWorkspaceAPI()))
+        let screen = TaskScreenModel(store:store,creationService:TaskCreationService(client:api),categoryService:TaskCategoryService(client:api))
+        let workspace = try XCTUnwrap(screen.categories); api.holdReads = true
+        let background = Task { await workspace.refreshCatalog() }; try await reached { api.reads["/api/task-categories"] != nil }
+        let old = try XCTUnwrap(api.reads["/api/task-categories"])
+        XCTAssertTrue(screen.beginCreate()); let creation = try XCTUnwrap(screen.creation), owner = try XCTUnwrap(creation.context).id
+        let loading = Task { await creation.load(contextID:owner) }; try await reached { api.reads.count == 5 }
+        old.resume(returning:try api.response(["categories":[api.row(9)]])); await background.value
+        api.reads["/api/task-categories"]?.resume(returning:try api.response(["categories":[api.row(8)]]))
+        api.reads["/api/companies"]?.resume(returning:try api.response([["id":1,"name":"company"]]))
+        api.reads["/api/llm/profiles"]?.resume(returning:try api.response(["profiles":[]]))
+        api.reads["/api/task-templates"]?.resume(returning:try api.response(["templates":[]]))
+        api.reads["/api/tasks"]?.resume(returning:try api.response(["tasks":[],"active":""]))
+        await loading.value
+        XCTAssertEqual(creation.categories.value?.map(\.id),[9]); XCTAssertEqual(creation.companies.value?.map(\.id),[1])
+        XCTAssertNotNil(creation.profiles.value); XCTAssertNotNil(creation.sources.value); XCTAssertFalse(creation.isLoading)
     }
 
 }
