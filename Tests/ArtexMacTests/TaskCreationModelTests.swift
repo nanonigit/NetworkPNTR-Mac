@@ -159,4 +159,12 @@ final class TaskCreationModelTests: XCTestCase {
         XCTAssertFalse(accepted); XCTAssertEqual(api.calls.count,before); XCTAssertNotNil(model.failure)
     }
 
+    @MainActor func testTemplateSelectionPreservesEditedFieldsUntilOverwriteDecision() async throws {
+        let (_, model) = make(); let id = try XCTUnwrap(model.open()); await model.load(contextID:id)
+        model.update(\.draft.description,value:"edited description",contextID:id); model.update(\.draft.goal,value:"edited goal",contextID:id)
+        model.addRule(contextID:id)
+        model.chooseTemplate(9,contextID:id)
+        XCTAssertEqual(model.form.draft.description,"edited description"); XCTAssertEqual(model.form.draft.goal,"edited goal"); XCTAssertEqual(model.form.rules.count,1)
+    }
+
 }
