@@ -13,6 +13,7 @@ import SwiftUI
     private var managerBusy: Bool { model.templateManager?.context != nil || model.templateManager?.isMutating == true }
     var body: some View {
         let decisionID = model.pendingTemplate?.id
+        let managerContextID = model.templateManager?.context?.id
         VStack(alignment: .leading, spacing: 12) {
             if model.context?.id == contextID {
                 HStack {
@@ -62,7 +63,7 @@ import SwiftUI
         } message: { decision in
             Text(s(.taskCreateReplaceHelp) + "\n" + decision.template.name)
         }
-        .sheet(item: Binding(get: { model.templateManager?.context }, set: { if $0 == nil, let manager = model.templateManager, let owner = manager.context?.id { manager.close(contextID:owner) } })) { owner in
+        .sheet(item: model.templateManager.map { TaskTemplateBindings.presentation(model:$0,contextID:managerContextID) } ?? .constant(nil)) { owner in
             if let manager = model.templateManager { TaskTemplateManagerView(model:manager,contextID:owner.id) }
         }
         .interactiveDismissDisabled(model.isSubmitting || model.isPicking || model.isUploading || managerBusy)

@@ -2,6 +2,9 @@ import ArtexCore
 import SwiftUI
 
 @MainActor enum TaskTemplateBindings {
+    static func presentation(model: TaskTemplateManager, contextID: UUID?) -> Binding<TaskTemplateContext?> {
+        Binding(get: { model.context }, set: { if $0 == nil, let contextID { model.close(contextID:contextID) } })
+    }
     static func field<Value>(model: TaskTemplateManager, contextID: UUID, editorID: UUID, key: WritableKeyPath<TaskTemplateForm, Value>, fallback: Value) -> Binding<Value> {
         Binding(get: { model.context?.id == contextID && model.editorID == editorID ? model.form[keyPath:key] : fallback },
                 set: { model.update(key,value:$0,contextID:contextID,editorID:editorID) })

@@ -175,3 +175,5 @@ T7はtask-staging-runtime-design.mdに従い、新規使い捨て状態の候補
 T7履歴：30339f0未実装RED→1fd297b名前実行RED3/4→7a9b58e GREEN4、ab1c1be→56ba489 PythonGREEN2、f2adde4→0504549レポートGREEN5/環境3、26cd220→10b82f5後片付けGREEN3。Swift363件（成功362・既存AX1スキップ）、Python60成功。署名VM単発14.85秒/終了0、8レコード/日英一覧が固定参照と一致、12読戻し/上書きなし。参照A/B準備失敗を保持、C成功・全資源削除/元ブラウザ不変。アプリbuild/strict署名成功。実UI/作成/再起動/カーネル信頼性/外部通信/全21/配布は継続。task-staging-runtime-verification.md参照。
 
 T8はtask-template-management-design.mdに従い、テンプレート一覧/新規/作成/編集/削除、分類/傍受ルール、作成フォームからの別名保存、結果不明時の保護、所有ID、日英UIを実装。固定契約/反例をTDD、レビュー/全回帰/署名で検証し、実操作/実ワークフロー比較は継続。比較版とVM隔離は保持します。
+
+T8 チェックポイント: API契約4件、管理・連携12件成功。最終Swift379件（成功378・既存AX1件スキップ）、Python60件成功。行カバレッジはAPI93.27%、管理92.11%、画面外UI83.20%。起動なし署名付きビルド、署名検証、追加21項目の英日同梱一致を確認。変更・読み取り・リセット・画面終了・破棄の所有権修正をレビュー済み。固定比較元21機能/27ルート/243ハンドラを維持。依存定義の追加なしでnpm/pip監査は対象外。実OS操作・保存永続化・ブラウザ画面比較は後日の解除後に実施。Tasks全体、全21機能、クラウド通信、カーネル安定性と配布は未完了。task-template-management-verification.ja.md と bugs/task-template-ownership-investigation.ja.md を参照。

@@ -117,7 +117,7 @@ enum TaskTemplateReceipt { case saved(TaskTemplateOption), deleted(Int64) }
         case .localDiscard: uncertain = false; failure = nil; replace(.init(),id:nil); return (true,nil)
         case let .delete(row):
             let life = lifetime
-            isMutating = true; failure = nil
+            isMutating = true; failure = nil; readTicket = UUID(); isLoading = false
             return (false,Task { await self.remove(row,life:life) })
         }
     }
@@ -160,7 +160,7 @@ enum TaskTemplateReceipt { case saved(TaskTemplateOption), deleted(Int64) }
             guard draft.categoryId.map({ id in categories.contains(where: { $0.id == id }) }) ?? true else { throw TaskTemplateInputError.invalid }
         } catch { failure = AppErrorMessage(error); return false }
         let life = lifetime, selected = selectedID
-        isMutating = true; failure = nil
+        isMutating = true; failure = nil; readTicket = UUID(); isLoading = false
         defer { isMutating = false }
         do {
             let value: TaskTemplateOption
@@ -174,6 +174,7 @@ enum TaskTemplateReceipt { case saved(TaskTemplateOption), deleted(Int64) }
     }
     private func remove(_ row: TaskTemplateOption, life: UUID) async -> Bool {
         defer { isMutating = false }
+        guard life == lifetime, !Task.isCancelled else { return false }
         do {
             let id = try await service.delete(id:row.id)
             guard life == lifetime else { return false }

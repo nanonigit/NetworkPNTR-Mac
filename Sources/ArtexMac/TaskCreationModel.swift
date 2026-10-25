@@ -63,7 +63,7 @@ struct TaskChoiceState<Value> {
         context = nil; pendingTemplate = nil; loadTicket = UUID(); isLoading = false
     }
     func discard(contextID: UUID) {
-        guard context?.id == contextID, !isSubmitting, !isPicking else { return }
+        guard context?.id == contextID, !isSubmitting, !isPicking, templateManager?.context == nil, templateManager?.isMutating != true else { return }
         close(contextID: contextID); clearUploads(); form = .init(); selectedTemplateID = nil; uncertain = false; failure = nil
     }
     func reset() {
@@ -100,14 +100,14 @@ struct TaskChoiceState<Value> {
             if hasText && (!form.draft.description.utf8.elementsEqual(template.description.utf8) || !form.draft.goal.utf8.elementsEqual(template.goal.utf8)) {
                 pendingTemplate = .init(contextID: contextID, template: template); return
             }
-            form.apply(template)
+            form.apply(template); uploadCount = 0; uploadFailure = nil
         }
         selectedTemplateID = id
     }
     func resolveTemplate(id: UUID, apply: Bool, contextID: UUID) {
         guard context?.id == contextID, !isSubmitting, !uncertain, !isUploading, let pending = pendingTemplate,
               pending.id == id, pending.contextID == contextID else { return }
-        if apply { form.apply(pending.template); selectedTemplateID = pending.template.id }
+        if apply { form.apply(pending.template); uploadCount = 0; uploadFailure = nil; selectedTemplateID = pending.template.id }
         pendingTemplate = nil
     }
     func addRule(contextID: UUID) { guard editable(contextID) else { return }; form.rules.append(.init()) }
