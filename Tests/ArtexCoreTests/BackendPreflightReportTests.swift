@@ -39,4 +39,16 @@ final class BackendPreflightReportTests: XCTestCase {
         XCTAssertFalse(GuestBootDiagnostics.credentialsAbsent(logDirectory:root,tokens:tokens))
     }
 
+    func testEarlyFaultCannotDisappearBehindLongCleanTail() throws {
+        let root = FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString)
+        try FileManager.default.createDirectory(at:root,withIntermediateDirectories:false)
+        defer { try? FileManager.default.removeItem(at:root) }
+        let data = Data("Bad rss-counter state\nSegmentation fault\n".utf8) + Data(repeating:120,count:100_000)
+        try data.write(to:root.appendingPathComponent("guest-fixture.log"))
+        let tail = String(decoding:data.suffix(65536),as:UTF8.self)
+        let limitedReport = report(log:tail)
+        let tokenAudit = GuestBootDiagnostics.credentialsAbsent(logDirectory:root,tokens:["transport-fixture"])
+        XCTAssertFalse(limitedReport.passed && tokenAudit, "A clean tail must not hide an earlier fault")
+    }
+
 }
