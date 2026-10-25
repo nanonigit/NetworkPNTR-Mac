@@ -166,6 +166,11 @@ final class TaskCreationUploadTests: XCTestCase {
         let owner = try XCTUnwrap(unavailable.open())
         let missing = await unavailable.uploadFiles(files,language:.english,contextID:owner)
         XCTAssertFalse(missing); XCTAssertNotNil(unavailable.uploadFailure); XCTAssertTrue(api.drafts.isEmpty)
+        for language in AppLanguage.allCases {
+            let hosting = NSHostingView(rootView:TaskCreateAttachments(model:unavailable,contextID:owner).environment(\.locale,language.locale))
+            hosting.frame = NSRect(x:0,y:0,width:600,height:180); hosting.layoutSubtreeIfNeeded()
+            XCTAssertNil(hosting.window); XCTAssertEqual(unavailable.uploadCount,0); XCTAssertTrue(api.drafts.isEmpty)
+        }
         let (foreignAPI,model) = make(); let context = try XCTUnwrap(model.open()); foreignAPI.hold = true
         model.pickerFailed(contextID:UUID()); XCTAssertNil(model.uploadFailure)
         let pending = Task { await model.uploadFiles(self.files,language:.english,contextID:context) }
