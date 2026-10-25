@@ -58,6 +58,7 @@ public enum TaskMutationConfirmation: Sendable {
 
     /// Local navigation only: reading detail does not activate or launch a task.
     public func select(id: String?) async {
+        guard !Task.isCancelled else { return }
         let next: String?
         do { next = try id.map(TaskWire.canonicalID) }
         catch { detail.failure = AppErrorMessage(error); return }
