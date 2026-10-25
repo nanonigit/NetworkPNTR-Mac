@@ -906,5 +906,15 @@
 	<string>ブラウザ版の詳細画面と比較して実装する予定です。</string>
 	<key>shell.taskPending</key>
 	<string>タスク詳細は移植中です</string>
+	<key>task.error.batch</key>
+	<string>1〜100件のタスクを選択してください。</string>
+	<key>task.error.creation</key>
+	<string>タスクの説明、目標、ID、時間制限を確認してください。</string>
+	<key>task.error.id</key>
+	<string>有効なタスクIDを指定してください。</string>
+	<key>task.error.metadata</key>
+	<string>タスク名またはピン留め設定を指定してください。</string>
+	<key>task.error.name</key>
+	<string>タスク名は1〜200文字（Unicodeスカラー）で入力してください。</string>
 </dict>
 </plist>

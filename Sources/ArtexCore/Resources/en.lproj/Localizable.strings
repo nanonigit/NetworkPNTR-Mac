@@ -908,5 +908,15 @@
 	<string>Task details will be implemented and compared with the browser version.</string>
 	<key>shell.taskPending</key>
 	<string>Task details are being migrated</string>
+	<key>task.error.batch</key>
+	<string>Select between 1 and 100 tasks.</string>
+	<key>task.error.creation</key>
+	<string>Check the task description, goal, IDs, and time limits.</string>
+	<key>task.error.id</key>
+	<string>Enter a valid task ID.</string>
+	<key>task.error.metadata</key>
+	<string>Specify a task name or pin setting.</string>
+	<key>task.error.name</key>
+	<string>Enter a task name of 1–200 Unicode characters.</string>
 </dict>
 </plist>

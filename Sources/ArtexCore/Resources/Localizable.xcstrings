@@ -7360,6 +7360,86 @@
           }
         }
       }
+    },
+    "task.error.id": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Enter a valid task ID."
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "有効なタスクIDを指定してください。"
+          }
+        }
+      }
+    },
+    "task.error.metadata": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Specify a task name or pin setting."
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "タスク名またはピン留め設定を指定してください。"
+          }
+        }
+      }
+    },
+    "task.error.name": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Enter a task name of 1–200 Unicode characters."
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "タスク名は1〜200文字（Unicodeスカラー）で入力してください。"
+          }
+        }
+      }
+    },
+    "task.error.creation": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Check the task description, goal, IDs, and time limits."
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "タスクの説明、目標、ID、時間制限を確認してください。"
+          }
+        }
+      }
+    },
+    "task.error.batch": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Select between 1 and 100 tasks."
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "1〜100件のタスクを選択してください。"
+          }
+        }
+      }
     }
   },
   "version": "1.0"

@@ -1,6 +1,11 @@
 import Foundation
 
 public enum AppStringKey: String, CaseIterable, Sendable {
+    case taskErrorID = "task.error.id"
+    case taskErrorMetadata = "task.error.metadata"
+    case taskErrorName = "task.error.name"
+    case taskErrorCreation = "task.error.creation"
+    case taskErrorBatch = "task.error.batch"
     case menuFile = "menu.file"
     case menuEdit = "menu.edit"
     case menuView = "menu.view"
