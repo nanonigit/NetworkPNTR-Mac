@@ -139,3 +139,5 @@ L8チェックポイント：346f7b4表示未実装RED→a4e9c7b GREEN4。Swift2
 L9 menu境界：既存NSMenu／action／responder／shortcut／target／有効状態を保持。既知の標準actionと静的表示名の組だけ翻訳し、登録済みwindow／help／servicesの同一性とroot見出し名＋操作から標準群を識別。未知／独自／装飾／custom view・動的window／service名は保持し、menuを再構築しない。アプリ言語とAppKit didBeginTrackingで更新し、SwiftUIによる差し替えに備え毎回現在mainMenuを取得。selector observer1つを明示stopし、timer／操作実行／保存／VM変更なし。合成menuのmetadata／往復／未知・observer差替／stopと28項目catalogをTDD。実OS dispatchと全動的／未知項目の網羅は解除後。Lazyweb desktop application menu barはCluely隣接メタデータ（.340）で画像証拠ではない。AppKit interopスキルの狭い接続を使い、SDKの通知／登録menu APIを確認。
 
 L9静的menuチェックポイント：8d65447未実装RED→bab27b4 GREEN5、b97a197 Close Window実RED1→b757992 GREEN7。Swift275（成功274・既存AX1スキップ）、Python52、Mac実行objectのmenu行100%／領域96%、署名両言語28項目一致。22selectorのmetadata保持・observer差替／stopを試験、レビュー済み。動的Undo／ExitFullscreen／ShowHide／SwiftUI selector・実tracking／dispatchは解除後で未確認、OS-menu／全21合格にはしない。localization-menu-verification.ja.md参照。
+
+T1 Tasks有限coreはtasks-core-design.ja.mdに従う。作成全optionと一覧／詳細／metadata／control／batch／delete、所有者／変更結果と日英型付き検証を実装。active化の副作用やUI完了扱いなし。RED/GREEN／全回帰／review／署名後、実VM／参照／UI合格を検証する。

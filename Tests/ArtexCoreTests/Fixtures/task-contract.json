@@ -1,0 +1,48 @@
+{
+  "baseline": "e75ae371ad777ffd1eecdd28d2781a6519b05591",
+  "source_sha256": {
+    "server/dto.go": "3676ad9814c02120297b727a3582e47d347d57fe4c0b9ff7b64d77b5f8b0693a",
+    "server/server.go": "2239ad23fad1ec680f6ec2927439892575d037fe1521b73445f0956504341b7f",
+    "server/task_metadata.go": "261536aeaefc720cf9c6e15d2f36d851c0c01e48ef6b444305314ed8b57c8b81",
+    "server/task_control.go": "0a89a33f2779e64f03c3faab0263c6f78e0c5cea66088607674da7f0bc9afc58",
+    "server/server_mgmt.go": "c25118e7409789b8810515eab7c0664321f9b14c54839f622871a423d972f222",
+    "server/manager.go": "ade53a22ae535fc5b04ea14d89ba131da595f8d6badcabe7d66ec613966c93dc",
+    "web/src/lib/api.ts": "18b4529a99b508964348bf83b7777597ca3cb80a64565380e1b1320005700fe1"
+  },
+  "task": {
+    "id": "9007199254740993",
+    "exploration_id": 9007199254740993,
+    "name": "literal 中文 한국어",
+    "pinned": false,
+    "description": "fixture description {name}",
+    "goal": "fixture goal",
+    "status": "created",
+    "created_at": "2026-10-22T12:00:00Z",
+    "created_unix": 1792670400,
+    "completed_at": "",
+    "completed_unix": 0,
+    "last_activity_unix": 0,
+    "paused": false,
+    "queued": false,
+    "tokens": {
+      "input_tokens": 9007199254740993,
+      "output_tokens": 2,
+      "cache_read_tokens": 3,
+      "cache_write_tokens": 4
+    },
+    "goals_total": 2,
+    "goals_met": 1,
+    "in_flight": 0,
+    "findings": {
+      "critical": 1,
+      "high": 2,
+      "medium": 3,
+      "low": 4
+    },
+    "llm_profile_ids": [],
+    "llm_failover_state": "default",
+    "source_task_ids": [],
+    "company_ids": null,
+    "coverage_enabled": true
+  }
+}
