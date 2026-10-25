@@ -114,4 +114,34 @@ final class TaskStagingUploadTests: XCTestCase {
         _ = try await client.uploadTaskStaging(draftID:draft,files:files,progress:nil)
         XCTAssertEqual(api.calls.last?.2,"new.jwt")
     }
+    @MainActor func testByteDistinctNamesAndAggregateLimit() async throws {
+        let api = StagingAPI(), session = AuthenticationSession(client:api,vault:StagingVault(),setupToken:"fixture")
+        await session.refresh(); let client = AuthenticatedBackendClient(session:session)
+        var items: [[String:Any]] = []
+        for name in ["é.txt", "e\u{301}.txt"] {
+            items.append((try JSONSerialization.jsonObject(with:raw(name:name)) as! [String:Any])["attachments"].flatMap { ($0 as? [[String:Any]])?.first }!)
+        }
+        api.response = .init(status:200,body:try JSONSerialization.data(withJSONObject:["attachments":items]))
+        let result = try await client.uploadTaskStaging(draftID:draft,files:files+files,progress:nil)
+        XCTAssertEqual(result.count,2); XCTAssertNotEqual(result[0].id,result[1].id)
+        for index in items.indices { items[index]["size"] = ChatMultipartPlan.maximumBytes }
+        api.response = .init(status:200,body:try JSONSerialization.data(withJSONObject:["attachments":items]))
+        do { _ = try await client.uploadTaskStaging(draftID:draft,files:files+files,progress:nil); XCTFail("Impossible aggregate size accepted") } catch { }
+    }
+    @MainActor func testCancellationClosesProgressAndRejectsLateSuccessWithoutRetry() async throws {
+        let api = StagingAPI(), session = AuthenticationSession(client:api,vault:StagingVault(),setupToken:"fixture")
+        await session.refresh(); let client = AuthenticatedBackendClient(session:session)
+        var reply: CheckedContinuation<BackendHTTPResponse,Error>?
+        api.handler = { try await withCheckedThrowingContinuation { reply = $0 } }
+        let observed = StagingObservedProgress()
+        let pending = Task { @MainActor in try await client.uploadTaskStaging(draftID:self.draft,files:self.files,progress:{ observed.record($0) }) }
+        while reply == nil { await Task.yield() }
+        pending.cancel(); api.progress?(.init(sentBodyBytes:2,totalBodyBytes:10))
+        reply?.resume(returning:.init(status:200,body:try raw()))
+        do { _ = try await pending.value; XCTFail("Late success accepted") } catch { XCTAssertTrue(error is CancellationError) }
+        api.progress?(.init(sentBodyBytes:3,totalBodyBytes:10))
+        XCTAssertEqual(observed.received,1); XCTAssertEqual(api.calls.count,1); XCTAssertEqual(session.phase,.authenticated)
+        XCTAssertThrowsError(try JSONDecoder().decode(TaskStagedAttachment.self,from:Data(#"{"name":"a","path":"uploads/a","size":0,"abs":"/x"}"#.utf8)))
+    }
+
 }
