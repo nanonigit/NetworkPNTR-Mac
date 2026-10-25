@@ -1,0 +1,172 @@
+{
+  "entries": [
+    {
+      "key": "menu.file",
+      "case": "menuFile",
+      "en": "File",
+      "ja": "ファイル"
+    },
+    {
+      "key": "menu.edit",
+      "case": "menuEdit",
+      "en": "Edit",
+      "ja": "編集"
+    },
+    {
+      "key": "menu.view",
+      "case": "menuView",
+      "en": "View",
+      "ja": "表示"
+    },
+    {
+      "key": "menu.window",
+      "case": "menuWindow",
+      "en": "Window",
+      "ja": "ウインドウ"
+    },
+    {
+      "key": "menu.help",
+      "case": "menuHelp",
+      "en": "Help",
+      "ja": "ヘルプ"
+    },
+    {
+      "key": "menu.services",
+      "case": "menuServices",
+      "en": "Services",
+      "ja": "サービス"
+    },
+    {
+      "key": "menu.about",
+      "case": "menuAbout",
+      "en": "About {app}",
+      "ja": "{app}について"
+    },
+    {
+      "key": "menu.hide",
+      "case": "menuHide",
+      "en": "Hide {app}",
+      "ja": "{app}を隠す"
+    },
+    {
+      "key": "menu.hideOthers",
+      "case": "menuHideOthers",
+      "en": "Hide Others",
+      "ja": "ほかを隠す"
+    },
+    {
+      "key": "menu.showAll",
+      "case": "menuShowAll",
+      "en": "Show All",
+      "ja": "すべてを表示"
+    },
+    {
+      "key": "menu.quit",
+      "case": "menuQuit",
+      "en": "Quit {app}",
+      "ja": "{app}を終了"
+    },
+    {
+      "key": "menu.close",
+      "case": "menuClose",
+      "en": "Close",
+      "ja": "閉じる"
+    },
+    {
+      "key": "menu.undo",
+      "case": "menuUndo",
+      "en": "Undo",
+      "ja": "取り消す"
+    },
+    {
+      "key": "menu.redo",
+      "case": "menuRedo",
+      "en": "Redo",
+      "ja": "やり直す"
+    },
+    {
+      "key": "menu.cut",
+      "case": "menuCut",
+      "en": "Cut",
+      "ja": "カット"
+    },
+    {
+      "key": "menu.copy",
+      "case": "menuCopy",
+      "en": "Copy",
+      "ja": "コピー"
+    },
+    {
+      "key": "menu.paste",
+      "case": "menuPaste",
+      "en": "Paste",
+      "ja": "ペースト"
+    },
+    {
+      "key": "menu.pastePlain",
+      "case": "menuPastePlain",
+      "en": "Paste and Match Style",
+      "ja": "ペーストしてスタイルを合わせる"
+    },
+    {
+      "key": "menu.delete",
+      "case": "menuDelete",
+      "en": "Delete",
+      "ja": "削除"
+    },
+    {
+      "key": "menu.selectAll",
+      "case": "menuSelectAll",
+      "en": "Select All",
+      "ja": "すべてを選択"
+    },
+    {
+      "key": "menu.minimize",
+      "case": "menuMinimize",
+      "en": "Minimize",
+      "ja": "しまう"
+    },
+    {
+      "key": "menu.zoom",
+      "case": "menuZoom",
+      "en": "Zoom",
+      "ja": "拡大／縮小"
+    },
+    {
+      "key": "menu.bringAll",
+      "case": "menuBringAll",
+      "en": "Bring All to Front",
+      "ja": "すべてを手前に移動"
+    },
+    {
+      "key": "menu.fullScreen",
+      "case": "menuFullScreen",
+      "en": "Enter Full Screen",
+      "ja": "フルスクリーンにする"
+    },
+    {
+      "key": "menu.sidebar",
+      "case": "menuSidebar",
+      "en": "Toggle Sidebar",
+      "ja": "サイドバーの表示を切り替える"
+    },
+    {
+      "key": "menu.toolbar",
+      "case": "menuToolbar",
+      "en": "Toggle Toolbar",
+      "ja": "ツールバーの表示を切り替える"
+    },
+    {
+      "key": "menu.customizeToolbar",
+      "case": "menuCustomizeToolbar",
+      "en": "Customize Toolbar…",
+      "ja": "ツールバーをカスタマイズ…"
+    },
+    {
+      "key": "menu.appHelp",
+      "case": "menuAppHelp",
+      "en": "{app} Help",
+      "ja": "{app}ヘルプ"
+    }
+  ]
+}
