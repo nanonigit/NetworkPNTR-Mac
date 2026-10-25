@@ -29,6 +29,7 @@ import SwiftUI
                         categoryPicker
                         VStack(alignment: .leading) { Text(s(.taskUIDescription)).font(.headline); TextEditor(text: field(\.draft.description, "")).frame(minHeight: 90).border(.quaternary) }
                         VStack(alignment: .leading) { Text(s(.taskUIGoal)).font(.headline); TextEditor(text: field(\.draft.goal, "")).frame(minHeight: 90).border(.quaternary) }
+                        TaskCreateAttachments(model: model, contextID: contextID)
                         TaskCreateSelectors(model: model, contextID: contextID)
                         TaskCreateRules(model: model, contextID: contextID)
                         DisclosureGroup(s(.taskCreateAdvanced)) {
@@ -45,12 +46,12 @@ import SwiftUI
                 else if let failure = model.failure { Text(failure.text(language: language)).foregroundStyle(.red) }
                 Divider()
                 HStack {
-                    Button(s(.taskCreateDiscard)) { model.discard(contextID: contextID) }.help(s(.taskCreateDiscardHelp)).disabled(model.isSubmitting)
+                    Button(s(.taskCreateDiscard)) { model.discard(contextID: contextID) }.help(s(.taskCreateDiscardHelp)).disabled(model.isSubmitting || model.isPicking)
                     Spacer()
                     if model.isSubmitting { ProgressView().controlSize(.small) }
-                    Button(s(model.uncertain ? .taskUIClose : .taskUICancel)) { model.close(contextID: contextID) }.keyboardShortcut(.cancelAction).disabled(model.isSubmitting)
+                    Button(s(model.uncertain ? .taskUIClose : .taskUICancel)) { model.close(contextID: contextID) }.keyboardShortcut(.cancelAction).disabled(model.isSubmitting || model.isPicking)
                     Button(s(.taskCreateCreate)) { Task { _ = await model.submit(contextID: contextID) } }
-                        .keyboardShortcut(.defaultAction).disabled(model.isSubmitting || model.isLoading || model.uncertain || model.pendingTemplate != nil)
+                        .keyboardShortcut(.defaultAction).disabled(model.isSubmitting || model.isLoading || model.isPicking || model.isUploading || model.uncertain || model.pendingTemplate != nil)
                 }
             }
         }.padding(20).frame(width: 640, height: 600)
@@ -60,7 +61,7 @@ import SwiftUI
         } message: { decision in
             Text(s(.taskCreateReplaceHelp) + "\n" + decision.template.name)
         }
-        .interactiveDismissDisabled(model.isSubmitting)
+        .interactiveDismissDisabled(model.isSubmitting || model.isPicking || model.isUploading)
         .task { await model.load(contextID: contextID) }
     }
     private var templatePicker: some View {
@@ -70,6 +71,7 @@ import SwiftUI
                 ForEach(model.templates.value ?? []) { Text($0.name).tag($0.id) }
                 if let id = model.selectedTemplateID, !(model.templates.value ?? []).contains(where: { $0.id == id }) { Text(unavailable(id)).tag(id) }
             }
+            .disabled(model.isUploading || model.isPicking)
             if let error = model.templates.failure { Text(error.text(language: language)).font(.caption).foregroundStyle(.red) }
         }
     }

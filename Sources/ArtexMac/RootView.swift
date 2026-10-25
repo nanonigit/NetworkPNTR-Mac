@@ -103,7 +103,7 @@ struct RootView: View {
                 guard !Task.isCancelled, session.phase == .authenticated else { return }
                 taskScreen?.reset()
                 let client = AuthenticatedBackendClient(session: session)
-                taskScreen = TaskScreenModel(store: TaskStore(service: TaskService(client: client)), creationService: TaskCreationService(client: client))
+                taskScreen = TaskScreenModel(store: TaskStore(service: TaskService(client: client)), creationService: TaskCreationService(client: client), stagingUploader: client)
                 taskOwner = ObjectIdentifier(session)
             }
         }
