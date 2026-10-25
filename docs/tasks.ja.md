@@ -163,3 +163,5 @@ B1はboot-preflight-design.mdに従い、空/非空と検査異常を区別し�
 B1診断チェックポイント：終了分類/全ログ監査を実装・レビュー、Swift337件（成功336・既存AX1スキップ）、Python54成功。旧/修正候補の隔離単発起動は成功。過去障害/信頼性/実UI/外部通信は未完了。boot-preflight-verification.ja.md参照。
 
 T5はtasks-staging-design.mdに従い、UUIDの作成前添付を既存の上限付きmultipart/vsockと認証世代/進捗ガードへ接続します。ゲストの下書きパスを厳密検証しUnicode原文を保持、ホストURLには変換しません。TDD・不正応答/件数/認証世代/取消/ヘッダ試験、レビュー/全体回帰/署名を実施。作成モデル/UI/説明への一覧追加と実VM/ブラウザ添付比較は後続ゲートで、通信層のみのためLazyweb対象外です。
+
+T5履歴：0c5b0cb RED→e84f3be GREEN5、4e36255合計実行RED1/7→dae79a8 GREEN7、3efadea実クライアントGREEN8。Swift345件（成功344・既存AX1スキップ）/Python54成功、添付メタデータ/ヘッダ行・領域100%、共通認証行100%。署名ビルド/strict検証成功、固定比較ソース/目録を保持・レビュー済。作成状態/UI/英日一覧/実添付/比較は未完了。tasks-staging-verification.md参照。

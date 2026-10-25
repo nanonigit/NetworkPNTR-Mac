@@ -1,0 +1,36 @@
+{
+  "phase": "T5",
+  "baseline": "e75ae371ad777ffd1eecdd28d2781a6519b05591",
+  "baseline_clean": true,
+  "source_sha256": {
+    "web/src/app/(main)/function/tasks/page.tsx": "f1fb3304b87085c78c84cbc5bcc71117a63a281d3a17a22e438b4b2f357f6ef3",
+    "web/src/lib/api.ts": "18b4529a99b508964348bf83b7777597ca3cb80a64565380e1b1320005700fe1",
+    "server/chatupload.go": "b853889e74770ef7c5d6cc1ab3d769882dbadb11e1bab3ff9b4939241aa38f63",
+    "server/manager.go": "ade53a22ae535fc5b04ea14d89ba131da595f8d6badcabe7d66ec613966c93dc"
+  },
+  "contract": {
+    "request": "POST /api/chat/upload?scope=staging&id=<lowercase UUID>",
+    "multipart_field": "file",
+    "maximum_request_bytes": 134217728,
+    "guest_data_root": "/state/app/data",
+    "response_fields": [
+      "name",
+      "path",
+      "size",
+      "abs"
+    ],
+    "collision_rename": true,
+    "possible_partial_writes_on_error": true
+  },
+  "comparison_scope": "fixed source contract, not visible or live runtime parity",
+  "acceptance": {
+    "task_creation_model_wired": false,
+    "native_picker_wired": false,
+    "localized_manifest_wired": false,
+    "actual_vm_staging_upload_verified": false,
+    "visible_browser_native_parity_verified": false,
+    "tasks_feature_complete": false
+  },
+  "no_host_AI_execution": true,
+  "no_host_guest_share": true
+}

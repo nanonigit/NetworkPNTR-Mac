@@ -1,0 +1,113 @@
+{
+  "phase": "T5",
+  "code_commit": "3efadea78c028716463ef0693adf4d960847ad5e",
+  "checkpoints": {
+    "initial_red": "0c5b0cb",
+    "initial_green": "e84f3be",
+    "aggregate_red": "4e36255",
+    "aggregate_green": "dae79a8",
+    "concrete_client_green": "3efadea"
+  },
+  "verification": {
+    "swift_total": 345,
+    "swift_passed": 344,
+    "swift_existing_ax_skip": 1,
+    "staging_focused_passed": 8,
+    "python_passed": 54,
+    "swift_terminal_exit": 0,
+    "python_terminal_exit": 0,
+    "app_build_terminal_exit": 0,
+    "strict_ad_hoc_signature_verified": true,
+    "baseline_inventory": {
+      "features": 21,
+      "routes": 27,
+      "handlers": 243,
+      "parity": "pending"
+    }
+  },
+  "coverage": {
+    "AuthenticationSession.swift": {
+      "lines": {
+        "count": 152,
+        "covered": 152,
+        "percent": 100
+      },
+      "regions": {
+        "count": 133,
+        "covered": 120,
+        "notcovered": 13,
+        "percent": 90.22556390977444
+      }
+    },
+    "BackendJSONClient.swift": {
+      "lines": {
+        "count": 46,
+        "covered": 39,
+        "percent": 84.78260869565217
+      },
+      "regions": {
+        "count": 27,
+        "covered": 21,
+        "notcovered": 6,
+        "percent": 77.77777777777779
+      }
+    },
+    "BackendMultipartRequest.swift": {
+      "lines": {
+        "count": 18,
+        "covered": 18,
+        "percent": 100
+      },
+      "regions": {
+        "count": 12,
+        "covered": 12,
+        "notcovered": 0,
+        "percent": 100
+      }
+    },
+    "LLMService.swift": {
+      "lines": {
+        "count": 99,
+        "covered": 98,
+        "percent": 98.98989898989899
+      },
+      "regions": {
+        "count": 91,
+        "covered": 80,
+        "notcovered": 11,
+        "percent": 87.91208791208791
+      }
+    },
+    "TaskStagedAttachment.swift": {
+      "lines": {
+        "count": 23,
+        "covered": 23,
+        "percent": 100
+      },
+      "regions": {
+        "count": 22,
+        "covered": 22,
+        "notcovered": 0,
+        "percent": 100
+      }
+    }
+  },
+  "scope": "typed authenticated staging transport; mocks and unstarted concrete client, not live upload",
+  "runtime_changes": {
+    "guest_nic_added": false,
+    "host_share_added": false,
+    "new_host_server_added": false,
+    "host_AI_command_executed": false,
+    "raw_guest_paths_opened_on_host": false,
+    "new_VM_boot_attempted": false
+  },
+  "pending": [
+    "creation model stable draft ownership and upload lifecycle",
+    "native picker/progress/create busy guard",
+    "en/ja upload manifest in task description",
+    "actual VM file upload and persisted payload comparison",
+    "visible browser/native UI/UX comparison",
+    "previous intermittent kernel faults and runtime reliability",
+    "all21 feature acceptance"
+  ]
+}
