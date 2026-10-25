@@ -1,0 +1,154 @@
+{
+  "phase": "T6",
+  "code_commit": "d63a0b35e49f335d5ad8299170ea527749d0d869",
+  "baseline": "e75ae371ad777ffd1eecdd28d2781a6519b05591",
+  "baseline_clean": true,
+  "browser_manifest_oracle": {
+    "source": "web/src/app/(main)/function/tasks/page.tsx",
+    "source_sha256": "f1fb3304b87085c78c84cbc5bcc71117a63a281d3a17a22e438b4b2f357f6ef3",
+    "cases": 126,
+    "fixture_sha256": "7ff7882f2ae8afadce2e293d3eddab8e917da4965dd26bc5073916d7c996b973",
+    "execution_scope": "extracted pure fmtBytes/appendUploads only; no upstream application or agent on host"
+  },
+  "tests": {
+    "swift_total": 358,
+    "swift_passed": 357,
+    "swift_existing_AX_skip": 1,
+    "core_cases": 290,
+    "mac_cases": 68,
+    "new_core_cases": 4,
+    "new_mac_cases": 9,
+    "python_passed": 54,
+    "swift_terminal_exit": 0,
+    "python_terminal_exit": 0,
+    "intermediate_picker_related_cases": 27,
+    "incorrect_commit_title_28_is_not_evidence": true
+  },
+  "coverage": {
+    "ChatText.swift": {
+      "lines": {
+        "count": 17,
+        "covered": 17,
+        "percent": 100
+      },
+      "regions": {
+        "count": 13,
+        "covered": 13,
+        "notcovered": 0,
+        "percent": 100
+      }
+    },
+    "TaskUploadManifest.swift": {
+      "lines": {
+        "count": 18,
+        "covered": 18,
+        "percent": 100
+      },
+      "regions": {
+        "count": 16,
+        "covered": 16,
+        "notcovered": 0,
+        "percent": 100
+      }
+    },
+    "ChatAttachmentPickerButton.swift": {
+      "lines": {
+        "count": 54,
+        "covered": 40,
+        "percent": 74.07407407407408
+      },
+      "regions": {
+        "count": 21,
+        "covered": 14,
+        "notcovered": 7,
+        "percent": 66.66666666666666
+      }
+    },
+    "TaskCreateAttachments.swift": {
+      "lines": {
+        "count": 98,
+        "covered": 79,
+        "percent": 80.61224489795919
+      },
+      "regions": {
+        "count": 31,
+        "covered": 19,
+        "notcovered": 12,
+        "percent": 61.29032258064516
+      }
+    },
+    "TaskCreationModel.swift": {
+      "lines": {
+        "count": 270,
+        "covered": 268,
+        "percent": 99.25925925925925
+      },
+      "regions": {
+        "count": 195,
+        "covered": 178,
+        "notcovered": 17,
+        "percent": 91.28205128205128
+      }
+    },
+    "TaskCreationUploadSelection.swift": {
+      "lines": {
+        "count": 12,
+        "covered": 12,
+        "percent": 100
+      },
+      "regions": {
+        "count": 6,
+        "covered": 6,
+        "notcovered": 0,
+        "percent": 100
+      }
+    }
+  },
+  "resources": {
+    "locales": [
+      "en",
+      "ja"
+    ],
+    "new_upload_keys": 8,
+    "signed_bundle_values_exact": true,
+    "new_upload_resource_hangul": 0
+  },
+  "app": {
+    "build_only_exit": 0,
+    "strict_ad_hoc_signature_verified": true,
+    "default_guest_manifest_matches_bundle": true,
+    "candidate_promoted": false,
+    "launched": false,
+    "installed": false
+  },
+  "research": {
+    "query": "file attachment upload form",
+    "desktop_reference": {
+      "company": "any.do",
+      "similarity": 0.452713,
+      "url": "https://www.any.do/contact_form"
+    },
+    "adjacent_mobile_reference": {
+      "company": "doordash",
+      "similarity": 0.9
+    },
+    "images_visually_inspected": false,
+    "use": "limited metadata reference; pinned browser remains authoritative"
+  },
+  "proof_scope": {
+    "confirmed_multi_file_manifest_and_count": true,
+    "latest_text_append": true,
+    "language_switch_does_not_rewrite_existing_text": true,
+    "close_keeps_confirmed_draft": true,
+    "reset_discard_confirmed_create_rotate_draft": true,
+    "stale_operations_rejected": true,
+    "scopes_balanced_in_injected_tests": true,
+    "parent_stop_cancels_and_invalidates": true,
+    "no_automatic_retry": true,
+    "new_real_vm_boot": false,
+    "actual_guest_transfer": false,
+    "visible_ui_parity": false,
+    "actual_security_scoped_selection": false,
+    "all21_features_accepted": false
+  }
+}

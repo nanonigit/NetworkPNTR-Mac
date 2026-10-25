@@ -167,3 +167,5 @@ T5はtasks-staging-design.mdに従い、UUIDの作成前添付を既存の上限
 T5履歴：0c5b0cb RED→e84f3be GREEN5、4e36255合計実行RED1/7→dae79a8 GREEN7、3efadea実クライアントGREEN8。Swift345件（成功344・既存AX1スキップ）/Python54成功、添付メタデータ/ヘッダ行・領域100%、共通認証行100%。署名ビルド/strict検証成功、固定比較ソース/目録を保持・レビュー済。作成状態/UI/英日一覧/実添付/比較は未完了。tasks-staging-verification.md参照。
 
 T6はtasks-staging-ui-design.mdに従い、T5通信を作成下書き・明示的ファイル選択・取消可能な進捗・参照版どおりの日英一覧へ接続します。閉じると本文保持、破棄/リセット/作成確定で下書きID更新、遅延応答を拒否し転送/選択中の作成を防止。TDD/レビュー/全体回帰/署名リソース、実UI比較は解除後のままです。
+
+T6履歴：5bd60c9→435b654 CoreGREEN3、654cc90→215d3edモデルGREEN4、ef21ef4参照126、ebd3176→e2b1541 UI GREEN5、60a267b→603a47a権限境界GREEN6、a19a09d GREEN7、4f8514a親停止の実行RED9失敗→66440ab GREEN12、1c73474→72115f3案内GREEN27（題名28は誤記）、f5d6b02/d63a0b3追加。最終Swift358件（成功357・既存AX1スキップ）、Python54成功、署名/日英8キー一致、レビュー済。UI/一覧を接続、実操作/OS権限/VMとブラウザ実添付/全21機能/実行環境/配布は未完了。tasks-staging-ui-verification.md参照。
