@@ -916,5 +916,117 @@
 	<string>タスク名またはピン留め設定を指定してください。</string>
 	<key>task.error.name</key>
 	<string>タスク名は1〜200文字（Unicodeスカラー）で入力してください。</string>
+	<key>task.ui.active</key>
+	<string>アクティブタスク</string>
+	<key>task.ui.all</key>
+	<string>すべての状態</string>
+	<key>task.ui.ascending</key>
+	<string>昇順</string>
+	<key>task.ui.cancel</key>
+	<string>キャンセル</string>
+	<key>task.ui.category</key>
+	<string>分類</string>
+	<key>task.ui.changed</key>
+	<string>タスク {id} を更新しました。</string>
+	<key>task.ui.cleanupAssets</key>
+	<string>関連アセットを削除</string>
+	<key>task.ui.cleanupCounts</key>
+	<string>アセット削除: {assets}、関連解除: {detached}、通信: {traffic}、検出: {findings}、LLM記録: {llm}。</string>
+	<key>task.ui.cleanupFiles</key>
+	<string>タスクのファイルを削除</string>
+	<key>task.ui.cleanupFindings</key>
+	<string>検出結果を削除</string>
+	<key>task.ui.cleanupLLM</key>
+	<string>LLM記録を削除</string>
+	<key>task.ui.cleanupTraffic</key>
+	<string>記録された通信を削除</string>
+	<key>task.ui.cleanupWarning</key>
+	<string>タスクは削除済みですが、一部の後処理に確認が必要です。</string>
+	<key>task.ui.close</key>
+	<string>閉じる</string>
+	<key>task.ui.completed</key>
+	<string>完了日時</string>
+	<key>task.ui.created</key>
+	<string>作成日時</string>
+	<key>task.ui.days</key>
+	<string>{a}日 {b}時間</string>
+	<key>task.ui.delete</key>
+	<string>タスクを削除…</string>
+	<key>task.ui.deleteConfirm</key>
+	<string>削除する</string>
+	<key>task.ui.deleteHelp</key>
+	<string>このタスクを完全に削除します。以下で選択しない関連データは保持します。</string>
+	<key>task.ui.deleteTitle</key>
+	<string>タスクを削除</string>
+	<key>task.ui.deleted</key>
+	<string>タスク {id} を削除しました。</string>
+	<key>task.ui.descending</key>
+	<string>降順</string>
+	<key>task.ui.description</key>
+	<string>説明</string>
+	<key>task.ui.duration</key>
+	<string>実行時間</string>
+	<key>task.ui.empty</key>
+	<string>タスクはまだありません</string>
+	<key>task.ui.filesDeleted</key>
+	<string>タスクのファイルを削除しました。</string>
+	<key>task.ui.findings</key>
+	<string>検出結果</string>
+	<key>task.ui.goal</key>
+	<string>目標</string>
+	<key>task.ui.goals</key>
+	<string>目標</string>
+	<key>task.ui.hours</key>
+	<string>{a}時間 {b}分</string>
+	<key>task.ui.iD</key>
+	<string>ID</string>
+	<key>task.ui.loading</key>
+	<string>タスクを読み込み中…</string>
+	<key>task.ui.login</key>
+	<string>タスクを表示・管理するにはログインしてください。</string>
+	<key>task.ui.minutes</key>
+	<string>{a}分 {b}秒</string>
+	<key>task.ui.name</key>
+	<string>名前</string>
+	<key>task.ui.noMatch</key>
+	<string>一致するタスクがありません</string>
+	<key>task.ui.pause</key>
+	<string>一時停止</string>
+	<key>task.ui.pin</key>
+	<string>ピン留め</string>
+	<key>task.ui.queued</key>
+	<string>待機中</string>
+	<key>task.ui.refresh</key>
+	<string>更新</string>
+	<key>task.ui.rename</key>
+	<string>名前を変更</string>
+	<key>task.ui.resume</key>
+	<string>再開</string>
+	<key>task.ui.save</key>
+	<string>保存</string>
+	<key>task.ui.search</key>
+	<string>タスクを検索</string>
+	<key>task.ui.seconds</key>
+	<string>{a}秒</string>
+	<key>task.ui.select</key>
+	<string>タスクを選択すると詳細を表示します。</string>
+	<key>task.ui.sort</key>
+	<string>並べ替え</string>
+	<key>task.ui.stale</key>
+	<string>以前取得した情報を表示しています。更新して現在の状態を確認してください。</string>
+	<key>task.ui.status</key>
+	<string>状態</string>
+	<key>task.ui.title</key>
+	<string>タスク</string>
+	<key>task.ui.tokens</key>
+	<string>トークン</string>
+	<key>task.ui.uncategorized</key>
+	<string>未分類</string>
+	<key>task.ui.uncertain</key>
+	<string>操作がサーバーに届いている可能性があります。再操作の前に更新して状態を確認してください。</string>
+	<key>task.ui.unnamed</key>
+	<string>タスク {id}</string>
+	<key>task.ui.unpin</key>
+	<string>ピン留めを解除</string>
 </dict>
 </plist>

@@ -9,6 +9,8 @@ struct RootView: View {
     @State private var catalog: FeatureCatalog?
     @State private var catalogError: String?
     @State private var taskDetailID: String?
+    @State private var taskScreen: TaskScreenModel?
+    @State private var taskOwner: ObjectIdentifier?
     var body: some View {
         NavigationSplitView {
             List(selection: $selection) {
@@ -38,12 +40,18 @@ struct RootView: View {
                 DashboardView(session: session) { destination in
                     switch destination {
                     case .feature(let id): selection = id
-                    case .task(let id): taskDetailID = id
+                    case .task(let id): taskDetailID = id; selection = "tasks"
                     }
                 }.id(ObjectIdentifier(session))
             }
             else if selection == "dashboard" {
                 ContentUnavailableView(s(.loginRequired), systemImage: "person.crop.circle", description: Text(s(.dashboardLogin)))
+            }
+            else if selection == "tasks", let session = environment.authentication, session.phase == .authenticated {
+                taskContent(session)
+            }
+            else if selection == "tasks" {
+                ContentUnavailableView(s(.loginRequired), systemImage: "person.crop.circle", description: Text(s(.taskUILogin)))
             }
             else if selection == "chat", let session = environment.authentication, session.phase == .authenticated {
                 ChatView(session: session).id(ObjectIdentifier(session))
@@ -77,21 +85,26 @@ struct RootView: View {
                 .help(s(.languageHelp))
             }
         }
-        .sheet(isPresented: Binding(get: { taskDetailID != nil }, set: { if !$0 { taskDetailID = nil } })) {
-            VStack(alignment: .leading, spacing: 16) {
-                Label(s(.taskPending), systemImage: "hammer").font(.title2.bold())
-                Text(s(.selectedTask) + (taskDetailID ?? "")).textSelection(.enabled)
-                Text(s(.taskComparison))
-                Button(s(.close)) { taskDetailID = nil }.keyboardShortcut(.cancelAction)
-            }.padding(28).frame(minWidth: 440)
-        }
         .task {
             do { catalog = try FeatureCatalog.load() } catch { catalogError = error.localizedDescription }
             // Diagnostic startup belongs to its validated plan, not this UI task.
             if RuntimeFactory.diagnosticsDirectory == nil { await environment.start() }
         }
         .onChange(of: environment.authentication?.phase) { _, phase in
+            if phase != .authenticated { taskScreen?.reset(); taskDetailID = nil }
             if phase == .needsSetup || phase == .needsLogin || phase == .unavailable { selection = "auth" }
+        }
+    }
+    @ViewBuilder private func taskContent(_ session: AuthenticationSession) -> some View {
+        if taskOwner == ObjectIdentifier(session), let taskScreen {
+            TasksView(model: taskScreen, requestedID: $taskDetailID)
+        } else {
+            ProgressView().task {
+                guard !Task.isCancelled, session.phase == .authenticated else { return }
+                taskScreen?.reset()
+                taskScreen = TaskScreenModel(store: TaskStore(service: TaskService(client: AuthenticatedBackendClient(session: session))))
+                taskOwner = ObjectIdentifier(session)
+            }
         }
     }
     private func s(_ key: AppStringKey) -> String { AppStrings.text(key, language: language.language) }

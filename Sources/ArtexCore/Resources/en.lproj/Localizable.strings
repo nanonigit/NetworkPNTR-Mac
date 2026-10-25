@@ -918,5 +918,117 @@
 	<string>Specify a task name or pin setting.</string>
 	<key>task.error.name</key>
 	<string>Enter a task name of 1–200 Unicode characters.</string>
+	<key>task.ui.active</key>
+	<string>Active task</string>
+	<key>task.ui.all</key>
+	<string>All statuses</string>
+	<key>task.ui.ascending</key>
+	<string>Ascending</string>
+	<key>task.ui.cancel</key>
+	<string>Cancel</string>
+	<key>task.ui.category</key>
+	<string>Category</string>
+	<key>task.ui.changed</key>
+	<string>Task {id} updated.</string>
+	<key>task.ui.cleanupAssets</key>
+	<string>Delete linked assets</string>
+	<key>task.ui.cleanupCounts</key>
+	<string>Assets deleted: {assets}; detached: {detached}; traffic: {traffic}; findings: {findings}; LLM records: {llm}.</string>
+	<key>task.ui.cleanupFiles</key>
+	<string>Delete task files</string>
+	<key>task.ui.cleanupFindings</key>
+	<string>Delete findings</string>
+	<key>task.ui.cleanupLLM</key>
+	<string>Delete LLM records</string>
+	<key>task.ui.cleanupTraffic</key>
+	<string>Delete captured traffic</string>
+	<key>task.ui.cleanupWarning</key>
+	<string>The task was deleted, but some cleanup needs attention.</string>
+	<key>task.ui.close</key>
+	<string>Close</string>
+	<key>task.ui.completed</key>
+	<string>Completed</string>
+	<key>task.ui.created</key>
+	<string>Created</string>
+	<key>task.ui.days</key>
+	<string>{a}d {b}h</string>
+	<key>task.ui.delete</key>
+	<string>Delete task…</string>
+	<key>task.ui.deleteConfirm</key>
+	<string>Delete</string>
+	<key>task.ui.deleteHelp</key>
+	<string>Delete this task permanently. Related data is kept unless selected below.</string>
+	<key>task.ui.deleteTitle</key>
+	<string>Delete task</string>
+	<key>task.ui.deleted</key>
+	<string>Task {id} deleted.</string>
+	<key>task.ui.descending</key>
+	<string>Descending</string>
+	<key>task.ui.description</key>
+	<string>Description</string>
+	<key>task.ui.duration</key>
+	<string>Duration</string>
+	<key>task.ui.empty</key>
+	<string>No tasks yet</string>
+	<key>task.ui.filesDeleted</key>
+	<string>Task files deleted.</string>
+	<key>task.ui.findings</key>
+	<string>Findings</string>
+	<key>task.ui.goal</key>
+	<string>Goal</string>
+	<key>task.ui.goals</key>
+	<string>Goals</string>
+	<key>task.ui.hours</key>
+	<string>{a}h {b}m</string>
+	<key>task.ui.iD</key>
+	<string>ID</string>
+	<key>task.ui.loading</key>
+	<string>Loading tasks…</string>
+	<key>task.ui.login</key>
+	<string>Sign in to view and manage tasks.</string>
+	<key>task.ui.minutes</key>
+	<string>{a}m {b}s</string>
+	<key>task.ui.name</key>
+	<string>Name</string>
+	<key>task.ui.noMatch</key>
+	<string>No matching tasks</string>
+	<key>task.ui.pause</key>
+	<string>Pause</string>
+	<key>task.ui.pin</key>
+	<string>Pin</string>
+	<key>task.ui.queued</key>
+	<string>Queued</string>
+	<key>task.ui.refresh</key>
+	<string>Refresh</string>
+	<key>task.ui.rename</key>
+	<string>Rename</string>
+	<key>task.ui.resume</key>
+	<string>Resume</string>
+	<key>task.ui.save</key>
+	<string>Save</string>
+	<key>task.ui.search</key>
+	<string>Search tasks</string>
+	<key>task.ui.seconds</key>
+	<string>{a}s</string>
+	<key>task.ui.select</key>
+	<string>Select a task to view details.</string>
+	<key>task.ui.sort</key>
+	<string>Sort by</string>
+	<key>task.ui.stale</key>
+	<string>Showing previously loaded data. Refresh to check the current state.</string>
+	<key>task.ui.status</key>
+	<string>Status</string>
+	<key>task.ui.title</key>
+	<string>Tasks</string>
+	<key>task.ui.tokens</key>
+	<string>Tokens</string>
+	<key>task.ui.uncategorized</key>
+	<string>Uncategorized</string>
+	<key>task.ui.uncertain</key>
+	<string>The operation may have reached the server. Refresh and check before trying again.</string>
+	<key>task.ui.unnamed</key>
+	<string>Task {id}</string>
+	<key>task.ui.unpin</key>
+	<string>Unpin</string>
 </dict>
 </plist>
