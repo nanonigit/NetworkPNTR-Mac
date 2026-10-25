@@ -46,4 +46,19 @@ final class TaskPresentationTests: XCTestCase {
         XCTAssertEqual(TaskPresentation.durationText(-1, language: .english), "0s")
     }
 
+    func testAllSortBranchesCreatedFallbackAndSearchFields() throws {
+        let old = try record("7", ["created_unix": 0, "created_at": "2000-01-01T00:00:00.500Z", "status": "running", "description": "distinct-description"])
+        let newer = try record("8", ["created_unix": 0, "created_at": "2020-01-01T00:00:00Z", "status": "paused", "goal": "distinct-goal"])
+        let invalid = try record("9", ["created_unix": 0, "created_at": "invalid", "status": "future"])
+        XCTAssertEqual(TaskPresentation.rows([newer, old, invalid], query: "", status: nil, sort: .created, ascending: true, now: 0).map(\.id), ["9", "7", "8"])
+        XCTAssertEqual(TaskPresentation.rows([newer, old, invalid], query: "", status: nil, sort: .status, ascending: false, now: 0).map(\.id), ["8", "7", "9"])
+        XCTAssertEqual(TaskPresentation.rows([old,newer], query: " DISTINCT-GOAL ", status: nil, sort: .duration, ascending: true, now: 0).map(\.id), ["8"])
+        XCTAssertEqual(TaskPresentation.rows([old,newer], query: "distinct-description", status: nil, sort: .id, ascending: false, now: 0).map(\.id), ["7"])
+        let running = try record("10", ["created_unix": 100, "status": "running"])
+        let stopped = try record("11", ["created_unix": 100, "status": "paused", "last_activity_unix": 150])
+        XCTAssertEqual(TaskPresentation.rows([running, stopped], query: "", status: nil, sort: .duration, ascending: true, now: 200).map(\.id), ["11", "10"])
+        XCTAssertEqual(TaskPresentation.duration(stopped, now: 200), 50)
+        XCTAssertEqual(TaskPresentation.controlAction("queued"), .pause); XCTAssertEqual(TaskPresentation.controlAction("running"), .pause)
+    }
+
 }
