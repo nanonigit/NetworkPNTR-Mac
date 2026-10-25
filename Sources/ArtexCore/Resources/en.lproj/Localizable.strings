@@ -1116,5 +1116,19 @@
 	<string>Task {id}</string>
 	<key>task.ui.unpin</key>
 	<string>Unpin</string>
+	<key>task.upload.count</key>
+	<string>{count} files uploaded</string>
+	<key>task.upload.help</key>
+	<string>Files are copied into this task draft in the isolated VM. Limit: 128 MiB per upload.</string>
+	<key>task.upload.hint</key>
+	<string>The worker can open these paths with Read/Bash:</string>
+	<key>task.upload.idle</key>
+	<string>No files uploaded</string>
+	<key>task.upload.interrupted</key>
+	<string>Upload interrupted. Confirmed text is kept; some files may remain in the VM. Select files again to retry.</string>
+	<key>task.upload.marker</key>
+	<string>[Uploaded files (absolute paths)]</string>
+	<key>task.upload.progress</key>
+	<string>Sending {sent} of {total} bytes; awaiting storage confirmation</string>
 </dict>
 </plist>

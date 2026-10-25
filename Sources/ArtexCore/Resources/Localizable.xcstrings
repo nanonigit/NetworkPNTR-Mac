@@ -9024,6 +9024,125 @@
           }
         }
       }
+    },
+    "task.upload.marker": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "[Uploaded files (absolute paths)]"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "【アップロードファイル(絶対パス)】"
+          }
+        }
+      }
+    },
+    "task.upload.hint": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The worker can open these paths with Read/Bash:"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "worker は Read/Bash でパスを開くことができます:"
+          }
+        }
+      }
+    },
+    "task.upload.help": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Files are copied into this task draft in the isolated VM. Limit: 128 MiB per upload."
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ファイルは隔離VM内の下書きへコピーされます。1回のアップロード上限は128 MiBです。"
+          }
+        }
+      }
+    },
+    "task.upload.idle": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "No files uploaded"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "添付ファイルはありません"
+          }
+        }
+      }
+    },
+    "task.upload.count": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "{count} files uploaded"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "{count}件アップロード済み"
+          }
+        }
+      }
+    },
+    "task.upload.progress": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Sending {sent} of {total} bytes; awaiting storage confirmation"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "{total}バイト中{sent}バイトを送信。保存の確認を待っています"
+          }
+        }
+      }
+    },
+    "task.upload.interrupted": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Upload interrupted. Confirmed text is kept; some files may remain in the VM. Select files again to retry."
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "アップロードを中断しました。確定済みの本文は保持され、一部のファイルがVM内に残る場合があります。再試行する場合はファイルを選び直してください。"
+          }
+        }
+      }
     }
   },
   "version": "1.0"

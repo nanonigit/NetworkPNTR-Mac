@@ -1114,5 +1114,19 @@
 	<string>タスク {id}</string>
 	<key>task.ui.unpin</key>
 	<string>ピン留めを解除</string>
+	<key>task.upload.count</key>
+	<string>{count}件アップロード済み</string>
+	<key>task.upload.help</key>
+	<string>ファイルは隔離VM内の下書きへコピーされます。1回のアップロード上限は128 MiBです。</string>
+	<key>task.upload.hint</key>
+	<string>worker は Read/Bash でパスを開くことができます:</string>
+	<key>task.upload.idle</key>
+	<string>添付ファイルはありません</string>
+	<key>task.upload.interrupted</key>
+	<string>アップロードを中断しました。確定済みの本文は保持され、一部のファイルがVM内に残る場合があります。再試行する場合はファイルを選び直してください。</string>
+	<key>task.upload.marker</key>
+	<string>【アップロードファイル(絶対パス)】</string>
+	<key>task.upload.progress</key>
+	<string>{total}バイト中{sent}バイトを送信。保存の確認を待っています</string>
 </dict>
 </plist>

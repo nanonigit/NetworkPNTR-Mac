@@ -1,6 +1,13 @@
 import Foundation
 
 public enum AppStringKey: String, CaseIterable, Sendable {
+    case taskUploadMarker = "task.upload.marker"
+    case taskUploadHint = "task.upload.hint"
+    case taskUploadHelp = "task.upload.help"
+    case taskUploadIdle = "task.upload.idle"
+    case taskUploadCount = "task.upload.count"
+    case taskUploadProgress = "task.upload.progress"
+    case taskUploadInterrupted = "task.upload.interrupted"
     case taskCreateReplaceTitle = "task.create.replaceTitle"
     case taskCreateReplaceHelp = "task.create.replaceHelp"
     case taskCreateApply = "task.create.apply"
