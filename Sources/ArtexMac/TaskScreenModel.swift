@@ -40,9 +40,9 @@ struct TaskDialog: Identifiable {
         dialog = .init(kind: .delete, task: task); deletionOptions = .init(); dialogUncertain = false; dialogFailure = nil
         return true
     }
-    func closeDialog() { guard !busy else { return }; dialog = nil; renameDraft = ""; dialogUncertain = false; dialogFailure = nil }
-    func submit() async -> Bool {
-        guard !busy, !dialogUncertain, let context = dialog else { return false }
+    func closeDialog(id: UUID) { guard !busy, dialog?.id == id else { return }; dialog = nil; renameDraft = ""; dialogUncertain = false; dialogFailure = nil }
+    func submit(dialogID: UUID) async -> Bool {
+        guard !busy, !dialogUncertain, let context = dialog, context.id == dialogID else { return false }
         let name = renameDraft; let options = deletionOptions
         isSubmitting = true; defer { isSubmitting = false }
         switch context.kind {

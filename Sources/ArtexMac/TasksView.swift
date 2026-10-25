@@ -8,6 +8,7 @@ import SwiftUI
     private var language: AppLanguage { .preferred(in: [locale.identifier]) }
     private func s(_ key: AppStringKey) -> String { AppStrings.text(key, language: language) }
     var body: some View {
+        let sheetID = model.dialog?.id
         VStack(alignment: .leading, spacing: 12) {
             HStack {
                 Text(s(.taskUITitle)).font(.largeTitle.bold())
@@ -26,7 +27,7 @@ import SwiftUI
             }
         }
         .padding(20).navigationTitle(s(.taskUITitle))
-        .sheet(item: Binding(get: { model.dialog }, set: { if $0 == nil { model.closeDialog() } })) { _ in TaskDialogView(model: model) }
+        .sheet(item: Binding(get: { model.dialog }, set: { if $0 == nil, let sheetID { model.closeDialog(id: sheetID) } })) { context in TaskDialogView(model: model, contextID: context.id) }
         .task {
             if let id = requestedID {
                 requestedID = nil; model.query = ""; model.status = nil

@@ -21,13 +21,20 @@ final class TaskScreenModelTests: XCTestCase {
         let root = try XCTUnwrap(JSONSerialization.jsonObject(with: Data(contentsOf: url)) as? [String: Any])
         var value = try XCTUnwrap(root["task"] as? [String: Any]); if let id { value["id"] = id }; return try BackendJSONCoding.decode(TaskRecord.self, from: JSONSerialization.data(withJSONObject: value))
     }
+    @MainActor private func submit(_ model: TaskScreenModel) async -> Bool {
+        guard let id = model.dialog?.id else { XCTFail("No dialog"); return false }
+        return await model.submit(dialogID: id)
+    }
+    @MainActor private func close(_ model: TaskScreenModel) {
+        guard let id = model.dialog?.id else { return }; model.closeDialog(id: id)
+    }
     @MainActor private func reached(_ condition: () -> Bool) async throws {
         for _ in 0..<10_000 { if condition() { return }; await Task.yield() }; XCTFail("Missing controlled suspension"); throw CancellationError()
     }
     @MainActor func testRenameKeepsCapturedOwnerDraftAndConfirmedCloseAcrossRefreshFailure() async throws {
         let api = TaskScreenTransport(); let model = TaskScreenModel(store: TaskStore(service: TaskService(client: api)))
         let item = try record(); XCTAssertTrue(model.beginRename(item)); model.renameDraft = "  literal 中文 한국어 {name}  "
-        api.hold = true; let save = Task { await model.submit() }; try await reached { api.reply != nil }
+        api.hold = true; let save = Task { await submit(model) }; try await reached { api.reply != nil }
         XCTAssertTrue(model.isSubmitting); XCTAssertFalse(model.beginDelete(item))
         let body = try XCTUnwrap(JSONSerialization.jsonObject(with: XCTUnwrap(api.bodies[0])) as? [String: Any])
         XCTAssertEqual(body["name"] as? String, "literal 中文 한국어 {name}"); XCTAssertEqual(api.paths, ["/api/tasks/" + item.id])
@@ -42,38 +49,40 @@ final class TaskScreenModelTests: XCTestCase {
         let api = TaskScreenTransport(); let model = TaskScreenModel(store: TaskStore(service: TaskService(client: api)))
         XCTAssertTrue(model.beginDelete(try record())); model.deletionOptions.deleteFiles = true
         model.deletionOptions.deleteFindings = true
-        let succeeded = await model.submit(); XCTAssertFalse(succeeded); XCTAssertNotNil(model.dialog); XCTAssertTrue(model.dialogUncertain)
-        let repeated = await model.submit(); XCTAssertFalse(repeated); XCTAssertEqual(api.paths.count, 1)
+        let succeeded = await submit(model); XCTAssertFalse(succeeded); XCTAssertNotNil(model.dialog); XCTAssertTrue(model.dialogUncertain)
+        let repeated = await submit(model); XCTAssertFalse(repeated); XCTAssertEqual(api.paths.count, 1)
         XCTAssertTrue(model.deletionOptions.deleteFiles); XCTAssertTrue(model.deletionOptions.deleteFindings)
-        model.closeDialog(); XCTAssertNil(model.dialog)
+        close(model); XCTAssertNil(model.dialog)
         XCTAssertTrue(model.beginDelete(try record())); XCTAssertFalse(model.deletionOptions.deleteFiles); XCTAssertFalse(model.deletionOptions.deleteAssets)
     }
     @MainActor func testResetDiscardsPendingDialogCompletionAndClearsPrivateInputs() async throws {
         let api = TaskScreenTransport(); let model = TaskScreenModel(store: TaskStore(service: TaskService(client: api)))
         XCTAssertTrue(model.beginRename(try record())); model.renameDraft = "private input"; model.query = "private query"
-        api.hold = true; let save = Task { await model.submit() }; try await reached { api.reply != nil }
+        api.hold = true; let save = Task { await submit(model) }; try await reached { api.reply != nil }
         model.reset(); XCTAssertNil(model.dialog); XCTAssertEqual(model.renameDraft, ""); XCTAssertEqual(model.query, ""); XCTAssertTrue(model.isSubmitting)
         try XCTUnwrap(api.reply).resume(throwing: CancellationError())
         let succeeded = await save.value; XCTAssertFalse(succeeded); XCTAssertFalse(model.isSubmitting); XCTAssertNil(model.store.mutationFailure)
     }
     @MainActor func testDialogFailureBelongsOnlyToItsSubmission() async throws {
         let api = TaskScreenTransport(); let model = TaskScreenModel(store: TaskStore(service: TaskService(client: api)))
-        XCTAssertTrue(model.beginDelete(try record())); _ = await model.submit()
+        XCTAssertTrue(model.beginDelete(try record())); _ = await submit(model)
         XCTAssertNotNil(model.dialogFailure)
-        model.closeDialog(); XCTAssertTrue(model.beginRename(try record()))
+        close(model); XCTAssertTrue(model.beginRename(try record()))
         XCTAssertNil(model.dialogFailure); XCTAssertFalse(model.dialogUncertain)
         model.renameDraft = "  "
         let sentBefore = api.paths.count
-        _ = await model.submit(); XCTAssertNotNil(model.dialogFailure); XCTAssertFalse(model.dialogUncertain)
+        _ = await submit(model); XCTAssertNotNil(model.dialogFailure); XCTAssertFalse(model.dialogUncertain)
         XCTAssertEqual(api.paths.count, sentBefore); XCTAssertEqual(model.renameDraft, "  ")
     }
 
     @MainActor func testQueuedConfirmationAndOldCloseCannotTargetReplacementDialog() async throws {
         let api = TaskScreenTransport(); let model = TaskScreenModel(store: TaskStore(service: TaskService(client: api)))
         XCTAssertTrue(model.beginDelete(try record("7")))
-        let queued = Task { await model.submit() }
-        model.closeDialog(); XCTAssertTrue(model.beginDelete(try record("8")))
+        let original = try XCTUnwrap(model.dialog).id
+        let queued = Task { await model.submit(dialogID: original) }
+        close(model); XCTAssertTrue(model.beginDelete(try record("8")))
         let replacement = try XCTUnwrap(model.dialog).id
+        model.closeDialog(id: original)
         _ = await queued.value
         XCTAssertTrue(api.paths.isEmpty); XCTAssertEqual(model.dialog?.id, replacement); XCTAssertFalse(model.dialogUncertain)
     }

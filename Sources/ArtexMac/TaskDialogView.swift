@@ -3,12 +3,13 @@ import SwiftUI
 
 @MainActor struct TaskDialogView: View {
     let model: TaskScreenModel
+    let contextID: UUID
     @Environment(\.locale) private var locale
     private var language: AppLanguage { .preferred(in: [locale.identifier]) }
     private func s(_ key: AppStringKey) -> String { AppStrings.text(key, language: language) }
     var body: some View {
         VStack(alignment: .leading, spacing: 16) {
-            if let context = model.dialog {
+            if let context = model.dialog, context.id == contextID {
                 Text(s(context.kind == .rename ? .taskUIRename : .taskUIDeleteTitle)).font(.title2.bold())
                 Text(context.task.name).font(.headline).textSelection(.enabled)
                 Text(context.task.id).font(.caption.monospaced()).textSelection(.enabled)
@@ -28,9 +29,9 @@ import SwiftUI
                 HStack {
                     if model.isSubmitting { ProgressView().controlSize(.small) }
                     Spacer()
-                    Button(s(model.dialogUncertain ? .taskUIClose : .taskUICancel)) { model.closeDialog() }
+                    Button(s(model.dialogUncertain ? .taskUIClose : .taskUICancel)) { model.closeDialog(id: context.id) }
                         .keyboardShortcut(.cancelAction).disabled(model.busy)
-                    Button(s(context.kind == .rename ? .taskUISave : .taskUIDeleteConfirm), role: context.kind == .delete ? .destructive : nil) { Task { _ = await model.submit() } }
+                    Button(s(context.kind == .rename ? .taskUISave : .taskUIDeleteConfirm), role: context.kind == .delete ? .destructive : nil) { Task { _ = await model.submit(dialogID: context.id) } }
                         .keyboardShortcut(.defaultAction).disabled(model.busy || model.dialogUncertain)
                 }
             }
