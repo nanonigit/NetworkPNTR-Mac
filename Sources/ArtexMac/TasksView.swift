@@ -29,7 +29,7 @@ import SwiftUI
         .sheet(item: Binding(get: { model.dialog }, set: { if $0 == nil { model.closeDialog() } })) { _ in TaskDialogView(model: model) }
         .task {
             if let id = requestedID {
-                requestedID = nil
+                requestedID = nil; model.query = ""; model.status = nil
                 await model.store.select(id: id)
             }
             await model.store.run()
@@ -68,8 +68,8 @@ import SwiftUI
                 }.width(min: 130, ideal: 180)
                 TableColumn(s(.taskUIStatus)) { item in Text(DashboardLabels.text(item.status, domain: .task, language: language)) }.width(min: 70, ideal: 90)
                 TableColumn(s(.taskUIGoals)) { item in Text("\(item.goalsMet)/\(item.goalsTotal)").monospacedDigit() }.width(min: 48, ideal: 55)
-                TableColumn(s(.taskUITokens)) { item in Text(TaskPresentation.tokens(item)).monospacedDigit() }.width(min: 80, ideal: 100)
-                TableColumn(s(.taskUIDuration)) { item in Text(TaskPresentation.durationText(TaskPresentation.duration(item, now: Int64(context.date.timeIntervalSince1970)), language: language)) }.width(min: 65, ideal: 80)
+                TableColumn(s(.taskUITokens)) { item in Text(TaskPresentation.tokens(item)).monospacedDigit().help(AppStrings.formatted(.taskUITokenBreakdown, language: language, values: ["input": String(item.tokens.inputTokens), "read": String(item.tokens.cacheReadTokens), "write": String(item.tokens.cacheWriteTokens), "output": String(item.tokens.outputTokens)])) }.width(min: 80, ideal: 100)
+                TableColumn(s(.taskUIDuration)) { item in Text(TaskPresentation.duration(item, now: Int64(context.date.timeIntervalSince1970)) > 0 ? TaskPresentation.durationText(TaskPresentation.duration(item, now: Int64(context.date.timeIntervalSince1970)), language: language) : "—") }.width(min: 65, ideal: 80)
             }
             .overlay {
                 if rows.isEmpty {

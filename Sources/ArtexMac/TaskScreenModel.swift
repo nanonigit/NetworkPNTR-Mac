@@ -20,6 +20,7 @@ struct TaskDialog: Identifiable {
     var deletionOptions = TaskDeletionOptions()
     private(set) var dialog: TaskDialog?
     private(set) var dialogUncertain = false
+    private(set) var dialogFailure: AppErrorMessage?
     private(set) var isSubmitting = false
     @ObservationIgnored private var selectionTask: Task<Void, Never>?
     @ObservationIgnored private var lifecycle = UUID()
@@ -31,15 +32,15 @@ struct TaskDialog: Identifiable {
     }
     func beginRename(_ task: TaskRecord) -> Bool {
         guard !busy else { return false }
-        dialog = .init(kind: .rename, task: task); renameDraft = task.name; dialogUncertain = false
+        dialog = .init(kind: .rename, task: task); renameDraft = task.name; dialogUncertain = false; dialogFailure = nil
         return true
     }
     func beginDelete(_ task: TaskRecord) -> Bool {
         guard !busy else { return false }
-        dialog = .init(kind: .delete, task: task); deletionOptions = .init(); dialogUncertain = false
+        dialog = .init(kind: .delete, task: task); deletionOptions = .init(); dialogUncertain = false; dialogFailure = nil
         return true
     }
-    func closeDialog() { guard !busy else { return }; dialog = nil; renameDraft = ""; dialogUncertain = false }
+    func closeDialog() { guard !busy else { return }; dialog = nil; renameDraft = ""; dialogUncertain = false; dialogFailure = nil }
     func submit() async -> Bool {
         guard !busy, !dialogUncertain, let context = dialog else { return false }
         let name = renameDraft; let options = deletionOptions
@@ -53,8 +54,9 @@ struct TaskDialog: Identifiable {
         guard dialog?.id == context else { return false }
         switch result {
         case .confirmed: dialog = nil; renameDraft = ""; return true
-        case .unconfirmed: dialogUncertain = true; return false
-        case .notStarted, .rejected, .discarded: return false
+        case .unconfirmed: dialogFailure = store.mutationFailure; dialogUncertain = true; return false
+        case .rejected: dialogFailure = store.mutationFailure; return false
+        case .notStarted, .discarded: return false
         }
     }
     func togglePin(_ task: TaskRecord) async {
@@ -74,6 +76,6 @@ struct TaskDialog: Identifiable {
     func stop() { lifecycle = UUID(); selectionTask?.cancel(); selectionTask = nil; store.stop() }
     func reset() {
         stop(); store.reset(); dialog = nil; renameDraft = ""; query = ""; status = nil
-        sort = .id; ascending = false; deletionOptions = .init(); dialogUncertain = false
+        sort = .id; ascending = false; deletionOptions = .init(); dialogUncertain = false; dialogFailure = nil
     }
 }

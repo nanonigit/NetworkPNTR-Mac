@@ -17,14 +17,14 @@ import SwiftUI
                         .textFieldStyle(.roundedBorder).disabled(model.busy || model.dialogUncertain)
                 } else {
                     Text(s(.taskUIDeleteHelp))
-                    Toggle(s(.taskUICleanupAssets), isOn: option(\.deleteAssets))
-                    Toggle(s(.taskUICleanupTraffic), isOn: option(\.deleteTraffic))
-                    Toggle(s(.taskUICleanupFiles), isOn: option(\.deleteFiles))
-                    Toggle(s(.taskUICleanupFindings), isOn: option(\.deleteFindings))
-                    Toggle(s(.taskUICleanupLLM), isOn: option(\.deleteLlmRecords))
+                    Toggle(s(.taskUICleanupAssets), isOn: option(\.deleteAssets)).disabled(model.busy || model.dialogUncertain)
+                    Toggle(s(.taskUICleanupTraffic), isOn: option(\.deleteTraffic)).disabled(model.busy || model.dialogUncertain)
+                    Toggle(s(.taskUICleanupFiles), isOn: option(\.deleteFiles)).disabled(model.busy || model.dialogUncertain)
+                    Toggle(s(.taskUICleanupFindings), isOn: option(\.deleteFindings)).disabled(model.busy || model.dialogUncertain)
+                    Toggle(s(.taskUICleanupLLM), isOn: option(\.deleteLlmRecords)).disabled(model.busy || model.dialogUncertain)
                 }
                 if model.dialogUncertain { Text(s(.taskUIUncertain)).foregroundStyle(.orange) }
-                else if let failure = model.store.mutationFailure { Text(failure.text(language: language)).foregroundStyle(.red) }
+                else if let failure = model.dialogFailure { Text(failure.text(language: language)).foregroundStyle(.red) }
                 HStack {
                     if model.isSubmitting { ProgressView().controlSize(.small) }
                     Spacer()

@@ -1018,6 +1018,8 @@
 	<string>状態</string>
 	<key>task.ui.title</key>
 	<string>タスク</string>
+	<key>task.ui.tokenBreakdown</key>
+	<string>入力: {input}・キャッシュ読込: {read}・キャッシュ書込: {write}・出力: {output}</string>
 	<key>task.ui.tokens</key>
 	<string>トークン</string>
 	<key>task.ui.uncategorized</key>

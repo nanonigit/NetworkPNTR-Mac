@@ -29,6 +29,7 @@ import SwiftUI
                         if let summary = model.store.list.value?.first(where: { $0.id == task.id }) {
                             field(.taskUIGoals, "\(summary.goalsMet)/\(summary.goalsTotal)")
                             field(.taskUITokens, TaskPresentation.tokens(summary))
+                            Text(AppStrings.formatted(.taskUITokenBreakdown, language: language, values: ["input": String(summary.tokens.inputTokens), "read": String(summary.tokens.cacheReadTokens), "write": String(summary.tokens.cacheWriteTokens), "output": String(summary.tokens.outputTokens)])).font(.caption).textSelection(.enabled)
                             VStack(alignment: .leading, spacing: 4) {
                                 Text(s(.taskUIFindings)).font(.headline)
                                 ForEach([("critical", summary.findings.critical), ("high", summary.findings.high), ("medium", summary.findings.medium), ("low", summary.findings.low)], id: \.0) { severity, count in

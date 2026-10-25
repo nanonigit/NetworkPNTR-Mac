@@ -8336,6 +8336,22 @@
           }
         }
       }
+    },
+    "task.ui.tokenBreakdown": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Input: {input} · Cache read: {read} · Cache write: {write} · Output: {output}"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "入力: {input}・キャッシュ読込: {read}・キャッシュ書込: {write}・出力: {output}"
+          }
+        }
+      }
     }
   },
   "version": "1.0"

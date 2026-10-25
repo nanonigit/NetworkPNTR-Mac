@@ -1020,6 +1020,8 @@
 	<string>Status</string>
 	<key>task.ui.title</key>
 	<string>Tasks</string>
+	<key>task.ui.tokenBreakdown</key>
+	<string>Input: {input} · Cache read: {read} · Cache write: {write} · Output: {output}</string>
 	<key>task.ui.tokens</key>
 	<string>Tokens</string>
 	<key>task.ui.uncategorized</key>

@@ -1,6 +1,7 @@
 import Foundation
 
 public enum AppStringKey: String, CaseIterable, Sendable {
+    case taskUITokenBreakdown = "task.ui.tokenBreakdown"
     case taskUITitle = "task.ui.title"
     case taskUILogin = "task.ui.login"
     case taskUISearch = "task.ui.search"
