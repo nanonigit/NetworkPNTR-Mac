@@ -138,6 +138,9 @@ final class TaskTemplateManagerTests: XCTestCase {
         XCTAssertTrue(uploaded); let original = Data(creation.form.draft.description.utf8), draft = creation.draftID
         XCTAssertTrue(creation.openTemplateManager(asSeed:true,contextID:context))
         let manager = try XCTUnwrap(creation.templateManager), owner = try XCTUnwrap(manager.context).id
+        creation.discard(contextID:context)
+        XCTAssertEqual(creation.draftID,draft); XCTAssertEqual(Data(creation.form.draft.description.utf8),original)
+        XCTAssertEqual(creation.context?.id,context)
         XCTAssertEqual(Data(manager.form.description.utf8),original); XCTAssertEqual(manager.form.name,""); XCTAssertTrue(parent.busy)
         let forbidden = await creation.submit(contextID:context); XCTAssertFalse(forbidden)
         manager.update(\.name,value:"saved",contextID:owner,editorID:manager.editorID)
@@ -190,6 +193,16 @@ final class TaskTemplateManagerTests: XCTestCase {
         await pending.value
         XCTAssertEqual(model.templates.map(\.id),[8]); XCTAssertEqual(model.selectedID,8)
         XCTAssertNil(model.categoryFailure); XCTAssertFalse(model.isLoading)
+    }
+
+    @MainActor func testOldSheetDismissalCannotCloseReplacementContext() throws {
+        let (_,model) = make()
+        let first = try XCTUnwrap(model.open(seed:nil,templates:[]))
+        let binding = TaskTemplateBindings.presentation(model:model,contextID:first)
+        model.close(contextID:first)
+        let second = try XCTUnwrap(model.open(seed:nil,templates:[]))
+        binding.wrappedValue = nil
+        XCTAssertEqual(model.context?.id,second)
     }
 
 }
