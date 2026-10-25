@@ -1,0 +1,74 @@
+{
+  "boot": {
+    "bootAttempts": 1,
+    "cooperativeStop": true,
+    "credentialLogCheckPassed": true,
+    "diagnostics": [],
+    "formatStageObserved": true,
+    "freshAuth": true,
+    "isolationVerified": true,
+    "logAuditComplete": true,
+    "machineStopped": true,
+    "passed": true,
+    "protectedStatus": 401,
+    "reachedReady": true
+  },
+  "exercise": {
+    "englishManifest": "Task draft fixture\n\n[Uploaded files (absolute paths)] The worker can open these paths with Read/Bash:\n- <draft>/uploads/fixture.bin (68.4 KB)\n- <draft>/uploads/empty.txt (0 B)\n- <draft>/uploads/fixture-1.bin (28 B)\n- <draft>/uploads/日本-é.txt (1.3 KB)\n- <draft>/uploads/fixture-2.bin (68.4 KB)\n- <draft>/uploads/empty-1.txt (0 B)\n- <draft>/uploads/fixture-3.bin (28 B)\n- <draft>/uploads/日本-é-1.txt (1.3 KB)\n",
+    "japaneseManifest": "Task draft fixture\n\n【アップロードファイル(絶対パス)】 worker は Read/Bash でパスを開くことができます:\n- <draft>/uploads/fixture.bin (68.4 KB)\n- <draft>/uploads/empty.txt (0 B)\n- <draft>/uploads/fixture-1.bin (28 B)\n- <draft>/uploads/日本-é.txt (1.3 KB)\n- <draft>/uploads/fixture-2.bin (68.4 KB)\n- <draft>/uploads/empty-1.txt (0 B)\n- <draft>/uploads/fixture-3.bin (28 B)\n- <draft>/uploads/日本-é-1.txt (1.3 KB)\n",
+    "originalFilesPreserved": true,
+    "records": [
+      {
+        "name": "fixture.bin",
+        "path": "uploads/fixture.bin",
+        "sha256": "d6dd068e2d9d6f42dd20ea6b45a1740dd0d5ceae7b840b3bbd77322d8d627113",
+        "size": 70001
+      },
+      {
+        "name": "empty.txt",
+        "path": "uploads/empty.txt",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "size": 0
+      },
+      {
+        "name": "fixture-1.bin",
+        "path": "uploads/fixture-1.bin",
+        "sha256": "72e8ded6417188a85eb01392760cc7fecd3545df770a40b4d3229c82cbd06372",
+        "size": 28
+      },
+      {
+        "name": "日本-é.txt",
+        "path": "uploads/日本-é.txt",
+        "sha256": "670f4c5b4d2c4063a0f559ed71df21407dab70f0c72ee47f41258d0e50b165f2",
+        "size": 1280
+      },
+      {
+        "name": "fixture-2.bin",
+        "path": "uploads/fixture-2.bin",
+        "sha256": "d6dd068e2d9d6f42dd20ea6b45a1740dd0d5ceae7b840b3bbd77322d8d627113",
+        "size": 70001
+      },
+      {
+        "name": "empty-1.txt",
+        "path": "uploads/empty-1.txt",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "size": 0
+      },
+      {
+        "name": "fixture-3.bin",
+        "path": "uploads/fixture-3.bin",
+        "sha256": "72e8ded6417188a85eb01392760cc7fecd3545df770a40b4d3229c82cbd06372",
+        "size": 28
+      },
+      {
+        "name": "日本-é-1.txt",
+        "path": "uploads/日本-é-1.txt",
+        "sha256": "670f4c5b4d2c4063a0f559ed71df21407dab70f0c72ee47f41258d0e50b165f2",
+        "size": 1280
+      }
+    ]
+  },
+  "passed": true,
+  "stage": "complete",
+  "terminalSuccess": true
+}

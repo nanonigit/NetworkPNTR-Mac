@@ -57,3 +57,7 @@ This is additional counter-evidence for the unchanged one-vCPU source candidate,
 ## B1 diagnostic repair and bounded controls
 
 The blank-check label ambiguity is repaired in aaeb8db with fail-closed status separation. One old-profile control and one separate changed-profile preflight both passed their finite read-only readiness/auth401/full-log/stop checks. Offline build failures and corrected exact guest-parent provenance are retained. No kernel root cause or reliability acceptance follows; prior failures remain open. See ../boot-preflight-verification.md and normalized evidence/native-runtime/b1-verification.json.
+
+## T7 single-boot staging observation
+
+The separate changed B1 profile passed one fresh boot with two actual upload batches,12byte-readbacks and cooperative shutdown in14.85s. Full stopped serial-log audit has no recognized diagnostic or tested secret, with all isolation witnesses. It matches a separately disposable pinned reference after preserving two failed reference preparations. No native retry or default promotion; previous kernel/memory faults remain unresolved counter-evidence. See ../task-staging-runtime-verification.md.

@@ -1,0 +1,11 @@
+{
+  "semantic_equal": true,
+  "records": 8,
+  "both_manifests_equal": true,
+  "original_files_preserved": true,
+  "all_reference_resources_removed_verified": true,
+  "existing_browser_container_ids_unchanged": true,
+  "private_reference_env_files_removed": true,
+  "native_boot_attempts": 1,
+  "native_vm_exit": 0
+}

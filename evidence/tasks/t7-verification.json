@@ -1,0 +1,196 @@
+{
+  "phase": "T7",
+  "code_commit": "10b82f5cf6ed87ff32eb20c674cf8ebc343144f0",
+  "native_probe_source_commit": "0504549720ac01abfec434bd68a71d5fcfd3ac31",
+  "executed_probe_sha256": "30924d8f9a98f8829fa3a017fdf30e45dc61072f58227f8ff378f759d0f46980",
+  "baseline": "e75ae371ad777ffd1eecdd28d2781a6519b05591",
+  "source_kernel_manifest": {
+    "architecture": "arm64",
+    "kernel": "Image",
+    "initramfs": "initramfs.cpio.gz",
+    "systemDisk": "system.ext4",
+    "sourceCommit": "e75ae371ad777ffd1eecdd28d2781a6519b05591",
+    "backendImage": "sha256:46b3ce5d5f91cd05b9e3fd6834e33196be9626eb40d38e84b7fb398f00a172d0",
+    "backendSHA256": "0ebad83ddda276b03b415d64ce30af44e7a587860f3b660c12563462a0ac5e80",
+    "packageLockSHA256": "619e4e6c33cc2a1e2fce48e28ac138cd2020fbfc74d5c71b6500a6eec8c9a5aa",
+    "networkDevices": 0,
+    "hostShares": 0,
+    "kernelSHA256": "8e57308787c420cb42e4c4ea80e6def6438a52232692c010dc4609bb9bf21879",
+    "initramfsSHA256": "88de8582409a9ad861a69035f056e65953b36803fbc77b391e0a9deb77e335ba",
+    "systemDiskSHA256": "82e32042ec52dd316c74357d3ce5ef4dbbaf76c22a16a1dc73c925bc38fb9346",
+    "bootMode": "rootDisk",
+    "cpuCount": 1,
+    "kernelPackage": {
+      "source": {
+        "url": "https://cdn.kernel.org/pub/linux/kernel/v6.x/linux-6.12.114.tar.xz",
+        "sha256": "7a8589912bd7a8adb07fed074283652cf482a35facef8954554654f0154b4af3",
+        "maximum_bytes": 268435456
+      },
+      "configuration": {
+        "url": "https://raw.githubusercontent.com/linuxkit/linuxkit/f935f6b18cad69f08c1830b432d7dab90bf67614/kernel/6.12.x/config-aarch64",
+        "sha256": "53280e08ae286156a31049c90ab8b2077db93c0366a8a9e6bb4b3fa7c02f65fe",
+        "maximum_bytes": 1048576
+      },
+      "recipeSHA256": "43bb1338577b1a68723ac9ca750abed1df5e93e1598b588f72cf6e6d5f69dcca"
+    },
+    "guestRuntimeImage": "sha256:735d063ffd4290be40a870c4c77f6a6f9ad16ae306262e2e21e3865cd9c2b91d",
+    "guestRuntimeSourceCommit": "aaeb8db8b7301d1fc9ca64112336df55f3e3b507",
+    "guestRuntimeRecipeSHA256": "2c0e8fe50729d79025b89e1586384e92796e38b465208f2714ef3860bb24e107",
+    "guestRuntimeParentImage": "sha256:87ae72b5cd651612003313a3ee0f76f5681d16426fe7b0ee276fa77a3ce68cad",
+    "guestRuntimeSourceSHA256": {
+      "backend.Dockerfile": "bc2553a80922c4893a8b0fd5a8206197aee10b4d8ebe6ca9d7afd05d5109a104",
+      "backend-init": "3141204720cd63c5651470fefe28a89e6a50b6b94dc1d478fd407f7e66efcb0d",
+      "vsock_relay.py": "4995c4551fac64e15d0be14f211689937edbab3d91e72abc373b81558fd1f1d2",
+      "check_blank_disk.py": "cc1776fae8120feca24d11dbf0ad94143715572f1d5e398898ca6607aa993b1d",
+      "check_network.py": "4bc167e71c655d31eda1872f11ad4b8a90b201994834a63c82194a3fa317ee2e",
+      "summarize_failure.py": "a68c74cd4a84447a9b6b5531e3ef3e31b5d372d9c6175cc6f72379af3047124d",
+      "backend-packages.lock": "619e4e6c33cc2a1e2fce48e28ac138cd2020fbfc74d5c71b6500a6eec8c9a5aa"
+    }
+  },
+  "backend_image": "sha256:46b3ce5d5f91cd05b9e3fd6834e33196be9626eb40d38e84b7fb398f00a172d0",
+  "postgres_image": "sha256:d81f7b51697014367236d07ec58b54153fc28f828b72bf247fe5c7487520bcb0",
+  "source_fixture_spelling": "Mac URL leaves use decomposed e+U0301; fixtures preserve those bytes",
+  "native": {
+    "status": {
+      "returncode": 0,
+      "timed_out": false,
+      "elapsed_seconds": 14.85
+    },
+    "one_boot_only": true,
+    "fresh_state_bytes": 2147483648,
+    "memory_vault": true,
+    "host_keychain_used": false,
+    "runtime_path": "/usr/bin:/bin",
+    "docker_host": "unix:///nonexistent-artex-t7-runtime.sock",
+    "docker_desktop_stopped": false,
+    "same_boot_readback_only": true,
+    "snapshot_equal_to_reference": true
+  },
+  "reference_attempts": [
+    {
+      "attempt": "A",
+      "fixture_executed": false,
+      "result": "read_only_root_rejects_docker_cp_preparation",
+      "returncode": null,
+      "cleanup_verified": true
+    },
+    {
+      "attempt": "B",
+      "fixture_executed": false,
+      "result": "JWT_symlink_requires_state_parent_tmpfs",
+      "returncode": 1,
+      "cleanup_verified": true
+    },
+    {
+      "attempt": "C",
+      "fixture_executed": true,
+      "result": "pass",
+      "returncode": 0,
+      "cleanup_verified": true
+    }
+  ],
+  "read_only_copy_counterexample": {
+    "docker_cp_returncode": 1,
+    "read_only_error": true,
+    "no_application_or_network_started": true
+  },
+  "reference_isolation": {
+    "internal_network": true,
+    "published_ports": 0,
+    "host_binds": 0,
+    "docker_socket": false,
+    "backend_binary_matches_vm": true,
+    "read_only_roots": true,
+    "uids": [
+      999,
+      1000
+    ],
+    "storage": "disposable tmpfs only",
+    "image_ids": [
+      "sha256:46b3ce5d5f91cd05b9e3fd6834e33196be9626eb40d38e84b7fb398f00a172d0",
+      "sha256:d81f7b51697014367236d07ec58b54153fc28f828b72bf247fe5c7487520bcb0"
+    ]
+  },
+  "existing_output_guard": {
+    "returncode": 1,
+    "existing_output_unchanged": true,
+    "failure_before_boot": true,
+    "strict_probe_signature_verified": true
+  },
+  "verification": {
+    "swift_total": 363,
+    "swift_passed": 362,
+    "swift_existing_AX_skip": 1,
+    "python_passed": 60,
+    "swift_terminal_exit": 0,
+    "python_terminal_exit": 0,
+    "app_build_only_exit": 0,
+    "strict_app_signature_verified": true,
+    "baseline_inventory": {
+      "baseline": "e75ae371ad777ffd1eecdd28d2781a6519b05591",
+      "navigation_features": 21,
+      "page_routes": 27,
+      "api_handlers": 243,
+      "inventory_parity": true,
+      "native_workflow_parity": "pending"
+    }
+  },
+  "coverage": {
+    "TaskStagingExercise.swift": {
+      "lines": {
+        "count": 48,
+        "covered": 48,
+        "percent": 100
+      },
+      "regions": {
+        "count": 34,
+        "covered": 33,
+        "notcovered": 1,
+        "percent": 97.05882352941177
+      }
+    },
+    "TaskStagingRunReport.swift": {
+      "lines": {
+        "count": 7,
+        "covered": 7,
+        "percent": 100
+      },
+      "regions": {
+        "count": 4,
+        "covered": 4,
+        "notcovered": 0,
+        "percent": 100
+      }
+    }
+  },
+  "comparison": {
+    "semantic_equal": true,
+    "records": 8,
+    "both_manifests_equal": true,
+    "original_files_preserved": true,
+    "all_reference_resources_removed_verified": true,
+    "existing_browser_container_ids_unchanged": true,
+    "private_reference_env_files_removed": true,
+    "native_boot_attempts": 1,
+    "native_vm_exit": 0
+  },
+  "public_results_contain_only_synthetic_fixture_data": true,
+  "acceptance": {
+    "production_staging_transport_live": true,
+    "visible_native_browser_comparison": false,
+    "actual_OS_picker_acceptance": false,
+    "task_creation_workflow_live": false,
+    "persistence_across_restart": false,
+    "kernel_reliability": false,
+    "native_cloud_egress": false,
+    "all21_features_complete": false,
+    "default_candidate_promoted": false
+  },
+  "reference_recipe_sha256": [
+    "020b4ee02233464f4f173464ca944bb164927ac89c37e91daf101195ebef488e",
+    "cf8a088431fa5b31e9c0242754187c6f5ab31aaeb8a431f12b4c799f824f7353",
+    "d750777f64e798c897d1d54d9f91262454b664d4cd2fec09659517b69d7d307d"
+  ],
+  "reference_manifest_oracle_sha256": "a0e021fc10ff25e769f457bdda9afd6cb8186bb5739c18d58f36f5f301b28d0a",
+  "vm_runner_sha256": "f867fceed81569d322ec5b4418f918381dff0d0386b5786bbbce617cca84d6ee"
+}

@@ -171,3 +171,5 @@ T6はtasks-staging-ui-design.mdに従い、T5通信を作成下書き・明示�
 T6履歴：5bd60c9→435b654 CoreGREEN3、654cc90→215d3edモデルGREEN4、ef21ef4参照126、ebd3176→e2b1541 UI GREEN5、60a267b→603a47a権限境界GREEN6、a19a09d GREEN7、4f8514a親停止の実行RED9失敗→66440ab GREEN12、1c73474→72115f3案内GREEN27（題名28は誤記）、f5d6b02/d63a0b3追加。最終Swift358件（成功357・既存AX1スキップ）、Python54成功、署名/日英8キー一致、レビュー済。UI/一覧を接続、実操作/OS権限/VMとブラウザ実添付/全21機能/実行環境/配布は未完了。tasks-staging-ui-verification.md参照。
 
 T7はtask-staging-runtime-design.mdに従い、新規使い捨て状態の候補を1回起動して添付/読戻し/衝突を実試験し、新規固定Docker参照版と比較します。エージェント/タスク/会話/クラウド/ユーザーデータは対象外。固定合成ファイル、全ログ監査、失敗も保持し、TDD/反例/レビュー/回帰後に実機へ進みます。実UI/OS選択/再起動信頼性は別ゲート、インフラのみでLazyweb対象外。
+
+T7履歴：30339f0未実装RED→1fd297b名前実行RED3/4→7a9b58e GREEN4、ab1c1be→56ba489 PythonGREEN2、f2adde4→0504549レポートGREEN5/環境3、26cd220→10b82f5後片付けGREEN3。Swift363件（成功362・既存AX1スキップ）、Python60成功。署名VM単発14.85秒/終了0、8レコード/日英一覧が固定参照と一致、12読戻し/上書きなし。参照A/B準備失敗を保持、C成功・全資源削除/元ブラウザ不変。アプリbuild/strict署名成功。実UI/作成/再起動/カーネル信頼性/外部通信/全21/配布は継続。task-staging-runtime-verification.md参照。
