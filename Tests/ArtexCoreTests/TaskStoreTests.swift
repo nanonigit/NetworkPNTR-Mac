@@ -201,4 +201,15 @@ final class TaskStoreTests: XCTestCase {
         XCTAssertEqual(api.calls.count, 4)
     }
 
+    @MainActor func testPreCancelledSelectionCannotClearCurrentOwnerOrError() async throws {
+        let api = ChatTestTransport(); let store = TaskStore(service: TaskService(client: api))
+        try api.enqueue(task("8", name: "current")); await store.select(id: "8")
+        for target: String? in ["7", nil, "bad/path"] {
+            let cancelled = Task { await store.select(id: target) }; cancelled.cancel(); await cancelled.value
+            XCTAssertEqual(store.selectedID, "8"); XCTAssertEqual(store.detail.value?.name, "current")
+            XCTAssertNil(store.detail.failure); XCTAssertFalse(store.detail.isLoading)
+        }
+        XCTAssertEqual(api.calls.count, 1)
+    }
+
 }
