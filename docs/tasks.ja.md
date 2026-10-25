@@ -157,3 +157,5 @@ T4はtasks-create-design.mdに従い、選択肢とT1全12項目の作成フォ�
 T4記録：889b32d→c1b9fe4 CoreGREEN3、6c85680→d8ea915状態GREEN4、ee46711実ID/BOM実行RED4失敗→8105e5c GREEN8、cfa4c93→bc4c674 UI GREEN10、d5b6a25追加14、e1edf9f上書き実行RED3失敗→f56c82a GREEN15、fe75585 Unicode実行RED12失敗→a8e3302 GREEN16。最終Swift332件（331成功/既存AX1スキップ）、Python52成功。署名ビルド/厳密署名/日英42文言を確認。Core/状態の行93〜100%、UI分岐は部分的、レビュー済み。添付/管理/実作成と拒否/比較/全21機能/実行/配布は継続。tasks-create-verification.md参照。
 
 - [ ] 他のサービス一覧変換にも生FEFF/NFC/NFD試験を広げる。T4の修正は自身のカタログのみ。
+
+B1はboot-preflight-design.mdに従い、空/非空と検査異常を区別し、fail-closedの書式化条件を維持します。専用の新規使い捨て状態に1回だけ起動し、読み取りAPIと固定の秘密を含まない結果を出すVMProbeを追加します。ユーザーデータ/隔離方針は変更せず、TDD/判定/書式化ガード試験、旧新プロファイル各1回の制御実験、レビュー/全体回帰/署名を行います。カーネル原因/安定性/実UI比較は未完了、インフラのみでLazyweb対象外です。
