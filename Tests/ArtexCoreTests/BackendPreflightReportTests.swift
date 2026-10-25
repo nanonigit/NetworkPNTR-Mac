@@ -1,14 +1,15 @@
 import XCTest
 @testable import ArtexCore
 final class BackendPreflightReportTests: XCTestCase {
-    private func report(log:String="",ready:Bool=true,stopped:Bool=true,status:Int?=401) -> BackendPreflightReport {
-        .init(reachedReady:ready,freshAuth:true,protectedStatus:status,isolationVerified:true,credentialLogCheckPassed:true,cooperativeStop:stopped,machineStopped:stopped,guestLog:log)
+    private func report(log:String="",ready:Bool=true,stopped:Bool=true,status:Int?=401,isolation:Bool=true,credentials:Bool=true) -> BackendPreflightReport {
+        let audit = GuestBootLogAudit(diagnostics:GuestBootDiagnostics.classify(log),credentialsAbsent:credentials,isolationWitnessesPresent:isolation,formatStageObserved:log.contains("ARTEX_MAC_STAGE_state_format"),complete:true)
+        return .init(reachedReady:ready,freshAuth:true,protectedStatus:status,cooperativeStop:stopped,machineStopped:stopped,audit:audit)
     }
     func testPassRequiresAllReadinessAndShutdownEvidence() {
         XCTAssertTrue(report().passed); XCTAssertEqual(report().bootAttempts,1)
         XCTAssertFalse(report(ready:false).passed); XCTAssertFalse(report(stopped:false).passed); XCTAssertFalse(report(status:200).passed)
-        XCTAssertFalse(BackendPreflightReport(reachedReady:true,freshAuth:true,protectedStatus:401,isolationVerified:false,credentialLogCheckPassed:true,cooperativeStop:true,machineStopped:true,guestLog:"").passed)
-        XCTAssertFalse(BackendPreflightReport(reachedReady:true,freshAuth:true,protectedStatus:401,isolationVerified:true,credentialLogCheckPassed:false,cooperativeStop:true,machineStopped:true,guestLog:"").passed)
+        XCTAssertFalse(report(isolation:false).passed)
+        XCTAssertFalse(report(credentials:false).passed)
     }
     func testClassificationRetainsOldAmbiguityAndSeparatesExecutionFailure() {
         let old = report(log:"ARTEX_MAC_GUEST_ERROR stage=nonblank-state-disk\nSegmentation fault\nBad rss-counter state")
@@ -43,12 +44,16 @@ final class BackendPreflightReportTests: XCTestCase {
         let root = FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString)
         try FileManager.default.createDirectory(at:root,withIntermediateDirectories:false)
         defer { try? FileManager.default.removeItem(at:root) }
-        let data = Data("Bad rss-counter state\nSegmentation fault\n".utf8) + Data(repeating:120,count:100_000)
+        let data = Data("network_hardware_devices=0\nnetwork_nonloopback_up=0\nnetwork_external_routes=0\nshared_mounts=0\nBad rss-counter state\nSegmentation fault\n".utf8) + Data(repeating:120,count:100_000)
         try data.write(to:root.appendingPathComponent("guest-fixture.log"))
         let tail = String(decoding:data.suffix(65536),as:UTF8.self)
         let limitedReport = report(log:tail)
-        let tokenAudit = GuestBootDiagnostics.credentialsAbsent(logDirectory:root,tokens:["transport-fixture"])
-        XCTAssertFalse(limitedReport.passed && tokenAudit, "A clean tail must not hide an earlier fault")
+        XCTAssertTrue(limitedReport.passed, "Negative control: display-tail evidence alone misses the fault")
+        let audit = GuestBootDiagnostics.audit(logDirectory:root,tokens:["transport-fixture"])
+        let completeReport = BackendPreflightReport(reachedReady:true,freshAuth:true,protectedStatus:401,cooperativeStop:true,machineStopped:true,audit:audit)
+        XCTAssertTrue(audit.complete); XCTAssertTrue(audit.credentialsAbsent); XCTAssertTrue(audit.isolationWitnessesPresent)
+        XCTAssertEqual(Set(audit.diagnostics),[.signalFault,.memoryAccountingFault])
+        XCTAssertFalse(completeReport.passed, "A clean tail must not hide an earlier fault")
     }
 
 }

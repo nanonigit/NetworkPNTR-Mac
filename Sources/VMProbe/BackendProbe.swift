@@ -9,13 +9,12 @@ import Foundation
         let controller = VMController()
         var privatePreflightDirectory = false
         var preflightStartAttempted = false; var preflightCooperativeStop = false
-        var preflightReady = false; var preflightFreshAuth = false; var preflightIsolation = false
+        var preflightReady = false; var preflightFreshAuth = false
         var preflightProtectedStatus: Int?; var preflightTokens: [String] = []
         func preflightReport(cooperative: Bool) -> BackendPreflightReport {
             BackendPreflightReport(reachedReady: preflightReady, freshAuth: preflightFreshAuth, protectedStatus: preflightProtectedStatus,
-                                   isolationVerified: preflightIsolation,
-                                   credentialLogCheckPassed: GuestBootDiagnostics.credentialsAbsent(logDirectory: logs, tokens: preflightTokens),
-                                   cooperativeStop: cooperative, machineStopped: !controller.hasMachine, guestLog: controller.guestLog, bootAttempts: preflightStartAttempted ? 1 : 0)
+                                   cooperativeStop: cooperative, machineStopped: !controller.hasMachine,
+                                   audit: GuestBootDiagnostics.audit(logDirectory: logs, tokens: preflightTokens), bootAttempts: preflightStartAttempted ? 1 : 0)
         }
         func writePreflight(_ report: BackendPreflightReport) throws {
             let encoder = JSONEncoder(); encoder.outputFormatting = [.prettyPrinted, .sortedKeys]
@@ -68,7 +67,7 @@ import Foundation
             }
             if preflightOnly { preflightStartAttempted = true }
             try await boot(disk); try requireReady()
-            if preflightOnly { preflightReady = true; preflightIsolation = true }
+            if preflightOnly { preflightReady = true }
             let status = try await request("GET", "/api/auth/status")
             try expect(200, status.0, "first auth status")
             guard status.1["initialized"] as? Bool == false, status.1["setup_token_required"] as? Bool == true else { throw RuntimeError.integrity("first-run auth contract") }

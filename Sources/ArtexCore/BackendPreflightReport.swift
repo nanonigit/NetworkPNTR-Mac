@@ -1,7 +1,7 @@
 import Foundation
 
 public enum GuestBootDiagnostic: String, Codable, Hashable, Sendable {
-    case kernelFault, signalFault, memoryAccountingFault, nonblankStateDisk, blankCheckFailure, otherGuestFailure
+    case kernelFault, signalFault, memoryAccountingFault, nonblankStateDisk, blankCheckFailure, otherGuestFailure, logAuditFailure
 }
 
 public enum GuestBootDiagnostics {
@@ -20,32 +20,50 @@ public enum GuestBootDiagnostics {
         return found
     }
 
-    /// Audit the complete owned, stopped-VM log, including secrets across chunk boundaries.
     public static func credentialsAbsent(logDirectory: URL, tokens: [String]) -> Bool {
-        guard !tokens.isEmpty, tokens.count <= 16, tokens.allSatisfy({ !$0.isEmpty && $0.utf8.count <= 8192 }) else { return false }
+        audit(logDirectory: logDirectory, tokens: tokens).credentialsAbsent
+    }
+
+    /// One complete, bounded stopped-VM log snapshot supplies every log-based verdict.
+    public static func audit(logDirectory: URL, tokens: [String]) -> GuestBootLogAudit {
+        guard !tokens.isEmpty, tokens.count <= 16, tokens.allSatisfy({ !$0.isEmpty && $0.utf8.count <= 8192 }) else { return .unavailable }
         do {
             let logs = try FileManager.default.contentsOfDirectory(at: logDirectory, includingPropertiesForKeys: nil)
                 .filter { $0.lastPathComponent.hasPrefix("guest-") && $0.pathExtension == "log" }
-            guard logs.count == 1 else { return false }
+            guard logs.count == 1 else { return .unavailable }
             let properties = try logs[0].resourceValues(forKeys: [.isRegularFileKey, .isSymbolicLinkKey, .fileSizeKey])
             guard properties.isRegularFile == true, properties.isSymbolicLink != true,
-                  let size = properties.fileSize, size > 0, size <= 8 * 1024 * 1024 else { return false }
+                  let size = properties.fileSize, size > 0, size <= 8 * 1024 * 1024 else { return .unavailable }
             let reader = try FileHandle(forReadingFrom: logs[0]); defer { try? reader.close() }
-            let needles = tokens.map { Data($0.utf8) }; let overlap = (needles.map(\.count).max() ?? 1) - 1
-            var tail = Data(); var total = 0
+            var snapshot = Data()
             while let chunk = try reader.read(upToCount: 65536), !chunk.isEmpty {
-                total += chunk.count; guard total <= size else { return false }
-                let window = tail + chunk
-                if needles.contains(where: { window.range(of: $0) != nil }) { return false }
-                tail = window.suffix(overlap)
+                guard chunk.count <= size - snapshot.count else { return .unavailable }
+                snapshot.append(chunk)
             }
             let finalSize = try reader.seekToEnd()
-            return total == size && finalSize == UInt64(size)
-        } catch { return false }
+            guard snapshot.count == size, finalSize == UInt64(size) else { return .unavailable }
+            let log = String(decoding: snapshot, as: UTF8.self)
+            let lines = Set(log.components(separatedBy: .newlines))
+            let witnesses = ["network_hardware_devices=0", "network_nonloopback_up=0", "network_external_routes=0", "shared_mounts=0"]
+            return GuestBootLogAudit(diagnostics: classify(log), credentialsAbsent: !tokens.contains { snapshot.range(of: Data($0.utf8)) != nil },
+                                    isolationWitnessesPresent: witnesses.allSatisfy(lines.contains),
+                                    formatStageObserved: lines.contains("ARTEX_MAC_STAGE_state_format"), complete: true)
+        } catch { return .unavailable }
     }
+
 }
 
-/// Fixed normalized evidence only. No raw log, error, token or filesystem path can be serialized.
+/// Contains no raw log or tokens. Only the Core audit can construct production values.
+public struct GuestBootLogAudit: Sendable {
+    public let diagnostics: [GuestBootDiagnostic]
+    public let credentialsAbsent: Bool
+    public let isolationWitnessesPresent: Bool
+    public let formatStageObserved: Bool
+    public let complete: Bool
+    static var unavailable: Self { .init(diagnostics: [.logAuditFailure], credentialsAbsent: false, isolationWitnessesPresent: false, formatStageObserved: false, complete: false) }
+}
+
+/// Fixed normalized evidence only. Display-tail text is deliberately not an input.
 public struct BackendPreflightReport: Encodable, Sendable {
     public let bootAttempts: Int
     public let reachedReady: Bool
@@ -57,15 +75,15 @@ public struct BackendPreflightReport: Encodable, Sendable {
     public let machineStopped: Bool
     public let diagnostics: [GuestBootDiagnostic]
     public let formatStageObserved: Bool
+    public let logAuditComplete: Bool
     public let passed: Bool
-    public init(reachedReady: Bool, freshAuth: Bool, protectedStatus: Int?, isolationVerified: Bool,
-                credentialLogCheckPassed: Bool, cooperativeStop: Bool, machineStopped: Bool, guestLog: String, bootAttempts: Int = 1) {
+    public init(reachedReady: Bool, freshAuth: Bool, protectedStatus: Int?, cooperativeStop: Bool,
+                machineStopped: Bool, audit: GuestBootLogAudit, bootAttempts: Int = 1) {
         self.bootAttempts = bootAttempts
         self.reachedReady = reachedReady; self.freshAuth = freshAuth; self.protectedStatus = protectedStatus
-        self.isolationVerified = isolationVerified; self.credentialLogCheckPassed = credentialLogCheckPassed
+        isolationVerified = audit.isolationWitnessesPresent; credentialLogCheckPassed = audit.credentialsAbsent
         self.cooperativeStop = cooperativeStop; self.machineStopped = machineStopped
-        diagnostics = GuestBootDiagnostics.classify(guestLog)
-        passed = bootAttempts == 1 && reachedReady && freshAuth && protectedStatus == 401 && isolationVerified && credentialLogCheckPassed && cooperativeStop && machineStopped && diagnostics.isEmpty
-        formatStageObserved = guestLog.components(separatedBy: .newlines).contains("ARTEX_MAC_STAGE_state_format")
+        diagnostics = audit.diagnostics; formatStageObserved = audit.formatStageObserved; logAuditComplete = audit.complete
+        passed = bootAttempts == 1 && reachedReady && freshAuth && protectedStatus == 401 && isolationVerified && credentialLogCheckPassed && cooperativeStop && machineStopped && logAuditComplete && diagnostics.isEmpty
     }
 }
