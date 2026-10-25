@@ -1,0 +1,1394 @@
+{
+  "baseline": "e75ae371ad777ffd1eecdd28d2781a6519b05591",
+  "source": "web/src/app/(main)/function/tasks/page.tsx",
+  "source_sha256": "f1fb3304b87085c78c84cbc5bcc71117a63a281d3a17a22e438b4b2f357f6ef3",
+  "draft": "aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee",
+  "cases": [
+    {
+      "language": "en",
+      "description": "",
+      "attachment": {
+        "name": "﻿é日本.txt",
+        "path": "uploads/﻿é日本.txt",
+        "size": 0,
+        "abs": "/state/app/data/drafts/aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee/uploads/﻿é日本.txt"
+      },
+      "expected": "[Uploaded files (absolute paths)] The worker can open these paths with Read/Bash:\n- /state/app/data/drafts/aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee/uploads/﻿é日本.txt (0 B)\n"
+    },
+    {
+      "language": "en",
+      "description": "",
+      "attachment": {
+        "name": "﻿é日本.txt",
+        "path": "uploads/﻿é日本.txt",
+        "size": 1023,
+        "abs": "/state/app/data/drafts/aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee/uploads/﻿é日本.txt"
+      },
+      "expected": "[Uploaded files (absolute paths)] The worker can open these paths with Read/Bash:\n- /state/app/data/drafts/aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee/uploads/﻿é日本.txt (1023 B)\n"
+    },
+    {
+      "language": "en",
+      "description": "",
+      "attachment": {
+        "name": "﻿é日本.txt",
+        "path": "uploads/﻿é日本.txt",
+        "size": 1024,
+        "abs": "/state/app/data/drafts/aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee/uploads/﻿é日本.txt"
+      },
+      "expected": "[Uploaded files (absolute paths)] The worker can open these paths with Read/Bash:\n- /state/app/data/drafts/aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee/uploads/﻿é日本.txt (1.0 KB)\n"
+    },
+    {
+      "language": "en",
+      "description": "",
+      "attachment": {
+        "name": "﻿é日本.txt",
+        "path": "uploads/﻿é日本.txt",
+        "size": 1280,
+        "abs": "/state/app/data/drafts/aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee/uploads/﻿é日本.txt"
+      },
+      "expected": "[Uploaded files (absolute paths)] The worker can open these paths with Read/Bash:\n- /state/app/data/drafts/aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee/uploads/﻿é日本.txt (1.3 KB)\n"
+    },
+    {
+      "language": "en",
+      "description": "",
+      "attachment": {
+        "name": "﻿é日本.txt",
+        "path": "uploads/﻿é日本.txt",
+        "size": 1536,
+        "abs": "/state/app/data/drafts/aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee/uploads/﻿é日本.txt"
+      },
+      "expected": "[Uploaded files (absolute paths)] The worker can open these paths with Read/Bash:\n- /state/app/data/drafts/aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee/uploads/﻿é日本.txt (1.5 KB)\n"
+    },
+    {
+      "language": "en",
+      "description": "",
+      "attachment": {
+        "name": "﻿é日本.txt",
+        "path": "uploads/﻿é日本.txt",
+        "size": 1048575,
+        "abs": "/state/app/data/drafts/aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee/uploads/﻿é日本.txt"
+      },
+      "expected": "[Uploaded files (absolute paths)] The worker can open these paths with Read/Bash:\n- /state/app/data/drafts/aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee/uploads/﻿é日本.txt (1024.0 KB)\n"
+    },
+    {
+      "language": "en",
+      "description": "",
+      "attachment": {
+        "name": "﻿é日本.txt",
+        "path": "uploads/﻿é日本.txt",
+        "size": 1048576,
+        "abs": "/state/app/data/drafts/aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee/uploads/﻿é日本.txt"
+      },
+      "expected": "[Uploaded files (absolute paths)] The worker can open these paths with Read/Bash:\n- /state/app/data/drafts/aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee/uploads/﻿é日本.txt (1.0 MB)\n"
+    },
+    {
+      "language": "en",
+      "description": "",
+      "attachment": {
+        "name": "﻿é日本.txt",
+        "path": "uploads/﻿é日本.txt",
+        "size": 1310720,
+        "abs": "/state/app/data/drafts/aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee/uploads/﻿é日本.txt"
+      },
+      "expected": "[Uploaded files (absolute paths)] The worker can open these paths with Read/Bash:\n- /state/app/data/drafts/aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee/uploads/﻿é日本.txt (1.3 MB)\n"
+    },
+    {
+      "language": "en",
+      "description": "",
+      "attachment": {
+        "name": "﻿é日本.txt",
+        "path": "uploads/﻿é日本.txt",
+        "size": 134217728,
+        "abs": "/state/app/data/drafts/aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee/uploads/﻿é日本.txt"
+      },
+      "expected": "[Uploaded files (absolute paths)] The worker can open these paths with Read/Bash:\n- /state/app/data/drafts/aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee/uploads/﻿é日本.txt (128.0 MB)\n"
+    },
+    {
+      "language": "en",
+      "description": " ﻿\t",
+      "attachment": {
+        "name": "﻿é日本.txt",
+        "path": "uploads/﻿é日本.txt",
+        "size": 0,
+        "abs": "/state/app/data/drafts/aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee/uploads/﻿é日本.txt"
+      },
+      "expected": "[Uploaded files (absolute paths)] The worker can open these paths with Read/Bash:\n- /state/app/data/drafts/aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee/uploads/﻿é日本.txt (0 B)\n"
+    },
+    {
+      "language": "en",
+      "description": " ﻿\t",
+      "attachment": {
+        "name": "﻿é日本.txt",
+        "path": "uploads/﻿é日本.txt",
+        "size": 1023,
+        "abs": "/state/app/data/drafts/aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee/uploads/﻿é日本.txt"
+      },
+      "expected": "[Uploaded files (absolute paths)] The worker can open these paths with Read/Bash:\n- /state/app/data/drafts/aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee/uploads/﻿é日本.txt (1023 B)\n"
+    },
+    {
+      "language": "en",
+      "description": " ﻿\t",
+      "attachment": {
+        "name": "﻿é日本.txt",
+        "path": "uploads/﻿é日本.txt",
+        "size": 1024,
+        "abs": "/state/app/data/drafts/aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee/uploads/﻿é日本.txt"
+      },
+      "expected": "[Uploaded files (absolute paths)] The worker can open these paths with Read/Bash:\n- /state/app/data/drafts/aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee/uploads/﻿é日本.txt (1.0 KB)\n"
+    },
+    {
+      "language": "en",
+      "description": " ﻿\t",
+      "attachment": {
+        "name": "﻿é日本.txt",
+        "path": "uploads/﻿é日本.txt",
+        "size": 1280,
+        "abs": "/state/app/data/drafts/aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee/uploads/﻿é日本.txt"
+      },
+      "expected": "[Uploaded files (absolute paths)] The worker can open these paths with Read/Bash:\n- /state/app/data/drafts/aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee/uploads/﻿é日本.txt (1.3 KB)\n"
+    },
+    {
+      "language": "en",
+      "description": " ﻿\t",
+      "attachment": {
+        "name": "﻿é日本.txt",
+        "path": "uploads/﻿é日本.txt",
+        "size": 1536,
+        "abs": "/state/app/data/drafts/aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee/uploads/﻿é日本.txt"
+      },
+      "expected": "[Uploaded files (absolute paths)] The worker can open these paths with Read/Bash:\n- /state/app/data/drafts/aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee/uploads/﻿é日本.txt (1.5 KB)\n"
+    },
+    {
+      "language": "en",
+      "description": " ﻿\t",
+      "attachment": {
+        "name": "﻿é日本.txt",
+        "path": "uploads/﻿é日本.txt",
+        "size": 1048575,
+        "abs": "/state/app/data/drafts/aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee/uploads/﻿é日本.txt"
+      },
+      "expected": "[Uploaded files (absolute paths)] The worker can open these paths with Read/Bash:\n- /state/app/data/drafts/aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee/uploads/﻿é日本.txt (1024.0 KB)\n"
+    },
+    {
+      "language": "en",
+      "description": " ﻿\t",
+      "attachment": {
+        "name": "﻿é日本.txt",
+        "path": "uploads/﻿é日本.txt",
+        "size": 1048576,
+        "abs": "/state/app/data/drafts/aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee/uploads/﻿é日本.txt"
+      },
+      "expected": "[Uploaded files (absolute paths)] The worker can open these paths with Read/Bash:\n- /state/app/data/drafts/aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee/uploads/﻿é日本.txt (1.0 MB)\n"
+    },
+    {
+      "language": "en",
+      "description": " ﻿\t",
+      "attachment": {
+        "name": "﻿é日本.txt",
+        "path": "uploads/﻿é日本.txt",
+        "size": 1310720,
+        "abs": "/state/app/data/drafts/aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee/uploads/﻿é日本.txt"
+      },
+      "expected": "[Uploaded files (absolute paths)] The worker can open these paths with Read/Bash:\n- /state/app/data/drafts/aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee/uploads/﻿é日本.txt (1.3 MB)\n"
+    },
+    {
+      "language": "en",
+      "description": " ﻿\t",
+      "attachment": {
+        "name": "﻿é日本.txt",
+        "path": "uploads/﻿é日本.txt",
+        "size": 134217728,
+        "abs": "/state/app/data/drafts/aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee/uploads/﻿é日本.txt"
+      },
+      "expected": "[Uploaded files (absolute paths)] The worker can open these paths with Read/Bash:\n- /state/app/data/drafts/aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee/uploads/﻿é日本.txt (128.0 MB)\n"
+    },
+    {
+      "language": "en",
+      "description": "﻿ original \n﻿",
+      "attachment": {
+        "name": "﻿é日本.txt",
+        "path": "uploads/﻿é日本.txt",
+        "size": 0,
+        "abs": "/state/app/data/drafts/aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee/uploads/﻿é日本.txt"
+      },
+      "expected": "﻿ original\n\n[Uploaded files (absolute paths)] The worker can open these paths with Read/Bash:\n- /state/app/data/drafts/aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee/uploads/﻿é日本.txt (0 B)\n"
+    },
+    {
+      "language": "en",
+      "description": "﻿ original \n﻿",
+      "attachment": {
+        "name": "﻿é日本.txt",
+        "path": "uploads/﻿é日本.txt",
+        "size": 1023,
+        "abs": "/state/app/data/drafts/aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee/uploads/﻿é日本.txt"
+      },
+      "expected": "﻿ original\n\n[Uploaded files (absolute paths)] The worker can open these paths with Read/Bash:\n- /state/app/data/drafts/aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee/uploads/﻿é日本.txt (1023 B)\n"
+    },
+    {
+      "language": "en",
+      "description": "﻿ original \n﻿",
+      "attachment": {
+        "name": "﻿é日本.txt",
+        "path": "uploads/﻿é日本.txt",
+        "size": 1024,
+        "abs": "/state/app/data/drafts/aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee/uploads/﻿é日本.txt"
+      },
+      "expected": "﻿ original\n\n[Uploaded files (absolute paths)] The worker can open these paths with Read/Bash:\n- /state/app/data/drafts/aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee/uploads/﻿é日本.txt (1.0 KB)\n"
+    },
+    {
+      "language": "en",
+      "description": "﻿ original \n﻿",
+      "attachment": {
+        "name": "﻿é日本.txt",
+        "path": "uploads/﻿é日本.txt",
+        "size": 1280,
+        "abs": "/state/app/data/drafts/aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee/uploads/﻿é日本.txt"
+      },
+      "expected": "﻿ original\n\n[Uploaded files (absolute paths)] The worker can open these paths with Read/Bash:\n- /state/app/data/drafts/aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee/uploads/﻿é日本.txt (1.3 KB)\n"
+    },
+    {
+      "language": "en",
+      "description": "﻿ original \n﻿",
+      "attachment": {
+        "name": "﻿é日本.txt",
+        "path": "uploads/﻿é日本.txt",
+        "size": 1536,
+        "abs": "/state/app/data/drafts/aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee/uploads/﻿é日本.txt"
+      },
+      "expected": "﻿ original\n\n[Uploaded files (absolute paths)] The worker can open these paths with Read/Bash:\n- /state/app/data/drafts/aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee/uploads/﻿é日本.txt (1.5 KB)\n"
+    },
+    {
+      "language": "en",
+      "description": "﻿ original \n﻿",
+      "attachment": {
+        "name": "﻿é日本.txt",
+        "path": "uploads/﻿é日本.txt",
+        "size": 1048575,
+        "abs": "/state/app/data/drafts/aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee/uploads/﻿é日本.txt"
+      },
+      "expected": "﻿ original\n\n[Uploaded files (absolute paths)] The worker can open these paths with Read/Bash:\n- /state/app/data/drafts/aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee/uploads/﻿é日本.txt (1024.0 KB)\n"
+    },
+    {
+      "language": "en",
+      "description": "﻿ original \n﻿",
+      "attachment": {
+        "name": "﻿é日本.txt",
+        "path": "uploads/﻿é日本.txt",
+        "size": 1048576,
+        "abs": "/state/app/data/drafts/aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee/uploads/﻿é日本.txt"
+      },
+      "expected": "﻿ original\n\n[Uploaded files (absolute paths)] The worker can open these paths with Read/Bash:\n- /state/app/data/drafts/aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee/uploads/﻿é日本.txt (1.0 MB)\n"
+    },
+    {
+      "language": "en",
+      "description": "﻿ original \n﻿",
+      "attachment": {
+        "name": "﻿é日本.txt",
+        "path": "uploads/﻿é日本.txt",
+        "size": 1310720,
+        "abs": "/state/app/data/drafts/aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee/uploads/﻿é日本.txt"
+      },
+      "expected": "﻿ original\n\n[Uploaded files (absolute paths)] The worker can open these paths with Read/Bash:\n- /state/app/data/drafts/aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee/uploads/﻿é日本.txt (1.3 MB)\n"
+    },
+    {
+      "language": "en",
+      "description": "﻿ original \n﻿",
+      "attachment": {
+        "name": "﻿é日本.txt",
+        "path": "uploads/﻿é日本.txt",
+        "size": 134217728,
+        "abs": "/state/app/data/drafts/aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee/uploads/﻿é日本.txt"
+      },
+      "expected": "﻿ original\n\n[Uploaded files (absolute paths)] The worker can open these paths with Read/Bash:\n- /state/app/data/drafts/aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee/uploads/﻿é日本.txt (128.0 MB)\n"
+    },
+    {
+      "language": "en",
+      "description": "",
+      "attachment": {
+        "name": "﻿é日本.txt",
+        "path": "uploads/﻿é日本.txt",
+        "size": 0,
+        "abs": "/state/app/data/drafts/aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee/uploads/﻿é日本.txt"
+      },
+      "expected": "\n\n[Uploaded files (absolute paths)] The worker can open these paths with Read/Bash:\n- /state/app/data/drafts/aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee/uploads/﻿é日本.txt (0 B)\n"
+    },
+    {
+      "language": "en",
+      "description": "",
+      "attachment": {
+        "name": "﻿é日本.txt",
+        "path": "uploads/﻿é日本.txt",
+        "size": 1023,
+        "abs": "/state/app/data/drafts/aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee/uploads/﻿é日本.txt"
+      },
+      "expected": "\n\n[Uploaded files (absolute paths)] The worker can open these paths with Read/Bash:\n- /state/app/data/drafts/aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee/uploads/﻿é日本.txt (1023 B)\n"
+    },
+    {
+      "language": "en",
+      "description": "",
+      "attachment": {
+        "name": "﻿é日本.txt",
+        "path": "uploads/﻿é日本.txt",
+        "size": 1024,
+        "abs": "/state/app/data/drafts/aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee/uploads/﻿é日本.txt"
+      },
+      "expected": "\n\n[Uploaded files (absolute paths)] The worker can open these paths with Read/Bash:\n- /state/app/data/drafts/aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee/uploads/﻿é日本.txt (1.0 KB)\n"
+    },
+    {
+      "language": "en",
+      "description": "",
+      "attachment": {
+        "name": "﻿é日本.txt",
+        "path": "uploads/﻿é日本.txt",
+        "size": 1280,
+        "abs": "/state/app/data/drafts/aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee/uploads/﻿é日本.txt"
+      },
+      "expected": "\n\n[Uploaded files (absolute paths)] The worker can open these paths with Read/Bash:\n- /state/app/data/drafts/aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee/uploads/﻿é日本.txt (1.3 KB)\n"
+    },
+    {
+      "language": "en",
+      "description": "",
+      "attachment": {
+        "name": "﻿é日本.txt",
+        "path": "uploads/﻿é日本.txt",
+        "size": 1536,
+        "abs": "/state/app/data/drafts/aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee/uploads/﻿é日本.txt"
+      },
+      "expected": "\n\n[Uploaded files (absolute paths)] The worker can open these paths with Read/Bash:\n- /state/app/data/drafts/aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee/uploads/﻿é日本.txt (1.5 KB)\n"
+    },
+    {
+      "language": "en",
+      "description": "",
+      "attachment": {
+        "name": "﻿é日本.txt",
+        "path": "uploads/﻿é日本.txt",
+        "size": 1048575,
+        "abs": "/state/app/data/drafts/aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee/uploads/﻿é日本.txt"
+      },
+      "expected": "\n\n[Uploaded files (absolute paths)] The worker can open these paths with Read/Bash:\n- /state/app/data/drafts/aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee/uploads/﻿é日本.txt (1024.0 KB)\n"
+    },
+    {
+      "language": "en",
+      "description": "",
+      "attachment": {
+        "name": "﻿é日本.txt",
+        "path": "uploads/﻿é日本.txt",
+        "size": 1048576,
+        "abs": "/state/app/data/drafts/aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee/uploads/﻿é日本.txt"
+      },
+      "expected": "\n\n[Uploaded files (absolute paths)] The worker can open these paths with Read/Bash:\n- /state/app/data/drafts/aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee/uploads/﻿é日本.txt (1.0 MB)\n"
+    },
+    {
+      "language": "en",
+      "description": "",
+      "attachment": {
+        "name": "﻿é日本.txt",
+        "path": "uploads/﻿é日本.txt",
+        "size": 1310720,
+        "abs": "/state/app/data/drafts/aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee/uploads/﻿é日本.txt"
+      },
+      "expected": "\n\n[Uploaded files (absolute paths)] The worker can open these paths with Read/Bash:\n- /state/app/data/drafts/aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee/uploads/﻿é日本.txt (1.3 MB)\n"
+    },
+    {
+      "language": "en",
+      "description": "",
+      "attachment": {
+        "name": "﻿é日本.txt",
+        "path": "uploads/﻿é日本.txt",
+        "size": 134217728,
+        "abs": "/state/app/data/drafts/aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee/uploads/﻿é日本.txt"
+      },
+      "expected": "\n\n[Uploaded files (absolute paths)] The worker can open these paths with Read/Bash:\n- /state/app/data/drafts/aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee/uploads/﻿é日本.txt (128.0 MB)\n"
+    },
+    {
+      "language": "en",
+      "description": "é日本 한국어",
+      "attachment": {
+        "name": "﻿é日本.txt",
+        "path": "uploads/﻿é日本.txt",
+        "size": 0,
+        "abs": "/state/app/data/drafts/aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee/uploads/﻿é日本.txt"
+      },
+      "expected": "é日本 한국어\n\n[Uploaded files (absolute paths)] The worker can open these paths with Read/Bash:\n- /state/app/data/drafts/aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee/uploads/﻿é日本.txt (0 B)\n"
+    },
+    {
+      "language": "en",
+      "description": "é日本 한국어",
+      "attachment": {
+        "name": "﻿é日本.txt",
+        "path": "uploads/﻿é日本.txt",
+        "size": 1023,
+        "abs": "/state/app/data/drafts/aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee/uploads/﻿é日本.txt"
+      },
+      "expected": "é日本 한국어\n\n[Uploaded files (absolute paths)] The worker can open these paths with Read/Bash:\n- /state/app/data/drafts/aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee/uploads/﻿é日本.txt (1023 B)\n"
+    },
+    {
+      "language": "en",
+      "description": "é日本 한국어",
+      "attachment": {
+        "name": "﻿é日本.txt",
+        "path": "uploads/﻿é日本.txt",
+        "size": 1024,
+        "abs": "/state/app/data/drafts/aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee/uploads/﻿é日本.txt"
+      },
+      "expected": "é日本 한국어\n\n[Uploaded files (absolute paths)] The worker can open these paths with Read/Bash:\n- /state/app/data/drafts/aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee/uploads/﻿é日本.txt (1.0 KB)\n"
+    },
+    {
+      "language": "en",
+      "description": "é日本 한국어",
+      "attachment": {
+        "name": "﻿é日本.txt",
+        "path": "uploads/﻿é日本.txt",
+        "size": 1280,
+        "abs": "/state/app/data/drafts/aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee/uploads/﻿é日本.txt"
+      },
+      "expected": "é日本 한국어\n\n[Uploaded files (absolute paths)] The worker can open these paths with Read/Bash:\n- /state/app/data/drafts/aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee/uploads/﻿é日本.txt (1.3 KB)\n"
+    },
+    {
+      "language": "en",
+      "description": "é日本 한국어",
+      "attachment": {
+        "name": "﻿é日本.txt",
+        "path": "uploads/﻿é日本.txt",
+        "size": 1536,
+        "abs": "/state/app/data/drafts/aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee/uploads/﻿é日本.txt"
+      },
+      "expected": "é日本 한국어\n\n[Uploaded files (absolute paths)] The worker can open these paths with Read/Bash:\n- /state/app/data/drafts/aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee/uploads/﻿é日本.txt (1.5 KB)\n"
+    },
+    {
+      "language": "en",
+      "description": "é日本 한국어",
+      "attachment": {
+        "name": "﻿é日本.txt",
+        "path": "uploads/﻿é日本.txt",
+        "size": 1048575,
+        "abs": "/state/app/data/drafts/aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee/uploads/﻿é日本.txt"
+      },
+      "expected": "é日本 한국어\n\n[Uploaded files (absolute paths)] The worker can open these paths with Read/Bash:\n- /state/app/data/drafts/aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee/uploads/﻿é日本.txt (1024.0 KB)\n"
+    },
+    {
+      "language": "en",
+      "description": "é日本 한국어",
+      "attachment": {
+        "name": "﻿é日本.txt",
+        "path": "uploads/﻿é日本.txt",
+        "size": 1048576,
+        "abs": "/state/app/data/drafts/aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee/uploads/﻿é日本.txt"
+      },
+      "expected": "é日本 한국어\n\n[Uploaded files (absolute paths)] The worker can open these paths with Read/Bash:\n- /state/app/data/drafts/aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee/uploads/﻿é日本.txt (1.0 MB)\n"
+    },
+    {
+      "language": "en",
+      "description": "é日本 한국어",
+      "attachment": {
+        "name": "﻿é日本.txt",
+        "path": "uploads/﻿é日本.txt",
+        "size": 1310720,
+        "abs": "/state/app/data/drafts/aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee/uploads/﻿é日本.txt"
+      },
+      "expected": "é日本 한국어\n\n[Uploaded files (absolute paths)] The worker can open these paths with Read/Bash:\n- /state/app/data/drafts/aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee/uploads/﻿é日本.txt (1.3 MB)\n"
+    },
+    {
+      "language": "en",
+      "description": "é日本 한국어",
+      "attachment": {
+        "name": "﻿é日本.txt",
+        "path": "uploads/﻿é日本.txt",
+        "size": 134217728,
+        "abs": "/state/app/data/drafts/aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee/uploads/﻿é日本.txt"
+      },
+      "expected": "é日本 한국어\n\n[Uploaded files (absolute paths)] The worker can open these paths with Read/Bash:\n- /state/app/data/drafts/aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee/uploads/﻿é日本.txt (128.0 MB)\n"
+    },
+    {
+      "language": "en",
+      "description": "prefix\n[Uploaded files (absolute paths)] literal\n",
+      "attachment": {
+        "name": "﻿é日本.txt",
+        "path": "uploads/﻿é日本.txt",
+        "size": 0,
+        "abs": "/state/app/data/drafts/aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee/uploads/﻿é日本.txt"
+      },
+      "expected": "prefix\n[Uploaded files (absolute paths)] literal\n- /state/app/data/drafts/aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee/uploads/﻿é日本.txt (0 B)\n"
+    },
+    {
+      "language": "en",
+      "description": "prefix\n[Uploaded files (absolute paths)] literal\n",
+      "attachment": {
+        "name": "﻿é日本.txt",
+        "path": "uploads/﻿é日本.txt",
+        "size": 1023,
+        "abs": "/state/app/data/drafts/aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee/uploads/﻿é日本.txt"
+      },
+      "expected": "prefix\n[Uploaded files (absolute paths)] literal\n- /state/app/data/drafts/aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee/uploads/﻿é日本.txt (1023 B)\n"
+    },
+    {
+      "language": "en",
+      "description": "prefix\n[Uploaded files (absolute paths)] literal\n",
+      "attachment": {
+        "name": "﻿é日本.txt",
+        "path": "uploads/﻿é日本.txt",
+        "size": 1024,
+        "abs": "/state/app/data/drafts/aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee/uploads/﻿é日本.txt"
+      },
+      "expected": "prefix\n[Uploaded files (absolute paths)] literal\n- /state/app/data/drafts/aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee/uploads/﻿é日本.txt (1.0 KB)\n"
+    },
+    {
+      "language": "en",
+      "description": "prefix\n[Uploaded files (absolute paths)] literal\n",
+      "attachment": {
+        "name": "﻿é日本.txt",
+        "path": "uploads/﻿é日本.txt",
+        "size": 1280,
+        "abs": "/state/app/data/drafts/aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee/uploads/﻿é日本.txt"
+      },
+      "expected": "prefix\n[Uploaded files (absolute paths)] literal\n- /state/app/data/drafts/aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee/uploads/﻿é日本.txt (1.3 KB)\n"
+    },
+    {
+      "language": "en",
+      "description": "prefix\n[Uploaded files (absolute paths)] literal\n",
+      "attachment": {
+        "name": "﻿é日本.txt",
+        "path": "uploads/﻿é日本.txt",
+        "size": 1536,
+        "abs": "/state/app/data/drafts/aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee/uploads/﻿é日本.txt"
+      },
+      "expected": "prefix\n[Uploaded files (absolute paths)] literal\n- /state/app/data/drafts/aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee/uploads/﻿é日本.txt (1.5 KB)\n"
+    },
+    {
+      "language": "en",
+      "description": "prefix\n[Uploaded files (absolute paths)] literal\n",
+      "attachment": {
+        "name": "﻿é日本.txt",
+        "path": "uploads/﻿é日本.txt",
+        "size": 1048575,
+        "abs": "/state/app/data/drafts/aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee/uploads/﻿é日本.txt"
+      },
+      "expected": "prefix\n[Uploaded files (absolute paths)] literal\n- /state/app/data/drafts/aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee/uploads/﻿é日本.txt (1024.0 KB)\n"
+    },
+    {
+      "language": "en",
+      "description": "prefix\n[Uploaded files (absolute paths)] literal\n",
+      "attachment": {
+        "name": "﻿é日本.txt",
+        "path": "uploads/﻿é日本.txt",
+        "size": 1048576,
+        "abs": "/state/app/data/drafts/aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee/uploads/﻿é日本.txt"
+      },
+      "expected": "prefix\n[Uploaded files (absolute paths)] literal\n- /state/app/data/drafts/aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee/uploads/﻿é日本.txt (1.0 MB)\n"
+    },
+    {
+      "language": "en",
+      "description": "prefix\n[Uploaded files (absolute paths)] literal\n",
+      "attachment": {
+        "name": "﻿é日本.txt",
+        "path": "uploads/﻿é日本.txt",
+        "size": 1310720,
+        "abs": "/state/app/data/drafts/aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee/uploads/﻿é日本.txt"
+      },
+      "expected": "prefix\n[Uploaded files (absolute paths)] literal\n- /state/app/data/drafts/aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee/uploads/﻿é日本.txt (1.3 MB)\n"
+    },
+    {
+      "language": "en",
+      "description": "prefix\n[Uploaded files (absolute paths)] literal\n",
+      "attachment": {
+        "name": "﻿é日本.txt",
+        "path": "uploads/﻿é日本.txt",
+        "size": 134217728,
+        "abs": "/state/app/data/drafts/aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee/uploads/﻿é日本.txt"
+      },
+      "expected": "prefix\n[Uploaded files (absolute paths)] literal\n- /state/app/data/drafts/aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee/uploads/﻿é日本.txt (128.0 MB)\n"
+    },
+    {
+      "language": "en",
+      "description": "[Uploaded files (absolute paths)]",
+      "attachment": {
+        "name": "﻿é日本.txt",
+        "path": "uploads/﻿é日本.txt",
+        "size": 0,
+        "abs": "/state/app/data/drafts/aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee/uploads/﻿é日本.txt"
+      },
+      "expected": "[Uploaded files (absolute paths)]\n- /state/app/data/drafts/aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee/uploads/﻿é日本.txt (0 B)\n"
+    },
+    {
+      "language": "en",
+      "description": "[Uploaded files (absolute paths)]",
+      "attachment": {
+        "name": "﻿é日本.txt",
+        "path": "uploads/﻿é日本.txt",
+        "size": 1023,
+        "abs": "/state/app/data/drafts/aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee/uploads/﻿é日本.txt"
+      },
+      "expected": "[Uploaded files (absolute paths)]\n- /state/app/data/drafts/aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee/uploads/﻿é日本.txt (1023 B)\n"
+    },
+    {
+      "language": "en",
+      "description": "[Uploaded files (absolute paths)]",
+      "attachment": {
+        "name": "﻿é日本.txt",
+        "path": "uploads/﻿é日本.txt",
+        "size": 1024,
+        "abs": "/state/app/data/drafts/aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee/uploads/﻿é日本.txt"
+      },
+      "expected": "[Uploaded files (absolute paths)]\n- /state/app/data/drafts/aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee/uploads/﻿é日本.txt (1.0 KB)\n"
+    },
+    {
+      "language": "en",
+      "description": "[Uploaded files (absolute paths)]",
+      "attachment": {
+        "name": "﻿é日本.txt",
+        "path": "uploads/﻿é日本.txt",
+        "size": 1280,
+        "abs": "/state/app/data/drafts/aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee/uploads/﻿é日本.txt"
+      },
+      "expected": "[Uploaded files (absolute paths)]\n- /state/app/data/drafts/aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee/uploads/﻿é日本.txt (1.3 KB)\n"
+    },
+    {
+      "language": "en",
+      "description": "[Uploaded files (absolute paths)]",
+      "attachment": {
+        "name": "﻿é日本.txt",
+        "path": "uploads/﻿é日本.txt",
+        "size": 1536,
+        "abs": "/state/app/data/drafts/aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee/uploads/﻿é日本.txt"
+      },
+      "expected": "[Uploaded files (absolute paths)]\n- /state/app/data/drafts/aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee/uploads/﻿é日本.txt (1.5 KB)\n"
+    },
+    {
+      "language": "en",
+      "description": "[Uploaded files (absolute paths)]",
+      "attachment": {
+        "name": "﻿é日本.txt",
+        "path": "uploads/﻿é日本.txt",
+        "size": 1048575,
+        "abs": "/state/app/data/drafts/aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee/uploads/﻿é日本.txt"
+      },
+      "expected": "[Uploaded files (absolute paths)]\n- /state/app/data/drafts/aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee/uploads/﻿é日本.txt (1024.0 KB)\n"
+    },
+    {
+      "language": "en",
+      "description": "[Uploaded files (absolute paths)]",
+      "attachment": {
+        "name": "﻿é日本.txt",
+        "path": "uploads/﻿é日本.txt",
+        "size": 1048576,
+        "abs": "/state/app/data/drafts/aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee/uploads/﻿é日本.txt"
+      },
+      "expected": "[Uploaded files (absolute paths)]\n- /state/app/data/drafts/aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee/uploads/﻿é日本.txt (1.0 MB)\n"
+    },
+    {
+      "language": "en",
+      "description": "[Uploaded files (absolute paths)]",
+      "attachment": {
+        "name": "﻿é日本.txt",
+        "path": "uploads/﻿é日本.txt",
+        "size": 1310720,
+        "abs": "/state/app/data/drafts/aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee/uploads/﻿é日本.txt"
+      },
+      "expected": "[Uploaded files (absolute paths)]\n- /state/app/data/drafts/aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee/uploads/﻿é日本.txt (1.3 MB)\n"
+    },
+    {
+      "language": "en",
+      "description": "[Uploaded files (absolute paths)]",
+      "attachment": {
+        "name": "﻿é日本.txt",
+        "path": "uploads/﻿é日本.txt",
+        "size": 134217728,
+        "abs": "/state/app/data/drafts/aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee/uploads/﻿é日本.txt"
+      },
+      "expected": "[Uploaded files (absolute paths)]\n- /state/app/data/drafts/aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee/uploads/﻿é日本.txt (128.0 MB)\n"
+    },
+    {
+      "language": "ja",
+      "description": "",
+      "attachment": {
+        "name": "﻿é日本.txt",
+        "path": "uploads/﻿é日本.txt",
+        "size": 0,
+        "abs": "/state/app/data/drafts/aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee/uploads/﻿é日本.txt"
+      },
+      "expected": "【アップロードファイル(絶対パス)】 worker は Read/Bash でパスを開くことができます:\n- /state/app/data/drafts/aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee/uploads/﻿é日本.txt (0 B)\n"
+    },
+    {
+      "language": "ja",
+      "description": "",
+      "attachment": {
+        "name": "﻿é日本.txt",
+        "path": "uploads/﻿é日本.txt",
+        "size": 1023,
+        "abs": "/state/app/data/drafts/aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee/uploads/﻿é日本.txt"
+      },
+      "expected": "【アップロードファイル(絶対パス)】 worker は Read/Bash でパスを開くことができます:\n- /state/app/data/drafts/aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee/uploads/﻿é日本.txt (1023 B)\n"
+    },
+    {
+      "language": "ja",
+      "description": "",
+      "attachment": {
+        "name": "﻿é日本.txt",
+        "path": "uploads/﻿é日本.txt",
+        "size": 1024,
+        "abs": "/state/app/data/drafts/aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee/uploads/﻿é日本.txt"
+      },
+      "expected": "【アップロードファイル(絶対パス)】 worker は Read/Bash でパスを開くことができます:\n- /state/app/data/drafts/aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee/uploads/﻿é日本.txt (1.0 KB)\n"
+    },
+    {
+      "language": "ja",
+      "description": "",
+      "attachment": {
+        "name": "﻿é日本.txt",
+        "path": "uploads/﻿é日本.txt",
+        "size": 1280,
+        "abs": "/state/app/data/drafts/aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee/uploads/﻿é日本.txt"
+      },
+      "expected": "【アップロードファイル(絶対パス)】 worker は Read/Bash でパスを開くことができます:\n- /state/app/data/drafts/aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee/uploads/﻿é日本.txt (1.3 KB)\n"
+    },
+    {
+      "language": "ja",
+      "description": "",
+      "attachment": {
+        "name": "﻿é日本.txt",
+        "path": "uploads/﻿é日本.txt",
+        "size": 1536,
+        "abs": "/state/app/data/drafts/aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee/uploads/﻿é日本.txt"
+      },
+      "expected": "【アップロードファイル(絶対パス)】 worker は Read/Bash でパスを開くことができます:\n- /state/app/data/drafts/aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee/uploads/﻿é日本.txt (1.5 KB)\n"
+    },
+    {
+      "language": "ja",
+      "description": "",
+      "attachment": {
+        "name": "﻿é日本.txt",
+        "path": "uploads/﻿é日本.txt",
+        "size": 1048575,
+        "abs": "/state/app/data/drafts/aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee/uploads/﻿é日本.txt"
+      },
+      "expected": "【アップロードファイル(絶対パス)】 worker は Read/Bash でパスを開くことができます:\n- /state/app/data/drafts/aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee/uploads/﻿é日本.txt (1024.0 KB)\n"
+    },
+    {
+      "language": "ja",
+      "description": "",
+      "attachment": {
+        "name": "﻿é日本.txt",
+        "path": "uploads/﻿é日本.txt",
+        "size": 1048576,
+        "abs": "/state/app/data/drafts/aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee/uploads/﻿é日本.txt"
+      },
+      "expected": "【アップロードファイル(絶対パス)】 worker は Read/Bash でパスを開くことができます:\n- /state/app/data/drafts/aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee/uploads/﻿é日本.txt (1.0 MB)\n"
+    },
+    {
+      "language": "ja",
+      "description": "",
+      "attachment": {
+        "name": "﻿é日本.txt",
+        "path": "uploads/﻿é日本.txt",
+        "size": 1310720,
+        "abs": "/state/app/data/drafts/aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee/uploads/﻿é日本.txt"
+      },
+      "expected": "【アップロードファイル(絶対パス)】 worker は Read/Bash でパスを開くことができます:\n- /state/app/data/drafts/aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee/uploads/﻿é日本.txt (1.3 MB)\n"
+    },
+    {
+      "language": "ja",
+      "description": "",
+      "attachment": {
+        "name": "﻿é日本.txt",
+        "path": "uploads/﻿é日本.txt",
+        "size": 134217728,
+        "abs": "/state/app/data/drafts/aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee/uploads/﻿é日本.txt"
+      },
+      "expected": "【アップロードファイル(絶対パス)】 worker は Read/Bash でパスを開くことができます:\n- /state/app/data/drafts/aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee/uploads/﻿é日本.txt (128.0 MB)\n"
+    },
+    {
+      "language": "ja",
+      "description": " ﻿\t",
+      "attachment": {
+        "name": "﻿é日本.txt",
+        "path": "uploads/﻿é日本.txt",
+        "size": 0,
+        "abs": "/state/app/data/drafts/aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee/uploads/﻿é日本.txt"
+      },
+      "expected": "【アップロードファイル(絶対パス)】 worker は Read/Bash でパスを開くことができます:\n- /state/app/data/drafts/aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee/uploads/﻿é日本.txt (0 B)\n"
+    },
+    {
+      "language": "ja",
+      "description": " ﻿\t",
+      "attachment": {
+        "name": "﻿é日本.txt",
+        "path": "uploads/﻿é日本.txt",
+        "size": 1023,
+        "abs": "/state/app/data/drafts/aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee/uploads/﻿é日本.txt"
+      },
+      "expected": "【アップロードファイル(絶対パス)】 worker は Read/Bash でパスを開くことができます:\n- /state/app/data/drafts/aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee/uploads/﻿é日本.txt (1023 B)\n"
+    },
+    {
+      "language": "ja",
+      "description": " ﻿\t",
+      "attachment": {
+        "name": "﻿é日本.txt",
+        "path": "uploads/﻿é日本.txt",
+        "size": 1024,
+        "abs": "/state/app/data/drafts/aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee/uploads/﻿é日本.txt"
+      },
+      "expected": "【アップロードファイル(絶対パス)】 worker は Read/Bash でパスを開くことができます:\n- /state/app/data/drafts/aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee/uploads/﻿é日本.txt (1.0 KB)\n"
+    },
+    {
+      "language": "ja",
+      "description": " ﻿\t",
+      "attachment": {
+        "name": "﻿é日本.txt",
+        "path": "uploads/﻿é日本.txt",
+        "size": 1280,
+        "abs": "/state/app/data/drafts/aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee/uploads/﻿é日本.txt"
+      },
+      "expected": "【アップロードファイル(絶対パス)】 worker は Read/Bash でパスを開くことができます:\n- /state/app/data/drafts/aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee/uploads/﻿é日本.txt (1.3 KB)\n"
+    },
+    {
+      "language": "ja",
+      "description": " ﻿\t",
+      "attachment": {
+        "name": "﻿é日本.txt",
+        "path": "uploads/﻿é日本.txt",
+        "size": 1536,
+        "abs": "/state/app/data/drafts/aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee/uploads/﻿é日本.txt"
+      },
+      "expected": "【アップロードファイル(絶対パス)】 worker は Read/Bash でパスを開くことができます:\n- /state/app/data/drafts/aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee/uploads/﻿é日本.txt (1.5 KB)\n"
+    },
+    {
+      "language": "ja",
+      "description": " ﻿\t",
+      "attachment": {
+        "name": "﻿é日本.txt",
+        "path": "uploads/﻿é日本.txt",
+        "size": 1048575,
+        "abs": "/state/app/data/drafts/aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee/uploads/﻿é日本.txt"
+      },
+      "expected": "【アップロードファイル(絶対パス)】 worker は Read/Bash でパスを開くことができます:\n- /state/app/data/drafts/aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee/uploads/﻿é日本.txt (1024.0 KB)\n"
+    },
+    {
+      "language": "ja",
+      "description": " ﻿\t",
+      "attachment": {
+        "name": "﻿é日本.txt",
+        "path": "uploads/﻿é日本.txt",
+        "size": 1048576,
+        "abs": "/state/app/data/drafts/aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee/uploads/﻿é日本.txt"
+      },
+      "expected": "【アップロードファイル(絶対パス)】 worker は Read/Bash でパスを開くことができます:\n- /state/app/data/drafts/aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee/uploads/﻿é日本.txt (1.0 MB)\n"
+    },
+    {
+      "language": "ja",
+      "description": " ﻿\t",
+      "attachment": {
+        "name": "﻿é日本.txt",
+        "path": "uploads/﻿é日本.txt",
+        "size": 1310720,
+        "abs": "/state/app/data/drafts/aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee/uploads/﻿é日本.txt"
+      },
+      "expected": "【アップロードファイル(絶対パス)】 worker は Read/Bash でパスを開くことができます:\n- /state/app/data/drafts/aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee/uploads/﻿é日本.txt (1.3 MB)\n"
+    },
+    {
+      "language": "ja",
+      "description": " ﻿\t",
+      "attachment": {
+        "name": "﻿é日本.txt",
+        "path": "uploads/﻿é日本.txt",
+        "size": 134217728,
+        "abs": "/state/app/data/drafts/aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee/uploads/﻿é日本.txt"
+      },
+      "expected": "【アップロードファイル(絶対パス)】 worker は Read/Bash でパスを開くことができます:\n- /state/app/data/drafts/aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee/uploads/﻿é日本.txt (128.0 MB)\n"
+    },
+    {
+      "language": "ja",
+      "description": "﻿ original \n﻿",
+      "attachment": {
+        "name": "﻿é日本.txt",
+        "path": "uploads/﻿é日本.txt",
+        "size": 0,
+        "abs": "/state/app/data/drafts/aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee/uploads/﻿é日本.txt"
+      },
+      "expected": "﻿ original\n\n【アップロードファイル(絶対パス)】 worker は Read/Bash でパスを開くことができます:\n- /state/app/data/drafts/aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee/uploads/﻿é日本.txt (0 B)\n"
+    },
+    {
+      "language": "ja",
+      "description": "﻿ original \n﻿",
+      "attachment": {
+        "name": "﻿é日本.txt",
+        "path": "uploads/﻿é日本.txt",
+        "size": 1023,
+        "abs": "/state/app/data/drafts/aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee/uploads/﻿é日本.txt"
+      },
+      "expected": "﻿ original\n\n【アップロードファイル(絶対パス)】 worker は Read/Bash でパスを開くことができます:\n- /state/app/data/drafts/aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee/uploads/﻿é日本.txt (1023 B)\n"
+    },
+    {
+      "language": "ja",
+      "description": "﻿ original \n﻿",
+      "attachment": {
+        "name": "﻿é日本.txt",
+        "path": "uploads/﻿é日本.txt",
+        "size": 1024,
+        "abs": "/state/app/data/drafts/aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee/uploads/﻿é日本.txt"
+      },
+      "expected": "﻿ original\n\n【アップロードファイル(絶対パス)】 worker は Read/Bash でパスを開くことができます:\n- /state/app/data/drafts/aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee/uploads/﻿é日本.txt (1.0 KB)\n"
+    },
+    {
+      "language": "ja",
+      "description": "﻿ original \n﻿",
+      "attachment": {
+        "name": "﻿é日本.txt",
+        "path": "uploads/﻿é日本.txt",
+        "size": 1280,
+        "abs": "/state/app/data/drafts/aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee/uploads/﻿é日本.txt"
+      },
+      "expected": "﻿ original\n\n【アップロードファイル(絶対パス)】 worker は Read/Bash でパスを開くことができます:\n- /state/app/data/drafts/aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee/uploads/﻿é日本.txt (1.3 KB)\n"
+    },
+    {
+      "language": "ja",
+      "description": "﻿ original \n﻿",
+      "attachment": {
+        "name": "﻿é日本.txt",
+        "path": "uploads/﻿é日本.txt",
+        "size": 1536,
+        "abs": "/state/app/data/drafts/aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee/uploads/﻿é日本.txt"
+      },
+      "expected": "﻿ original\n\n【アップロードファイル(絶対パス)】 worker は Read/Bash でパスを開くことができます:\n- /state/app/data/drafts/aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee/uploads/﻿é日本.txt (1.5 KB)\n"
+    },
+    {
+      "language": "ja",
+      "description": "﻿ original \n﻿",
+      "attachment": {
+        "name": "﻿é日本.txt",
+        "path": "uploads/﻿é日本.txt",
+        "size": 1048575,
+        "abs": "/state/app/data/drafts/aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee/uploads/﻿é日本.txt"
+      },
+      "expected": "﻿ original\n\n【アップロードファイル(絶対パス)】 worker は Read/Bash でパスを開くことができます:\n- /state/app/data/drafts/aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee/uploads/﻿é日本.txt (1024.0 KB)\n"
+    },
+    {
+      "language": "ja",
+      "description": "﻿ original \n﻿",
+      "attachment": {
+        "name": "﻿é日本.txt",
+        "path": "uploads/﻿é日本.txt",
+        "size": 1048576,
+        "abs": "/state/app/data/drafts/aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee/uploads/﻿é日本.txt"
+      },
+      "expected": "﻿ original\n\n【アップロードファイル(絶対パス)】 worker は Read/Bash でパスを開くことができます:\n- /state/app/data/drafts/aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee/uploads/﻿é日本.txt (1.0 MB)\n"
+    },
+    {
+      "language": "ja",
+      "description": "﻿ original \n﻿",
+      "attachment": {
+        "name": "﻿é日本.txt",
+        "path": "uploads/﻿é日本.txt",
+        "size": 1310720,
+        "abs": "/state/app/data/drafts/aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee/uploads/﻿é日本.txt"
+      },
+      "expected": "﻿ original\n\n【アップロードファイル(絶対パス)】 worker は Read/Bash でパスを開くことができます:\n- /state/app/data/drafts/aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee/uploads/﻿é日本.txt (1.3 MB)\n"
+    },
+    {
+      "language": "ja",
+      "description": "﻿ original \n﻿",
+      "attachment": {
+        "name": "﻿é日本.txt",
+        "path": "uploads/﻿é日本.txt",
+        "size": 134217728,
+        "abs": "/state/app/data/drafts/aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee/uploads/﻿é日本.txt"
+      },
+      "expected": "﻿ original\n\n【アップロードファイル(絶対パス)】 worker は Read/Bash でパスを開くことができます:\n- /state/app/data/drafts/aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee/uploads/﻿é日本.txt (128.0 MB)\n"
+    },
+    {
+      "language": "ja",
+      "description": "",
+      "attachment": {
+        "name": "﻿é日本.txt",
+        "path": "uploads/﻿é日本.txt",
+        "size": 0,
+        "abs": "/state/app/data/drafts/aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee/uploads/﻿é日本.txt"
+      },
+      "expected": "\n\n【アップロードファイル(絶対パス)】 worker は Read/Bash でパスを開くことができます:\n- /state/app/data/drafts/aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee/uploads/﻿é日本.txt (0 B)\n"
+    },
+    {
+      "language": "ja",
+      "description": "",
+      "attachment": {
+        "name": "﻿é日本.txt",
+        "path": "uploads/﻿é日本.txt",
+        "size": 1023,
+        "abs": "/state/app/data/drafts/aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee/uploads/﻿é日本.txt"
+      },
+      "expected": "\n\n【アップロードファイル(絶対パス)】 worker は Read/Bash でパスを開くことができます:\n- /state/app/data/drafts/aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee/uploads/﻿é日本.txt (1023 B)\n"
+    },
+    {
+      "language": "ja",
+      "description": "",
+      "attachment": {
+        "name": "﻿é日本.txt",
+        "path": "uploads/﻿é日本.txt",
+        "size": 1024,
+        "abs": "/state/app/data/drafts/aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee/uploads/﻿é日本.txt"
+      },
+      "expected": "\n\n【アップロードファイル(絶対パス)】 worker は Read/Bash でパスを開くことができます:\n- /state/app/data/drafts/aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee/uploads/﻿é日本.txt (1.0 KB)\n"
+    },
+    {
+      "language": "ja",
+      "description": "",
+      "attachment": {
+        "name": "﻿é日本.txt",
+        "path": "uploads/﻿é日本.txt",
+        "size": 1280,
+        "abs": "/state/app/data/drafts/aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee/uploads/﻿é日本.txt"
+      },
+      "expected": "\n\n【アップロードファイル(絶対パス)】 worker は Read/Bash でパスを開くことができます:\n- /state/app/data/drafts/aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee/uploads/﻿é日本.txt (1.3 KB)\n"
+    },
+    {
+      "language": "ja",
+      "description": "",
+      "attachment": {
+        "name": "﻿é日本.txt",
+        "path": "uploads/﻿é日本.txt",
+        "size": 1536,
+        "abs": "/state/app/data/drafts/aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee/uploads/﻿é日本.txt"
+      },
+      "expected": "\n\n【アップロードファイル(絶対パス)】 worker は Read/Bash でパスを開くことができます:\n- /state/app/data/drafts/aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee/uploads/﻿é日本.txt (1.5 KB)\n"
+    },
+    {
+      "language": "ja",
+      "description": "",
+      "attachment": {
+        "name": "﻿é日本.txt",
+        "path": "uploads/﻿é日本.txt",
+        "size": 1048575,
+        "abs": "/state/app/data/drafts/aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee/uploads/﻿é日本.txt"
+      },
+      "expected": "\n\n【アップロードファイル(絶対パス)】 worker は Read/Bash でパスを開くことができます:\n- /state/app/data/drafts/aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee/uploads/﻿é日本.txt (1024.0 KB)\n"
+    },
+    {
+      "language": "ja",
+      "description": "",
+      "attachment": {
+        "name": "﻿é日本.txt",
+        "path": "uploads/﻿é日本.txt",
+        "size": 1048576,
+        "abs": "/state/app/data/drafts/aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee/uploads/﻿é日本.txt"
+      },
+      "expected": "\n\n【アップロードファイル(絶対パス)】 worker は Read/Bash でパスを開くことができます:\n- /state/app/data/drafts/aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee/uploads/﻿é日本.txt (1.0 MB)\n"
+    },
+    {
+      "language": "ja",
+      "description": "",
+      "attachment": {
+        "name": "﻿é日本.txt",
+        "path": "uploads/﻿é日本.txt",
+        "size": 1310720,
+        "abs": "/state/app/data/drafts/aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee/uploads/﻿é日本.txt"
+      },
+      "expected": "\n\n【アップロードファイル(絶対パス)】 worker は Read/Bash でパスを開くことができます:\n- /state/app/data/drafts/aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee/uploads/﻿é日本.txt (1.3 MB)\n"
+    },
+    {
+      "language": "ja",
+      "description": "",
+      "attachment": {
+        "name": "﻿é日本.txt",
+        "path": "uploads/﻿é日本.txt",
+        "size": 134217728,
+        "abs": "/state/app/data/drafts/aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee/uploads/﻿é日本.txt"
+      },
+      "expected": "\n\n【アップロードファイル(絶対パス)】 worker は Read/Bash でパスを開くことができます:\n- /state/app/data/drafts/aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee/uploads/﻿é日本.txt (128.0 MB)\n"
+    },
+    {
+      "language": "ja",
+      "description": "é日本 한국어",
+      "attachment": {
+        "name": "﻿é日本.txt",
+        "path": "uploads/﻿é日本.txt",
+        "size": 0,
+        "abs": "/state/app/data/drafts/aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee/uploads/﻿é日本.txt"
+      },
+      "expected": "é日本 한국어\n\n【アップロードファイル(絶対パス)】 worker は Read/Bash でパスを開くことができます:\n- /state/app/data/drafts/aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee/uploads/﻿é日本.txt (0 B)\n"
+    },
+    {
+      "language": "ja",
+      "description": "é日本 한국어",
+      "attachment": {
+        "name": "﻿é日本.txt",
+        "path": "uploads/﻿é日本.txt",
+        "size": 1023,
+        "abs": "/state/app/data/drafts/aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee/uploads/﻿é日本.txt"
+      },
+      "expected": "é日本 한국어\n\n【アップロードファイル(絶対パス)】 worker は Read/Bash でパスを開くことができます:\n- /state/app/data/drafts/aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee/uploads/﻿é日本.txt (1023 B)\n"
+    },
+    {
+      "language": "ja",
+      "description": "é日本 한국어",
+      "attachment": {
+        "name": "﻿é日本.txt",
+        "path": "uploads/﻿é日本.txt",
+        "size": 1024,
+        "abs": "/state/app/data/drafts/aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee/uploads/﻿é日本.txt"
+      },
+      "expected": "é日本 한국어\n\n【アップロードファイル(絶対パス)】 worker は Read/Bash でパスを開くことができます:\n- /state/app/data/drafts/aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee/uploads/﻿é日本.txt (1.0 KB)\n"
+    },
+    {
+      "language": "ja",
+      "description": "é日本 한국어",
+      "attachment": {
+        "name": "﻿é日本.txt",
+        "path": "uploads/﻿é日本.txt",
+        "size": 1280,
+        "abs": "/state/app/data/drafts/aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee/uploads/﻿é日本.txt"
+      },
+      "expected": "é日本 한국어\n\n【アップロードファイル(絶対パス)】 worker は Read/Bash でパスを開くことができます:\n- /state/app/data/drafts/aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee/uploads/﻿é日本.txt (1.3 KB)\n"
+    },
+    {
+      "language": "ja",
+      "description": "é日本 한국어",
+      "attachment": {
+        "name": "﻿é日本.txt",
+        "path": "uploads/﻿é日本.txt",
+        "size": 1536,
+        "abs": "/state/app/data/drafts/aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee/uploads/﻿é日本.txt"
+      },
+      "expected": "é日本 한국어\n\n【アップロードファイル(絶対パス)】 worker は Read/Bash でパスを開くことができます:\n- /state/app/data/drafts/aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee/uploads/﻿é日本.txt (1.5 KB)\n"
+    },
+    {
+      "language": "ja",
+      "description": "é日本 한국어",
+      "attachment": {
+        "name": "﻿é日本.txt",
+        "path": "uploads/﻿é日本.txt",
+        "size": 1048575,
+        "abs": "/state/app/data/drafts/aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee/uploads/﻿é日本.txt"
+      },
+      "expected": "é日本 한국어\n\n【アップロードファイル(絶対パス)】 worker は Read/Bash でパスを開くことができます:\n- /state/app/data/drafts/aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee/uploads/﻿é日本.txt (1024.0 KB)\n"
+    },
+    {
+      "language": "ja",
+      "description": "é日本 한국어",
+      "attachment": {
+        "name": "﻿é日本.txt",
+        "path": "uploads/﻿é日本.txt",
+        "size": 1048576,
+        "abs": "/state/app/data/drafts/aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee/uploads/﻿é日本.txt"
+      },
+      "expected": "é日本 한국어\n\n【アップロードファイル(絶対パス)】 worker は Read/Bash でパスを開くことができます:\n- /state/app/data/drafts/aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee/uploads/﻿é日本.txt (1.0 MB)\n"
+    },
+    {
+      "language": "ja",
+      "description": "é日本 한국어",
+      "attachment": {
+        "name": "﻿é日本.txt",
+        "path": "uploads/﻿é日本.txt",
+        "size": 1310720,
+        "abs": "/state/app/data/drafts/aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee/uploads/﻿é日本.txt"
+      },
+      "expected": "é日本 한국어\n\n【アップロードファイル(絶対パス)】 worker は Read/Bash でパスを開くことができます:\n- /state/app/data/drafts/aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee/uploads/﻿é日本.txt (1.3 MB)\n"
+    },
+    {
+      "language": "ja",
+      "description": "é日本 한국어",
+      "attachment": {
+        "name": "﻿é日本.txt",
+        "path": "uploads/﻿é日本.txt",
+        "size": 134217728,
+        "abs": "/state/app/data/drafts/aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee/uploads/﻿é日本.txt"
+      },
+      "expected": "é日本 한국어\n\n【アップロードファイル(絶対パス)】 worker は Read/Bash でパスを開くことができます:\n- /state/app/data/drafts/aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee/uploads/﻿é日本.txt (128.0 MB)\n"
+    },
+    {
+      "language": "ja",
+      "description": "prefix\n【アップロードファイル(絶対パス)】 literal\n",
+      "attachment": {
+        "name": "﻿é日本.txt",
+        "path": "uploads/﻿é日本.txt",
+        "size": 0,
+        "abs": "/state/app/data/drafts/aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee/uploads/﻿é日本.txt"
+      },
+      "expected": "prefix\n【アップロードファイル(絶対パス)】 literal\n- /state/app/data/drafts/aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee/uploads/﻿é日本.txt (0 B)\n"
+    },
+    {
+      "language": "ja",
+      "description": "prefix\n【アップロードファイル(絶対パス)】 literal\n",
+      "attachment": {
+        "name": "﻿é日本.txt",
+        "path": "uploads/﻿é日本.txt",
+        "size": 1023,
+        "abs": "/state/app/data/drafts/aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee/uploads/﻿é日本.txt"
+      },
+      "expected": "prefix\n【アップロードファイル(絶対パス)】 literal\n- /state/app/data/drafts/aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee/uploads/﻿é日本.txt (1023 B)\n"
+    },
+    {
+      "language": "ja",
+      "description": "prefix\n【アップロードファイル(絶対パス)】 literal\n",
+      "attachment": {
+        "name": "﻿é日本.txt",
+        "path": "uploads/﻿é日本.txt",
+        "size": 1024,
+        "abs": "/state/app/data/drafts/aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee/uploads/﻿é日本.txt"
+      },
+      "expected": "prefix\n【アップロードファイル(絶対パス)】 literal\n- /state/app/data/drafts/aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee/uploads/﻿é日本.txt (1.0 KB)\n"
+    },
+    {
+      "language": "ja",
+      "description": "prefix\n【アップロードファイル(絶対パス)】 literal\n",
+      "attachment": {
+        "name": "﻿é日本.txt",
+        "path": "uploads/﻿é日本.txt",
+        "size": 1280,
+        "abs": "/state/app/data/drafts/aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee/uploads/﻿é日本.txt"
+      },
+      "expected": "prefix\n【アップロードファイル(絶対パス)】 literal\n- /state/app/data/drafts/aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee/uploads/﻿é日本.txt (1.3 KB)\n"
+    },
+    {
+      "language": "ja",
+      "description": "prefix\n【アップロードファイル(絶対パス)】 literal\n",
+      "attachment": {
+        "name": "﻿é日本.txt",
+        "path": "uploads/﻿é日本.txt",
+        "size": 1536,
+        "abs": "/state/app/data/drafts/aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee/uploads/﻿é日本.txt"
+      },
+      "expected": "prefix\n【アップロードファイル(絶対パス)】 literal\n- /state/app/data/drafts/aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee/uploads/﻿é日本.txt (1.5 KB)\n"
+    },
+    {
+      "language": "ja",
+      "description": "prefix\n【アップロードファイル(絶対パス)】 literal\n",
+      "attachment": {
+        "name": "﻿é日本.txt",
+        "path": "uploads/﻿é日本.txt",
+        "size": 1048575,
+        "abs": "/state/app/data/drafts/aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee/uploads/﻿é日本.txt"
+      },
+      "expected": "prefix\n【アップロードファイル(絶対パス)】 literal\n- /state/app/data/drafts/aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee/uploads/﻿é日本.txt (1024.0 KB)\n"
+    },
+    {
+      "language": "ja",
+      "description": "prefix\n【アップロードファイル(絶対パス)】 literal\n",
+      "attachment": {
+        "name": "﻿é日本.txt",
+        "path": "uploads/﻿é日本.txt",
+        "size": 1048576,
+        "abs": "/state/app/data/drafts/aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee/uploads/﻿é日本.txt"
+      },
+      "expected": "prefix\n【アップロードファイル(絶対パス)】 literal\n- /state/app/data/drafts/aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee/uploads/﻿é日本.txt (1.0 MB)\n"
+    },
+    {
+      "language": "ja",
+      "description": "prefix\n【アップロードファイル(絶対パス)】 literal\n",
+      "attachment": {
+        "name": "﻿é日本.txt",
+        "path": "uploads/﻿é日本.txt",
+        "size": 1310720,
+        "abs": "/state/app/data/drafts/aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee/uploads/﻿é日本.txt"
+      },
+      "expected": "prefix\n【アップロードファイル(絶対パス)】 literal\n- /state/app/data/drafts/aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee/uploads/﻿é日本.txt (1.3 MB)\n"
+    },
+    {
+      "language": "ja",
+      "description": "prefix\n【アップロードファイル(絶対パス)】 literal\n",
+      "attachment": {
+        "name": "﻿é日本.txt",
+        "path": "uploads/﻿é日本.txt",
+        "size": 134217728,
+        "abs": "/state/app/data/drafts/aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee/uploads/﻿é日本.txt"
+      },
+      "expected": "prefix\n【アップロードファイル(絶対パス)】 literal\n- /state/app/data/drafts/aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee/uploads/﻿é日本.txt (128.0 MB)\n"
+    },
+    {
+      "language": "ja",
+      "description": "【アップロードファイル(絶対パス)】",
+      "attachment": {
+        "name": "﻿é日本.txt",
+        "path": "uploads/﻿é日本.txt",
+        "size": 0,
+        "abs": "/state/app/data/drafts/aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee/uploads/﻿é日本.txt"
+      },
+      "expected": "【アップロードファイル(絶対パス)】\n\n【アップロードファイル(絶対パス)】 worker は Read/Bash でパスを開くことができます:\n- /state/app/data/drafts/aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee/uploads/﻿é日本.txt (0 B)\n"
+    },
+    {
+      "language": "ja",
+      "description": "【アップロードファイル(絶対パス)】",
+      "attachment": {
+        "name": "﻿é日本.txt",
+        "path": "uploads/﻿é日本.txt",
+        "size": 1023,
+        "abs": "/state/app/data/drafts/aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee/uploads/﻿é日本.txt"
+      },
+      "expected": "【アップロードファイル(絶対パス)】\n\n【アップロードファイル(絶対パス)】 worker は Read/Bash でパスを開くことができます:\n- /state/app/data/drafts/aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee/uploads/﻿é日本.txt (1023 B)\n"
+    },
+    {
+      "language": "ja",
+      "description": "【アップロードファイル(絶対パス)】",
+      "attachment": {
+        "name": "﻿é日本.txt",
+        "path": "uploads/﻿é日本.txt",
+        "size": 1024,
+        "abs": "/state/app/data/drafts/aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee/uploads/﻿é日本.txt"
+      },
+      "expected": "【アップロードファイル(絶対パス)】\n\n【アップロードファイル(絶対パス)】 worker は Read/Bash でパスを開くことができます:\n- /state/app/data/drafts/aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee/uploads/﻿é日本.txt (1.0 KB)\n"
+    },
+    {
+      "language": "ja",
+      "description": "【アップロードファイル(絶対パス)】",
+      "attachment": {
+        "name": "﻿é日本.txt",
+        "path": "uploads/﻿é日本.txt",
+        "size": 1280,
+        "abs": "/state/app/data/drafts/aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee/uploads/﻿é日本.txt"
+      },
+      "expected": "【アップロードファイル(絶対パス)】\n\n【アップロードファイル(絶対パス)】 worker は Read/Bash でパスを開くことができます:\n- /state/app/data/drafts/aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee/uploads/﻿é日本.txt (1.3 KB)\n"
+    },
+    {
+      "language": "ja",
+      "description": "【アップロードファイル(絶対パス)】",
+      "attachment": {
+        "name": "﻿é日本.txt",
+        "path": "uploads/﻿é日本.txt",
+        "size": 1536,
+        "abs": "/state/app/data/drafts/aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee/uploads/﻿é日本.txt"
+      },
+      "expected": "【アップロードファイル(絶対パス)】\n\n【アップロードファイル(絶対パス)】 worker は Read/Bash でパスを開くことができます:\n- /state/app/data/drafts/aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee/uploads/﻿é日本.txt (1.5 KB)\n"
+    },
+    {
+      "language": "ja",
+      "description": "【アップロードファイル(絶対パス)】",
+      "attachment": {
+        "name": "﻿é日本.txt",
+        "path": "uploads/﻿é日本.txt",
+        "size": 1048575,
+        "abs": "/state/app/data/drafts/aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee/uploads/﻿é日本.txt"
+      },
+      "expected": "【アップロードファイル(絶対パス)】\n\n【アップロードファイル(絶対パス)】 worker は Read/Bash でパスを開くことができます:\n- /state/app/data/drafts/aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee/uploads/﻿é日本.txt (1024.0 KB)\n"
+    },
+    {
+      "language": "ja",
+      "description": "【アップロードファイル(絶対パス)】",
+      "attachment": {
+        "name": "﻿é日本.txt",
+        "path": "uploads/﻿é日本.txt",
+        "size": 1048576,
+        "abs": "/state/app/data/drafts/aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee/uploads/﻿é日本.txt"
+      },
+      "expected": "【アップロードファイル(絶対パス)】\n\n【アップロードファイル(絶対パス)】 worker は Read/Bash でパスを開くことができます:\n- /state/app/data/drafts/aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee/uploads/﻿é日本.txt (1.0 MB)\n"
+    },
+    {
+      "language": "ja",
+      "description": "【アップロードファイル(絶対パス)】",
+      "attachment": {
+        "name": "﻿é日本.txt",
+        "path": "uploads/﻿é日本.txt",
+        "size": 1310720,
+        "abs": "/state/app/data/drafts/aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee/uploads/﻿é日本.txt"
+      },
+      "expected": "【アップロードファイル(絶対パス)】\n\n【アップロードファイル(絶対パス)】 worker は Read/Bash でパスを開くことができます:\n- /state/app/data/drafts/aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee/uploads/﻿é日本.txt (1.3 MB)\n"
+    },
+    {
+      "language": "ja",
+      "description": "【アップロードファイル(絶対パス)】",
+      "attachment": {
+        "name": "﻿é日本.txt",
+        "path": "uploads/﻿é日本.txt",
+        "size": 134217728,
+        "abs": "/state/app/data/drafts/aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee/uploads/﻿é日本.txt"
+      },
+      "expected": "【アップロードファイル(絶対パス)】\n\n【アップロードファイル(絶対パス)】 worker は Read/Bash でパスを開くことができます:\n- /state/app/data/drafts/aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee/uploads/﻿é日本.txt (128.0 MB)\n"
+    }
+  ]
+}

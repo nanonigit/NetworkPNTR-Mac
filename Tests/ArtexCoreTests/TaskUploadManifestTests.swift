@@ -45,4 +45,24 @@ final class TaskUploadManifestTests: XCTestCase {
             for language in AppLanguage.allCases { XCTAssertNotEqual(AppStrings.text(key,language:language),key.rawValue) }
         }
     }
+    func testAll126PinnedBrowserFunctionOracleCases() throws {
+        struct Oracle: Decodable {
+            struct Entry: Decodable {
+                let language: String
+                let description: String
+                let attachment: TaskStagedAttachment
+                let expected: String
+            }
+            let baseline: String
+            let cases: [Entry]
+        }
+        let url = try XCTUnwrap(Bundle.module.url(forResource:"task-upload-manifest-oracle",withExtension:"json",subdirectory:"Fixtures"))
+        let decoder = JSONDecoder(); decoder.userInfo[TaskStagedAttachment.draftKey] = draft
+        let oracle = try decoder.decode(Oracle.self,from:Data(contentsOf:url))
+        XCTAssertEqual(oracle.baseline,"e75ae371ad777ffd1eecdd28d2781a6519b05591"); XCTAssertEqual(oracle.cases.count,126)
+        for entry in oracle.cases {
+            let value = TaskUploadManifest.appending(to:entry.description,attachments:[entry.attachment],language:entry.language == "en" ? .english : .japanese)
+            XCTAssertTrue(value.utf8.elementsEqual(entry.expected.utf8),"Mismatch \(entry.language) size \(entry.attachment.size)")
+        }
+    }
 }
