@@ -21,7 +21,13 @@ echo ARTEX_MAC_STAGE_state_probe
 # Existing filesystems are mounted as-is. Only an entirely zero disk is formatted.
 if ! blkid /dev/vdb | grep -q 'TYPE="ext4"'; then
     echo ARTEX_MAC_STAGE_state_zero_check
-    python3 /opt/artex-mac/check_blank_disk.py || fail nonblank-state-disk
+    blank_status=0
+    python3 /opt/artex-mac/check_blank_disk.py || blank_status=$?
+    case "$blank_status" in
+        0) ;;
+        2) fail nonblank-state-disk ;;
+        *) fail state-blank-check-failed ;;
+    esac
     echo ARTEX_MAC_STAGE_state_format
     mkfs.ext4 -q -F -E nodiscard -L artex-state /dev/vdb || fail format-state-disk
 fi

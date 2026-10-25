@@ -2,16 +2,37 @@ import ArtexCore
 import Foundation
 
 @MainActor enum BackendProbe {
-    static func run(_ args: [String]) async {
+    static func run(_ args: [String], preflightOnly: Bool = false) async {
         guard args.count == 2 else { print("Usage: VMProbe --backend guest-artifacts evidence-directory"); exit(2) }
         let artifacts = URL(fileURLWithPath: args[0])
         let logs = URL(fileURLWithPath: args[1])
         let controller = VMController()
+        var privatePreflightDirectory = false
+        var preflightStartAttempted = false; var preflightCooperativeStop = false
+        var preflightReady = false; var preflightFreshAuth = false; var preflightIsolation = false
+        var preflightProtectedStatus: Int?; var preflightTokens: [String] = []
+        func preflightReport(cooperative: Bool) -> BackendPreflightReport {
+            BackendPreflightReport(reachedReady: preflightReady, freshAuth: preflightFreshAuth, protectedStatus: preflightProtectedStatus,
+                                   isolationVerified: preflightIsolation,
+                                   credentialLogCheckPassed: GuestBootDiagnostics.credentialsAbsent(logDirectory: logs, tokens: preflightTokens),
+                                   cooperativeStop: cooperative, machineStopped: !controller.hasMachine, guestLog: controller.guestLog, bootAttempts: preflightStartAttempted ? 1 : 0)
+        }
+        func writePreflight(_ report: BackendPreflightReport) throws {
+            let encoder = JSONEncoder(); encoder.outputFormatting = [.prettyPrinted, .sortedKeys]
+            try encoder.encode(report).write(to: logs.appendingPathComponent("preflight.json"), options: .atomic)
+        }
         do {
-            try FileManager.default.createDirectory(at: logs, withIntermediateDirectories: true, attributes: [.posixPermissions: 0o700])
+            if preflightOnly {
+                // Atomic fresh output: never mix a control run with existing private state.
+                try FileManager.default.createDirectory(at: logs, withIntermediateDirectories: false, attributes: [.posixPermissions: 0o700])
+                privatePreflightDirectory = true
+            } else {
+                try FileManager.default.createDirectory(at: logs, withIntermediateDirectories: true, attributes: [.posixPermissions: 0o700])
+            }
             let disk = logs.appendingPathComponent("state-" + UUID().uuidString + ".ext4")
             _ = try PersistentGuestDisk.createIfMissing(at: disk, byteCount: 2 * 1024 * 1024 * 1024)
             var provisioning = try GuestProvisioning.generate()
+            if preflightOnly { preflightTokens = [provisioning.transportToken, provisioning.setupToken] }
             func boot(_ stateDisk: URL) async throws {
                 try await controller.start(artifacts: artifacts, logs: logs, readinessTimeout: .seconds(120), dataDisk: stateDisk, provisioning: provisioning)
                 for _ in 0..<1300 {
@@ -27,6 +48,11 @@ import Foundation
                 guard !controller.guestLog.contains(provisioning.transportToken), !controller.guestLog.contains(provisioning.setupToken) else { throw RuntimeError.integrity("credentials appeared in guest log") }
             }
             func request(_ method: String, _ path: String, body: [String: Any]? = nil, token: String? = nil) async throws -> (Int, [String: Any]) {
+                if preflightOnly {
+                    guard method == "GET", ["/api/auth/status", "/api/llm/profiles"].contains(path), body == nil, token == nil else {
+                        throw RuntimeError.integrity("preflight read-only request")
+                    }
+                }
                 let data = try body.map { try JSONSerialization.data(withJSONObject: $0, options: [.sortedKeys]) } ?? Data()
                 var header = "\(method) \(path) HTTP/1.1\r\nHost: localhost\r\nConnection: close\r\nContent-Type: application/json\r\nContent-Length: \(data.count)\r\n"
                 if let token { header += "Authorization: Bearer \(token)\r\n" }
@@ -40,12 +66,25 @@ import Foundation
             func expect(_ code: Int, _ actual: Int, _ stage: String) throws {
                 guard actual == code else { throw RuntimeError.integrity(stage + " status=\(actual)") }
             }
+            if preflightOnly { preflightStartAttempted = true }
             try await boot(disk); try requireReady()
+            if preflightOnly { preflightReady = true; preflightIsolation = true }
             let status = try await request("GET", "/api/auth/status")
             try expect(200, status.0, "first auth status")
             guard status.1["initialized"] as? Bool == false, status.1["setup_token_required"] as? Bool == true else { throw RuntimeError.integrity("first-run auth contract") }
+            if preflightOnly { preflightFreshAuth = true }
             let denied = try await request("GET", "/api/llm/profiles")
+            if preflightOnly { preflightProtectedStatus = denied.0 }
             try expect(401, denied.0, "protected API")
+            if preflightOnly {
+                try await controller.stop()
+                preflightCooperativeStop = true
+                let report = preflightReport(cooperative: true)
+                try writePreflight(report)
+                guard report.passed else { throw RuntimeError.integrity("backend preflight evidence") }
+                print("PASS backend_preflight_single_boot=true read_only_auth=true cooperative_stop=true network_devices=0 host_shares=0")
+                return
+            }
             let password = UUID().uuidString + "-fixture"
             let wrongSetup = try await request("POST", "/api/auth/init", body: ["password": password, "setup_token": "wrong"])
             try expect(403, wrongSetup.0, "wrong setup token")
@@ -105,8 +144,16 @@ import Foundation
             let contract: [String: Any] = ["initial_auth": status.1, "protected_status": denied.0, "wrong_setup_status": wrongSetup.0, "setup_status": initialized.0, "profile_status": saved.0, "profile": normalized]
             try JSONSerialization.data(withJSONObject: contract, options: [.prettyPrinted, .sortedKeys]).write(to: logs.appendingPathComponent("api-contract-vm.json"))
         } catch {
-            FileHandle.standardError.write(Data("FAIL: \(error.localizedDescription)\n".utf8))
-            try? await controller.forceStop()
+            if preflightOnly {
+                try? await controller.forceStop()
+                let report = preflightReport(cooperative: preflightCooperativeStop)
+                if privatePreflightDirectory { try? writePreflight(report) }
+                let categories = report.diagnostics.map(\.rawValue).joined(separator: ",")
+                FileHandle.standardError.write(Data(("FAIL backend_preflight_boot_attempted=\(preflightStartAttempted) ready=\(report.reachedReady) categories=" + (categories.isEmpty ? "unclassified" : categories) + "\n").utf8))
+            } else {
+                FileHandle.standardError.write(Data("FAIL: \(error.localizedDescription)\n".utf8))
+                try? await controller.forceStop()
+            }
             exit(1)
         }
     }

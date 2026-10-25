@@ -12,7 +12,15 @@ def is_blank(path):
     return True
 
 
+def check_status(path):
+    """Return 2 only for observed data; invalid devices and I/O are execution failures."""
+    try:
+        if not stat.S_ISBLK(path.stat().st_mode):
+            return 3
+        return 0 if is_blank(path) else 2
+    except (OSError, ValueError):
+        return 3
+
+
 if __name__ == '__main__':
-    target = Path('/dev/vdb')
-    if not stat.S_ISBLK(target.stat().st_mode) or not is_blank(target):
-        raise SystemExit(2)
+    raise SystemExit(check_status(Path('/dev/vdb')))
