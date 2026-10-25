@@ -1,4 +1,6 @@
 import Foundation
+import AppKit
+import SwiftUI
 import XCTest
 @testable import ArtexCore
 @testable import ArtexMac
@@ -110,4 +112,31 @@ final class TaskCreationUploadTests: XCTestCase {
         let before = api.drafts.count
         let forbidden = await model.uploadFiles(files,language:.english,contextID:context); XCTAssertFalse(forbidden); XCTAssertEqual(api.drafts.count,before)
     }
+    @MainActor func testParentInjectionBusyAndBilingualAttachmentSectionRetainOwnership() async throws {
+        let api = DraftUploadAPI(), store = TaskStore(service:TaskService(client:DraftUploadAPI()))
+        let parent = TaskScreenModel(store:store,creationService:TaskCreationService(client:api),stagingUploader:api)
+        XCTAssertTrue(parent.beginCreate()); let model = try XCTUnwrap(parent.creation), context = try XCTUnwrap(model.context).id
+        XCTAssertTrue(model.uploadsAvailable)
+        model.setPickerPresented(true,contextID:context); XCTAssertTrue(parent.busy)
+        model.setPickerPresented(false,contextID:context); api.hold = true
+        let pending = Task { await model.uploadFiles(self.files,language:.japanese,contextID:context) }
+        try await reached { api.replies.count == 1 }
+        XCTAssertTrue(parent.busy); let draft = model.draftID
+        for language in AppLanguage.allCases {
+            let hosting = NSHostingView(rootView:TaskCreateAttachments(model:model,contextID:context).environment(\.locale,language.locale))
+            hosting.frame = NSRect(x:0,y:0,width:600,height:180); hosting.layoutSubtreeIfNeeded()
+            XCTAssertTrue(hosting.fittingSize.height.isFinite); XCTAssertNil(hosting.window)
+            XCTAssertEqual(model.draftID,draft); XCTAssertTrue(model.isUploading)
+        }
+        api.replies[0].resume(returning:[try api.attachment(draft:draft)])
+        let success = await pending.value; XCTAssertTrue(success); XCTAssertFalse(parent.busy)
+        let text = Data(model.form.draft.description.utf8)
+        for language in AppLanguage.allCases {
+            let hosting = NSHostingView(rootView:TaskCreateAttachments(model:model,contextID:context).environment(\.locale,language.locale))
+            hosting.frame = NSRect(x:0,y:0,width:600,height:180); hosting.layoutSubtreeIfNeeded()
+            XCTAssertEqual(Data(model.form.draft.description.utf8),text)
+        }
+        parent.reset(); XCTAssertNil(model.context); XCTAssertEqual(model.uploadCount,0)
+    }
+
 }
