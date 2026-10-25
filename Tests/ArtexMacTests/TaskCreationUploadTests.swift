@@ -45,19 +45,21 @@ final class TaskCreationUploadTests: XCTestCase {
         let (api,model) = make(); let context = try XCTUnwrap(model.open()), draft = model.draftID
         model.update(\.draft.description,value:"initial",contextID:context); model.update(\.draft.goal,value:"goal",contextID:context)
         api.hold = true
-        let pending = Task { await model.uploadFiles(self.files,language:.english,contextID:context) }
+        let selected = files + [URL(fileURLWithPath:"/synthetic/second.txt")]
+        let pending = Task { await model.uploadFiles(selected,language:.english,contextID:context) }
         try await reached { api.replies.count == 1 && model.uploadProgress != nil }
         XCTAssertTrue(model.isUploading); let blockedSubmit = await model.submit(contextID:context); XCTAssertFalse(blockedSubmit); XCTAssertEqual(api.postCount,0)
         let repeated = await model.uploadFiles(files,language:.japanese,contextID:context); XCTAssertFalse(repeated); XCTAssertEqual(api.drafts.count,1)
         model.update(\.draft.description,value:"edited 한국어",contextID:context)
-        api.replies[0].resume(returning:[try api.attachment(draft:draft)])
+        api.replies[0].resume(returning:[try api.attachment(draft:draft), try api.attachment(draft:draft,name:"second.txt")])
         let success = await pending.value; XCTAssertTrue(success); XCTAssertFalse(model.isUploading)
-        XCTAssertEqual(model.uploadCount,1); XCTAssertTrue(model.form.draft.description.hasPrefix("edited 한국어\n\n[Uploaded files"))
+        XCTAssertTrue(model.form.draft.description.hasSuffix("/uploads/second.txt (1.3 KB)\n"))
+        XCTAssertEqual(model.uploadCount,2); XCTAssertTrue(model.form.draft.description.hasPrefix("edited 한국어\n\n[Uploaded files"))
         model.close(contextID:context); let reopened = try XCTUnwrap(model.open())
-        XCTAssertEqual(model.draftID,draft); XCTAssertEqual(model.uploadCount,1)
+        XCTAssertEqual(model.draftID,draft); XCTAssertEqual(model.uploadCount,2)
         api.hold = false
         let second = await model.uploadFiles(files,language:.japanese,contextID:reopened); XCTAssertTrue(second)
-        XCTAssertEqual(model.uploadCount,2); XCTAssertEqual(api.drafts,[draft,draft]); XCTAssertTrue(model.form.draft.description.contains("【アップロードファイル(絶対パス)】"))
+        XCTAssertEqual(model.uploadCount,3); XCTAssertEqual(api.drafts,[draft,draft]); XCTAssertTrue(model.form.draft.description.contains("【アップロードファイル(絶対パス)】"))
     }
     @MainActor func testCloseCancelsOldOperationAndLateCleanupCannotClearNewUpload() async throws {
         let (api,model) = make(); let old = try XCTUnwrap(model.open()), draft = model.draftID; api.hold = true

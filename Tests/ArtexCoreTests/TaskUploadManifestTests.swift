@@ -18,6 +18,9 @@ final class TaskUploadManifestTests: XCTestCase {
             XCTAssertTrue(result.utf8.elementsEqual(expected.utf8))
             let repeated = TaskUploadManifest.appending(to:result,attachments:[a],language:language)
             XCTAssertTrue(repeated.utf8.elementsEqual((expected+bullet).utf8))
+            let b = try attachment("second.txt",0)
+            let multi = TaskUploadManifest.appending(to:"\u{FEFF} original \n\u{FEFF}",attachments:[a,b],language:language)
+            XCTAssertTrue(multi.utf8.elementsEqual((expected+"- "+b.absolutePath+" (0 B)\n").utf8))
             XCTAssertEqual(AppStrings.text(.taskUploadMarker,language:language),marker)
         }
     }
