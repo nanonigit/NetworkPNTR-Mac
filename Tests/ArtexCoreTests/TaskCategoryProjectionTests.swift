@@ -41,4 +41,19 @@ final class TaskCategoryProjectionTests: XCTestCase {
         let final = try XCTUnwrap(store.beginCategoryMutation()); XCTAssertNil(store.beginCategoryMutation())
         store.finishCategoryMutation(ticket:final,change:nil)
     }
+    func testSingleAndPartialBatchProjectionOnlyChangesConfirmedGrouping() throws {
+        var raw = try fixture(); raw["id"] = "7"; raw["category_id"] = 8; raw["category_name"] = "before"
+        let first = try BackendJSONCoding.decode(TaskRecord.self,from:JSONSerialization.data(withJSONObject:raw))
+        raw["id"] = "9"; let second = try BackendJSONCoding.decode(TaskRecord.self,from:JSONSerialization.data(withJSONObject:raw))
+        raw["id"] = "7"; raw["category_id"] = NSNull(); raw["category_name"] = NSNull()
+        let cleared = try BackendJSONCoding.decode(TaskRecord.self,from:JSONSerialization.data(withJSONObject:raw))
+        let single = TaskCategoryChange.assigned(cleared).applying(to:[first,second])
+        XCTAssertNil(single[0].categoryId); XCTAssertEqual(single[1],second); XCTAssertEqual(single[0].status,first.status)
+        let partial = try BackendJSONCoding.decode(TaskCategoryBatchResult.self,from:Data(#"{"items":[{"id":"7","ok":true},{"id":"9","ok":false}],"category":{"id":10,"name":"target","task_count":1,"created_at":"c","updated_at":"u"}}"#.utf8))
+        let projected = TaskCategoryChange.batchAssigned(partial).applying(to:[first,second])
+        XCTAssertEqual(projected[0].categoryId,10); XCTAssertEqual(projected[1],second); XCTAssertEqual(projected[0].tokens,first.tokens)
+        let allFailed = try BackendJSONCoding.decode(TaskCategoryBatchResult.self,from:Data(#"{"items":[{"id":"7","ok":false}],"category":null}"#.utf8))
+        XCTAssertEqual(TaskCategoryChange.batchAssigned(allFailed).applying(to:[first]),[first])
+    }
+
 }

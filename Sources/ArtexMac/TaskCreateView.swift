@@ -10,9 +10,10 @@ import SwiftUI
     private func field<Value>(_ key: WritableKeyPath<TaskCreationForm, Value>, _ fallback: Value) -> Binding<Value> {
         TaskCreationBindings.field(model: model, contextID: contextID, key: key, fallback: fallback)
     }
-    private var managerBusy: Bool { model.templateManager?.context != nil || model.templateManager?.isMutating == true }
+    private var managerBusy: Bool { model.templateManager?.context != nil || model.templateManager?.isMutating == true || model.categoryBusy }
     var body: some View {
         let decisionID = model.pendingTemplate?.id
+        let categoryContextID = model.categoryWorkspace?.context?.id
         let managerContextID = model.templateManager?.context?.id
         VStack(alignment: .leading, spacing: 12) {
             if model.context?.id == contextID {
@@ -66,6 +67,9 @@ import SwiftUI
         .sheet(item: model.templateManager.map { TaskTemplateBindings.presentation(model:$0,contextID:managerContextID) } ?? .constant(nil)) { owner in
             if let manager = model.templateManager { TaskTemplateManagerView(model:manager,contextID:owner.id) }
         }
+        .sheet(item:model.categoryWorkspace.map { TaskCategoryBindings.presentation(model:$0,contextID:categoryContextID,inlineOwner:contextID) } ?? .constant(nil)) { owner in
+            if let workspace = model.categoryWorkspace { TaskCategoryView(model:workspace,contextID:owner.id) }
+        }
         .interactiveDismissDisabled(model.isSubmitting || model.isPicking || model.isUploading || managerBusy)
         .task { await model.load(contextID: contextID) }
     }
@@ -91,6 +95,9 @@ import SwiftUI
                 Text(s(.taskUIUncategorized)).tag(Int64(0))
                 ForEach(model.categories.value ?? []) { Text($0.name).tag($0.id) }
                 if let id = model.form.draft.categoryId, !(model.categories.value ?? []).contains(where: { $0.id == id }) { Text(unavailable(id)).tag(id) }
+            }
+            if model.categoryWorkspace != nil {
+                Button(s(.taskCategoryUIInline),systemImage:"plus") { _ = model.openCategoryCreator(contextID:contextID) }.disabled(model.isLoading || model.isUploading || model.isPicking || managerBusy)
             }
             if let error = model.categories.failure { Text(error.text(language: language)).font(.caption).foregroundStyle(.red) }
         }

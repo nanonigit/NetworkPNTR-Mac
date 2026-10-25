@@ -912,6 +912,58 @@
 	<string>カテゴリ名は80文字以内で入力してください。</string>
 	<key>task.category.validation</key>
 	<string>カテゴリ名と有効な ID を指定してください。</string>
+	<key>task.categoryUI.count</key>
+	<string>{name}（{count}件）</string>
+	<key>task.categoryUI.create</key>
+	<string>カテゴリを作成</string>
+	<key>task.categoryUI.delete</key>
+	<string>カテゴリを削除</string>
+	<key>task.categoryUI.deleteHelp</key>
+	<string>「{name}」を削除しますか？所属する{count}件のタスクは未分類に戻り、タスク自体は残ります。</string>
+	<key>task.categoryUI.deleteTitle</key>
+	<string>このカテゴリを削除しますか？</string>
+	<key>task.categoryUI.dirtyHelp</key>
+	<string>切り替えると未保存の名前を破棄します。</string>
+	<key>task.categoryUI.dirtyTitle</key>
+	<string>カテゴリ名の変更を破棄しますか？</string>
+	<key>task.categoryUI.discard</key>
+	<string>変更を破棄</string>
+	<key>task.categoryUI.help</key>
+	<string>カテゴリでタスクを整理します。メニューまたはドラッグで移動できます。</string>
+	<key>task.categoryUI.inline</key>
+	<string>カテゴリを作成して選択</string>
+	<key>task.categoryUI.localDiscard</key>
+	<string>ローカルの操作状態を破棄</string>
+	<key>task.categoryUI.localHelp</key>
+	<string>ローカルの入力と再送防止状態を消します。サーバーで実行済みの可能性がある変更は取り消されません。</string>
+	<key>task.categoryUI.manage</key>
+	<string>カテゴリ管理</string>
+	<key>task.categoryUI.move</key>
+	<string>タスクを移動</string>
+	<key>task.categoryUI.moveHelp</key>
+	<string>{count}件のタスクを「{target}」へ移動しますか？</string>
+	<key>task.categoryUI.moveTitle</key>
+	<string>カテゴリ移動の確認</string>
+	<key>task.categoryUI.new</key>
+	<string>新しいカテゴリ</string>
+	<key>task.categoryUI.noTasks</key>
+	<string>このカテゴリにタスクはありません。</string>
+	<key>task.categoryUI.partial</key>
+	<string>{ok}件を移動し、{failed}件は移動できませんでした。</string>
+	<key>task.categoryUI.result</key>
+	<string>カテゴリの変更を確認しました。</string>
+	<key>task.categoryUI.save</key>
+	<string>名前を保存</string>
+	<key>task.categoryUI.selected</key>
+	<string>選択: {count}件</string>
+	<key>task.categoryUI.target</key>
+	<string>移動先カテゴリ</string>
+	<key>task.categoryUI.tasks</key>
+	<string>このカテゴリのタスク</string>
+	<key>task.categoryUI.title</key>
+	<string>タスクのカテゴリ</string>
+	<key>task.categoryUI.unknown</key>
+	<string>サーバーでの処理結果を確認できません。一覧を確認してから次の操作を行ってください。この要求は自動再送しません。</string>
 	<key>task.create.addRule</key>
 	<string>ルールを追加</string>
 	<key>task.create.advanced</key>

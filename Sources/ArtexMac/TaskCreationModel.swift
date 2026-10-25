@@ -39,23 +39,26 @@ struct TaskChoiceState<Value> {
     @ObservationIgnored private var uploadWorker: Task<[TaskStagedAttachment],Error>?
     @ObservationIgnored private var uploadPump: Task<Void,Never>?
     @ObservationIgnored private var uploadContinuation: AsyncStream<BackendUploadProgress>.Continuation?
+    let categoryWorkspace: TaskCategoryWorkspace?
+    var categoryBusy: Bool { categoryWorkspace?.context != nil || categoryWorkspace?.isMutating == true }
     let templateManager: TaskTemplateManager?
     @ObservationIgnored private let store: TaskStore
     @ObservationIgnored private let service: TaskCreationService
     @ObservationIgnored private var loadTicket = UUID()
-    init(store: TaskStore, service: TaskCreationService, uploader: (any TaskStagingUploading)? = nil, templateService: TaskTemplateService? = nil) {
-        self.store = store; self.service = service; self.uploader = uploader
+    @ObservationIgnored private var categoryCatalogTicket = UUID()
+    init(store: TaskStore, service: TaskCreationService, uploader: (any TaskStagingUploading)? = nil, templateService: TaskTemplateService? = nil, categoryWorkspace: TaskCategoryWorkspace? = nil) {
+        self.store = store; self.service = service; self.uploader = uploader; self.categoryWorkspace = categoryWorkspace
         templateManager = templateService.map { TaskTemplateManager(service: $0) }
         templateManager?.onReceipt = { [weak self] receipt in self?.receiveTemplate(receipt) }
     }
     func open() -> UUID? {
-        guard context == nil, !isSubmitting, templateManager?.isMutating != true else { return nil }
+        guard context == nil, !isSubmitting, templateManager?.isMutating != true, !categoryBusy else { return nil }
         let next = TaskCreationContext(); context = next
         if !uncertain { failure = nil }
         return next.id
     }
     func close(contextID: UUID) {
-        guard context?.id == contextID, !isSubmitting, !isPicking, templateManager?.context == nil, templateManager?.isMutating != true else { return }
+        guard context?.id == contextID, !isSubmitting, !isPicking, templateManager?.context == nil, templateManager?.isMutating != true, !categoryBusy else { return }
         finishContext()
     }
     private func finishContext() {
@@ -63,17 +66,18 @@ struct TaskChoiceState<Value> {
         context = nil; pendingTemplate = nil; loadTicket = UUID(); isLoading = false
     }
     func discard(contextID: UUID) {
-        guard context?.id == contextID, !isSubmitting, !isPicking, templateManager?.context == nil, templateManager?.isMutating != true else { return }
+        guard context?.id == contextID, !isSubmitting, !isPicking, templateManager?.context == nil, templateManager?.isMutating != true, !categoryBusy else { return }
         close(contextID: contextID); clearUploads(); form = .init(); selectedTemplateID = nil; uncertain = false; failure = nil
     }
     func reset() {
+        categoryWorkspace?.reset()
         templateManager?.reset()
         clearUploads()
         context = nil; pendingTemplate = nil; loadTicket = UUID(); isLoading = false
         form = .init(); selectedTemplateID = nil; uncertain = false; failure = nil
         categories = .init(); companies = .init(); profiles = .init(); templates = .init(); sources = .init()
     }
-    private func editable(_ id: UUID) -> Bool { context?.id == id && !isSubmitting && !uncertain && pendingTemplate == nil && templateManager?.context == nil && templateManager?.isMutating != true }
+    private func editable(_ id: UUID) -> Bool { context?.id == id && !isSubmitting && !uncertain && pendingTemplate == nil && templateManager?.context == nil && templateManager?.isMutating != true && !categoryBusy }
     func update<Value>(_ key: WritableKeyPath<TaskCreationForm, Value>, value: Value, contextID: UUID) {
         guard editable(contextID) else { return }; form[keyPath: key] = value
     }
@@ -117,7 +121,7 @@ struct TaskChoiceState<Value> {
         form.rules[index].rule[keyPath: key] = value
     }
     func load(contextID: UUID) async {
-        guard context?.id == contextID, !isLoading, !isSubmitting, templateManager?.context == nil, templateManager?.isMutating != true, !Task.isCancelled else { return }
+        guard context?.id == contextID, !isLoading, !isSubmitting, templateManager?.context == nil, templateManager?.isMutating != true, !categoryBusy, !Task.isCancelled else { return }
         let ticket = UUID(); loadTicket = ticket; isLoading = true
         defer { if loadTicket == ticket { isLoading = false } }
         async let a: Void = loadCategories(ticket)
@@ -139,7 +143,9 @@ struct TaskChoiceState<Value> {
         }
     }
     private func loadCategories(_ ticket: UUID) async {
+        let categoryTicket = categoryCatalogTicket
         await fetch(ticket: ticket, operation: { try await self.service.categories() }) { value, error in
+            guard self.categoryCatalogTicket == categoryTicket else { return }
             if let value { self.categories.value = value }; self.categories.failure = error
         }
     }
@@ -195,12 +201,13 @@ struct TaskChoiceState<Value> {
         uploadFailure = AppErrorMessage(key: .errorUploadUnavailable)
     }
     func suspendAttachments() {
+        if context != nil, categoryWorkspace?.context?.inlineOwner == context?.id { categoryWorkspace?.suspend() }
         templateManager?.suspend(); isPicking = false
         if !isSubmitting { finishContext() }
     }
     func uploadFiles(_ files: [URL], language: AppLanguage, contextID: UUID) async -> Bool {
         guard context?.id == contextID, !isSubmitting, !uncertain, pendingTemplate == nil,
-              !isPicking, !isUploading, templateManager?.context == nil, templateManager?.isMutating != true, !files.isEmpty, !Task.isCancelled else { return false }
+              !isPicking, !isUploading, templateManager?.context == nil, templateManager?.isMutating != true, !categoryBusy, !files.isEmpty, !Task.isCancelled else { return false }
         guard let uploader else { pickerFailed(contextID: contextID); return false }
         let id = UUID(), draft = draftID
         let (stream, continuation) = AsyncStream<BackendUploadProgress>.makeStream(bufferingPolicy: .bufferingNewest(1))
@@ -253,6 +260,19 @@ struct TaskChoiceState<Value> {
             value.categoryId = form.draft.categoryId; value.interceptRules = form.rules.map(\.rule); seed = value
         }
         return manager.open(seed: seed, templates: templates.value ?? []) != nil
+    }
+    func openCategoryCreator(contextID: UUID) -> Bool {
+        guard editable(contextID), !isLoading, !isPicking, !isUploading, let categoryWorkspace else { return false }
+        return categoryWorkspace.open(tasks:store.list.value ?? [],inlineOwner:contextID) != nil
+    }
+    func receiveCategories(_ rows: [TaskCategoryRecord]) {
+        categoryCatalogTicket = UUID()
+        categories.value = rows.map { .init(id:$0.id,name:$0.name) }; categories.failure = nil
+        templateManager?.receiveCategories(rows)
+    }
+    func receiveCategory(_ change: TaskCategoryChange, inlineOwner: UUID?) {
+        guard let inlineOwner, context?.id == inlineOwner, case .saved(let row) = change else { return }
+        form.draft.categoryId = row.id
     }
     private func receiveTemplate(_ receipt: TaskTemplateReceipt) {
         switch receipt {

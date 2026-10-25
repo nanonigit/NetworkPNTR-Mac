@@ -9,6 +9,8 @@ import SwiftUI
     var hold = false
     var holdReads = false
     var status = 200
+    var readStatus = 200
+    var taskRows: [[String:Any]] = []
     var pending: [CheckedContinuation<BackendHTTPResponse,Error>] = []
     var reads: [String:CheckedContinuation<BackendHTTPResponse,Error>] = [:]
     func row(_ id: Int64 = 8) -> [String:Any] { ["id":id,"name":"category \(id)","task_count":0,"created_at":"c","updated_at":"u"] }
@@ -16,9 +18,10 @@ import SwiftUI
     func send(method: String,path: String,body: Data?,bearer: String?) async throws -> BackendHTTPResponse {
         calls.append((method,path,body))
         if method == "GET" {
+            if readStatus != 200 { return try response(["error":"private read"],status:readStatus) }
             if holdReads { return try await withCheckedThrowingContinuation { reads[path] = $0 } }
             if path == "/api/task-categories" { return try response(["categories":[row(8),row(9)]]) }
-            return try response(["tasks":[],"active":""])
+            return try response(["tasks":taskRows,"active":""])
         }
         if hold { return try await withCheckedThrowingContinuation { pending.append($0) } }
         if status != 200 { return try response(["error":"private error"],status:status) }
@@ -111,7 +114,7 @@ final class TaskCategoryWorkspaceTests: XCTestCase {
         api.hold = true; let editor = workspace.editorID
         let pending = Task { await workspace.save(contextID:stale,editorID:editor) }; try await reached { api.pending.count == 1 }
         screen.stop(); XCTAssertNil(creation.context)
-        api.pending[0].resume(returning:try api.response(api.row(10),status:201))
+        api.pending[0].resume(returning:try api.response(api.row(11),status:201))
         _ = await pending.value; XCTAssertNil(creation.context); XCTAssertEqual(Data(creation.form.draft.description.utf8),text)
         XCTAssertEqual(creation.form.draft.categoryId,10)
     }
@@ -128,6 +131,70 @@ final class TaskCategoryWorkspaceTests: XCTestCase {
             host.frame = NSRect(x:0,y:0,width:820,height:650); host.layoutSubtreeIfNeeded()
             XCTAssertNil(host.window); XCTAssertTrue(host.fittingSize.width.isFinite); XCTAssertEqual(model.editorID,editor)
         }
+    }
+
+    private func taskRow(_ id: String, category: Int64 = 8) throws -> [String:Any] {
+        let url = URL(fileURLWithPath:#filePath).deletingLastPathComponent().deletingLastPathComponent().appendingPathComponent("ArtexCoreTests/Fixtures/task-contract.json")
+        let root = try XCTUnwrap(JSONSerialization.jsonObject(with:Data(contentsOf:url)) as? [String:Any]); var row = try XCTUnwrap(root["task"] as? [String:Any])
+        row["id"] = id; row["category_id"] = category; row["category_name"] = "category \(category)"; return row
+    }
+    @MainActor func testPartialMoveKeepsFailedSelectionsAndRuntimeData() async throws {
+        let (api,model,store) = make(); api.taskRows = [try taskRow("7"),try taskRow("9")]
+        let owner = try XCTUnwrap(model.open(tasks:[])); await model.load(contextID:owner)
+        let editor = model.editorID, original = try XCTUnwrap(model.tasks.first)
+        for id in ["7","9"] { model.selectTask(id,selected:true,contextID:owner,editorID:editor) }
+        model.requestMove(ids:["7","9"],target:9,contextID:owner,editorID:editor)
+        let cancel = try XCTUnwrap(model.decision).id; _ = await model.resolve(id:cancel,accept:false,contextID:owner)
+        XCTAssertEqual(model.selectedTaskIDs,Set(["7","9"])); XCTAssertFalse(api.calls.contains{$0.0 == "POST"})
+        model.requestMove(ids:["7","9"],target:9,contextID:owner,editorID:editor)
+        api.hold = true
+        let operation = Task { await model.resolve(id:try XCTUnwrap(model.decision).id,accept:true,contextID:owner) }
+        try await reached { api.pending.count == 1 }; XCTAssertTrue(store.isMutating)
+        let forbidden = await store.update(id:"7",patch:.init(name:"blocked"))
+        if case .notStarted = forbidden {} else { XCTFail("Concurrent store mutation allowed") }
+        api.pending[0].resume(returning:try api.response(["items":[["id":"7","ok":true],["id":"9","ok":false,"error":"secret"]],"category":api.row(9)]))
+        let confirmed = try await operation.value; XCTAssertTrue(confirmed); XCTAssertEqual(model.selectedTaskIDs,Set(["9"]))
+        XCTAssertEqual(model.tasks.first?.categoryId,9); XCTAssertEqual(model.tasks.last?.categoryId,8)
+        XCTAssertEqual(model.tasks.first?.description,original.description); XCTAssertEqual(model.tasks.first?.status,original.status)
+        XCTAssertEqual(model.tasks.first?.tokens,original.tokens); XCTAssertTrue(model.countsStale); XCTAssertFalse(store.isMutating)
+        XCTAssertEqual(api.calls.filter{$0.0 == "POST"}.count,1)
+    }
+    @MainActor func testSingleMoveAndConfirmedReceiptSurviveReadFailure() async throws {
+        let (api,model,_) = make(); api.taskRows = [try taskRow("7")]
+        let owner = try XCTUnwrap(model.open(tasks:[])); await model.load(contextID:owner)
+        model.requestMove(ids:["not-owned"],target:9,contextID:owner,editorID:model.editorID); XCTAssertNil(model.decision)
+        model.requestMove(ids:["7"],target:44,contextID:owner,editorID:model.editorID); XCTAssertNil(model.decision)
+        model.requestMove(ids:["7"],target:9,contextID:owner,editorID:model.editorID)
+        api.hold = true; let decision = try XCTUnwrap(model.decision).id
+        let operation = Task { await model.resolve(id:decision,accept:true,contextID:owner) }; try await reached { api.pending.count == 1 }
+        api.pending[0].resume(returning:try api.response(taskRow("7",category:9)))
+        let moved = await operation.value; XCTAssertTrue(moved); XCTAssertEqual(model.tasks.first?.categoryId,9)
+        XCTAssertEqual(api.calls.last?.1,"/api/tasks/7/category")
+        api.readStatus = 503; await model.load(contextID:owner)
+        XCTAssertNotNil(model.lastChange); XCTAssertNotNil(model.categoryFailure); XCTAssertNotNil(model.taskFailure)
+        XCTAssertEqual(model.tasks.first?.categoryId,9); XCTAssertFalse(model.uncertain)
+    }
+
+    @MainActor func testOpeningManagerInvalidatesHeldBackgroundCatalogLoad() async throws {
+        let (api,model,_) = make(); api.holdReads = true
+        let background = Task { await model.refreshCatalog() }; try await reached { api.reads["/api/task-categories"] != nil }
+        let old = try XCTUnwrap(api.reads["/api/task-categories"])
+        let owner = try XCTUnwrap(model.open(tasks:[])); XCTAssertFalse(model.isLoading)
+        api.holdReads = false; await model.load(contextID:owner)
+        XCTAssertEqual(model.categories.map(\.id),[8,9]); XCTAssertEqual(model.selection,.category(8))
+        old.resume(returning:try api.response(["categories":[api.row(44)]])); await background.value
+        XCTAssertEqual(model.categories.map(\.id),[8,9]); XCTAssertEqual(model.context?.id,owner)
+    }
+    @MainActor func testWrongSheetScopeCannotDismissAnotherOwner() throws {
+        let (_,model,_) = make(); let owner = try XCTUnwrap(model.open(tasks:[]))
+        let wrong = TaskCategoryBindings.presentation(model:model,contextID:owner,inlineOwner:UUID())
+        XCTAssertNil(wrong.wrappedValue); wrong.wrappedValue = nil
+        XCTAssertEqual(model.context?.id,owner)
+        model.close(contextID:owner)
+        let parent = UUID(), next = try XCTUnwrap(model.open(tasks:[],inlineOwner:parent))
+        let manager = TaskCategoryBindings.presentation(model:model,contextID:next)
+        XCTAssertNil(manager.wrappedValue); manager.wrappedValue = nil
+        XCTAssertEqual(model.context?.id,next)
     }
 
 }

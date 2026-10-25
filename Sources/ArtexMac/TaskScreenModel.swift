@@ -13,6 +13,8 @@ struct TaskDialog: Identifiable {
 @MainActor @Observable final class TaskScreenModel {
     let store: TaskStore
     let creation: TaskCreationModel?
+    let categories: TaskCategoryWorkspace?
+    var categoryFilter: TaskCategoryFilter = .all
     var query = ""
     var status: String?
     var sort: TaskSortField = .id
@@ -25,15 +27,27 @@ struct TaskDialog: Identifiable {
     private(set) var isSubmitting = false
     @ObservationIgnored private var selectionTask: Task<Void, Never>?
     @ObservationIgnored private var lifecycle = UUID()
-    init(store: TaskStore, creationService: TaskCreationService? = nil, stagingUploader: (any TaskStagingUploading)? = nil, templateService: TaskTemplateService? = nil) {
+    init(store: TaskStore, creationService: TaskCreationService? = nil, stagingUploader: (any TaskStagingUploading)? = nil, templateService: TaskTemplateService? = nil, categoryService: TaskCategoryService? = nil) {
         self.store = store
-        creation = creationService.map { TaskCreationModel(store: store, service: $0, uploader: stagingUploader, templateService: templateService) }
+        let workspace = categoryService.map { TaskCategoryWorkspace(service:$0,store:store) }
+        categories = workspace
+        creation = creationService.map { TaskCreationModel(store: store, service: $0, uploader: stagingUploader, templateService: templateService, categoryWorkspace:workspace) }
+        categories?.onCatalog = { [weak self] rows in self?.receivedCatalog(rows) }
+        categories?.onChange = { [weak self] change,owner in self?.creation?.receiveCategory(change,inlineOwner:owner) }
+    }
+    func beginCategories() -> Bool {
+        guard !busy, dialog == nil, creation?.context == nil, let categories else { return false }
+        return categories.open(tasks:store.list.value ?? []) != nil
+    }
+    private func receivedCatalog(_ rows: [TaskCategoryRecord]) {
+        creation?.receiveCategories(rows)
+        if case .category(let id) = categoryFilter, !rows.contains(where:{$0.id == id}) { categoryFilter = .all }
     }
     func beginCreate() -> Bool {
         guard !busy, dialog == nil, let creation else { return false }
         return creation.open() != nil
     }
-    var busy: Bool { isSubmitting || store.isMutating || creation?.isSubmitting == true || creation?.isUploading == true || creation?.isPicking == true || creation?.templateManager?.context != nil || creation?.templateManager?.isMutating == true }
+    var busy: Bool { categories?.context != nil || categories?.isMutating == true || isSubmitting || store.isMutating || creation?.isSubmitting == true || creation?.isUploading == true || creation?.isPicking == true || creation?.templateManager?.context != nil || creation?.templateManager?.isMutating == true }
     func select(_ id: String?) {
         selectionTask?.cancel()
         selectionTask = Task { await store.select(id: id) }
@@ -81,9 +95,9 @@ struct TaskDialog: Identifiable {
         let ticket = lifecycle; await store.refreshList()
         if ticket == lifecycle, !Task.isCancelled { await store.refreshSelected() }
     }
-    func stop() { lifecycle = UUID(); selectionTask?.cancel(); selectionTask = nil; creation?.suspendAttachments(); store.stop() }
+    func stop() { categories?.suspend(); lifecycle = UUID(); selectionTask?.cancel(); selectionTask = nil; creation?.suspendAttachments(); store.stop() }
     func reset() {
-        stop(); creation?.reset(); store.reset(); dialog = nil; renameDraft = ""; query = ""; status = nil
+        stop(); categories?.reset(); categoryFilter = .all; creation?.reset(); store.reset(); dialog = nil; renameDraft = ""; query = ""; status = nil
         sort = .id; ascending = false; deletionOptions = .init(); dialogUncertain = false; dialogFailure = nil
     }
 }

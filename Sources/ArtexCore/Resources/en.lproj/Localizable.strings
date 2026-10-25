@@ -914,6 +914,58 @@
 	<string>Category names must contain at most 80 characters.</string>
 	<key>task.category.validation</key>
 	<string>Enter a category name and valid identifiers.</string>
+	<key>task.categoryUI.count</key>
+	<string>{name} ({count})</string>
+	<key>task.categoryUI.create</key>
+	<string>Create category</string>
+	<key>task.categoryUI.delete</key>
+	<string>Delete category</string>
+	<key>task.categoryUI.deleteHelp</key>
+	<string>Delete {name}? Its {count} tasks will become uncategorized. The tasks will be kept.</string>
+	<key>task.categoryUI.deleteTitle</key>
+	<string>Delete this category?</string>
+	<key>task.categoryUI.dirtyHelp</key>
+	<string>Switching categories will discard the unsaved name.</string>
+	<key>task.categoryUI.dirtyTitle</key>
+	<string>Discard category name changes?</string>
+	<key>task.categoryUI.discard</key>
+	<string>Discard changes</string>
+	<key>task.categoryUI.help</key>
+	<string>Organize tasks into categories. Move tasks with the menu or drag them onto a category.</string>
+	<key>task.categoryUI.inline</key>
+	<string>Create and select category</string>
+	<key>task.categoryUI.localDiscard</key>
+	<string>Discard local operation state</string>
+	<key>task.categoryUI.localHelp</key>
+	<string>This clears the local draft and retry block. It does not undo changes that may already exist on the server.</string>
+	<key>task.categoryUI.manage</key>
+	<string>Manage categories</string>
+	<key>task.categoryUI.move</key>
+	<string>Move tasks</string>
+	<key>task.categoryUI.moveHelp</key>
+	<string>Move {count} tasks to {target}?</string>
+	<key>task.categoryUI.moveTitle</key>
+	<string>Confirm category move</string>
+	<key>task.categoryUI.new</key>
+	<string>New category</string>
+	<key>task.categoryUI.noTasks</key>
+	<string>No tasks in this category.</string>
+	<key>task.categoryUI.partial</key>
+	<string>Moved {ok} tasks; {failed} tasks could not be moved.</string>
+	<key>task.categoryUI.result</key>
+	<string>Category change confirmed.</string>
+	<key>task.categoryUI.save</key>
+	<string>Save name</string>
+	<key>task.categoryUI.selected</key>
+	<string>Selected: {count}</string>
+	<key>task.categoryUI.target</key>
+	<string>Destination category</string>
+	<key>task.categoryUI.tasks</key>
+	<string>Tasks in this category</string>
+	<key>task.categoryUI.title</key>
+	<string>Task categories</string>
+	<key>task.categoryUI.unknown</key>
+	<string>The server result is unknown. Check the list before starting a new operation. This request will not be retried automatically.</string>
 	<key>task.create.addRule</key>
 	<string>Add rule</string>
 	<key>task.create.advanced</key>

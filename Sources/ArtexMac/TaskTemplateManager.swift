@@ -66,6 +66,9 @@ enum TaskTemplateReceipt { case saved(TaskTemplateOption), deleted(Int64) }
         }
         return context?.id
     }
+    func receiveCategories(_ rows: [TaskCategoryRecord]) {
+        categories = rows.map { .init(id:$0.id,name:$0.name) }
+    }
     func setQuery(_ value: String, contextID: UUID) { guard context?.id == contextID else { return }; query = value }
     func close(contextID: UUID) { guard context?.id == contextID, !isMutating else { return }; suspend() }
     func suspend() { context = nil; pendingDecision = nil; readTicket = UUID(); isLoading = false }

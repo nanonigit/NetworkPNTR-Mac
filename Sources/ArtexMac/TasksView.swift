@@ -10,10 +10,14 @@ import SwiftUI
     var body: some View {
         let sheetID = model.dialog?.id
         let creationID = model.creation?.context?.id
+        let categoryID = model.categories?.context.flatMap { $0.inlineOwner == nil ? $0.id : nil }
         VStack(alignment: .leading, spacing: 12) {
             HStack {
                 Text(s(.taskUITitle)).font(.largeTitle.bold())
                 Spacer()
+                if model.categories != nil {
+                    Button(s(.taskCategoryUIManage),systemImage:"tag") { _ = model.beginCategories() }.disabled(model.busy || model.dialog != nil || model.creation?.context != nil)
+                }
                 if model.creation != nil {
                     Button(s(.taskCreateTitle), systemImage: "plus") { _ = model.beginCreate() }.disabled(model.busy || model.dialog != nil || model.creation?.context != nil)
                 }
@@ -35,9 +39,13 @@ import SwiftUI
         .sheet(item: Binding(get: { model.creation?.context }, set: { if $0 == nil, let creationID { model.creation?.close(contextID: creationID) } })) { context in
             if let creation = model.creation { TaskCreateView(model: creation, contextID: context.id) }
         }
+        .sheet(item: model.categories.map { TaskCategoryBindings.presentation(model:$0,contextID:categoryID) } ?? .constant(nil)) { owner in
+            if let workspace = model.categories { TaskCategoryView(model:workspace,contextID:owner.id) }
+        }
+        .task { await model.categories?.refreshCatalog() }
         .task {
             if let id = requestedID {
-                requestedID = nil; model.query = ""; model.status = nil
+                requestedID = nil; model.query = ""; model.status = nil; model.categoryFilter = .all
                 await model.store.select(id: id)
             }
             await model.store.run()
@@ -52,6 +60,13 @@ import SwiftUI
                 Text(s(.taskUIAll)).tag("all")
                 ForEach(TaskPresentation.statuses, id: \.self) { status in Text(DashboardLabels.text(status, domain: .task, language: language)).tag(status) }
             }.frame(maxWidth: 180)
+            if let workspace = model.categories {
+                Picker(s(.taskUICategory),selection:Binding(get:{model.categoryFilter},set:{model.categoryFilter = $0})) {
+                    Text(s(.taskUIAll)).tag(TaskCategoryFilter.all)
+                    Text(s(.taskUIUncategorized)).tag(TaskCategoryFilter.uncategorized)
+                    ForEach(workspace.categories) { Text($0.name).tag(TaskCategoryFilter.category($0.id)) }
+                }.frame(maxWidth:180)
+            }
             Picker(s(.taskUISort), selection: Binding(get: { model.sort }, set: { model.sort = $0 })) {
                 Text(s(.taskUIID)).tag(TaskSortField.id); Text(s(.taskUICreated)).tag(TaskSortField.created)
                 Text(s(.taskUIDuration)).tag(TaskSortField.duration); Text(s(.taskUIStatus)).tag(TaskSortField.status)
@@ -62,7 +77,7 @@ import SwiftUI
     }
     private var taskTable: some View {
         TimelineView(.periodic(from: .now, by: 1)) { context in
-            let rows = TaskPresentation.rows(model.store.list.value ?? [], query: model.query, status: model.status,
+            let rows = TaskPresentation.rows(model.store.list.value ?? [], query: model.query, status: model.status, category:model.categoryFilter,
                                              sort: model.sort, ascending: model.ascending, now: Int64(context.date.timeIntervalSince1970))
             Table(rows, selection: Binding(get: { model.store.selectedID }, set: { model.select($0) })) {
                 TableColumn(s(.taskUIName)) { item in
@@ -74,6 +89,7 @@ import SwiftUI
                         }
                     }
                 }.width(min: 130, ideal: 180)
+                TableColumn(s(.taskUICategory)) { item in Text(item.categoryName ?? s(.taskUIUncategorized)).lineLimit(1) }.width(min:70,ideal:100)
                 TableColumn(s(.taskUIStatus)) { item in Text(DashboardLabels.text(item.status, domain: .task, language: language)) }.width(min: 70, ideal: 90)
                 TableColumn(s(.taskUIGoals)) { item in Text("\(item.goalsMet)/\(item.goalsTotal)").monospacedDigit() }.width(min: 48, ideal: 55)
                 TableColumn(s(.taskUITokens)) { item in Text(TaskPresentation.tokens(item)).monospacedDigit().help(AppStrings.formatted(.taskUITokenBreakdown, language: language, values: ["input": String(item.tokens.inputTokens), "read": String(item.tokens.cacheReadTokens), "write": String(item.tokens.cacheWriteTokens), "output": String(item.tokens.outputTokens)])) }.width(min: 80, ideal: 100)

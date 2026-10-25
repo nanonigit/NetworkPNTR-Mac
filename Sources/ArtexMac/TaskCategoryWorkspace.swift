@@ -2,7 +2,7 @@ import ArtexCore
 import Foundation
 import Observation
 
- enum TaskCategorySelection: Hashable { case new, uncategorized, category(Int64) }
+enum TaskCategorySelection: Hashable { case new, uncategorized, category(Int64) }
 struct TaskCategoryContext: Identifiable { let id = UUID(); let inlineOwner: UUID? }
 struct TaskCategoryDecision: Identifiable {
     enum Action {
@@ -11,6 +11,9 @@ struct TaskCategoryDecision: Identifiable {
     let id = UUID()
     let editorID: UUID
     let action: Action
+    var targetName: String? = nil
+    var taskIDs: [String] { if case .move(let ids,_) = action { return ids }; return [] }
+    var deleteCount: Int64 { if case .delete(let row) = action { return row.taskCount }; return 0 }
     var isDelete: Bool { if case .delete = action { return true }; return false }
     var isMove: Bool { if case .move = action { return true }; return false }
     var isDiscard: Bool { if case .discard = action { return true }; return false }
@@ -49,7 +52,7 @@ struct TaskCategoryDecision: Identifiable {
     init(service: TaskCategoryService, store: TaskStore) { self.service = service; self.store = store }
     func open(tasks initial: [TaskRecord], inlineOwner: UUID? = nil, seedName: String = "") -> UUID? {
         guard context == nil, !isMutating else { return nil }
-        context = .init(inlineOwner:inlineOwner)
+        invalidateReads(); context = .init(inlineOwner:inlineOwner)
         if !initialized { tasks = initial }
         if inlineOwner != nil, !uncertain {
             if isDirty { decision = .init(editorID:editorID,action:.select(.new,seedName)) }
@@ -95,7 +98,7 @@ struct TaskCategoryDecision: Identifiable {
               target.map({ id in categories.contains(where:{$0.id == id}) }) ?? true,
               ids.allSatisfy({ id in tasks.contains(where:{$0.id == id}) }),
               ids.contains(where: { id in tasks.contains(where:{$0.id == id && $0.categoryId != target}) }) else { return }
-        decision = .init(editorID:editorID,action:.move(ids,target))
+        decision = .init(editorID:editorID,action:.move(ids,target),targetName:target.flatMap { id in categories.first(where:{$0.id == id})?.name })
     }
     func requestDiscard(contextID: UUID) {
         guard context?.id == contextID, uncertain, !isMutating, decision == nil else { return }
@@ -171,6 +174,16 @@ struct TaskCategoryDecision: Identifiable {
             else { uncertain = true }
             return false
         }
+    }
+    func refreshCatalog() async {
+        guard context == nil, !isMutating, !isLoading, !Task.isCancelled else { return }
+        let ticket = UUID(); readTicket = ticket; isLoading = true
+        defer { if readTicket == ticket { isLoading = false } }
+        do {
+            let values = try await service.list()
+            guard readTicket == ticket, context == nil, !Task.isCancelled else { return }
+            categories = values; categoryFailure = nil; countsStale = false; onCatalog?(values)
+        } catch { guard readTicket == ticket, context == nil, !Task.isCancelled else { return }; categoryFailure = AppErrorMessage(error) }
     }
     func load(contextID: UUID) async {
         guard context?.id == contextID, !isMutating, !isLoading, !Task.isCancelled else { return }
