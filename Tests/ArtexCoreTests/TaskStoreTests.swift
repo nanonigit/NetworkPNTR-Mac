@@ -147,4 +147,58 @@ final class TaskStoreTests: XCTestCase {
         let read = Task { await store.refreshList() }; read.cancel(); await read.value
         XCTAssertTrue(api.calls.isEmpty); XCTAssertNil(store.list.failure); XCTAssertFalse(store.list.isLoading)
     }
+    @MainActor func testReadSingleFlightAndCancelledDetailRetainCachedOwner() async throws {
+        let api = ChatTestTransport(); let store = TaskStore(service: TaskService(client: api))
+        try api.enqueue(task()); await store.select(id: "7")
+        try api.enqueue([:], status: 503); await store.refreshSelected()
+        XCTAssertEqual(store.detail.value?.id, "7"); XCTAssertTrue(store.detail.isStale)
+        let previousFailure = store.detail.failure?.text(language: .english)
+        var reply: CheckedContinuation<BackendHTTPResponse, any Error>?
+        api.handler = { _ in try await withCheckedThrowingContinuation { reply = $0 } }
+        let detailRead = Task { await store.refreshSelected() }; try await reached { reply != nil }
+        await store.refreshSelected(); XCTAssertEqual(api.calls.count, 3)
+        detailRead.cancel(); try XCTUnwrap(reply).resume(throwing: TestFailure()); await detailRead.value
+        XCTAssertFalse(store.detail.isLoading); XCTAssertEqual(store.detail.value?.id, "7")
+        XCTAssertEqual(store.detail.failure?.text(language: .english), previousFailure)
+        reply = nil
+        let listRead = Task { await store.refreshList() }; try await reached { reply != nil }
+        await store.refreshList(); XCTAssertEqual(api.calls.count, 4)
+        try XCTUnwrap(reply).resume(returning: ChatTestTransport.response(["tasks": [task()], "active": "7"]))
+        await listRead.value; XCTAssertFalse(store.list.isLoading); XCTAssertFalse(store.list.isStale)
+    }
+    @MainActor func testSelectionDuringMutationRefreshesCurrentOwnerWithoutRedirectingReceipt() async throws {
+        let api = ChatTestTransport(); let store = TaskStore(service: TaskService(client: api))
+        try api.enqueue(task()); await store.select(id: "7")
+        var reply: CheckedContinuation<BackendHTTPResponse, any Error>?
+        api.handler = { _ in try await withCheckedThrowingContinuation { reply = $0 } }
+        let change = Task { await store.update(id: "7", patch: .init(pinned: true)) }; try await reached { reply != nil }
+        await store.select(id: "8"); await store.refreshList()
+        XCTAssertNil(store.detail.value); XCTAssertEqual(api.calls.count, 2)
+        api.handler = nil
+        try api.enqueue(["tasks": [task(), task("8")], "active": "7"]); try api.enqueue(task("8", name: "current"))
+        try XCTUnwrap(reply).resume(returning: ChatTestTransport.response(task()))
+        _ = try confirmed(await change.value)
+        guard case .updated(let owner) = store.lastConfirmation else { return XCTFail("Missing receipt") }
+        XCTAssertEqual(owner.id, "7"); XCTAssertEqual(store.selectedID, "8"); XCTAssertEqual(store.detail.value?.name, "current")
+        XCTAssertFalse(store.detail.isStale); XCTAssertNil(store.detail.failure)
+        XCTAssertEqual(api.calls.map(\.path), ["/api/tasks/7", "/api/tasks/7", "/api/tasks", "/api/tasks/8"])
+    }
+    @MainActor func testResetSuppressesOldMutationErrorsAndPollingRefreshesSelectedDetail() async throws {
+        let api = ChatTestTransport(); var delays: [Duration] = []
+        let store = TaskStore(service: TaskService(client: api), sleep: { delays.append($0); throw TestFailure() })
+        var reply: CheckedContinuation<BackendHTTPResponse, any Error>?
+        api.handler = { _ in try await withCheckedThrowingContinuation { reply = $0 } }
+        let change = Task { await store.create(draft()) }; try await reached { reply != nil }; store.reset()
+        try XCTUnwrap(reply).resume(throwing: BackendAPIError.status(503))
+        guard case .discarded = await change.value else { return XCTFail("Old error exposed") }
+        XCTAssertNil(store.mutationFailure); XCTAssertFalse(store.mutationUncertain); XCTAssertFalse(store.isMutating)
+        api.handler = nil
+        try api.enqueue(task()); await store.select(id: "7")
+        try api.enqueue(["tasks": [task(name: "list")], "active": "7"]); try api.enqueue(task(name: "detail"))
+        await store.run(); XCTAssertEqual(store.list.value?.first?.name, "list"); XCTAssertEqual(store.detail.value?.name, "detail")
+        XCTAssertFalse(store.isPolling); XCTAssertEqual(delays, [.seconds(10)])
+        let cancelled = Task { await store.run() }; cancelled.cancel(); await cancelled.value
+        XCTAssertEqual(api.calls.count, 4)
+    }
+
 }
