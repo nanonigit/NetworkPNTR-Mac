@@ -148,7 +148,10 @@ final class TaskServiceTests:XCTestCase {
             var draft = TaskCreateDraft(); draft.description = "d"; draft.goal = "g"
             do { _ = try await service.create(draft); XCTFail("Unconfirmed create accepted") } catch {}
         }
-        api.replies.append(.init(status: 200, body: Data(repeating: 32, count: 4 * 1024 * 1024 + 1)))
+        let oversized = Data(#"{"tasks":[],"active":""}"#.utf8) + Data(repeating: 32, count: 4 * 1024 * 1024)
+        let otherwiseValid = try BackendJSONCoding.decode(TaskListSnapshot.self, from: oversized)
+        XCTAssertTrue(otherwiseValid.tasks.isEmpty)
+        api.replies.append(.init(status: 200, body: oversized))
         do { _ = try await service.list(); XCTFail("Oversize accepted") } catch {}
     }
     @MainActor func testDeletionWarningAbsentAndCounterOwnerValidation() async throws {
