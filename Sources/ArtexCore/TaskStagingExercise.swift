@@ -15,9 +15,9 @@ public struct TaskStagingExerciseReport: Codable, Equatable, Sendable {
 
 /// Finite synthetic contract exercise, never a task/agent operation or arbitrary host download.
 @MainActor public enum TaskStagingExercise {
-    public static let inputNames = ["fixture.bin", "empty.txt", "fixture.bin", "日本-é.txt"]
-    public static let firstNames = ["fixture.bin", "empty.txt", "fixture-1.bin", "日本-é.txt"]
-    public static let repeatNames = ["fixture-2.bin", "empty-1.txt", "fixture-3.bin", "日本-é-1.txt"]
+    public static let inputNames = ["fixture.bin", "empty.txt", "fixture.bin", "日本-e\u{301}.txt"]
+    public static let firstNames = ["fixture.bin", "empty.txt", "fixture-1.bin", "日本-e\u{301}.txt"]
+    public static let repeatNames = ["fixture-2.bin", "empty-1.txt", "fixture-3.bin", "日本-e\u{301}-1.txt"]
     public static let contents = [Data((0..<70001).map { UInt8($0 % 256) }), Data(), Data("second synthetic attachment\n".utf8), Data((0..<1280).map { UInt8($0 % 251) })]
     public static func run(files: [URL], draftID: UUID, client: any BackendJSONTransport, uploader: any TaskStagingUploading) async throws -> TaskStagingExerciseReport {
         try Task.checkCancellation()
