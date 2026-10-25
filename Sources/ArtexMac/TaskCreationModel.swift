@@ -74,7 +74,7 @@ struct TaskChoiceState<Value> {
         if let id {
             guard let template = templates.value?.first(where: { $0.id == id }) else { return }
             let hasText = !ChatText.trim(form.draft.description).isEmpty || !ChatText.trim(form.draft.goal).isEmpty
-            if hasText && (form.draft.description != template.description || form.draft.goal != template.goal) {
+            if hasText && (!form.draft.description.utf8.elementsEqual(template.description.utf8) || !form.draft.goal.utf8.elementsEqual(template.goal.utf8)) {
                 pendingTemplate = .init(contextID: contextID, template: template); return
             }
             form.apply(template)
