@@ -1,0 +1,70 @@
+{
+  "baseline": "e75ae371ad777ffd1eecdd28d2781a6519b05591",
+  "scope": "backend observable state; no UI wiring",
+  "initial_red": "9e10d78: intended missing TaskStore/TaskMutationOutcome compile-time RED",
+  "initial_green": "732ab69:10tasktests pass",
+  "expanded": "8ceabdf:13tasktests pass",
+  "navigation_red": "1efb06f:1executed test,7assertion failures, no compile error",
+  "navigation_green": "e950f21:14tasktests pass; guard before selection state mutation",
+  "full_swift": {
+    "core": 262,
+    "mac": 40,
+    "passed": 301,
+    "existing_AX_skip": 1,
+    "failures": 0
+  },
+  "python": {
+    "tests": 52,
+    "failures": 0
+  },
+  "TaskStore_coverage": {
+    "branches": {
+      "count": 0,
+      "covered": 0,
+      "notcovered": 0,
+      "percent": 0
+    },
+    "functions": {
+      "count": 38,
+      "covered": 37,
+      "percent": 97.36842105263158
+    },
+    "instantiations": {
+      "count": 43,
+      "covered": 42,
+      "percent": 97.67441860465115
+    },
+    "lines": {
+      "count": 136,
+      "covered": 135,
+      "percent": 99.26470588235294
+    },
+    "mcdc": {
+      "count": 0,
+      "covered": 0,
+      "notcovered": 0,
+      "percent": 0
+    },
+    "regions": {
+      "count": 110,
+      "covered": 104,
+      "notcovered": 6,
+      "percent": 94.54545454545455
+    }
+  },
+  "signed_build": true,
+  "strict_codesign": true,
+  "review": "cancelled navigation fixed and reviewed; no remaining blockers",
+  "source_invariants": {
+    "existing_production_files_changed": false,
+    "active_selection_POST": false,
+    "automatic_mutation_retry": false,
+    "host_AI_execution": false,
+    "live_backend_request": false,
+    "network_configuration_changed": false,
+    "new_UI_strings": false
+  },
+  "live_browser_native_VM_acceptance": "pending; unlock deferred",
+  "tasks_feature_status": "pending",
+  "full_goal": "open"
+}
