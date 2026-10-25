@@ -205,4 +205,15 @@ final class TaskTemplateManagerTests: XCTestCase {
         XCTAssertEqual(model.context?.id,second)
     }
 
+    @MainActor func testResetBeforeQueuedDeleteDispatchCancelsOldOwner() async throws {
+        let (api,model) = make(); var receipts = 0
+        model.onReceipt = { _ in receipts += 1 }
+        let context = try XCTUnwrap(model.open(seed:nil,templates:[try api.row(7)]))
+        model.requestDelete(contextID:context,editorID:model.editorID)
+        model.resolveDecisionFromUI(id:try XCTUnwrap(model.pendingDecision).id,confirm:true,contextID:context)
+        model.reset(); XCTAssertTrue(model.isMutating)
+        try await reached { !model.isMutating }
+        XCTAssertTrue(api.calls.isEmpty); XCTAssertEqual(receipts,0)
+    }
+
 }
