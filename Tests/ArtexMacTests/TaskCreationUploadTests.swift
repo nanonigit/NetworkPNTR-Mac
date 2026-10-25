@@ -79,7 +79,8 @@ final class TaskCreationUploadTests: XCTestCase {
         let uploaded = await model.uploadFiles(files,language:.japanese,contextID:context); XCTAssertTrue(uploaded)
         model.discard(contextID:context); XCTAssertNotEqual(model.draftID,initial); XCTAssertEqual(model.uploadCount,0)
         context = try XCTUnwrap(model.open()); let discarded = model.draftID; api.hold = true
-        let old = Task { await model.uploadFiles(self.files,language:.english,contextID:context) }
+        let capturedContext = context
+        let old = Task { await model.uploadFiles(self.files,language:.english,contextID:capturedContext) }
         try await reached { api.replies.count == 1 }
         model.reset(); XCTAssertNotEqual(model.draftID,discarded); XCTAssertNil(model.context)
         api.replies[0].resume(returning:[try api.attachment(draft:discarded)])
@@ -157,6 +158,30 @@ final class TaskCreationUploadTests: XCTestCase {
         let unscoped = ChatFileAccess(start: { _ in false },stop: { _ in XCTFail("Unacquired scope released") })
         let normal = try await TaskCreationUploadSelection.upload(files,contextID:next,language:.english,model:model,access:unscoped)
         XCTAssertTrue(normal)
+    }
+
+    @MainActor func testUnavailableForeignDraftAndContextChangedDuringAcquisitionFailClosed() async throws {
+        let api = DraftUploadAPI()
+        let unavailable = TaskCreationModel(store:TaskStore(service:TaskService(client:api)),service:TaskCreationService(client:api))
+        let owner = try XCTUnwrap(unavailable.open())
+        let missing = await unavailable.uploadFiles(files,language:.english,contextID:owner)
+        XCTAssertFalse(missing); XCTAssertNotNil(unavailable.uploadFailure); XCTAssertTrue(api.drafts.isEmpty)
+        let (foreignAPI,model) = make(); let context = try XCTUnwrap(model.open()); foreignAPI.hold = true
+        model.pickerFailed(contextID:UUID()); XCTAssertNil(model.uploadFailure)
+        let pending = Task { await model.uploadFiles(self.files,language:.english,contextID:context) }
+        try await reached { foreignAPI.replies.count == 1 }
+        foreignAPI.replies[0].resume(returning:[try foreignAPI.attachment(draft:UUID())])
+        let accepted = await pending.value
+        XCTAssertFalse(accepted); XCTAssertEqual(model.uploadCount,0); XCTAssertEqual(model.form.draft.description,""); XCTAssertNotNil(model.uploadFailure)
+        var starts = 0, stops = 0
+        let resetDuringAccess = ChatFileAccess(start: { _ in starts += 1; model.reset(); return true },stop: { _ in stops += 1 })
+        let stale = try await TaskCreationUploadSelection.upload(files,contextID:context,language:.english,model:model,access:resetDuringAccess)
+        XCTAssertFalse(stale); XCTAssertEqual(starts,1); XCTAssertEqual(stops,1); XCTAssertEqual(foreignAPI.drafts.count,1)
+        let next = try XCTUnwrap(model.open()); foreignAPI.hold = false
+        let incomplete = await model.uploadFiles(files+files,language:.english,contextID:next)
+        XCTAssertFalse(incomplete); XCTAssertEqual(model.uploadCount,0); XCTAssertEqual(model.form.draft.description,"")
+        let empty = try await TaskCreationUploadSelection.upload([],contextID:next,language:.english,model:model,access:resetDuringAccess)
+        XCTAssertFalse(empty); XCTAssertEqual(starts,1)
     }
 
 }
