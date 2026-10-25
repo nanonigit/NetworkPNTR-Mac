@@ -58,7 +58,8 @@ import SwiftUI
                     Text(AppStrings.formatted(.taskUICleanupCounts, language: language, values: ["assets": String(result.assetsDeleted), "detached": String(result.assetsDetached), "traffic": String(result.trafficDeleted), "findings": String(result.findingsDeleted), "llm": String(result.llmRecordsDeleted)])).font(.caption)
                     if result.filesDeleted { Text(s(.taskUIFilesDeleted)).font(.caption) }
                     if result.hasCleanupWarning { Text(s(.taskUICleanupWarning)).foregroundStyle(.orange) }
-                case .created(let task), .updated(let task): Text(AppStrings.formatted(.taskUIChanged, language: language, values: ["id": task.id]))
+                case .created(let task): Text(AppStrings.formatted(.taskCreateCreated, language: language, values: ["id": task.id]))
+                case .updated(let task): Text(AppStrings.formatted(.taskUIChanged, language: language, values: ["id": task.id]))
                 case .controlled(let result): Text(AppStrings.formatted(.taskUIChanged, language: language, values: ["id": result.id]))
                 case .batchControlled: EmptyView()
                 }

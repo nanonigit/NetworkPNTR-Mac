@@ -906,6 +906,84 @@
 	<string>ブラウザ版の詳細画面と比較して実装する予定です。</string>
 	<key>shell.taskPending</key>
 	<string>タスク詳細は移植中です</string>
+	<key>task.create.addRule</key>
+	<string>ルールを追加</string>
+	<key>task.create.advanced</key>
+	<string>詳細設定</string>
+	<key>task.create.allow</key>
+	<string>許可</string>
+	<key>task.create.block</key>
+	<string>遮断</string>
+	<key>task.create.cidr</key>
+	<string>CIDRネットワーク</string>
+	<key>task.create.companies</key>
+	<string>会社（最大32件）</string>
+	<key>task.create.coverage</key>
+	<string>アセットの網羅状況を記録</string>
+	<key>task.create.create</key>
+	<string>タスクを作成</string>
+	<key>task.create.created</key>
+	<string>タスク {id} を作成しました。</string>
+	<key>task.create.defaultProfile</key>
+	<string>未選択の場合は既定のモデルを使います。</string>
+	<key>task.create.discard</key>
+	<string>下書きを破棄</string>
+	<key>task.create.discardHelp</key>
+	<string>下書きだけを消去します。サーバーで作成済みのタスクは削除しません。</string>
+	<key>task.create.emptyChoices</key>
+	<string>選択肢がありません。</string>
+	<key>task.create.exactDomain</key>
+	<string>ドメイン完全一致</string>
+	<key>task.create.exactIp</key>
+	<string>IPアドレス完全一致</string>
+	<key>task.create.exactUrl</key>
+	<string>URL完全一致</string>
+	<key>task.create.fuzzyDomain</key>
+	<string>ドメイン部分一致</string>
+	<key>task.create.fuzzyIp</key>
+	<string>IPアドレス部分一致</string>
+	<key>task.create.fuzzyUrl</key>
+	<string>URL部分一致</string>
+	<key>task.create.heartbeat</key>
+	<string>計画の更新間隔（分・最短10分）</string>
+	<key>task.create.help</key>
+	<string>作業内容と目指す結果を入力してください。</string>
+	<key>task.create.moveDown</key>
+	<string>下へ移動</string>
+	<key>task.create.moveUp</key>
+	<string>上へ移動</string>
+	<key>task.create.noTemplate</key>
+	<string>テンプレートなし</string>
+	<key>task.create.note</key>
+	<string>メモ</string>
+	<key>task.create.optionsRefresh</key>
+	<string>選択肢を更新</string>
+	<key>task.create.pattern</key>
+	<string>パターン</string>
+	<key>task.create.profiles</key>
+	<string>モデルと実行順</string>
+	<key>task.create.removeRule</key>
+	<string>ルールを削除</string>
+	<key>task.create.ruleAction</key>
+	<string>操作</string>
+	<key>task.create.ruleEnabled</key>
+	<string>有効</string>
+	<key>task.create.ruleKind</key>
+	<string>照合方法</string>
+	<key>task.create.rules</key>
+	<string>このタスクの傍受ルール</string>
+	<key>task.create.seed</key>
+	<string>初回の作業指示を先に開始</string>
+	<key>task.create.sources</key>
+	<string>関連タスク（最大8件）</string>
+	<key>task.create.template</key>
+	<string>テンプレート</string>
+	<key>task.create.timeout</key>
+	<string>制限時間（分・0で無制限）</string>
+	<key>task.create.title</key>
+	<string>新しいタスク</string>
+	<key>task.create.unavailable</key>
+	<string>利用できない選択 #{id}</string>
 	<key>task.error.batch</key>
 	<string>1〜100件のタスクを選択してください。</string>
 	<key>task.error.creation</key>

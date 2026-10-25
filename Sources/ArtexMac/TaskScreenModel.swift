@@ -12,6 +12,7 @@ struct TaskDialog: Identifiable {
 /// Window-owned inputs and captured dialog owners survive language changes and sidebar navigation.
 @MainActor @Observable final class TaskScreenModel {
     let store: TaskStore
+    let creation: TaskCreationModel?
     var query = ""
     var status: String?
     var sort: TaskSortField = .id
@@ -24,19 +25,26 @@ struct TaskDialog: Identifiable {
     private(set) var isSubmitting = false
     @ObservationIgnored private var selectionTask: Task<Void, Never>?
     @ObservationIgnored private var lifecycle = UUID()
-    init(store: TaskStore) { self.store = store }
-    var busy: Bool { isSubmitting || store.isMutating }
+    init(store: TaskStore, creationService: TaskCreationService? = nil) {
+        self.store = store
+        creation = creationService.map { TaskCreationModel(store: store, service: $0) }
+    }
+    func beginCreate() -> Bool {
+        guard !busy, dialog == nil, let creation else { return false }
+        return creation.open() != nil
+    }
+    var busy: Bool { isSubmitting || store.isMutating || creation?.isSubmitting == true }
     func select(_ id: String?) {
         selectionTask?.cancel()
         selectionTask = Task { await store.select(id: id) }
     }
     func beginRename(_ task: TaskRecord) -> Bool {
-        guard !busy else { return false }
+        guard !busy, creation?.context == nil else { return false }
         dialog = .init(kind: .rename, task: task); renameDraft = task.name; dialogUncertain = false; dialogFailure = nil
         return true
     }
     func beginDelete(_ task: TaskRecord) -> Bool {
-        guard !busy else { return false }
+        guard !busy, creation?.context == nil else { return false }
         dialog = .init(kind: .delete, task: task); deletionOptions = .init(); dialogUncertain = false; dialogFailure = nil
         return true
     }
@@ -75,7 +83,7 @@ struct TaskDialog: Identifiable {
     }
     func stop() { lifecycle = UUID(); selectionTask?.cancel(); selectionTask = nil; store.stop() }
     func reset() {
-        stop(); store.reset(); dialog = nil; renameDraft = ""; query = ""; status = nil
+        stop(); creation?.reset(); store.reset(); dialog = nil; renameDraft = ""; query = ""; status = nil
         sort = .id; ascending = false; deletionOptions = .init(); dialogUncertain = false; dialogFailure = nil
     }
 }

@@ -908,6 +908,84 @@
 	<string>Task details will be implemented and compared with the browser version.</string>
 	<key>shell.taskPending</key>
 	<string>Task details are being migrated</string>
+	<key>task.create.addRule</key>
+	<string>Add rule</string>
+	<key>task.create.advanced</key>
+	<string>Advanced options</string>
+	<key>task.create.allow</key>
+	<string>Allow</string>
+	<key>task.create.block</key>
+	<string>Block</string>
+	<key>task.create.cidr</key>
+	<string>CIDR network</string>
+	<key>task.create.companies</key>
+	<string>Companies (up to 32)</string>
+	<key>task.create.coverage</key>
+	<string>Track asset coverage</string>
+	<key>task.create.create</key>
+	<string>Create task</string>
+	<key>task.create.created</key>
+	<string>Task {id} created.</string>
+	<key>task.create.defaultProfile</key>
+	<string>Leave unselected to use the default model.</string>
+	<key>task.create.discard</key>
+	<string>Discard draft</string>
+	<key>task.create.discardHelp</key>
+	<string>This clears only the draft. A task already created on the server is kept.</string>
+	<key>task.create.emptyChoices</key>
+	<string>No options available.</string>
+	<key>task.create.exactDomain</key>
+	<string>Exact domain</string>
+	<key>task.create.exactIp</key>
+	<string>Exact IP address</string>
+	<key>task.create.exactUrl</key>
+	<string>Exact URL</string>
+	<key>task.create.fuzzyDomain</key>
+	<string>Partial domain</string>
+	<key>task.create.fuzzyIp</key>
+	<string>Partial IP address</string>
+	<key>task.create.fuzzyUrl</key>
+	<string>Partial URL</string>
+	<key>task.create.heartbeat</key>
+	<string>Planning interval (minutes; minimum 10)</string>
+	<key>task.create.help</key>
+	<string>Describe the work and the result you want.</string>
+	<key>task.create.moveDown</key>
+	<string>Move down</string>
+	<key>task.create.moveUp</key>
+	<string>Move up</string>
+	<key>task.create.noTemplate</key>
+	<string>No template</string>
+	<key>task.create.note</key>
+	<string>Note</string>
+	<key>task.create.optionsRefresh</key>
+	<string>Refresh choices</string>
+	<key>task.create.pattern</key>
+	<string>Pattern</string>
+	<key>task.create.profiles</key>
+	<string>Models, in execution order</string>
+	<key>task.create.removeRule</key>
+	<string>Remove rule</string>
+	<key>task.create.ruleAction</key>
+	<string>Action</string>
+	<key>task.create.ruleEnabled</key>
+	<string>Enabled</string>
+	<key>task.create.ruleKind</key>
+	<string>Match type</string>
+	<key>task.create.rules</key>
+	<string>Task interception rules</string>
+	<key>task.create.seed</key>
+	<string>Start with an initial worker instruction</string>
+	<key>task.create.sources</key>
+	<string>Related tasks (up to 8)</string>
+	<key>task.create.template</key>
+	<string>Template</string>
+	<key>task.create.timeout</key>
+	<string>Time limit (minutes; 0 means unlimited)</string>
+	<key>task.create.title</key>
+	<string>New task</string>
+	<key>task.create.unavailable</key>
+	<string>Unavailable selection #{id}</string>
 	<key>task.error.batch</key>
 	<string>Select between 1 and 100 tasks.</string>
 	<key>task.error.creation</key>

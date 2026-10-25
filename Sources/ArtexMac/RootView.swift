@@ -102,7 +102,8 @@ struct RootView: View {
             ProgressView().task {
                 guard !Task.isCancelled, session.phase == .authenticated else { return }
                 taskScreen?.reset()
-                taskScreen = TaskScreenModel(store: TaskStore(service: TaskService(client: AuthenticatedBackendClient(session: session))))
+                let client = AuthenticatedBackendClient(session: session)
+                taskScreen = TaskScreenModel(store: TaskStore(service: TaskService(client: client)), creationService: TaskCreationService(client: client))
                 taskOwner = ObjectIdentifier(session)
             }
         }

@@ -53,6 +53,10 @@ struct TaskChoiceState<Value> {
         if let index = form[keyPath: key].firstIndex(of: value) { form[keyPath: key].remove(at: index) }
         else if form[keyPath: key].count < maximum { form[keyPath: key].append(value) }
     }
+    func setSelected<Value: Equatable>(_ key: WritableKeyPath<TaskCreationForm, [Value]>, value: Value, selected: Bool, maximum: Int, contextID: UUID) {
+        guard editable(contextID), form[keyPath: key].contains(value) != selected else { return }
+        toggle(key, value: value, maximum: maximum, contextID: contextID)
+    }
     func moveProfile(id: Int64, offset: Int, contextID: UUID) {
         guard editable(contextID), offset == 1 || offset == -1, let index = form.draft.llmProfileIds.firstIndex(of: id) else { return }
         let target = index + offset

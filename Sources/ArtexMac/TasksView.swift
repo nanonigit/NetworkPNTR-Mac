@@ -9,10 +9,14 @@ import SwiftUI
     private func s(_ key: AppStringKey) -> String { AppStrings.text(key, language: language) }
     var body: some View {
         let sheetID = model.dialog?.id
+        let creationID = model.creation?.context?.id
         VStack(alignment: .leading, spacing: 12) {
             HStack {
                 Text(s(.taskUITitle)).font(.largeTitle.bold())
                 Spacer()
+                if model.creation != nil {
+                    Button(s(.taskCreateTitle), systemImage: "plus") { _ = model.beginCreate() }.disabled(model.busy || model.dialog != nil || model.creation?.context != nil)
+                }
                 if model.store.list.isLoading { ProgressView().controlSize(.small) }
                 Button(s(.taskUIRefresh), systemImage: "arrow.clockwise") { Task { await model.refresh() } }
                     .keyboardShortcut("r", modifiers: .command).disabled(model.busy)
@@ -28,6 +32,9 @@ import SwiftUI
         }
         .padding(20).navigationTitle(s(.taskUITitle))
         .sheet(item: Binding(get: { model.dialog }, set: { if $0 == nil, let sheetID { model.closeDialog(id: sheetID) } })) { context in TaskDialogView(model: model, contextID: context.id) }
+        .sheet(item: Binding(get: { model.creation?.context }, set: { if $0 == nil, let creationID { model.creation?.close(contextID: creationID) } })) { context in
+            if let creation = model.creation { TaskCreateView(model: creation, contextID: context.id) }
+        }
         .task {
             if let id = requestedID {
                 requestedID = nil; model.query = ""; model.status = nil
