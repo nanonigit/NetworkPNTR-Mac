@@ -14,7 +14,11 @@ import SwiftUI
                     ChatAttachmentPickerButton(enabled: model.uploadsAvailable && !model.isPicking && !model.isUploading && !model.isSubmitting && !model.uncertain && model.pendingTemplate == nil,
                         onChoose: { files in
                             let capturedLanguage = language
-                            Task { _ = await model.uploadFiles(files, language: capturedLanguage, contextID: contextID) }
+                            Task {
+                                do { _ = try await TaskCreationUploadSelection.upload(files, contextID: contextID, language: capturedLanguage, model: model) }
+                                catch is CancellationError { }
+                                catch { model.pickerFailed(contextID: contextID) }
+                            }
                         },
                         onPresentation: { model.setPickerPresented($0, contextID: contextID) },
                         onError: { model.pickerFailed(contextID: contextID) })
