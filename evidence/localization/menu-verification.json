@@ -1,0 +1,22 @@
+{
+  "initial_red": "8d65447",
+  "initial_green": "bab27b4",
+  "alias_runtime_red": "b97a197",
+  "alias_green": "b757992",
+  "focused_tests": 7,
+  "swift_cases": 275,
+  "swift_passed": 274,
+  "swift_skipped": 1,
+  "python_passed": 52,
+  "supported_static_selectors_tested": 22,
+  "signed_bundle_menu_entries_verified": {
+    "en": 28,
+    "ja": 28
+  },
+  "parameterized_templates": 4,
+  "review": "approved within static scope",
+  "synthetic_menus_only": true,
+  "native_tracking_and_dispatch": "pending until unlock",
+  "dynamic_title_support": "incomplete; unknown/dynamic/attributed/custom content preserved",
+  "whole_OS_menu_or_app_acceptance": false
+}

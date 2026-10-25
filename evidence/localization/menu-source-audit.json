@@ -1,0 +1,19 @@
+{
+  "before": "8d65447",
+  "source": "b757992",
+  "scope": "Source audit only; actual NSApp menu integration not proven",
+  "applicationShouldTerminate_exactly_unchanged": true,
+  "unchanged_sha256": {
+    "Sources/ArtexCore/AppLanguagePreferences.swift": "363a80cc43b7490331d5bee6770491561fc4686d6716904c46db9d14da9c0411",
+    "Sources/ArtexCore/VMController.swift": "f178b66105b99dea0ca028c4ea6631fa663526d2f902dc08447c15bbf34e7254",
+    "Sources/ArtexCore/DesktopRuntime.swift": "ea9c4936f63e844841dda14ebeeb6b7b66dece571d60eaa0d75df874a6bc000e",
+    "Sources/ArtexMac/RootView.swift": "88e2cf61073199aa1b29ea1c136ae9f4091ff48a60a0c409b37d63f2067a0bf9"
+  },
+  "observer": "AppKit didBeginTracking selector; no polling timer",
+  "known_limitations": [
+    "dynamic Undo titles",
+    "Exit Full Screen and Show/Hide state titles",
+    "SwiftUI-owned selectors not yet observed",
+    "system validation may overwrite titles after notification"
+  ]
+}
