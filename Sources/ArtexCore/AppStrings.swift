@@ -1,6 +1,7 @@
 import Foundation
 
 public enum AppStringKey: String, CaseIterable, Sendable {
+    case taskUploadPickerMessage = "task.upload.pickerMessage"
     case taskUploadMarker = "task.upload.marker"
     case taskUploadHint = "task.upload.hint"
     case taskUploadHelp = "task.upload.help"

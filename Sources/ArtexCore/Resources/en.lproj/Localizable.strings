@@ -1128,6 +1128,8 @@
 	<string>Upload interrupted. Confirmed text is kept; some files may remain in the VM. Select files again to retry.</string>
 	<key>task.upload.marker</key>
 	<string>[Uploaded files (absolute paths)]</string>
+	<key>task.upload.pickerMessage</key>
+	<string>Choose files to attach to the task draft.</string>
 	<key>task.upload.progress</key>
 	<string>Sending {sent} of {total} bytes; awaiting storage confirmation</string>
 </dict>

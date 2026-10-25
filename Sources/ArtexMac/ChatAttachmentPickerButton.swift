@@ -12,6 +12,7 @@ struct ChatAttachmentPickerButton: NSViewRepresentable {
     let onChoose: ([URL]) -> Void
     let onPresentation: (Bool) -> Void
     let onError: () -> Void
+    var messageKey: AppStringKey = .chatAttachMessage
     func makeCoordinator() -> Coordinator { Coordinator(self) }
     func makeNSView(context: Context) -> NSButton {
         let button = NSButton(title: s(.chatAttach), target: context.coordinator, action: #selector(Coordinator.pick(_:)))
@@ -31,11 +32,11 @@ struct ChatAttachmentPickerButton: NSViewRepresentable {
         let title = AppStrings.text(.chatAttach, language: language)
         button.title = title; button.setAccessibilityLabel(title); button.toolTip = title
     }
-    static func makePanel(language: AppLanguage = .japanese) -> NSOpenPanel {
+    static func makePanel(language: AppLanguage = .japanese, messageKey: AppStringKey = .chatAttachMessage) -> NSOpenPanel {
         let panel = NSOpenPanel()
         panel.canChooseFiles = true; panel.canChooseDirectories = false
         panel.allowsMultipleSelection = true; panel.treatsFilePackagesAsDirectories = true
-        panel.prompt = AppStrings.text(.chatAttachPrompt, language: language); panel.message = AppStrings.text(.chatAttachMessage, language: language)
+        panel.prompt = AppStrings.text(.chatAttachPrompt, language: language); panel.message = AppStrings.text(messageKey, language: language)
         return panel
     }
     @MainActor final class Coordinator: NSObject {
@@ -46,7 +47,7 @@ struct ChatAttachmentPickerButton: NSViewRepresentable {
         @objc func pick(_ button: NSButton) {
             guard parent.enabled, panel == nil else { return }
             guard let window = button.window else { parent.onError(); return }
-            let panel = ChatAttachmentPickerButton.makePanel(language: parent.language), ticket = UUID()
+            let panel = ChatAttachmentPickerButton.makePanel(language: parent.language, messageKey: parent.messageKey), ticket = UUID()
             let choose = parent.onChoose, presented = parent.onPresentation
             self.panel = panel; self.ticket = ticket; presented(true)
             panel.beginSheetModal(for: window) { [weak self, weak panel] response in

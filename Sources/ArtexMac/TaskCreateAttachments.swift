@@ -21,7 +21,7 @@ import SwiftUI
                             }
                         },
                         onPresentation: { model.setPickerPresented($0, contextID: contextID) },
-                        onError: { model.pickerFailed(contextID: contextID) })
+                        onError: { model.pickerFailed(contextID: contextID) }, messageKey: .taskUploadPickerMessage)
                         .fixedSize()
                     Text(model.uploadCount == 0 ? s(.taskUploadIdle) : AppStrings.formatted(.taskUploadCount, language: language, values: ["count": String(model.uploadCount)]))
                         .foregroundStyle(.secondary)

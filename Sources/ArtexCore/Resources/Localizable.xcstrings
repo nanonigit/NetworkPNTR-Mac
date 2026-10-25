@@ -9143,6 +9143,23 @@
           }
         }
       }
+    },
+    "task.upload.pickerMessage": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Choose files to attach to the task draft."
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "タスクの下書きに添付するファイルを選択してください。"
+          }
+        }
+      }
     }
   },
   "version": "1.0"

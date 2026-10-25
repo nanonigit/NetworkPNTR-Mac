@@ -1126,6 +1126,8 @@
 	<string>アップロードを中断しました。確定済みの本文は保持され、一部のファイルがVM内に残る場合があります。再試行する場合はファイルを選び直してください。</string>
 	<key>task.upload.marker</key>
 	<string>【アップロードファイル(絶対パス)】</string>
+	<key>task.upload.pickerMessage</key>
+	<string>タスクの下書きに添付するファイルを選択してください。</string>
 	<key>task.upload.progress</key>
 	<string>{total}バイト中{sent}バイトを送信。保存の確認を待っています</string>
 </dict>
