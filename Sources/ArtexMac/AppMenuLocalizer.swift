@@ -20,7 +20,7 @@ import ArtexCore
         "hideOtherApplications:": .init(key: .menuHideOthers, aliases: ["Hide Other Applications", "Hide Other Apps"]),
         "unhideAllApplications:": .init(key: .menuShowAll),
         "terminate:": .init(key: .menuQuit),
-        "performClose:": .init(key: .menuClose),
+        "performClose:": .init(key: .menuClose, aliases: ["Close Window", "ウインドウを閉じる", "ウィンドウを閉じる"]),
         "undo:": .init(key: .menuUndo, aliases: ["元に戻す"]),
         "redo:": .init(key: .menuRedo, aliases: ["やり直し"]),
         "cut:": .init(key: .menuCut, aliases: ["切り取り", "剪切", "剪下", "오려두기"]),
