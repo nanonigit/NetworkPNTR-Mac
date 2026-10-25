@@ -740,6 +740,62 @@
 	<string>思考スイッチ</string>
 	<key>llm.ui.unsaved</key>
 	<string>未保存の変更があります</string>
+	<key>menu.about</key>
+	<string>{app}について</string>
+	<key>menu.appHelp</key>
+	<string>{app}ヘルプ</string>
+	<key>menu.bringAll</key>
+	<string>すべてを手前に移動</string>
+	<key>menu.close</key>
+	<string>閉じる</string>
+	<key>menu.copy</key>
+	<string>コピー</string>
+	<key>menu.customizeToolbar</key>
+	<string>ツールバーをカスタマイズ…</string>
+	<key>menu.cut</key>
+	<string>カット</string>
+	<key>menu.delete</key>
+	<string>削除</string>
+	<key>menu.edit</key>
+	<string>編集</string>
+	<key>menu.file</key>
+	<string>ファイル</string>
+	<key>menu.fullScreen</key>
+	<string>フルスクリーンにする</string>
+	<key>menu.help</key>
+	<string>ヘルプ</string>
+	<key>menu.hide</key>
+	<string>{app}を隠す</string>
+	<key>menu.hideOthers</key>
+	<string>ほかを隠す</string>
+	<key>menu.minimize</key>
+	<string>しまう</string>
+	<key>menu.paste</key>
+	<string>ペースト</string>
+	<key>menu.pastePlain</key>
+	<string>ペーストしてスタイルを合わせる</string>
+	<key>menu.quit</key>
+	<string>{app}を終了</string>
+	<key>menu.redo</key>
+	<string>やり直す</string>
+	<key>menu.selectAll</key>
+	<string>すべてを選択</string>
+	<key>menu.services</key>
+	<string>サービス</string>
+	<key>menu.showAll</key>
+	<string>すべてを表示</string>
+	<key>menu.sidebar</key>
+	<string>サイドバーの表示を切り替える</string>
+	<key>menu.toolbar</key>
+	<string>ツールバーの表示を切り替える</string>
+	<key>menu.undo</key>
+	<string>取り消す</string>
+	<key>menu.view</key>
+	<string>表示</string>
+	<key>menu.window</key>
+	<string>ウインドウ</string>
+	<key>menu.zoom</key>
+	<string>拡大／縮小</string>
 	<key>runtime.ui.aRTEXStarting</key>
 	<string>ARTEXを起動しています</string>
 	<key>runtime.ui.environment</key>

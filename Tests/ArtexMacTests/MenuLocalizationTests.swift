@@ -38,10 +38,11 @@ final class MenuLocalizationTests:XCTestCase {
         let unknown=NSMenuItem(title:"unknown",action:NSSelectorFromString("fixture:"),keyEquivalent:"")
         let styled=NSMenuItem(title:"Copy",action:NSSelectorFromString("copy:"),keyEquivalent:"");styled.attributedTitle=NSAttributedString(string:"custom styled")
         let viewItem=NSMenuItem(title:"Paste",action:NSSelectorFromString("paste:"),keyEquivalent:"");viewItem.view=NSView()
+        let originalStyledTitle=styled.title
         [custom,unknown,styled,viewItem].forEach(root.addItem)
         AppMenuLocalizer.apply(.init(mainMenu:root),language:.japanese)
         XCTAssertEqual(custom.title,"custom cut 中文 한국어");XCTAssertEqual(unknown.title,"unknown")
-        XCTAssertEqual(styled.title,"Copy");XCTAssertEqual(styled.attributedTitle?.string,"custom styled");XCTAssertEqual(viewItem.title,"Paste")
+        XCTAssertEqual(styled.title,originalStyledTitle);XCTAssertEqual(styled.attributedTitle?.string,"custom styled");XCTAssertEqual(viewItem.title,"Paste")
     }
     @MainActor func testBridgeUsesLatestMenuAndLanguageWithOneObserverAndStops() {
         let center=NotificationCenter();var menu=NSMenu(title:"fixture");var calls=0

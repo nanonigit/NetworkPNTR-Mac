@@ -4,9 +4,20 @@ import SwiftUI
 
 @MainActor final class AppDelegate: NSObject, NSApplicationDelegate {
     weak var environment: DesktopRuntime?
+    private var menuLanguage: AppMenuLanguageBridge?
+    func updateMenuLanguage(_ language: AppLanguage) {
+        if menuLanguage == nil {
+            menuLanguage = AppMenuLanguageBridge {
+                AppMenuContext(mainMenu: NSApp.mainMenu, windowsMenu: NSApp.windowsMenu, helpMenu: NSApp.helpMenu, servicesMenu: NSApp.servicesMenu)
+            }
+        }
+        menuLanguage?.start(language: language)
+    }
+    func applicationWillTerminate(_ notification: Notification) { menuLanguage?.stop() }
     func applicationDidFinishLaunching(_ notification: Notification) {
         NSApp.setActivationPolicy(.regular)
         NSApp.activate(ignoringOtherApps: true)
+        menuLanguage?.refresh()
         #if DEBUG
         if let directory = RuntimeFactory.diagnosticsDirectory {
             Task {
@@ -36,7 +47,8 @@ import SwiftUI
     var body: some Scene {
         WindowGroup("ARTEX Mac") {
             RootView(environment: environment, language: language)
-                .onAppear { delegate.environment = environment }
+                .onAppear { delegate.environment = environment;delegate.updateMenuLanguage(language.language) }
+                .onChange(of: language.language) { _, value in delegate.updateMenuLanguage(value) }
                 .frame(minWidth: 980, minHeight: 680)
         }
         .defaultSize(width: 1180, height: 800)

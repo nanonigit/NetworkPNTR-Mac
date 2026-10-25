@@ -740,6 +740,62 @@
 	<string>Thinking switch</string>
 	<key>llm.ui.unsaved</key>
 	<string>You have unsaved changes</string>
+	<key>menu.about</key>
+	<string>About {app}</string>
+	<key>menu.appHelp</key>
+	<string>{app} Help</string>
+	<key>menu.bringAll</key>
+	<string>Bring All to Front</string>
+	<key>menu.close</key>
+	<string>Close</string>
+	<key>menu.copy</key>
+	<string>Copy</string>
+	<key>menu.customizeToolbar</key>
+	<string>Customize Toolbar…</string>
+	<key>menu.cut</key>
+	<string>Cut</string>
+	<key>menu.delete</key>
+	<string>Delete</string>
+	<key>menu.edit</key>
+	<string>Edit</string>
+	<key>menu.file</key>
+	<string>File</string>
+	<key>menu.fullScreen</key>
+	<string>Enter Full Screen</string>
+	<key>menu.help</key>
+	<string>Help</string>
+	<key>menu.hide</key>
+	<string>Hide {app}</string>
+	<key>menu.hideOthers</key>
+	<string>Hide Others</string>
+	<key>menu.minimize</key>
+	<string>Minimize</string>
+	<key>menu.paste</key>
+	<string>Paste</string>
+	<key>menu.pastePlain</key>
+	<string>Paste and Match Style</string>
+	<key>menu.quit</key>
+	<string>Quit {app}</string>
+	<key>menu.redo</key>
+	<string>Redo</string>
+	<key>menu.selectAll</key>
+	<string>Select All</string>
+	<key>menu.services</key>
+	<string>Services</string>
+	<key>menu.showAll</key>
+	<string>Show All</string>
+	<key>menu.sidebar</key>
+	<string>Toggle Sidebar</string>
+	<key>menu.toolbar</key>
+	<string>Toggle Toolbar</string>
+	<key>menu.undo</key>
+	<string>Undo</string>
+	<key>menu.view</key>
+	<string>View</string>
+	<key>menu.window</key>
+	<string>Window</string>
+	<key>menu.zoom</key>
+	<string>Zoom</string>
 	<key>runtime.ui.aRTEXStarting</key>
 	<string>Starting ARTEX</string>
 	<key>runtime.ui.environment</key>
