@@ -1,0 +1,21 @@
+# Tasks T1 — finite API foundation
+
+## Collect and reproduce
+
+The native Tasks screen is pending. Implement its API foundation separately, against pinned ARTEX e75ae371ad777ffd1eecdd28d2781a6519b05591. Source hashes for DTO/routes/metadata/control/delete and browser API were checked against the fixture. The fixture is a hand-authored pinned-shape transport contract, not a captured live backend result. Requirements, design and task plan preceded production changes. Lazyweb is out of scope for this backend-only phase.
+
+36b227b records intended compile-time RED: TaskService and its models did not exist. 3f47d06 records GREEN: the initial8cases compiled/executed successfully. During implementation, a function-reference error exposed ChatText.trim's second default parameter; using an explicit closure corrected the compiler failure before GREEN. Four additional contract tests passed in a full regression, then a controlled post-dispatch cancellation case passed in the13-case focused suite. Production stayed unchanged after the full regression.
+
+## Analyze and repair
+
+5 Whys: Tasks cannot migrate without API contracts → browser wraps server lifecycle operations → create/resume may launch agents → opaque success/failure handling can duplicate execution → finite typed operations, exact owner/status validation and no automatic retries are required. Fishbone: numeric precision, nullable data, path injection, mutation ambiguity, partial batch outcomes, post-commit cleanup, cancellation, arbitrary backend error text. Timeline: pinned contract inspection → bilingual requirements/design/tasks → RED → implementation/GREEN8 → expanded regression/coverage → review → controlled cancellation13 → signed build/resources.
+
+TaskRecord retains the full current DTO, optional fields, future status and custom text; IDs/counters retain Int64 precision. Canonical positive ASCII decimal path IDs prevent path/query injection. Creation sends all12browser options, including explicit null category, ordered profile/source IDs, first-seen company dedup, coverage/seed flags, timeout/heartbeat and filtered interception rules. Description/goal and limits are validated before dispatch. Metadata preserves absent versus explicit false and uses the backend's200-scalar name bound. Known errors resolve through5English/Japanese catalog entries; server body text is never used as an error message.
+
+Single and batch controls validate requested owners and action-consistent status. Batch partial failures remain per-item false without arbitrary error strings. Deletion retains cleanup counts and a warning-presence flag:200with a warning means deletion confirmed; never retry it as failure. Cancellation is checked before dispatch and after response. Cancellation after a mutation does not undo the operation; future state/UI must reconcile uncertain outcomes explicitly rather than automatically retrying. No active-selection call, host agent command, credential persistence, network configuration or existing UI was changed.
+
+## Verify and prevent recurrence
+
+Full regression:247Core+40Mac cases,286pass and one existing accessibility skip;52Python pass. After adding the final cancellation test,13focused task tests pass. All3new production files have100%line and region coverage in the full run. Coverage is scripted unit evidence, not runtime parity. Strict signature verification and build-only packaging pass; all5new validation strings in both packaged locales match the catalog. Source fixture hashes and localization exporter check pass. Reviewer found no blocking contract/security defect; the requested pre/post-dispatch cancellation coverage was added. Evidence: evidence/tasks/t1-verification.json. Tests guard wrong owners/counters, unknown content preservation, full option payloads, warning semantics, HTTP/malformed boundaries, cancellation and no retry.
+
+Tasks remains pending in the feature map. Native list/detail UI, stores/concurrency, categories/templates/archives/attachments, LLM chains, graphs/goals/constraints, main-agent chat/SSE and all task workflow comparisons remain open. No live Tasks request, VM launch, browser/native comparison, screenshot or cloud request was performed. The user will unlock the Mac later. Full21feature, native runtime/network/kernel, bilingual UI acceptance and distribution goals remain open.

@@ -105,4 +105,96 @@ final class TaskServiceTests:XCTestCase {
         }
         XCTAssertEqual(api.calls.count,5)
     }
+    @MainActor func testOptionalFieldsUnknownStatusAndEmptySnapshots() async throws {
+        let api = ChatTestTransport(); let service = TaskService(client: api)
+        var item = try task("7")
+        item.merge(["category_id": 5, "category_name": "custom 中文", "pinned_at": "raw", "llm_profile_id": 8,
+                    "llm_profile_ids": [8, 9], "active_llm_profile_id": 9, "llm_failover_reason": "custom 한국어",
+                    "source_task_ids": ["2"], "archive_blocked_by_task_id": "3", "company_ids": [4],
+                    "engine_mode": "future", "status": "future-state"]) { _, new in new }
+        try api.enqueue(item)
+        let record = try await service.detail(id: "7")
+        XCTAssertEqual(record.categoryId, 5); XCTAssertEqual(record.categoryName, "custom 中文")
+        XCTAssertEqual(record.llmProfileId, 8); XCTAssertEqual(record.activeLlmProfileId, 9)
+        XCTAssertEqual(record.llmFailoverReason, "custom 한국어"); XCTAssertEqual(record.archiveBlockedByTaskId, "3")
+        XCTAssertEqual(record.status, "future-state"); XCTAssertEqual(record.engineMode, "future")
+        try api.enqueue(["tasks": [], "active": "7"])
+        let concurrent = try await service.list(); XCTAssertEqual(concurrent.activeID, "7")
+        try api.enqueue(["tasks": []]); let empty = try await service.list(); XCTAssertNil(empty.activeID)
+        try api.enqueue(["id": "7", "paused": false, "queued": false, "status": "running"])
+        let resumed = try await service.control(id: "7", action: .resume); XCTAssertFalse(resumed.queued)
+        try api.enqueue(["items": [["id": "7", "ok": true, "status": "paused"]]])
+        let paused = try await service.controlBatch(ids: ["7"], action: .pause); XCTAssertFalse(paused[0].queued)
+    }
+    @MainActor func testMalformedIdentityTypesAndLimitsStayAtBoundary() async throws {
+        let api = ChatTestTransport(); let service = TaskService(client: api)
+        for change in [["id": "01"], ["exploration_id": 0], ["source_task_ids": ["01"]],
+                       ["archive_blocked_by_task_id": "x"], ["category_id": 0], ["llm_profile_ids": [-1]],
+                       ["company_ids": [0]], ["in_flight": -1], ["tokens": NSNull()]] as [[String: Any]] {
+            var item = try task("7"); item.merge(change) { _, new in new }; try api.enqueue(item)
+            do { _ = try await service.detail(id: "7"); XCTFail("Malformed record accepted") }
+            catch { XCTAssertTrue(error is BackendAPIError) }
+        }
+        for list in [["tasks": "wrong"], ["tasks": [], "active": "01"]] as [[String: Any]] {
+            try api.enqueue(list)
+            do { _ = try await service.list(); XCTFail("Malformed snapshot accepted") } catch {}
+        }
+        try api.enqueue(["items": [["id": "8", "ok": true, "status": "running"]]])
+        do { _ = try await service.controlBatch(ids: ["7"], action: .resume); XCTFail("Wrong batch owner") } catch {}
+        try api.enqueue(["items": [["id": "7", "ok": true, "status": "paused"]]])
+        do { _ = try await service.controlBatch(ids: ["7"], action: .resume); XCTFail("Wrong batch status") } catch {}
+        for status in [200, 201] {
+            try api.enqueue(["bad": true], status: status)
+            var draft = TaskCreateDraft(); draft.description = "d"; draft.goal = "g"
+            do { _ = try await service.create(draft); XCTFail("Unconfirmed create accepted") } catch {}
+        }
+        api.replies.append(.init(status: 200, body: Data(repeating: 32, count: 4 * 1024 * 1024 + 1)))
+        do { _ = try await service.list(); XCTFail("Oversize accepted") } catch {}
+    }
+    @MainActor func testDeletionWarningAbsentAndCounterOwnerValidation() async throws {
+        let api = ChatTestTransport(); let service = TaskService(client: api)
+        let base: [String: Any] = ["deleted": "7", "assets_deleted": 0, "assets_detached": 0, "traffic_deleted": 0,
+                                  "files_deleted": false, "findings_deleted": 0, "llm_records_deleted": 0]
+        try api.enqueue(base); let result = try await service.delete(id: "7"); XCTAssertFalse(result.hasCleanupWarning)
+        for change in [["deleted": "8"], ["assets_deleted": -1]] as [[String: Any]] {
+            var body = base; body.merge(change) { _, new in new }; try api.enqueue(body)
+            do { _ = try await service.delete(id: "7"); XCTFail("Invalid deletion confirmation") } catch {}
+        }
+    }
+    @MainActor func testTypedValidationRelocalizesAndCancellationNeverSends() async throws {
+        for error in TaskInputError.allCases {
+            let stored = AppErrorMessage(error)
+            XCTAssertEqual(stored.text(language: .english), AppStrings.text(error.key, language: .english))
+            XCTAssertEqual(AppErrorText.text(error, language: .japanese), stored.text(language: .japanese))
+            XCTAssertNotEqual(stored.text(language: .english), stored.text(language: .japanese))
+            XCTAssertEqual(error.errorDescription, stored.text(language: .japanese))
+        }
+        let api = ChatTestTransport(); let service = TaskService(client: api)
+        let pending = Task { @MainActor in try await service.list() }; pending.cancel()
+        do { _ = try await pending.value; XCTFail("Cancelled operation succeeded") }
+        catch { XCTAssertTrue(error is CancellationError) }
+        XCTAssertTrue(api.calls.isEmpty)
+        var draft = TaskCreateDraft(); draft.description = "d"; draft.goal = "g"; draft.sourceTaskIds = ["bad"]
+        do { _ = try draft.encoded(); XCTFail("Invalid source") } catch { XCTAssertEqual(error as? TaskInputError, .invalidCreation) }
+    }
+
+    @MainActor func testCancellationAfterDispatchDoesNotAcceptResponseOrRetry() async throws {
+        let api = ChatTestTransport(); let service = TaskService(client: api)
+        let (started, signal) = AsyncStream<Void>.makeStream()
+        var release: CheckedContinuation<BackendHTTPResponse, Never>?
+        api.handler = { _ in
+            await withCheckedContinuation { continuation in
+                release = continuation; signal.yield(())
+            }
+        }
+        let pending = Task { @MainActor in try await service.update(id: "7", patch: .init(pinned: true)) }
+        var iterator = started.makeAsyncIterator(); _ = await iterator.next()
+        pending.cancel()
+        let response = try ChatTestTransport.response(task("7"))
+        try XCTUnwrap(release).resume(returning: response)
+        do { _ = try await pending.value; XCTFail("Cancelled response accepted") }
+        catch { XCTAssertTrue(error is CancellationError) }
+        XCTAssertEqual(api.calls.count, 1); signal.finish()
+    }
+
 }

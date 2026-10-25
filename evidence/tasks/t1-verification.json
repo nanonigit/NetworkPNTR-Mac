@@ -1,0 +1,140 @@
+{
+  "baseline": "e75ae371ad777ffd1eecdd28d2781a6519b05591",
+  "baseline_hashes_verified": true,
+  "test_fixture": "scripted transport; no live backend request",
+  "red": "36b227b: missing TaskService/models compile-time RED",
+  "green": "3f47d06: 8 focused tests exit0",
+  "expanded_focused": {
+    "tests": 13,
+    "failures": 0
+  },
+  "full_before_final_cancellation_test": {
+    "core": 247,
+    "mac": 40,
+    "passed": 286,
+    "existing_AX_skip": 1,
+    "failures": 0
+  },
+  "python": {
+    "tests": 52,
+    "failures": 0
+  },
+  "production_coverage": {
+    "TaskDrafts.swift": {
+      "branches": {
+        "count": 0,
+        "covered": 0,
+        "notcovered": 0,
+        "percent": 0
+      },
+      "functions": {
+        "count": 28,
+        "covered": 28,
+        "percent": 100
+      },
+      "instantiations": {
+        "count": 28,
+        "covered": 28,
+        "percent": 100
+      },
+      "lines": {
+        "count": 75,
+        "covered": 75,
+        "percent": 100
+      },
+      "mcdc": {
+        "count": 0,
+        "covered": 0,
+        "notcovered": 0,
+        "percent": 0
+      },
+      "regions": {
+        "count": 67,
+        "covered": 67,
+        "notcovered": 0,
+        "percent": 100
+      }
+    },
+    "TaskModels.swift": {
+      "branches": {
+        "count": 0,
+        "covered": 0,
+        "notcovered": 0,
+        "percent": 0
+      },
+      "functions": {
+        "count": 27,
+        "covered": 27,
+        "percent": 100
+      },
+      "instantiations": {
+        "count": 27,
+        "covered": 27,
+        "percent": 100
+      },
+      "lines": {
+        "count": 77,
+        "covered": 77,
+        "percent": 100
+      },
+      "mcdc": {
+        "count": 0,
+        "covered": 0,
+        "notcovered": 0,
+        "percent": 0
+      },
+      "regions": {
+        "count": 77,
+        "covered": 77,
+        "notcovered": 0,
+        "percent": 100
+      }
+    },
+    "TaskService.swift": {
+      "branches": {
+        "count": 0,
+        "covered": 0,
+        "notcovered": 0,
+        "percent": 0
+      },
+      "functions": {
+        "count": 13,
+        "covered": 13,
+        "percent": 100
+      },
+      "instantiations": {
+        "count": 13,
+        "covered": 13,
+        "percent": 100
+      },
+      "lines": {
+        "count": 58,
+        "covered": 58,
+        "percent": 100
+      },
+      "mcdc": {
+        "count": 0,
+        "covered": 0,
+        "notcovered": 0,
+        "percent": 0
+      },
+      "regions": {
+        "count": 54,
+        "covered": 54,
+        "notcovered": 0,
+        "percent": 100
+      }
+    }
+  },
+  "signed_build": true,
+  "strict_codesign": true,
+  "packaged_task_validation_strings_per_language": 5,
+  "languages": [
+    "en",
+    "ja"
+  ],
+  "live_UI": "deferred: user will unlock later",
+  "real_VM_reference_acceptance": "pending",
+  "tasks_UI": "not implemented",
+  "full_goal": "open"
+}

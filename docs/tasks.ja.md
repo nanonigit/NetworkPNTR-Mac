@@ -141,3 +141,5 @@ L9 menu境界：既存NSMenu／action／responder／shortcut／target／有効�
 L9静的menuチェックポイント：8d65447未実装RED→bab27b4 GREEN5、b97a197 Close Window実RED1→b757992 GREEN7。Swift275（成功274・既存AX1スキップ）、Python52、Mac実行objectのmenu行100%／領域96%、署名両言語28項目一致。22selectorのmetadata保持・observer差替／stopを試験、レビュー済み。動的Undo／ExitFullscreen／ShowHide／SwiftUI selector・実tracking／dispatchは解除後で未確認、OS-menu／全21合格にはしない。localization-menu-verification.ja.md参照。
 
 T1 Tasks有限coreはtasks-core-design.ja.mdに従う。作成全optionと一覧／詳細／metadata／control／batch／delete、所有者／変更結果と日英型付き検証を実装。active化の副作用やUI完了扱いなし。RED/GREEN／全回帰／review／署名後、実VM／参照／UI合格を検証する。
+
+T1記録：36b227b未実装APIの意図したコンパイルRED→3f47d06 GREEN8。追加後の全体Swift287件（286成功/既存AX1件スキップ）、Python52件成功。最終タスク13件に送信前/後キャンセルを含みます。新規3ファイルの行/領域100%、署名付きビルドと日英各5文言を照合、レビュー済みです。固定参照ハッシュ一致、実API/UI/VM通信なし。Tasksはpending、状態/UI/実参照/実行/全21機能のゲートは継続します。tasks-core-verification.md参照。
