@@ -29,6 +29,11 @@ struct TaskStagingResponse: Decodable {
         let c = try decoder.container(keyedBy: CodingKeys.self)
         attachments = try c.decode([TaskStagedAttachment].self, forKey: .attachments)
         guard !attachments.isEmpty, Set(attachments.map(\.id)).count == attachments.count else { throw BackendAPIError.invalidResponse }
+        var total: Int64 = 0
+        for attachment in attachments {
+            guard attachment.size <= ChatMultipartPlan.maximumBytes - total else { throw BackendAPIError.invalidResponse }
+            total += attachment.size
+        }
     }
 }
 
