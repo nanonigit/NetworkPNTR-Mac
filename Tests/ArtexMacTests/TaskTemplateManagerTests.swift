@@ -1,12 +1,15 @@
 import Foundation
+import AppKit
+import SwiftUI
 import XCTest
 @testable import ArtexCore
 @testable import ArtexMac
 
-@MainActor private final class TemplateManagerAPI: BackendJSONTransport {
+@MainActor private final class TemplateManagerAPI: BackendJSONTransport, TaskStagingUploading {
     var status = 200
     var hold = false
     var holdReads = false
+    var bodies: [String:Data] = [:]
     var failReads = false
     var calls: [(String,String,Data?)] = []
     var held: [CheckedContinuation<BackendHTTPResponse,Error>] = []
@@ -22,13 +25,20 @@ import XCTest
         if method == "GET" {
             if holdReads { return try await withCheckedThrowingContinuation { reads[path] = $0 } }
             if failReads { return .init(status:503,body:Data()) }
+            if let body = bodies[path] { return .init(status:200,body:body) }
             return .init(status:200,body:Data((path == "/api/task-templates" ? #"{"templates":[]}"# : #"{"categories":[]}"#).utf8))
         }
         if hold { return try await withCheckedThrowingContinuation { held.append($0) } }
         if status != 200 { return .init(status:status,body:Data("private server text".utf8)) }
-        if method == "DELETE" { return .init(status:200,body:Data(#"{"deleted":7}"#.utf8)) }
+        if method == "DELETE" { return .init(status:200,body:try JSONSerialization.data(withJSONObject:["deleted":Int64(path.split(separator:"/").last!)!])) }
         return .init(status:method == "POST" ? 201 : 200,body:try data(method == "POST" ? 9 : 7))
     }
+    func uploadTaskStaging(draftID: UUID, files: [URL], progress: BackendUploadProgressHandler?) async throws -> [TaskStagedAttachment] {
+        let decoder = JSONDecoder(); decoder.userInfo[TaskStagedAttachment.draftKey] = draftID
+        let raw = try JSONSerialization.data(withJSONObject:["name":"selected.txt","path":"uploads/selected.txt","size":0,"abs":"/state/app/data/drafts/"+draftID.uuidString.lowercased()+"/uploads/selected.txt"])
+        return [try decoder.decode(TaskStagedAttachment.self,from:raw)]
+    }
+
 }
 
 final class TaskTemplateManagerTests: XCTestCase {
@@ -119,4 +129,51 @@ final class TaskTemplateManagerTests: XCTestCase {
         api.held[0].resume(returning:.init(status:200,body:try api.data(7)))
         let confirmed = await pending.value; XCTAssertTrue(confirmed); XCTAssertNil(model.context); XCTAssertEqual(model.templates.first?.id,7)
     }
+    @MainActor func testCreationSeedCatalogAndApplyCountMatchBrowserWithoutImplicitOverwrite() async throws {
+        let api = TemplateManagerAPI(), store = TaskStore(service:TaskService(client:TemplateManagerAPI()))
+        let parent = TaskScreenModel(store:store,creationService:TaskCreationService(client:api),stagingUploader:api,templateService:TaskTemplateService(client:api))
+        XCTAssertTrue(parent.beginCreate()); let creation = try XCTUnwrap(parent.creation), context = try XCTUnwrap(creation.context).id
+        creation.update(\.draft.goal,value:"goal",contextID:context)
+        let uploaded = await creation.uploadFiles([URL(fileURLWithPath:"/synthetic/selected.txt")],language:.english,contextID:context)
+        XCTAssertTrue(uploaded); let original = Data(creation.form.draft.description.utf8), draft = creation.draftID
+        XCTAssertTrue(creation.openTemplateManager(asSeed:true,contextID:context))
+        let manager = try XCTUnwrap(creation.templateManager), owner = try XCTUnwrap(manager.context).id
+        XCTAssertEqual(Data(manager.form.description.utf8),original); XCTAssertEqual(manager.form.name,""); XCTAssertTrue(parent.busy)
+        let forbidden = await creation.submit(contextID:context); XCTAssertFalse(forbidden)
+        manager.update(\.name,value:"saved",contextID:owner,editorID:manager.editorID)
+        let saved = await manager.save(contextID:owner,editorID:manager.editorID); XCTAssertTrue(saved)
+        XCTAssertEqual(creation.templates.value?.first?.id,9); XCTAssertEqual(Data(creation.form.draft.description.utf8),original); XCTAssertEqual(creation.uploadCount,1)
+        manager.close(contextID:owner)
+        creation.chooseTemplate(9,contextID:context)
+        let cancelled = try XCTUnwrap(creation.pendingTemplate).id
+        creation.resolveTemplate(id:cancelled,apply:false,contextID:context); XCTAssertEqual(creation.uploadCount,1)
+        creation.chooseTemplate(9,contextID:context)
+        creation.resolveTemplate(id:try XCTUnwrap(creation.pendingTemplate).id,apply:true,contextID:context)
+        XCTAssertEqual(creation.uploadCount,0); XCTAssertEqual(creation.draftID,draft); XCTAssertEqual(creation.selectedTemplateID,9)
+        let text = creation.form.draft.description
+        XCTAssertTrue(creation.openTemplateManager(asSeed:false,contextID:context))
+        let deleteContext = try XCTUnwrap(manager.context).id
+        manager.requestDelete(contextID:deleteContext,editorID:manager.editorID)
+        let deleted = await manager.resolveDecision(id:try XCTUnwrap(manager.pendingDecision).id,confirm:true,contextID:deleteContext)
+        XCTAssertTrue(deleted); XCTAssertNil(creation.selectedTemplateID); XCTAssertEqual(creation.form.draft.description,text)
+        parent.reset(); XCTAssertNil(manager.context); XCTAssertTrue(manager.templates.isEmpty)
+    }
+    @MainActor func testUIConfirmationClaimsMutationBeforeDismissalAndBindingsKeepEditorOwner() async throws {
+        let (api,model) = make(); api.hold = true
+        let context = try XCTUnwrap(model.open(seed:nil,templates:[try api.row(7),try api.row(8)])), editor = model.editorID
+        let old = TaskTemplateBindings.field(model:model,contextID:context,editorID:editor,key:\.name,fallback:"")
+        model.requestDelete(contextID:context,editorID:editor); let id = try XCTUnwrap(model.pendingDecision).id
+        model.resolveDecisionFromUI(id:id,confirm:true,contextID:context)
+        model.resolveDecisionFromUI(id:id,confirm:false,contextID:context)
+        XCTAssertTrue(model.isMutating); try await reached { api.held.count == 1 }
+        api.held[0].resume(returning:.init(status:200,body:Data(#"{"deleted":7}"#.utf8)))
+        try await reached { !model.isMutating }
+        old.wrappedValue = "late"; XCTAssertEqual(old.wrappedValue,""); XCTAssertEqual(model.form.name,"template 8")
+        for language in AppLanguage.allCases {
+            let hosting = NSHostingView(rootView:TaskTemplateManagerView(model:model,contextID:context).environment(\.locale,language.locale))
+            hosting.frame = NSRect(x:0,y:0,width:800,height:650); hosting.layoutSubtreeIfNeeded()
+            XCTAssertNil(hosting.window); XCTAssertTrue(hosting.fittingSize.width.isFinite); XCTAssertEqual(model.selectedID,8)
+        }
+    }
+
 }
