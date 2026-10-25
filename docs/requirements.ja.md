@@ -68,3 +68,5 @@ L8 runtime／比較画面：操作・lifecycle6状態・sidebar・機能比較�
 L9 menu境界：既存NSMenu／action／responder／shortcut／target／有効状態を保持。既知の標準actionと静的表示名の組だけ翻訳し、登録済みwindow／help／servicesの同一性とroot見出し名＋操作から標準群を識別。未知／独自／装飾／custom view・動的window／service名は保持し、menuを再構築しない。アプリ言語とAppKit didBeginTrackingで更新し、SwiftUIによる差し替えに備え毎回現在mainMenuを取得。selector observer1つを明示stopし、timer／操作実行／保存／VM変更なし。合成menuのmetadata／往復／未知・observer差替／stopと28項目catalogをTDD。実OS dispatchと全動的／未知項目の網羅は解除後。Lazyweb desktop application menu barはCluely隣接メタデータ（.340）で画像証拠ではない。AppKit interopスキルの狭い接続を使い、SDKの通知／登録menu APIを確認。
 
 T1 Tasks有限coreはtasks-core-design.ja.mdに従う。作成全optionと一覧／詳細／metadata／control／batch／delete、所有者／変更結果と日英型付き検証を実装。active化の副作用やUI完了扱いなし。RED/GREEN／全回帰／review／署名後、実VM／参照／UI合格を検証する。
+
+T2タスク状態はtasks-state-design.mdに従います。一覧/詳細と選択ID、競合/ライフサイクル保護、T1全有限操作の確定/入力拒否/不確定結果、再取得失敗後も操作確定保持、自動再試行/アクティブ選択なし、キャンセル可能な10秒ポーリングを実装します。画面/機能/実行環境の受入は未完了です。バックエンド状態のみでLazyweb対象外。RED/GREEN、応答順序/キャンセル/リセット制御試験、全体回帰、レビュー、署名付きビルドを必須とします。
