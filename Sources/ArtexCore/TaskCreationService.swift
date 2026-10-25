@@ -8,6 +8,14 @@ public struct TaskProfileOption: Decodable, Identifiable, Sendable {
     public let id: Int64
     public let name: String
     public let model: String
+    private enum CodingKeys: String, CodingKey { case id, name, model }
+    public init(from decoder: any Decoder) throws {
+        let c = try decoder.container(keyedBy: CodingKeys.self)
+        let raw = try c.decode(String.self, forKey: .id)
+        try TaskWire.validateID(raw)
+        id = try BackendJSONCoding.numericID(raw)
+        name = try c.decode(String.self, forKey: .name); model = try c.decode(String.self, forKey: .model)
+    }
 }
 public struct TaskTemplateOption: Decodable, Identifiable, Sendable {
     public let id: Int64
@@ -37,17 +45,11 @@ public struct TaskTemplateOption: Decodable, Identifiable, Sendable {
         try Task.checkCancellation()
         guard (200..<300).contains(response.status) else { throw BackendAPIError.status(response.status) }
         guard response.status == 200, response.body.count <= 4 * 1024 * 1024 else { throw BackendAPIError.invalidResponse }
-        let root: Any
-        do { root = try JSONSerialization.jsonObject(with: response.body, options: .fragmentsAllowed) }
+        let decoder = JSONDecoder(); decoder.keyDecodingStrategy = .convertFromSnakeCase
+        decoder.userInfo[TaskCatalogArray<T>.envelopeKey] = key ?? ""
+        let result: [T]
+        do { result = try decoder.decode(TaskCatalogArray<T>.self, from: response.body).values }
         catch { throw BackendAPIError.invalidResponse }
-        let value: Any
-        if let key {
-            guard let envelope = root as? [String: Any], let found = envelope[key] else { throw BackendAPIError.invalidResponse }
-            value = found
-        } else { value = root }
-        if value is NSNull { return [] }
-        guard value is [Any] else { throw BackendAPIError.invalidResponse }
-        let result = try BackendJSONCoding.decode([T].self, from: JSONSerialization.data(withJSONObject: value))
         guard result.allSatisfy({ $0.id > 0 }), Set(result.map(\.id)).count == result.count else { throw BackendAPIError.invalidResponse }
         return result
     }
@@ -56,4 +58,29 @@ public struct TaskTemplateOption: Decodable, Identifiable, Sendable {
     public func profiles() async throws -> [TaskProfileOption] { try await array(TaskProfileOption.self, path: "/api/llm/profiles", key: "profiles") }
     public func templates() async throws -> [TaskTemplateOption] { try await array(TaskTemplateOption.self, path: "/api/task-templates", key: "templates") }
     public func sources() async throws -> [TaskRecord] { try await TaskService(client: client).list().tasks }
+}
+
+private struct TaskCatalogKey: CodingKey {
+    let stringValue: String
+    var intValue: Int? { nil }
+    init(_ value: String) { stringValue = value }
+    init?(stringValue: String) { self.stringValue = stringValue }
+    init?(intValue: Int) { return nil }
+}
+
+/// Decode directly from wire bytes; Foundation JSONSerialization can strip leading BOM text.
+private struct TaskCatalogArray<Value: Decodable>: Decodable {
+    static var envelopeKey: CodingUserInfoKey { CodingUserInfoKey(rawValue: "artex.taskCatalogEnvelope")! }
+    let values: [Value]
+    init(from decoder: any Decoder) throws {
+        let key = decoder.userInfo[Self.envelopeKey] as? String ?? ""
+        if key.isEmpty {
+            let c = try decoder.singleValueContainer()
+            values = try c.decodeNil() ? [] : c.decode([Value].self)
+        } else {
+            let c = try decoder.container(keyedBy: TaskCatalogKey.self); let key = TaskCatalogKey(key)
+            guard c.contains(key) else { throw BackendAPIError.invalidResponse }
+            values = try c.decodeIfPresent([Value].self, forKey: key) ?? []
+        }
+    }
 }
