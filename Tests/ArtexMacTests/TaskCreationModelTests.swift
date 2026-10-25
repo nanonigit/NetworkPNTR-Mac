@@ -12,6 +12,8 @@ import XCTest
     var createdBody = Data()
     var failPaths = Set<String>()
     var sourceRecords: [[String: Any]] = []
+    var templateDescription = "template 中文"
+    var templateGoal = "template 한국어"
     func send(method: String, path: String, body: Data?, bearer: String?) async throws -> BackendHTTPResponse {
         calls.append((method,path,body))
         if hold { return try await withCheckedThrowingContinuation { held[path] = $0 } }
@@ -22,7 +24,7 @@ import XCTest
         case "/api/task-categories": value = ["categories": [["id": 5, "name": "category"]]]
         case "/api/companies": value = [["id": 6, "name": "company"]]
         case "/api/llm/profiles": value = ["profiles": [["id": "7", "name": "first", "model": "m"], ["id": "8", "name": "second", "model": "m"]]]
-        case "/api/task-templates": value = ["templates": [["id": 9, "name": "template", "description": "template 中文", "goal": "template 한국어", "category_id": 5, "intercept_rules": []]]]
+        case "/api/task-templates": value = ["templates": [["id": 9, "name": "template", "description": templateDescription, "goal": templateGoal, "category_id": 5, "intercept_rules": []]]]
         default: value = ["tasks": sourceRecords, "active": ""]
         }
         return .init(status: 200, body: try JSONSerialization.data(withJSONObject: value))
@@ -180,6 +182,21 @@ final class TaskCreationModelTests: XCTestCase {
         XCTAssertEqual(model.pendingTemplate?.id,current); XCTAssertEqual(model.form.draft.description,"new edit")
         model.resolveTemplate(id:current,apply:false,contextID:next)
         XCTAssertEqual(model.form.draft.description,"new edit"); XCTAssertNil(model.pendingTemplate)
+    }
+
+    @MainActor func testCanonicalEquivalentTemplateTextStillRequiresByteExactConfirmation() async throws {
+        for descriptionField in [true,false] {
+            for (existing,replacement) in [("é","e\u{301}"),("e\u{301}","é")] {
+                let (api,model) = make(); api.templateDescription = descriptionField ? replacement : "d"; api.templateGoal = descriptionField ? "g" : replacement
+                let id = try XCTUnwrap(model.open()); await model.load(contextID:id)
+                model.update(\.draft.description,value:descriptionField ? existing : "d",contextID:id)
+                model.update(\.draft.goal,value:descriptionField ? "g" : existing,contextID:id)
+                model.addRule(contextID:id); model.chooseTemplate(9,contextID:id)
+                XCTAssertNotNil(model.pendingTemplate)
+                XCTAssertEqual(Array((descriptionField ? model.form.draft.description : model.form.draft.goal).utf8),Array(existing.utf8))
+                XCTAssertEqual(model.form.rules.count,1)
+            }
+        }
     }
 
 }
