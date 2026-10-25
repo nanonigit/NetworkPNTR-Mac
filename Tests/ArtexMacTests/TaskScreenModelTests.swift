@@ -16,10 +16,10 @@ import ArtexCore
     }
 }
 final class TaskScreenModelTests: XCTestCase {
-    private func record() throws -> TaskRecord {
+    private func record(_ id: String? = nil) throws -> TaskRecord {
         let url = URL(fileURLWithPath: #filePath).deletingLastPathComponent().deletingLastPathComponent().appendingPathComponent("ArtexCoreTests/Fixtures/task-contract.json")
         let root = try XCTUnwrap(JSONSerialization.jsonObject(with: Data(contentsOf: url)) as? [String: Any])
-        return try BackendJSONCoding.decode(TaskRecord.self, from: JSONSerialization.data(withJSONObject: XCTUnwrap(root["task"])))
+        var value = try XCTUnwrap(root["task"] as? [String: Any]); if let id { value["id"] = id }; return try BackendJSONCoding.decode(TaskRecord.self, from: JSONSerialization.data(withJSONObject: value))
     }
     @MainActor private func reached(_ condition: () -> Bool) async throws {
         for _ in 0..<10_000 { if condition() { return }; await Task.yield() }; XCTFail("Missing controlled suspension"); throw CancellationError()
@@ -66,6 +66,16 @@ final class TaskScreenModelTests: XCTestCase {
         let sentBefore = api.paths.count
         _ = await model.submit(); XCTAssertNotNil(model.dialogFailure); XCTAssertFalse(model.dialogUncertain)
         XCTAssertEqual(api.paths.count, sentBefore); XCTAssertEqual(model.renameDraft, "  ")
+    }
+
+    @MainActor func testQueuedConfirmationAndOldCloseCannotTargetReplacementDialog() async throws {
+        let api = TaskScreenTransport(); let model = TaskScreenModel(store: TaskStore(service: TaskService(client: api)))
+        XCTAssertTrue(model.beginDelete(try record("7")))
+        let queued = Task { await model.submit() }
+        model.closeDialog(); XCTAssertTrue(model.beginDelete(try record("8")))
+        let replacement = try XCTUnwrap(model.dialog).id
+        _ = await queued.value
+        XCTAssertTrue(api.paths.isEmpty); XCTAssertEqual(model.dialog?.id, replacement); XCTAssertFalse(model.dialogUncertain)
     }
 
 }
