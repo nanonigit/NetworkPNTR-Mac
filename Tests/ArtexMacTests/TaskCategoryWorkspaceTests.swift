@@ -1,4 +1,6 @@
 import XCTest
+import AppKit
+import SwiftUI
 @testable import ArtexCore
 @testable import ArtexMac
 
@@ -88,4 +90,44 @@ final class TaskCategoryWorkspaceTests: XCTestCase {
         model.suspend(); api.pending[0].resume(returning:try api.response(api.row(10),status:201))
         let confirmed = await pending.value; XCTAssertTrue(confirmed); XCTAssertEqual(savedOwner,parent); XCTAssertEqual(changes,1); XCTAssertNil(model.context)
     }
+    @MainActor func testInlineIntegrationProtectsParentDraftAndSelectsOnlyMatchingOwner() async throws {
+        let api = CategoryWorkspaceAPI(), store = TaskStore(service:TaskService(client:CategoryWorkspaceAPI()))
+        let screen = TaskScreenModel(store:store,creationService:TaskCreationService(client:api),templateService:TaskTemplateService(client:api),categoryService:TaskCategoryService(client:api))
+        XCTAssertTrue(screen.beginCreate()); let creation = try XCTUnwrap(screen.creation), owner = try XCTUnwrap(creation.context).id
+        creation.update(\.draft.description,value:"e\u{301} 中文 한국어",contextID:owner); creation.update(\.draft.goal,value:"goal",contextID:owner)
+        let draft = creation.draftID, text = Data(creation.form.draft.description.utf8)
+        XCTAssertTrue(creation.openCategoryCreator(contextID:owner))
+        let workspace = try XCTUnwrap(screen.categories), categoryOwner = try XCTUnwrap(workspace.context).id
+        XCTAssertTrue(screen.busy); creation.discard(contextID:owner); creation.close(contextID:owner)
+        XCTAssertEqual(creation.context?.id,owner); XCTAssertEqual(creation.draftID,draft)
+        XCTAssertFalse(creation.openTemplateManager(asSeed:false,contextID:owner))
+        let forbidden = await creation.submit(contextID:owner); XCTAssertFalse(forbidden)
+        workspace.setName("new",contextID:categoryOwner,editorID:workspace.editorID)
+        let saved = await workspace.save(contextID:categoryOwner,editorID:workspace.editorID); XCTAssertTrue(saved)
+        XCTAssertEqual(creation.form.draft.categoryId,10); XCTAssertEqual(creation.categories.value?.first?.id,10)
+        XCTAssertEqual(Data(creation.form.draft.description.utf8),text); XCTAssertEqual(creation.draftID,draft)
+        XCTAssertTrue(creation.openCategoryCreator(contextID:owner))
+        let stale = try XCTUnwrap(workspace.context).id; workspace.setName("late",contextID:stale,editorID:workspace.editorID)
+        api.hold = true; let editor = workspace.editorID
+        let pending = Task { await workspace.save(contextID:stale,editorID:editor) }; try await reached { api.pending.count == 1 }
+        screen.stop(); XCTAssertNil(creation.context)
+        api.pending[0].resume(returning:try api.response(api.row(10),status:201))
+        _ = await pending.value; XCTAssertNil(creation.context); XCTAssertEqual(Data(creation.form.draft.description.utf8),text)
+        XCTAssertEqual(creation.form.draft.categoryId,10)
+    }
+    @MainActor func testBindingsAndOffscreenUIUseCapturedOwnerAcrossLanguageSwitch() async throws {
+        let (_,model,_) = make(); let owner = try XCTUnwrap(model.open(tasks:[])); await model.load(contextID:owner)
+        let editor = model.editorID
+        let binding = TaskCategoryBindings.name(model:model,contextID:owner,editorID:editor)
+        let old = TaskCategoryBindings.presentation(model:model,contextID:owner)
+        model.close(contextID:owner); let next = try XCTUnwrap(model.open(tasks:[]))
+        old.wrappedValue = nil; binding.wrappedValue = "late"
+        XCTAssertEqual(model.context?.id,next); XCTAssertEqual(model.name,"category 8")
+        for language in AppLanguage.allCases {
+            let host = NSHostingView(rootView:TaskCategoryView(model:model,contextID:next).environment(\.locale,language.locale))
+            host.frame = NSRect(x:0,y:0,width:820,height:650); host.layoutSubtreeIfNeeded()
+            XCTAssertNil(host.window); XCTAssertTrue(host.fittingSize.width.isFinite); XCTAssertEqual(model.editorID,editor)
+        }
+    }
+
 }
