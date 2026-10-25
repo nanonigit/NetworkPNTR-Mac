@@ -81,7 +81,7 @@ struct TaskDialog: Identifiable {
         let ticket = lifecycle; await store.refreshList()
         if ticket == lifecycle, !Task.isCancelled { await store.refreshSelected() }
     }
-    func stop() { lifecycle = UUID(); selectionTask?.cancel(); selectionTask = nil; store.stop() }
+    func stop() { lifecycle = UUID(); selectionTask?.cancel(); selectionTask = nil; creation?.suspendAttachments(); store.stop() }
     func reset() {
         stop(); creation?.reset(); store.reset(); dialog = nil; renameDraft = ""; query = ""; status = nil
         sort = .id; ascending = false; deletionOptions = .init(); dialogUncertain = false; dialogFailure = nil

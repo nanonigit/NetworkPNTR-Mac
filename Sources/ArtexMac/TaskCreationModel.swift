@@ -185,6 +185,10 @@ struct TaskChoiceState<Value> {
         guard context?.id == contextID else { return }
         uploadFailure = AppErrorMessage(key: .errorUploadUnavailable)
     }
+    func suspendAttachments() {
+        isPicking = false
+        if let context { close(contextID: context.id) }
+    }
     func uploadFiles(_ files: [URL], language: AppLanguage, contextID: UUID) async -> Bool {
         guard context?.id == contextID, !isSubmitting, !uncertain, pendingTemplate == nil,
               !isPicking, !isUploading, !files.isEmpty, !Task.isCancelled else { return false }
