@@ -1,0 +1,303 @@
+{
+  "baseline": "e75ae371ad777ffd1eecdd28d2781a6519b05591",
+  "tdd": {
+    "889b32d": "intendedmissingCore RED",
+    "c1b9fe4": "CoreGREEN3",
+    "6c85680": "intendedmissingcontroller RED",
+    "d8ea915": "controllerGREEN4",
+    "ee46711": "runtimeRED4cases4failures(1profiledecode,3BOMbytes)",
+    "8105e5c": "profile/directtypedJSON GREEN8",
+    "cfa4c93": "intendedmissingnativeentry/labels RED",
+    "bc4c674": "nativecreation GREEN10",
+    "d5b6a25": "expanded14pass",
+    "e1edf9f": "runtimeRED1/3editedtemplatefailures",
+    "f56c82a": "contextdecision GREEN15",
+    "fe75585": "runtimeRED1/12Unicodeconfirmationfailures",
+    "a8e3302": "exactUTF8 GREEN16"
+  },
+  "full_swift": {
+    "core": 273,
+    "mac": 59,
+    "passed": 331,
+    "existing_AX_skip": 1,
+    "failures": 0
+  },
+  "python": {
+    "tests": 52,
+    "failures": 0
+  },
+  "coverage": {
+    "TaskCreationForm.swift": {
+      "branches": {
+        "count": 0,
+        "covered": 0,
+        "notcovered": 0,
+        "percent": 0
+      },
+      "functions": {
+        "count": 12,
+        "covered": 12,
+        "percent": 100
+      },
+      "instantiations": {
+        "count": 12,
+        "covered": 12,
+        "percent": 100
+      },
+      "lines": {
+        "count": 32,
+        "covered": 32,
+        "percent": 100
+      },
+      "mcdc": {
+        "count": 0,
+        "covered": 0,
+        "notcovered": 0,
+        "percent": 0
+      },
+      "regions": {
+        "count": 22,
+        "covered": 22,
+        "notcovered": 0,
+        "percent": 100
+      }
+    },
+    "TaskCreationService.swift": {
+      "branches": {
+        "count": 0,
+        "covered": 0,
+        "notcovered": 0,
+        "percent": 0
+      },
+      "functions": {
+        "count": 23,
+        "covered": 19,
+        "percent": 82.6086956521739
+      },
+      "instantiations": {
+        "count": 23,
+        "covered": 19,
+        "percent": 82.6086956521739
+      },
+      "lines": {
+        "count": 59,
+        "covered": 55,
+        "percent": 93.22033898305084
+      },
+      "mcdc": {
+        "count": 0,
+        "covered": 0,
+        "notcovered": 0,
+        "percent": 0
+      },
+      "regions": {
+        "count": 68,
+        "covered": 62,
+        "notcovered": 6,
+        "percent": 91.17647058823529
+      }
+    },
+    "TaskCreateRules.swift": {
+      "branches": {
+        "count": 0,
+        "covered": 0,
+        "notcovered": 0,
+        "percent": 0
+      },
+      "functions": {
+        "count": 18,
+        "covered": 16,
+        "percent": 88.88888888888889
+      },
+      "instantiations": {
+        "count": 18,
+        "covered": 16,
+        "percent": 88.88888888888889
+      },
+      "lines": {
+        "count": 97,
+        "covered": 95,
+        "percent": 97.9381443298969
+      },
+      "mcdc": {
+        "count": 0,
+        "covered": 0,
+        "notcovered": 0,
+        "percent": 0
+      },
+      "regions": {
+        "count": 27,
+        "covered": 25,
+        "notcovered": 2,
+        "percent": 92.5925925925926
+      }
+    },
+    "TaskCreateSelectors.swift": {
+      "branches": {
+        "count": 0,
+        "covered": 0,
+        "notcovered": 0,
+        "percent": 0
+      },
+      "functions": {
+        "count": 31,
+        "covered": 18,
+        "percent": 58.06451612903226
+      },
+      "instantiations": {
+        "count": 31,
+        "covered": 18,
+        "percent": 58.06451612903226
+      },
+      "lines": {
+        "count": 158,
+        "covered": 130,
+        "percent": 82.27848101265823
+      },
+      "mcdc": {
+        "count": 0,
+        "covered": 0,
+        "notcovered": 0,
+        "percent": 0
+      },
+      "regions": {
+        "count": 44,
+        "covered": 26,
+        "notcovered": 18,
+        "percent": 59.09090909090909
+      }
+    },
+    "TaskCreateView.swift": {
+      "branches": {
+        "count": 0,
+        "covered": 0,
+        "notcovered": 0,
+        "percent": 0
+      },
+      "functions": {
+        "count": 58,
+        "covered": 38,
+        "percent": 65.51724137931035
+      },
+      "instantiations": {
+        "count": 58,
+        "covered": 38,
+        "percent": 65.51724137931035
+      },
+      "lines": {
+        "count": 257,
+        "covered": 213,
+        "percent": 82.87937743190662
+      },
+      "mcdc": {
+        "count": 0,
+        "covered": 0,
+        "notcovered": 0,
+        "percent": 0
+      },
+      "regions": {
+        "count": 89,
+        "covered": 46,
+        "notcovered": 43,
+        "percent": 51.68539325842697
+      }
+    },
+    "TaskCreationBindings.swift": {
+      "branches": {
+        "count": 0,
+        "covered": 0,
+        "notcovered": 0,
+        "percent": 0
+      },
+      "functions": {
+        "count": 8,
+        "covered": 8,
+        "percent": 100
+      },
+      "instantiations": {
+        "count": 8,
+        "covered": 8,
+        "percent": 100
+      },
+      "lines": {
+        "count": 13,
+        "covered": 13,
+        "percent": 100
+      },
+      "mcdc": {
+        "count": 0,
+        "covered": 0,
+        "notcovered": 0,
+        "percent": 0
+      },
+      "regions": {
+        "count": 12,
+        "covered": 11,
+        "notcovered": 1,
+        "percent": 91.66666666666666
+      }
+    },
+    "TaskCreationModel.swift": {
+      "branches": {
+        "count": 0,
+        "covered": 0,
+        "notcovered": 0,
+        "percent": 0
+      },
+      "functions": {
+        "count": 70,
+        "covered": 69,
+        "percent": 98.57142857142858
+      },
+      "instantiations": {
+        "count": 70,
+        "covered": 69,
+        "percent": 98.57142857142858
+      },
+      "lines": {
+        "count": 187,
+        "covered": 186,
+        "percent": 99.46524064171123
+      },
+      "mcdc": {
+        "count": 0,
+        "covered": 0,
+        "notcovered": 0,
+        "percent": 0
+      },
+      "regions": {
+        "count": 146,
+        "covered": 132,
+        "notcovered": 14,
+        "percent": 90.41095890410958
+      }
+    }
+  },
+  "packaged_creation_strings_per_locale": 42,
+  "packaged_locales": [
+    "en",
+    "ja"
+  ],
+  "signed_build_only": true,
+  "strict_codesign": true,
+  "installed_or_launched": false,
+  "live_requests_VM_UI": "none; simulatedAPI/offscreenconstructiononly",
+  "lazyweb": {
+    "search_id": "a3e6f398-633d-449b-b658-49de2fd2ee3b",
+    "Reclaim": 0.453608,
+    "Attio": 0.441405,
+    "scope": "metadata only, no visual parity claim"
+  },
+  "review": "profile ID/string and BOM defects, templateoverwrite/Unicodecomparison repaired; no remaining reviewed blockers",
+  "body_fields": 12,
+  "rule_kinds": 7,
+  "pending": [
+    "native task staging upload",
+    "template/category/company management",
+    "bulk/archive/advancedTaskdetail",
+    "remotevalidation and unknown-outcome UI parity",
+    "actual native/browser/VM creation/keyboard/IME/accessibility/cloud",
+    "kernel reliability/native egress/cleanMac distribution/all21acceptance"
+  ],
+  "full_goal": "open"
+}
