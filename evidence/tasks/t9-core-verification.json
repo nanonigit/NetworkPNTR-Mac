@@ -1,0 +1,40 @@
+{
+  "phase": "T9 category Core only",
+  "baseline_commit": "e75ae371ad777ffd1eecdd28d2781a6519b05591",
+  "reference_files": {
+    "server/task_categories.go": "e176138a0e97eb4276bdeeb56c4fae8a65e61e29535a2232cfc1df6ae71cd1dc",
+    "db/task_categories.go": "8ea63311836d844b61032876ba1f8652ddf81b573adcf01c3c32db3bacb5db8e",
+    "server/server.go": "2239ad23fad1ec680f6ec2927439892575d037fe1521b73445f0956504341b7f",
+    "web/src/lib/api.ts": "18b4529a99b508964348bf83b7777597ca3cb80a64565380e1b1320005700fe1",
+    "web/src/lib/types.ts": "469cf531c8b257579bf2eb8ca6b632ef05973f6019ef6f5389d0ab9d48e79309",
+    "web/src/app/(main)/function/tasks/page.tsx": "f1fb3304b87085c78c84cbc5bcc71117a63a281d3a17a22e438b4b2f357f6ef3"
+  },
+  "swift": {
+    "total": 387,
+    "passed": 386,
+    "skipped_existing_ax": 1,
+    "failed": 0
+  },
+  "python": {
+    "total": 60,
+    "failed": 0
+  },
+  "focused_cases": 8,
+  "service_coverage": {
+    "lines": 100.0,
+    "regions": 100.0,
+    "functions": 100.0
+  },
+  "live_requests": false,
+  "native_window_opened": false,
+  "vm_booted": false,
+  "workflow_acceptance": "pending",
+  "remaining_category_gates": [
+    "native manager",
+    "inline category creation",
+    "list filter",
+    "single and batch move UI",
+    "session and mutation state integration",
+    "live browser and VM comparison"
+  ]
+}

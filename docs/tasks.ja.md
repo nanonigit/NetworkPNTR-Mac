@@ -179,3 +179,5 @@ T8はtask-template-management-design.mdに従い、テンプレート一覧/新�
 T8 チェックポイント: API契約4件、管理・連携12件成功。最終Swift379件（成功378・既存AX1件スキップ）、Python60件成功。行カバレッジはAPI93.27%、管理92.11%、画面外UI83.20%。起動なし署名付きビルド、署名検証、追加21項目の英日同梱一致を確認。変更・読み取り・リセット・画面終了・破棄の所有権修正をレビュー済み。固定比較元21機能/27ルート/243ハンドラを維持。依存定義の追加なしでnpm/pip監査は対象外。実OS操作・保存永続化・ブラウザ画面比較は後日の解除後に実施。Tasks全体、全21機能、クラウド通信、カーネル安定性と配布は未完了。task-template-management-verification.ja.md と bugs/task-template-ownership-investigation.ja.md を参照。
 
 T9 は task-category-core-design.md に従い CRUD・単独/複数移動 Core を RED/GREEN 実装。Unicode・ID・スキーマ・null・部分失敗・ステータス・キャンセル、レビュー・全体試験・署名ビルドを確認。管理・即時作成・フィルタ・移動 UI と実比較は未完了。
+
+T9: RED1f3ad33→GREEN334935a7件→追加8件。全体Swift387件（成功386・既存AX1件スキップ）、Python60件成功。サービスの行・領域・関数100%。CRUD・移動・部分結果・null・Unicode・上限をレビュー。署名ビルドと追加3項目の英日同梱を確認。比較元ハッシュは evidence/tasks/t9-core-verification.json。カテゴリ管理UI・状態連携・即時作成・フィルタ・移動と実比較は後続必須。全21機能・実行環境・クラウド・配布条件は未完了。task-category-core-verification.md を参照。

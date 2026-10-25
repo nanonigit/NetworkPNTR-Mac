@@ -38,7 +38,7 @@ final class TaskCategoryServiceTests: XCTestCase {
     @MainActor func testNameValidationMatchesServerBeforeWhitespaceCollapse() async throws {
         let api = ChatTestTransport()
         let client = TaskCategoryService(client:api)
-        for name in ["", " \n", "\u{85}",String(repeating:"a",count:81),String(repeating:"e\u{301}",count:41),"a"+String(repeating:" ",count:80)+"b"] {
+        for name in ["", " \n", "\u{85}",String(repeating:"a",count:81),String(repeating:"\u{85}",count:9000)+"a",String(repeating:"e\u{301}",count:41),"a"+String(repeating:" ",count:80)+"b"] {
             await rejected { _ = try await client.create(name:name) }
         }
         for id: Int64 in [0,-1] {
@@ -62,7 +62,9 @@ final class TaskCategoryServiceTests: XCTestCase {
         for invalid: Any in [[:], ["categories":[row(),row()]], ["categories":[row(0)]], ["categories":[["id":7,"name":"n","task_count":-1,"created_at":"c","updated_at":"u"]]], ["categories":[["id":7,"name":"n","created_at":"c","updated_at":"u"]]]] {
             try api.enqueue(invalid); await rejected { _ = try await service.list() }
         }
-        api.replies.append(.init(status:200,body:Data(repeating:32,count:4*1024*1024+1))); await rejected { _ = try await service.list() }
+        var large = Data(#"{"categories":[]}"#.utf8)
+        large.append(Data(repeating:32,count:4*1024*1024+1))
+        api.replies.append(.init(status:200,body:large)); await rejected { _ = try await service.list() }
     }
     @MainActor func testSingleAssignmentClearAndOwnerValidation() async throws {
         let api = ChatTestTransport(), service = TaskCategoryService(client:api)
@@ -123,4 +125,20 @@ final class TaskCategoryServiceTests: XCTestCase {
         do { _ = try await late.value; XCTFail("Late cancellation accepted") } catch { XCTAssertTrue(error is CancellationError) }
         XCTAssertEqual(api.calls.count,1)
     }
+    @MainActor func testHundredAssignmentsPreserveOrderAndAllFailedCategoryRace() async throws {
+        let api = ChatTestTransport(), service = TaskCategoryService(client:api)
+        let ids = (1...100).reversed().map(String.init)
+        try api.enqueue(["items":ids.map { ["id":$0,"ok":true] as [String:Any] },"category":row(8)])
+        let hundred = try await service.assignBatch(taskIDs:ids,categoryID:8)
+        XCTAssertEqual(hundred.items.map(\.id),ids); XCTAssertEqual(try object(api.calls[0].body)["task_ids"] as? [String],ids)
+        // A task can disappear after the server collected pending IDs but before its database update.
+        try api.enqueue(["items":[["id":"7","ok":false]],"category":row(8)])
+        let missing = try await service.assignBatch(taskIDs:["7"],categoryID:8)
+        XCTAssertFalse(missing.items[0].ok); XCTAssertEqual(missing.category?.id,8)
+        try api.enqueue(["items":[["id":"7","ok":false]],"category":row(9)])
+        await rejected { _ = try await service.assignBatch(taskIDs:["7"],categoryID:8) }
+        try api.enqueue(["items":[["id":"7","ok":false]],"category":NSNull()])
+        let cleared = try await service.assignBatch(taskIDs:["7"],categoryID:nil); XCTAssertNil(cleared.category)
+    }
+
 }
