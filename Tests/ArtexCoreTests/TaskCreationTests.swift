@@ -58,4 +58,25 @@ final class TaskCreationTests: XCTestCase {
         }
     }
 
+    @MainActor func testProfileIDsStatusesBodyBoundsAndPreCancellation() async throws {
+        let api = ChatTestTransport(); let service = TaskCreationService(client:api)
+        for id in ["0","-1","01","9223372036854775808","１"] {
+            try api.enqueue(["profiles":[["id":id,"name":"n","model":"m"]]])
+            do { _ = try await service.profiles(); XCTFail("Invalid string ID") } catch {}
+        }
+        try api.enqueue(["profiles":[["id":"9007199254740993","name":"n","model":"m"]]])
+        let large = try await service.profiles(); XCTAssertEqual(large[0].id,9_007_199_254_740_993)
+        try api.enqueue(["profiles":[]],status:202)
+        do { _ = try await service.profiles(); XCTFail("Accepted unconfirmed status") } catch {}
+        let oversized = Data(#"{"profiles":[]}"#.utf8) + Data(repeating:32,count:4*1024*1024)
+        api.replies.append(.init(status:200,body:oversized))
+        do { _ = try await service.profiles(); XCTFail("Oversized response") } catch {}
+        let count = api.calls.count
+        let cancelled = Task { @MainActor in try await service.profiles() }; cancelled.cancel()
+        do { _ = try await cancelled.value; XCTFail("Cancelled request") } catch { XCTAssertTrue(error is CancellationError) }
+        XCTAssertEqual(api.calls.count,count)
+        var form = TaskCreationForm(); form.draft.description = "d"; form.draft.goal = "g"; form.timeoutMinutes = "-1.5"; form.heartbeatMinutes = ""
+        XCTAssertEqual(try form.payload().timeoutSeconds,0); XCTAssertEqual(try form.payload().planHeartbeatSeconds,600)
+    }
+
 }
