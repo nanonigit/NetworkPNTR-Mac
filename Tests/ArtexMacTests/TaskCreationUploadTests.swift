@@ -208,4 +208,14 @@ final class TaskCreationUploadTests: XCTestCase {
         XCTAssertEqual(model.form.draft.description,"confirmed text")
     }
 
+    @MainActor func testTaskPickerLabelsAreBilingualAndKeepExistingFilePolicy() {
+        for language in AppLanguage.allCases {
+            let panel = ChatAttachmentPickerButton.makePanel(language:language,messageKey:.taskUploadPickerMessage)
+            XCTAssertEqual(panel.message,AppStrings.text(.taskUploadPickerMessage,language:language))
+            XCTAssertNotEqual(panel.message,AppStrings.text(.chatAttachMessage,language:language))
+            XCTAssertTrue(panel.canChooseFiles); XCTAssertFalse(panel.canChooseDirectories); XCTAssertTrue(panel.allowsMultipleSelection)
+            XCTAssertTrue(panel.treatsFilePackagesAsDirectories)
+        }
+    }
+
 }
