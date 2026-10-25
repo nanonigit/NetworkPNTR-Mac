@@ -165,6 +165,21 @@ final class TaskCreationModelTests: XCTestCase {
         model.addRule(contextID:id)
         model.chooseTemplate(9,contextID:id)
         XCTAssertEqual(model.form.draft.description,"edited description"); XCTAssertEqual(model.form.draft.goal,"edited goal"); XCTAssertEqual(model.form.rules.count,1)
+        let first = try XCTUnwrap(model.pendingTemplate).id
+        let blocked = await model.submit(contextID:id); XCTAssertFalse(blocked)
+        model.resolveTemplate(id:first,apply:false,contextID:id)
+        XCTAssertNil(model.pendingTemplate); XCTAssertEqual(model.form.draft.description,"edited description"); XCTAssertEqual(model.form.rules.count,1)
+        model.chooseTemplate(9,contextID:id); let accepted = try XCTUnwrap(model.pendingTemplate).id
+        model.resolveTemplate(id:accepted,apply:true,contextID:id)
+        XCTAssertEqual(model.form.draft.description,"template 中文"); XCTAssertEqual(model.form.draft.categoryId,5); XCTAssertEqual(model.form.rules.count,0)
+        model.update(\.draft.description,value:"new edit",contextID:id); model.chooseTemplate(9,contextID:id)
+        let stale = try XCTUnwrap(model.pendingTemplate).id
+        model.close(contextID:id); let next = try XCTUnwrap(model.open()); model.chooseTemplate(9,contextID:next)
+        let current = try XCTUnwrap(model.pendingTemplate).id
+        model.resolveTemplate(id:stale,apply:true,contextID:next)
+        XCTAssertEqual(model.pendingTemplate?.id,current); XCTAssertEqual(model.form.draft.description,"new edit")
+        model.resolveTemplate(id:current,apply:false,contextID:next)
+        XCTAssertEqual(model.form.draft.description,"new edit"); XCTAssertNil(model.pendingTemplate)
     }
 
 }

@@ -3,6 +3,11 @@ import Foundation
 import Observation
 
 struct TaskCreationContext: Identifiable { let id = UUID() }
+struct TaskTemplateDecision: Identifiable {
+    let id = UUID()
+    let contextID: UUID
+    let template: TaskTemplateOption
+}
 struct TaskChoiceState<Value> {
     var value: [Value]?
     var failure: AppErrorMessage?
@@ -12,6 +17,7 @@ struct TaskChoiceState<Value> {
     private(set) var context: TaskCreationContext?
     private(set) var form = TaskCreationForm()
     private(set) var selectedTemplateID: Int64?
+    private(set) var pendingTemplate: TaskTemplateDecision?
     private(set) var categories = TaskChoiceState<TaskNamedOption>()
     private(set) var companies = TaskChoiceState<TaskNamedOption>()
     private(set) var profiles = TaskChoiceState<TaskProfileOption>()
@@ -33,18 +39,18 @@ struct TaskChoiceState<Value> {
     }
     func close(contextID: UUID) {
         guard context?.id == contextID, !isSubmitting else { return }
-        context = nil; loadTicket = UUID(); isLoading = false
+        context = nil; pendingTemplate = nil; loadTicket = UUID(); isLoading = false
     }
     func discard(contextID: UUID) {
         guard context?.id == contextID, !isSubmitting else { return }
         close(contextID: contextID); form = .init(); selectedTemplateID = nil; uncertain = false; failure = nil
     }
     func reset() {
-        context = nil; loadTicket = UUID(); isLoading = false
+        context = nil; pendingTemplate = nil; loadTicket = UUID(); isLoading = false
         form = .init(); selectedTemplateID = nil; uncertain = false; failure = nil
         categories = .init(); companies = .init(); profiles = .init(); templates = .init(); sources = .init()
     }
-    private func editable(_ id: UUID) -> Bool { context?.id == id && !isSubmitting && !uncertain }
+    private func editable(_ id: UUID) -> Bool { context?.id == id && !isSubmitting && !uncertain && pendingTemplate == nil }
     func update<Value>(_ key: WritableKeyPath<TaskCreationForm, Value>, value: Value, contextID: UUID) {
         guard editable(contextID) else { return }; form[keyPath: key] = value
     }
@@ -67,9 +73,19 @@ struct TaskChoiceState<Value> {
         guard editable(contextID) else { return }
         if let id {
             guard let template = templates.value?.first(where: { $0.id == id }) else { return }
+            let hasText = !ChatText.trim(form.draft.description).isEmpty || !ChatText.trim(form.draft.goal).isEmpty
+            if hasText && (form.draft.description != template.description || form.draft.goal != template.goal) {
+                pendingTemplate = .init(contextID: contextID, template: template); return
+            }
             form.apply(template)
         }
         selectedTemplateID = id
+    }
+    func resolveTemplate(id: UUID, apply: Bool, contextID: UUID) {
+        guard context?.id == contextID, !isSubmitting, !uncertain, let pending = pendingTemplate,
+              pending.id == id, pending.contextID == contextID else { return }
+        if apply { form.apply(pending.template); selectedTemplateID = pending.template.id }
+        pendingTemplate = nil
     }
     func addRule(contextID: UUID) { guard editable(contextID) else { return }; form.rules.append(.init()) }
     func removeRule(id: UUID, contextID: UUID) { guard editable(contextID) else { return }; form.rules.removeAll { $0.id == id } }

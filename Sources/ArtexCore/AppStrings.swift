@@ -1,6 +1,9 @@
 import Foundation
 
 public enum AppStringKey: String, CaseIterable, Sendable {
+    case taskCreateReplaceTitle = "task.create.replaceTitle"
+    case taskCreateReplaceHelp = "task.create.replaceHelp"
+    case taskCreateApply = "task.create.apply"
     case taskCreateTitle = "task.create.title"
     case taskCreateCreate = "task.create.create"
     case taskCreateCreated = "task.create.created"

@@ -914,6 +914,8 @@
 	<string>Advanced options</string>
 	<key>task.create.allow</key>
 	<string>Allow</string>
+	<key>task.create.apply</key>
+	<string>Apply template</string>
 	<key>task.create.block</key>
 	<string>Block</string>
 	<key>task.create.cidr</key>
@@ -966,6 +968,10 @@
 	<string>Models, in execution order</string>
 	<key>task.create.removeRule</key>
 	<string>Remove rule</string>
+	<key>task.create.replaceHelp</key>
+	<string>This template replaces the description, goal, category and interception rules.</string>
+	<key>task.create.replaceTitle</key>
+	<string>Replace task content?</string>
 	<key>task.create.ruleAction</key>
 	<string>Action</string>
 	<key>task.create.ruleEnabled</key>

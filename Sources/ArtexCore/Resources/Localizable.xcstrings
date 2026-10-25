@@ -8976,6 +8976,54 @@
           }
         }
       }
+    },
+    "task.create.replaceTitle": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Replace task content?"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "タスク内容を置き換えますか？"
+          }
+        }
+      }
+    },
+    "task.create.replaceHelp": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "This template replaces the description, goal, category and interception rules."
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "このテンプレートで説明・目標・分類・傍受ルールを置き換えます。"
+          }
+        }
+      }
+    },
+    "task.create.apply": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Apply template"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "テンプレートを適用"
+          }
+        }
+      }
     }
   },
   "version": "1.0"

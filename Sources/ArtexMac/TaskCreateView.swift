@@ -11,6 +11,7 @@ import SwiftUI
         TaskCreationBindings.field(model: model, contextID: contextID, key: key, fallback: fallback)
     }
     var body: some View {
+        let decisionID = model.pendingTemplate?.id
         VStack(alignment: .leading, spacing: 12) {
             if model.context?.id == contextID {
                 HStack {
@@ -39,7 +40,7 @@ import SwiftUI
                             }.padding(.top, 10)
                         }
                     }.padding(.vertical, 6)
-                }.disabled(model.isSubmitting || model.uncertain)
+                }.disabled(model.isSubmitting || model.uncertain || model.pendingTemplate != nil)
                 if model.uncertain { Text(s(.taskUIUncertain)).foregroundStyle(.orange) }
                 else if let failure = model.failure { Text(failure.text(language: language)).foregroundStyle(.red) }
                 Divider()
@@ -49,10 +50,16 @@ import SwiftUI
                     if model.isSubmitting { ProgressView().controlSize(.small) }
                     Button(s(model.uncertain ? .taskUIClose : .taskUICancel)) { model.close(contextID: contextID) }.keyboardShortcut(.cancelAction).disabled(model.isSubmitting)
                     Button(s(.taskCreateCreate)) { Task { _ = await model.submit(contextID: contextID) } }
-                        .keyboardShortcut(.defaultAction).disabled(model.isSubmitting || model.isLoading || model.uncertain)
+                        .keyboardShortcut(.defaultAction).disabled(model.isSubmitting || model.isLoading || model.uncertain || model.pendingTemplate != nil)
                 }
             }
         }.padding(20).frame(width: 640, height: 600)
+        .alert(s(.taskCreateReplaceTitle), isPresented: Binding(get: { model.context?.id == contextID && model.pendingTemplate != nil }, set: { if !$0, let decisionID { model.resolveTemplate(id: decisionID, apply: false, contextID: contextID) } }), presenting: model.pendingTemplate) { decision in
+            Button(s(.taskUICancel), role: .cancel) { model.resolveTemplate(id: decision.id, apply: false, contextID: contextID) }
+            Button(s(.taskCreateApply)) { model.resolveTemplate(id: decision.id, apply: true, contextID: contextID) }
+        } message: { decision in
+            Text(s(.taskCreateReplaceHelp) + "\n" + decision.template.name)
+        }
         .interactiveDismissDisabled(model.isSubmitting)
         .task { await model.load(contextID: contextID) }
     }

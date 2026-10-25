@@ -912,6 +912,8 @@
 	<string>詳細設定</string>
 	<key>task.create.allow</key>
 	<string>許可</string>
+	<key>task.create.apply</key>
+	<string>テンプレートを適用</string>
 	<key>task.create.block</key>
 	<string>遮断</string>
 	<key>task.create.cidr</key>
@@ -964,6 +966,10 @@
 	<string>モデルと実行順</string>
 	<key>task.create.removeRule</key>
 	<string>ルールを削除</string>
+	<key>task.create.replaceHelp</key>
+	<string>このテンプレートで説明・目標・分類・傍受ルールを置き換えます。</string>
+	<key>task.create.replaceTitle</key>
+	<string>タスク内容を置き換えますか？</string>
 	<key>task.create.ruleAction</key>
 	<string>操作</string>
 	<key>task.create.ruleEnabled</key>
