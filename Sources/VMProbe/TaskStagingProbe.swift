@@ -9,26 +9,19 @@ import Foundation
 }
 
 @MainActor enum TaskStagingProbe {
-    private enum Stage: String, Encodable { case preparing, boot, authentication, transfer, shutdown, complete }
-    private struct Report: Encodable {
-        let stage: Stage
-        let boot: BackendPreflightReport
-        let exercise: TaskStagingExerciseReport?
-        let passed: Bool
-    }
     static func run(_ args: [String]) async {
         guard args.count == 2 else { print("Usage: VMProbe --task-staging ARTIFACTS NEW_PRIVATE_OUTPUT"); exit(2) }
         let controller = VMController(), output = URL(fileURLWithPath: args[1])
         var created = false, attempted = false, ready = false, freshAuth = false, cooperative = false
         var protectedStatus: Int?, tokens: [String] = []
-        var stage = Stage.preparing, exercise: TaskStagingExerciseReport?
-        func report() -> Report {
+        var stage = TaskStagingRunStage.preparing, exercise: TaskStagingExerciseReport?
+        func report(terminalSuccess: Bool = false) -> TaskStagingRunReport {
             let boot = BackendPreflightReport(reachedReady: ready, freshAuth: freshAuth, protectedStatus: protectedStatus,
                 cooperativeStop: cooperative, machineStopped: !controller.hasMachine,
                 audit: GuestBootDiagnostics.audit(logDirectory: output, tokens: tokens), bootAttempts: attempted ? 1 : 0)
-            return Report(stage: stage, boot: boot, exercise: exercise, passed: exercise != nil && boot.passed)
+            return TaskStagingRunReport(stage: stage, boot: boot, exercise: exercise, terminalSuccess: terminalSuccess)
         }
-        func write(_ result: Report) throws {
+        func write(_ result: TaskStagingRunReport) throws {
             let encoder = JSONEncoder(); encoder.outputFormatting = [.prettyPrinted, .sortedKeys]
             try encoder.encode(result).write(to: output.appendingPathComponent("task-staging-vm.json"), options: .atomic)
         }
@@ -73,9 +66,10 @@ import Foundation
             guard session.phase == .needsLogin, vault.token == nil else { throw RuntimeError.integrity("staging logout") }
             stage = .shutdown
             try await controller.stop(); cooperative = true
-            let stopped = report()
+            stage = .complete
+            let stopped = report(terminalSuccess: true)
             guard stopped.passed else { throw RuntimeError.integrity("staging complete log audit") }
-            try write(Report(stage: .complete, boot: stopped.boot, exercise: stopped.exercise, passed: true))
+            try write(stopped)
             print("PASS task_staging_single_boot=true actual_vsock_upload=true byte_readback=true originals_preserved=true cooperative_stop=true")
         } catch {
             try? await controller.forceStop()
