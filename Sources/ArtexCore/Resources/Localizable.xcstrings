@@ -9517,6 +9517,57 @@
           }
         }
       }
+    },
+    "task.category.validation": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Enter a category name and valid identifiers."
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "カテゴリ名と有効な ID を指定してください。"
+          }
+        }
+      }
+    },
+    "task.category.nameLimit": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Category names must contain at most 80 characters."
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "カテゴリ名は80文字以内で入力してください。"
+          }
+        }
+      }
+    },
+    "task.category.batchValidation": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Select between 1 and 100 tasks for a category move."
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "カテゴリを移動するタスクを1〜100件選択してください。"
+          }
+        }
+      }
     }
   },
   "version": "1.0"

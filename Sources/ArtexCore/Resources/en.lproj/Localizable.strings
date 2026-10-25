@@ -908,6 +908,12 @@
 	<string>Task details will be implemented and compared with the browser version.</string>
 	<key>shell.taskPending</key>
 	<string>Task details are being migrated</string>
+	<key>task.category.batchValidation</key>
+	<string>Select between 1 and 100 tasks for a category move.</string>
+	<key>task.category.nameLimit</key>
+	<string>Category names must contain at most 80 characters.</string>
+	<key>task.category.validation</key>
+	<string>Enter a category name and valid identifiers.</string>
 	<key>task.create.addRule</key>
 	<string>Add rule</string>
 	<key>task.create.advanced</key>

@@ -906,6 +906,12 @@
 	<string>ブラウザ版の詳細画面と比較して実装する予定です。</string>
 	<key>shell.taskPending</key>
 	<string>タスク詳細は移植中です</string>
+	<key>task.category.batchValidation</key>
+	<string>カテゴリを移動するタスクを1〜100件選択してください。</string>
+	<key>task.category.nameLimit</key>
+	<string>カテゴリ名は80文字以内で入力してください。</string>
+	<key>task.category.validation</key>
+	<string>カテゴリ名と有効な ID を指定してください。</string>
 	<key>task.create.addRule</key>
 	<string>ルールを追加</string>
 	<key>task.create.advanced</key>

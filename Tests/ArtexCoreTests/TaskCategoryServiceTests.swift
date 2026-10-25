@@ -19,8 +19,7 @@ final class TaskCategoryServiceTests: XCTestCase {
         do { try await action(); XCTFail("Accepted invalid contract",file:file,line:line) } catch {}
     }
     @MainActor func testCRUDExactWireAndLiteralLargeIdentifiers() async throws {
-        let api = ChatTestTransport(), service = TaskCategoryService(client:ChatTestTransport())
-        _ = service
+        let api = ChatTestTransport()
         let client = TaskCategoryService(client:api)
         // Use raw bytes for text because JSONSerialization can remove a leading BOM in string values.
         let raw = Data(#"{"id":9007199254740993,"name":"\ufeffe\u0301 中文 한국어","task_count":3,"created_at":"created","updated_at":"updated"}"#.utf8)
@@ -37,7 +36,7 @@ final class TaskCategoryServiceTests: XCTestCase {
         XCTAssertEqual(Set(try object(api.calls[1].body).keys),["name"]); XCTAssertNil(api.calls[2].body)
     }
     @MainActor func testNameValidationMatchesServerBeforeWhitespaceCollapse() async throws {
-        let api = ChatTestTransport(), service = TaskCategoryService(client:ChatTestTransport()); _ = service
+        let api = ChatTestTransport()
         let client = TaskCategoryService(client:api)
         for name in ["", " \n", "\u{85}",String(repeating:"a",count:81),String(repeating:"e\u{301}",count:41),"a"+String(repeating:" ",count:80)+"b"] {
             await rejected { _ = try await client.create(name:name) }

@@ -24,6 +24,7 @@ public enum BackendValidation: String, CaseIterable, Sendable {
 public enum AppErrorText {
     public static func text(_ error: any Error, language: AppLanguage) -> String {
         func s(_ key: AppStringKey) -> String { AppStrings.text(key, language: language) }
+        if let error = error as? TaskCategoryInputError { return s(error.key) }
         if let error = error as? TaskTemplateInputError { return s(error.key) }
         if let error = error as? TaskInputError { return s(error.key) }
         if let error = error as? RuntimeError { return s(RuntimeLabels.errorKey(error)) }
