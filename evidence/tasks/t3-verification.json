@@ -1,0 +1,254 @@
+{
+  "baseline": "e75ae371ad777ffd1eecdd28d2781a6519b05591",
+  "inventory": {
+    "features": 21,
+    "routes": 27,
+    "endpoints": 243,
+    "in_progress": 4,
+    "pending": 17,
+    "workflow_acceptance": "all open"
+  },
+  "tdd": {
+    "0c01a4b": "intended missing presentation/controller RED (both compiler failures observed in sequence)",
+    "f0e460b": "GREEN6focusedcases",
+    "80ca7c3": "intended missing token key/dialog failure identity RED",
+    "b38f3b3": "GREEN8focusedcases",
+    "51c0531": "runtimeRED1case2failures: queued A confirmation submits B",
+    "e286140": "GREEN9focusedcases; strict submit/dismiss UUID",
+    "d1d2464": "intended missing guarded bindings RED plus extra coverage",
+    "741717f": "GREEN14focusedcases; stale input/read/write guards"
+  },
+  "full_swift": {
+    "core": 267,
+    "mac": 49,
+    "passed": 315,
+    "existing_AX_skip": 1,
+    "failures": 0
+  },
+  "python": {
+    "tests": 52,
+    "failures": 0
+  },
+  "coverage": {
+    "TaskPresentation.swift": {
+      "branches": {
+        "count": 0,
+        "covered": 0,
+        "notcovered": 0,
+        "percent": 0
+      },
+      "functions": {
+        "count": 23,
+        "covered": 16,
+        "percent": 69.56521739130434
+      },
+      "instantiations": {
+        "count": 23,
+        "covered": 16,
+        "percent": 69.56521739130434
+      },
+      "lines": {
+        "count": 81,
+        "covered": 74,
+        "percent": 91.35802469135803
+      },
+      "mcdc": {
+        "count": 0,
+        "covered": 0,
+        "notcovered": 0,
+        "percent": 0
+      },
+      "regions": {
+        "count": 63,
+        "covered": 55,
+        "notcovered": 8,
+        "percent": 87.3015873015873
+      }
+    },
+    "TaskDetailView.swift": {
+      "branches": {
+        "count": 0,
+        "covered": 0,
+        "notcovered": 0,
+        "percent": 0
+      },
+      "functions": {
+        "count": 21,
+        "covered": 15,
+        "percent": 71.42857142857143
+      },
+      "instantiations": {
+        "count": 21,
+        "covered": 15,
+        "percent": 71.42857142857143
+      },
+      "lines": {
+        "count": 164,
+        "covered": 151,
+        "percent": 92.07317073170732
+      },
+      "mcdc": {
+        "count": 0,
+        "covered": 0,
+        "notcovered": 0,
+        "percent": 0
+      },
+      "regions": {
+        "count": 56,
+        "covered": 39,
+        "notcovered": 17,
+        "percent": 69.64285714285714
+      }
+    },
+    "TaskDialogView.swift": {
+      "branches": {
+        "count": 0,
+        "covered": 0,
+        "notcovered": 0,
+        "percent": 0
+      },
+      "functions": {
+        "count": 27,
+        "covered": 22,
+        "percent": 81.48148148148148
+      },
+      "instantiations": {
+        "count": 27,
+        "covered": 22,
+        "percent": 81.48148148148148
+      },
+      "lines": {
+        "count": 140,
+        "covered": 107,
+        "percent": 76.42857142857142
+      },
+      "mcdc": {
+        "count": 0,
+        "covered": 0,
+        "notcovered": 0,
+        "percent": 0
+      },
+      "regions": {
+        "count": 70,
+        "covered": 41,
+        "notcovered": 29,
+        "percent": 58.57142857142858
+      }
+    },
+    "TaskScreenModel.swift": {
+      "branches": {
+        "count": 0,
+        "covered": 0,
+        "notcovered": 0,
+        "percent": 0
+      },
+      "functions": {
+        "count": 24,
+        "covered": 23,
+        "percent": 95.83333333333334
+      },
+      "instantiations": {
+        "count": 24,
+        "covered": 23,
+        "percent": 95.83333333333334
+      },
+      "lines": {
+        "count": 65,
+        "covered": 64,
+        "percent": 98.46153846153847
+      },
+      "mcdc": {
+        "count": 0,
+        "covered": 0,
+        "notcovered": 0,
+        "percent": 0
+      },
+      "regions": {
+        "count": 50,
+        "covered": 44,
+        "notcovered": 6,
+        "percent": 88
+      }
+    },
+    "TasksView.swift": {
+      "branches": {
+        "count": 0,
+        "covered": 0,
+        "notcovered": 0,
+        "percent": 0
+      },
+      "functions": {
+        "count": 43,
+        "covered": 24,
+        "percent": 55.81395348837209
+      },
+      "instantiations": {
+        "count": 43,
+        "covered": 24,
+        "percent": 55.81395348837209
+      },
+      "lines": {
+        "count": 229,
+        "covered": 181,
+        "percent": 79.03930131004367
+      },
+      "mcdc": {
+        "count": 0,
+        "covered": 0,
+        "notcovered": 0,
+        "percent": 0
+      },
+      "regions": {
+        "count": 79,
+        "covered": 34,
+        "notcovered": 45,
+        "percent": 43.037974683544306
+      }
+    }
+  },
+  "coverage_scope": "Core JSON + Mac executable LLVM export; UI branch coverage partial, no acceptance claim",
+  "packaged_validation": {
+    "task_UI_keys_per_locale": 57,
+    "locales": [
+      "en",
+      "ja"
+    ],
+    "catalog_exact_match": true,
+    "strict_codesign": true,
+    "build_only": true,
+    "installed_or_launched_this_phase": false
+  },
+  "UI_evidence": {
+    "offscreen_EN_JA_construction": true,
+    "NSWindow_created_by_new_tests": false,
+    "draft_and_cleanup_preservation": true,
+    "visible_UI_keyboard_VoiceOver": "pending",
+    "browser_VM_native_click_comparison": "pending; unlock deferred"
+  },
+  "review": "queued confirmation and stale field findings repaired; no remaining blockers",
+  "lazyweb": {
+    "search_id": "88258e26-9263-4c46-938b-c4cf9b16b6ab",
+    "matches": [
+      {
+        "company": "Asana",
+        "similarity": 0.537564
+      },
+      {
+        "company": "Height",
+        "similarity": 0.501156
+      }
+    ],
+    "scope": "metadata only; no inspected image or visual parity claim"
+  },
+  "remaining_tasks_scope": [
+    "creation/fulloptions/selectors/templates",
+    "category management/persistence",
+    "bulk/archive/import/export",
+    "graph/goals/constraints/LLM-chain",
+    "attachments/main-agent-chat/advanced detail",
+    "actual VM/browser/native workflow and UI comparison"
+  ],
+  "runtime_network_kernel_changed": false,
+  "live_backend_or_host_AI_execution": false,
+  "full_goal": "open"
+}
