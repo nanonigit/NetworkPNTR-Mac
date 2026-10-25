@@ -6,8 +6,8 @@ final class TaskCreationTests: XCTestCase {
         try api.enqueue(["categories": [["id": 9_007_199_254_740_993, "name": "literal 中文 한국어"]]])
         let categories = try await service.categories(); XCTAssertEqual(categories[0].id, 9_007_199_254_740_993)
         try api.enqueue([["id": 7, "name": "company"]]); let companies = try await service.companies(); XCTAssertEqual(companies.count, 1)
-        try api.enqueue(["profiles": [["id": 8, "name": "profile", "model": "model", "api_key": "private-secret"]]])
-        let profiles = try await service.profiles(); XCTAssertFalse(String(describing: profiles).contains("private-secret"))
+        try api.enqueue(["profiles": [["id": "8", "name": "profile", "model": "model", "api_key": "private-secret"]]])
+        let profiles = try await service.profiles(); XCTAssertEqual(profiles[0].id,8); XCTAssertFalse(String(describing: profiles).contains("private-secret"))
         try api.enqueue(["templates": [["id": 3, "name": "template", "description": "d", "goal": "g", "category_id": NSNull(), "intercept_rules": NSNull()]]])
         let templates = try await service.templates(); XCTAssertTrue(templates[0].interceptRules.isEmpty)
         XCTAssertEqual(api.calls.map(\.path), ["/api/task-categories", "/api/companies", "/api/llm/profiles", "/api/task-templates"])
@@ -40,4 +40,14 @@ final class TaskCreationTests: XCTestCase {
         XCTAssertEqual(payload.description, "template 中文"); XCTAssertEqual(payload.categoryId, 5); XCTAssertEqual(payload.interceptRules[0].kind, .cidr)
         XCTAssertEqual(form.rules.count, 1)
     }
+    @MainActor func testRawTemplateTextRetainsBOMAndUnicodeBytes() async throws {
+        let api = ChatTestTransport(); let service = TaskCreationService(client: api)
+        let raw = Data(#"{"templates":[{"id":3,"name":"\uFEFFname","description":"\uFEFFe\u0301中","goal":"\uFEFFé한","category_id":null,"intercept_rules":[]}]}"#.utf8)
+        api.replies.append(.init(status:200,body:raw))
+        let result = try await service.templates()
+        XCTAssertEqual(Array(result[0].name.utf8), Array("\u{FEFF}name".utf8))
+        XCTAssertEqual(Array(result[0].description.utf8),Array("\u{FEFF}e\u{301}中".utf8))
+        XCTAssertEqual(Array(result[0].goal.utf8),Array("\u{FEFF}é한".utf8))
+    }
+
 }

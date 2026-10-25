@@ -18,7 +18,7 @@ import XCTest
         switch path {
         case "/api/task-categories": value = ["categories": [["id": 5, "name": "category"]]]
         case "/api/companies": value = [["id": 6, "name": "company"]]
-        case "/api/llm/profiles": value = ["profiles": [["id": 7, "name": "first", "model": "m"], ["id": 8, "name": "second", "model": "m"]]]
+        case "/api/llm/profiles": value = ["profiles": [["id": "7", "name": "first", "model": "m"], ["id": "8", "name": "second", "model": "m"]]]
         case "/api/task-templates": value = ["templates": [["id": 9, "name": "template", "description": "template 中文", "goal": "template 한국어", "category_id": 5, "intercept_rules": []]]]
         default: value = ["tasks": NSNull(), "active": ""]
         }
