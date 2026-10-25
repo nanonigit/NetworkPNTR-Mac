@@ -167,3 +167,5 @@ T4 checkpoints:889b32d→c1b9fe4 CoreGREEN3;6c85680→d8ea915 controllerGREEN4;e
 - [ ] Extend raw FEFF/NFC/NFD regressions to other remaining service list projections; T4 fixes only its own catalog decoding.
 
 B1 boot diagnostics follows boot-preflight-design.md: separate blank/nonblank from scan execution failure, preserve fail-closed formatting, add private one-boot read-only VMProbe preflight with fixed sanitized report. Use only fresh disposable state and verified separate candidate; no user-data/guest-policy change. TDD/report/guard tests, controlled old/new-profile single experiments, review/full regression/signed build. Kernel reliability/root cause and visible parity remain open; no Lazyweb for infrastructure.
+
+B1 diagnostic checkpoint: status classification and complete-log audit implemented/reviewed;337Swift cases (336pass,1existingAXskip),54Python pass; old/new isolated single-boot controls pass. Prior faults/reliability/UI/egress remain open. See boot-preflight-verification.md.

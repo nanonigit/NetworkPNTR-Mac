@@ -53,3 +53,7 @@ Docker.app由来の既存診断用カーネルは保持し、別のレシピでL
 新しい署名付きattachment-handoff-a4-v1はsetup/bootstrapや添付操作の前に失敗。stage=nonblank-state-diskだが、非公開serialにはMM_FILEPAGES/MM_ANONPAGESのBad rss-counter state、mm解放時のnon-zero pgtables_bytes、Python空判定のSegmentation faultがある。アプリ/VM終了後にホストから読み取りだけで2GiB全体を走査し、全ゼロ・割当block0・SHA256a7c744c13cc101ed66c29f672f92455547889cc586ce6d44fe76ae824958ea51を確認した。stage名は非ゼロデータの証拠ではなく、backend-initが確認プロセスの異常終了も同じ拒否段階へまとめている。フォーマットは実行されていない。非機密の証拠はattachment-handoff-boot-red.jsonとattachment-handoff-failed-native-results.json。
 
 同じ1vCPU候補の追加の不安定性証拠であり、ホスト/ハードウェア/Python/カーネルの根本原因は確定しない。走査を省略したり失敗ディスクを初期化しない。再現性分類と新機能検証のため、同じ構成の新しい対照実行を1回だけ行い、成功まで繰り返したり安定性合格としない。失敗raw/stateはignoredのまま保持。将来の起動診断では、非空の正当な終了と実行失敗を区別しつつ拒否を維持する必要がある。
+
+## B1診断修正と単発制御試験
+
+空ディスク検査異常を非空と誤分類する診断をaaeb8dbで修正しました。旧候補と別保存の修正候補を各1回起動し、準備/未初期化認証/保護API401/全ログ監査/正常停止に成功。失敗したオフラインビルドと、正しいゲスト親イメージのハッシュ照合も保持しています。カーネル原因/信頼性は未認定で過去障害は未解決。../boot-preflight-verification.ja.mdとevidence/native-runtime/b1-verification.json参照。
