@@ -6,7 +6,7 @@ import SwiftUI
         Binding(get:{model.context?.id == contextID && model.editorID == editorID ? model.name : ""},set:{model.setName($0,contextID:contextID,editorID:editorID)})
     }
     static func presentation(model: TaskCategoryWorkspace, contextID: UUID?, inlineOwner: UUID? = nil) -> Binding<TaskCategoryContext?> {
-        Binding(get:{model.context?.inlineOwner == inlineOwner ? model.context : nil},set:{if $0 == nil, let contextID { model.close(contextID:contextID) }})
+        Binding(get:{model.context?.inlineOwner == inlineOwner ? model.context : nil},set:{if $0 == nil, model.context?.inlineOwner == inlineOwner, let contextID { model.close(contextID:contextID) }})
     }
 }
 

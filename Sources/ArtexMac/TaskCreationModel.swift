@@ -193,7 +193,7 @@ struct TaskChoiceState<Value> {
         }
     }
     func setPickerPresented(_ presented: Bool, contextID: UUID) {
-        guard context?.id == contextID, !isSubmitting, !isUploading else { return }
+        guard context?.id == contextID, !isSubmitting, !isUploading, !categoryBusy, templateManager?.context == nil, templateManager?.isMutating != true else { return }
         isPicking = presented
     }
     func pickerFailed(contextID: UUID) {
