@@ -57,4 +57,38 @@ final class MenuLocalizationTests:XCTestCase {
         bridge.stop();let stopped=calls;center.post(name:NSMenu.didBeginTrackingNotification,object:menu);XCTAssertEqual(calls,stopped)
         bridge.stop()
     }
+    @MainActor func testAllSupportedNativeActionsAndCloseWindowAliasKeepRouting() {
+        let actions:[(String,AppStringKey)] = [
+            ("orderFrontStandardAboutPanel:",.menuAbout),("hide:",.menuHide),("hideOtherApplications:",.menuHideOthers),
+            ("unhideAllApplications:",.menuShowAll),("terminate:",.menuQuit),("performClose:",.menuClose),
+            ("undo:",.menuUndo),("redo:",.menuRedo),("cut:",.menuCut),("copy:",.menuCopy),("paste:",.menuPaste),
+            ("pasteAsPlainText:",.menuPastePlain),("delete:",.menuDelete),("selectAll:",.menuSelectAll),
+            ("performMiniaturize:",.menuMinimize),("performZoom:",.menuZoom),("arrangeInFront:",.menuBringAll),
+            ("toggleFullScreen:",.menuFullScreen),("toggleSidebar:",.menuSidebar),("toggleToolbarShown:",.menuToolbar),
+            ("runToolbarCustomizationPalette:",.menuCustomizeToolbar),("showHelp:",.menuAppHelp)
+        ]
+        let root=NSMenu(title:"fixture");let target=NSObject()
+        for (action,key) in actions {
+            let title=AppStrings.formatted(key,language:.english,values:["app":"ARTEX Mac"])
+            let item=NSMenuItem(title:title,action:NSSelectorFromString(action),keyEquivalent:"");item.target=target;root.addItem(item)
+        }
+        let close=NSMenuItem(title:"Close Window",action:NSSelectorFromString("performClose:"),keyEquivalent:"w");root.addItem(close)
+        AppMenuLocalizer.apply(.init(mainMenu:root),language:.japanese)
+        for (item,pair) in zip(root.items,actions) {
+            XCTAssertEqual(item.title,AppStrings.formatted(pair.1,language:.japanese,values:["app":"ARTEX Mac"]))
+            XCTAssertEqual(item.action,NSSelectorFromString(pair.0));XCTAssertTrue(item.target === target)
+        }
+        XCTAssertEqual(close.title,"閉じる");XCTAssertEqual(close.action,NSSelectorFromString("performClose:"));XCTAssertEqual(close.keyEquivalent,"w")
+    }
+    @MainActor func testStandardRootGroupsRequireBothKnownTitleAndNativeAnchor() {
+        let root=NSMenu(title:"fixture")
+        for (name,action) in [("File","performClose:"),("View","toggleFullScreen:"),("Window","performMiniaturize:"),("Help","showHelp:"),("Custom menu","copy:")] {
+            let item=NSMenuItem(title:name,action:nil,keyEquivalent:"");let child=NSMenu(title:name)
+            child.addItem(.init(title:"unknown",action:NSSelectorFromString(action),keyEquivalent:""));item.submenu=child;root.addItem(item)
+        }
+        let help=NSMenu(title:"registered");let item=NSMenuItem(title:"unknown",action:nil,keyEquivalent:"");item.submenu=help;root.addItem(item)
+        AppMenuLocalizer.apply(.init(mainMenu:root,helpMenu:help),language:.japanese)
+        XCTAssertEqual(root.items.map(\.title),["ファイル","表示","ウインドウ","ヘルプ","Custom menu","ヘルプ"])
+        AppMenuLocalizer.apply(.init(mainMenu:nil),language:.english)
+    }
 }
