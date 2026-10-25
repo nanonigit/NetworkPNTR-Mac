@@ -1,7 +1,7 @@
 import Foundation
 
 /// Feature clients cannot inject a separate bearer or bypass the live auth session.
-@MainActor public final class AuthenticatedBackendClient: BackendJSONTransport, ChatAttachmentUploading {
+@MainActor public final class AuthenticatedBackendClient: BackendJSONTransport, ChatAttachmentUploading, TaskStagingUploading {
     private let session: AuthenticationSession
     public init(session: AuthenticationSession) { self.session = session }
     public func uploadAttachments(conversationID: Int64, files: [URL], progress: BackendUploadProgressHandler?) async throws -> [ChatAttachment] {
@@ -10,6 +10,18 @@ import Foundation
         let attachments = try BackendJSONCoding.decode(ChatUploadResponse.self, from: response.body).attachments
         guard attachments.count == files.count else { throw BackendAPIError.invalidResponse }
         return attachments
+    }
+    public func uploadTaskStaging(draftID: UUID, files: [URL], progress: BackendUploadProgressHandler?) async throws -> [TaskStagedAttachment] {
+        let response = try await session.authenticatedStagingUpload(draftID: draftID, files: files, progress: progress)
+        guard response.status == 200 else { throw BackendAPIError.status(response.status) }
+        guard response.body.count <= 4 * 1024 * 1024 else { throw BackendAPIError.invalidResponse }
+        do {
+            let decoder = JSONDecoder()
+            decoder.userInfo[TaskStagedAttachment.draftKey] = draftID
+            let result = try decoder.decode(TaskStagingResponse.self, from: response.body).attachments
+            guard result.count == files.count else { throw BackendAPIError.invalidResponse }
+            return result
+        } catch { throw BackendAPIError.invalidResponse }
     }
     public func send(method: String, path: String, body: Data?, bearer: String?) async throws -> BackendHTTPResponse {
         guard bearer == nil else { throw BackendAPIError.invalidResponse }

@@ -78,9 +78,24 @@ public enum AuthenticationPhase: String, Sendable { case checking, needsSetup, n
     }
     public func authenticatedUpload(conversationID: Int64, files: [URL], progress: BackendUploadProgressHandler? = nil) async throws -> BackendHTTPResponse {
         try Task.checkCancellation()
-        guard phase == .authenticated, let token else { throw BackendAPIError.status(401) }
+        guard phase == .authenticated, token != nil else { throw BackendAPIError.status(401) }
         guard conversationID > 0, !files.isEmpty else { throw ChatUploadBodyError.invalidFile }
         guard let uploader = client as? any BackendMultipartTransport else { throw BackendAPIError.invalidResponse }
+        return try await authenticatedUploadOperation(progress: progress) { token, forwarded in
+            try await uploader.upload(conversationID: conversationID, files: files, bearer: token, progress: forwarded)
+        }
+    }
+    public func authenticatedStagingUpload(draftID: UUID, files: [URL], progress: BackendUploadProgressHandler? = nil) async throws -> BackendHTTPResponse {
+        try Task.checkCancellation()
+        guard phase == .authenticated, token != nil else { throw BackendAPIError.status(401) }
+        guard !files.isEmpty else { throw ChatUploadBodyError.invalidFile }
+        guard let uploader = client as? any BackendStagingMultipartTransport else { throw BackendAPIError.invalidResponse }
+        return try await authenticatedUploadOperation(progress: progress) { token, forwarded in
+            try await uploader.uploadStaging(draftID: draftID, files: files, bearer: token, progress: forwarded)
+        }
+    }
+    private func authenticatedUploadOperation(progress: BackendUploadProgressHandler?, operation: (String, BackendUploadProgressHandler?) async throws -> BackendHTTPResponse) async throws -> BackendHTTPResponse {
+        guard phase == .authenticated, let token else { throw BackendAPIError.status(401) }
         let ticket = revision
         let identifier = UUID()
         let gate = progress.map { BackendUploadProgressGate($0) }
@@ -91,7 +106,7 @@ public enum AuthenticationPhase: String, Sendable { case checking, needsSetup, n
         else { forwarded = nil }
         return try await withTaskCancellationHandler {
             try Task.checkCancellation()
-            let response = try await uploader.upload(conversationID: conversationID, files: files, bearer: token, progress: forwarded)
+            let response = try await operation(token, forwarded)
             try Task.checkCancellation()
             try validateReply(response, ticket: ticket)
             return response

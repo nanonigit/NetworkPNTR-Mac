@@ -4,7 +4,7 @@ import Foundation
     func send(method: String, path: String, body: Data?, bearer: String?) async throws -> BackendHTTPResponse
 }
 
-@MainActor public final class BackendJSONClient: BackendJSONTransport, BackendMultipartTransport, BackendAttachmentDownloadTransport {
+@MainActor public final class BackendJSONClient: BackendJSONTransport, BackendMultipartTransport, BackendStagingMultipartTransport, BackendAttachmentDownloadTransport {
     private let runtime: VMController
     private let provisioning: GuestProvisioning
     public init(runtime: VMController, provisioning: GuestProvisioning) {
@@ -13,13 +13,23 @@ import Foundation
     public func upload(conversationID: Int64, files: [URL], bearer: String, progress: BackendUploadProgressHandler?) async throws -> BackendHTTPResponse {
         try Task.checkCancellation()
         guard conversationID > 0 else { throw ChatUploadBodyError.invalidFile }
+        return try await upload(files: files, progress: progress) { plan in
+            try BackendMultipartRequest.header(conversationID: conversationID, plan: plan, bearer: bearer)
+        }
+    }
+    public func uploadStaging(draftID: UUID, files: [URL], bearer: String, progress: BackendUploadProgressHandler?) async throws -> BackendHTTPResponse {
+        try await upload(files: files, progress: progress) { plan in
+            try BackendMultipartRequest.stagingHeader(draftID: draftID, plan: plan, bearer: bearer)
+        }
+    }
+    private func upload(files: [URL], progress: BackendUploadProgressHandler?, header: (ChatMultipartPlan) throws -> Data) async throws -> BackendHTTPResponse {
+        try Task.checkCancellation()
         let preflight = Task.detached { try ChatMultipartPlan(files: files) }
         let plan = try await withTaskCancellationHandler {
             try await preflight.value
         } onCancel: { preflight.cancel() }
         try Task.checkCancellation()
-        let header = try BackendMultipartRequest.header(conversationID: conversationID, plan: plan, bearer: bearer)
-        return try await runtime.uploadBackend(plan: plan, header: header, provisioning: provisioning, progress: progress)
+        return try await runtime.uploadBackend(plan: plan, header: header(plan), provisioning: provisioning, progress: progress)
     }
     public func downloadDigest(_ attachment: ChatAttachmentDownload, bearer: String) async throws -> BackendDownloadResult {
         try Task.checkCancellation()
