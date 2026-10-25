@@ -184,4 +184,28 @@ final class TaskCreationUploadTests: XCTestCase {
         XCTAssertFalse(empty); XCTAssertEqual(starts,1)
     }
 
+    @MainActor func testParentStopInvalidatesPickerAndUploadButPreservesConfirmedDraft() async throws {
+        let api = DraftUploadAPI(), store = TaskStore(service:TaskService(client:DraftUploadAPI()))
+        let parent = TaskScreenModel(store:store,creationService:TaskCreationService(client:api),stagingUploader:api)
+        XCTAssertTrue(parent.beginCreate()); let model = try XCTUnwrap(parent.creation), first = try XCTUnwrap(model.context).id
+        model.update(\.draft.description,value:"confirmed text",contextID:first)
+        let draft = model.draftID
+        model.setPickerPresented(true,contextID:first)
+        parent.stop()
+        XCTAssertFalse(model.isPicking); XCTAssertNil(model.context); XCTAssertFalse(parent.busy)
+        let oldChoice = await model.uploadFiles(files,language:.english,contextID:first)
+        XCTAssertFalse(oldChoice); XCTAssertTrue(api.drafts.isEmpty)
+        // Recover the expected new context even when the pre-fix gate remains latched.
+        model.setPickerPresented(false,contextID:first); model.close(contextID:first)
+        let next = try XCTUnwrap(model.open()); api.hold = true
+        let pending = Task { await model.uploadFiles(self.files,language:.english,contextID:next) }
+        try await reached { api.replies.count == 1 }
+        parent.stop()
+        XCTAssertFalse(model.isUploading); XCTAssertNil(model.context); XCTAssertFalse(parent.busy)
+        XCTAssertEqual(model.draftID,draft); XCTAssertEqual(model.form.draft.description,"confirmed text")
+        api.replies[0].resume(returning:[try api.attachment(draft:draft)])
+        let late = await pending.value; XCTAssertFalse(late); XCTAssertEqual(model.uploadCount,0)
+        XCTAssertEqual(model.form.draft.description,"confirmed text")
+    }
+
 }
