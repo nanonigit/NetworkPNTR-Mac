@@ -27,10 +27,22 @@ struct TaskChoiceState<Value> {
     private(set) var isSubmitting = false
     private(set) var uncertain = false
     private(set) var failure: AppErrorMessage?
+    private(set) var draftID = UUID()
+    private(set) var uploadCount = 0
+    private(set) var uploadProgress: BackendUploadProgress?
+    private(set) var uploadFailure: AppErrorMessage?
+    private(set) var isPicking = false
+    private(set) var uploadID: UUID?
+    var isUploading: Bool { uploadID != nil }
+    var uploadsAvailable: Bool { uploader != nil }
+    @ObservationIgnored private let uploader: (any TaskStagingUploading)?
+    @ObservationIgnored private var uploadWorker: Task<[TaskStagedAttachment],Error>?
+    @ObservationIgnored private var uploadPump: Task<Void,Never>?
+    @ObservationIgnored private var uploadContinuation: AsyncStream<BackendUploadProgress>.Continuation?
     @ObservationIgnored private let store: TaskStore
     @ObservationIgnored private let service: TaskCreationService
     @ObservationIgnored private var loadTicket = UUID()
-    init(store: TaskStore, service: TaskCreationService) { self.store = store; self.service = service }
+    init(store: TaskStore, service: TaskCreationService, uploader: (any TaskStagingUploading)? = nil) { self.store = store; self.service = service; self.uploader = uploader }
     func open() -> UUID? {
         guard context == nil, !isSubmitting else { return nil }
         let next = TaskCreationContext(); context = next
@@ -38,14 +50,16 @@ struct TaskChoiceState<Value> {
         return next.id
     }
     func close(contextID: UUID) {
-        guard context?.id == contextID, !isSubmitting else { return }
+        guard context?.id == contextID, !isSubmitting, !isPicking else { return }
+        if isUploading { cancelUpload(); uploadFailure = AppErrorMessage(key: .taskUploadInterrupted) }
         context = nil; pendingTemplate = nil; loadTicket = UUID(); isLoading = false
     }
     func discard(contextID: UUID) {
-        guard context?.id == contextID, !isSubmitting else { return }
-        close(contextID: contextID); form = .init(); selectedTemplateID = nil; uncertain = false; failure = nil
+        guard context?.id == contextID, !isSubmitting, !isPicking else { return }
+        close(contextID: contextID); clearUploads(); form = .init(); selectedTemplateID = nil; uncertain = false; failure = nil
     }
     func reset() {
+        clearUploads()
         context = nil; pendingTemplate = nil; loadTicket = UUID(); isLoading = false
         form = .init(); selectedTemplateID = nil; uncertain = false; failure = nil
         categories = .init(); companies = .init(); profiles = .init(); templates = .init(); sources = .init()
@@ -70,7 +84,7 @@ struct TaskChoiceState<Value> {
         form.draft.llmProfileIds.swapAt(index, target)
     }
     func chooseTemplate(_ id: Int64?, contextID: UUID) {
-        guard editable(contextID) else { return }
+        guard editable(contextID), !isUploading else { return }
         if let id {
             guard let template = templates.value?.first(where: { $0.id == id }) else { return }
             let hasText = !ChatText.trim(form.draft.description).isEmpty || !ChatText.trim(form.draft.goal).isEmpty
@@ -82,7 +96,7 @@ struct TaskChoiceState<Value> {
         selectedTemplateID = id
     }
     func resolveTemplate(id: UUID, apply: Bool, contextID: UUID) {
-        guard context?.id == contextID, !isSubmitting, !uncertain, let pending = pendingTemplate,
+        guard context?.id == contextID, !isSubmitting, !uncertain, !isUploading, let pending = pendingTemplate,
               pending.id == id, pending.contextID == contextID else { return }
         if apply { form.apply(pending.template); selectedTemplateID = pending.template.id }
         pendingTemplate = nil
@@ -146,7 +160,7 @@ struct TaskChoiceState<Value> {
               contains(draft.sourceTaskIds, sources.value?.map(\.id)), contains(draft.categoryId.map { [$0] } ?? [], categories.value?.map(\.id)) else { throw TaskInputError.invalidCreation }
     }
     func submit(contextID: UUID) async -> Bool {
-        guard editable(contextID), !isLoading, !Task.isCancelled else { return false }
+        guard editable(contextID), !isLoading, !isPicking, !isUploading, !Task.isCancelled else { return false }
         let payload: TaskCreateDraft
         do { payload = try form.payload(); try validateChoices(payload) }
         catch { failure = AppErrorMessage(error); return false }
@@ -156,10 +170,65 @@ struct TaskChoiceState<Value> {
         guard context?.id == contextID else { return false }
         switch outcome {
         case .confirmed:
+            clearUploads()
             form = .init(); selectedTemplateID = nil; context = nil; failure = nil; uncertain = false; return true
         case .unconfirmed: uncertain = true; failure = store.mutationFailure; return false
         case .rejected: failure = store.mutationFailure; return false
         case .notStarted, .discarded: return false
         }
+    }
+    func setPickerPresented(_ presented: Bool, contextID: UUID) {
+        guard context?.id == contextID, !isSubmitting, !isUploading else { return }
+        isPicking = presented
+    }
+    func pickerFailed(contextID: UUID) {
+        guard context?.id == contextID else { return }
+        uploadFailure = AppErrorMessage(key: .errorUploadUnavailable)
+    }
+    func uploadFiles(_ files: [URL], language: AppLanguage, contextID: UUID) async -> Bool {
+        guard context?.id == contextID, !isSubmitting, !uncertain, pendingTemplate == nil,
+              !isPicking, !isUploading, !files.isEmpty, !Task.isCancelled else { return false }
+        guard let uploader else { pickerFailed(contextID: contextID); return false }
+        let id = UUID(), draft = draftID
+        let (stream, continuation) = AsyncStream<BackendUploadProgress>.makeStream(bufferingPolicy: .bufferingNewest(1))
+        let worker = Task { @MainActor in
+            try Task.checkCancellation()
+            let result = try await uploader.uploadTaskStaging(draftID: draft, files: files, progress: { continuation.yield($0) })
+            try Task.checkCancellation()
+            guard result.count == files.count, result.allSatisfy({ $0.draftID == draft }) else { throw BackendAPIError.invalidResponse }
+            return result
+        }
+        uploadID = id; uploadProgress = nil; uploadFailure = nil
+        uploadWorker = worker; uploadContinuation = continuation
+        uploadPump = Task { @MainActor [weak self] in
+            for await value in stream {
+                guard let self, self.uploadID == id, self.context?.id == contextID, !Task.isCancelled else { return }
+                self.uploadProgress = value
+            }
+        }
+        defer { finishUpload(id: id) }
+        do {
+            let attachments = try await withTaskCancellationHandler { try await worker.value } onCancel: { worker.cancel(); continuation.finish() }
+            guard uploadID == id, self.context?.id == contextID, draftID == draft, !Task.isCancelled else { return false }
+            form.draft.description = TaskUploadManifest.appending(to: form.draft.description, attachments: attachments, language: language)
+            uploadCount += attachments.count
+            return true
+        } catch {
+            guard uploadID == id, self.context?.id == contextID, draftID == draft else { return false }
+            uploadFailure = error is CancellationError ? AppErrorMessage(key: .taskUploadInterrupted) : AppErrorMessage(error)
+            return false
+        }
+    }
+    func cancelUpload() {
+        uploadWorker?.cancel(); uploadPump?.cancel(); uploadContinuation?.finish()
+        uploadWorker = nil; uploadPump = nil; uploadContinuation = nil; uploadID = nil; uploadProgress = nil
+    }
+    func clearUploads() {
+        cancelUpload(); draftID = UUID(); uploadCount = 0; uploadFailure = nil; isPicking = false
+    }
+    private func finishUpload(id: UUID) {
+        guard uploadID == id else { return }
+        uploadPump?.cancel(); uploadContinuation?.finish()
+        uploadWorker = nil; uploadPump = nil; uploadContinuation = nil; uploadID = nil; uploadProgress = nil
     }
 }

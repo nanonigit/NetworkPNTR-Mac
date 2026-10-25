@@ -2,6 +2,7 @@ import Foundation
 
 /// Validated guest-only paths for the draft manifest; never host URLs or downloads.
 public struct TaskStagedAttachment: Decodable, Sendable, Identifiable {
+    public let draftID: UUID
     public let name: String
     public let path: String
     public let size: Int64
@@ -11,6 +12,7 @@ public struct TaskStagedAttachment: Decodable, Sendable, Identifiable {
     private enum CodingKeys: String, CodingKey { case name, path, size, abs }
     public init(from decoder: any Decoder) throws {
         guard let draftID = decoder.userInfo[Self.draftKey] as? UUID else { throw BackendAPIError.invalidResponse }
+        self.draftID = draftID
         let c = try decoder.container(keyedBy: CodingKeys.self)
         name = try c.decode(String.self, forKey: .name)
         path = try c.decode(String.self, forKey: .path)
