@@ -1000,6 +1000,48 @@
 	<string>タスク名またはピン留め設定を指定してください。</string>
 	<key>task.error.name</key>
 	<string>タスク名は1〜200文字（Unicodeスカラー）で入力してください。</string>
+	<key>task.template.conflict</key>
+	<string>同じ名前のテンプレートが既に存在します。</string>
+	<key>task.template.create</key>
+	<string>テンプレートを作成</string>
+	<key>task.template.delete</key>
+	<string>テンプレートを削除</string>
+	<key>task.template.deleteHelp</key>
+	<string>保存したテンプレートを削除します。既存のタスクと作成中の本文は保持されます。</string>
+	<key>task.template.deleteTitle</key>
+	<string>このテンプレートを削除しますか？</string>
+	<key>task.template.dirtyHelp</key>
+	<string>次の選択に切り替えると現在の編集内容は失われます。</string>
+	<key>task.template.dirtyTitle</key>
+	<string>未保存のテンプレート変更を破棄しますか？</string>
+	<key>task.template.discard</key>
+	<string>変更を破棄</string>
+	<key>task.template.empty</key>
+	<string>テンプレートはありません</string>
+	<key>task.template.help</key>
+	<string>説明・目標・分類・傍受ルールを再利用できます。</string>
+	<key>task.template.limits</key>
+	<string>名前は120文字、説明と目標は各16,000文字までです。送信全体は512 KiB以内にしてください。</string>
+	<key>task.template.localDiscard</key>
+	<string>ローカルの編集を破棄</string>
+	<key>task.template.localHelp</key>
+	<string>ローカルの編集だけを破棄します。サーバーに保存済みの変更は取り消しません。</string>
+	<key>task.template.manage</key>
+	<string>テンプレートを管理</string>
+	<key>task.template.new</key>
+	<string>新規テンプレート</string>
+	<key>task.template.save</key>
+	<string>変更を保存</string>
+	<key>task.template.saveAs</key>
+	<string>テンプレートとして保存</string>
+	<key>task.template.search</key>
+	<string>テンプレートを検索</string>
+	<key>task.template.title</key>
+	<string>タスクテンプレート</string>
+	<key>task.template.unknown</key>
+	<string>処理結果を確認できません。一覧を更新して結果を確認してから、ローカル編集の破棄や次の操作を行ってください。</string>
+	<key>task.template.validation</key>
+	<string>名前・説明・目標を入力し、有効な分類を選んでください。</string>
 	<key>task.ui.active</key>
 	<string>アクティブタスク</string>
 	<key>task.ui.all</key>

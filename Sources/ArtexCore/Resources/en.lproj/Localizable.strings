@@ -1002,6 +1002,48 @@
 	<string>Specify a task name or pin setting.</string>
 	<key>task.error.name</key>
 	<string>Enter a task name of 1–200 Unicode characters.</string>
+	<key>task.template.conflict</key>
+	<string>A template with this name already exists.</string>
+	<key>task.template.create</key>
+	<string>Create template</string>
+	<key>task.template.delete</key>
+	<string>Delete template</string>
+	<key>task.template.deleteHelp</key>
+	<string>This removes the saved template. Existing tasks and the task draft are kept.</string>
+	<key>task.template.deleteTitle</key>
+	<string>Delete this template?</string>
+	<key>task.template.dirtyHelp</key>
+	<string>The next selection replaces these local edits.</string>
+	<key>task.template.dirtyTitle</key>
+	<string>Discard unsaved template changes?</string>
+	<key>task.template.discard</key>
+	<string>Discard changes</string>
+	<key>task.template.empty</key>
+	<string>No templates</string>
+	<key>task.template.help</key>
+	<string>Save reusable descriptions, goals, categories and interception rules.</string>
+	<key>task.template.limits</key>
+	<string>Use at most 120 characters for the name and 16,000 for each text. The complete request must fit within 512 KiB.</string>
+	<key>task.template.localDiscard</key>
+	<string>Discard local draft</string>
+	<key>task.template.localHelp</key>
+	<string>This clears local edits only. It does not undo a change that may already be saved on the server.</string>
+	<key>task.template.manage</key>
+	<string>Manage templates</string>
+	<key>task.template.new</key>
+	<string>New template</string>
+	<key>task.template.save</key>
+	<string>Save changes</string>
+	<key>task.template.saveAs</key>
+	<string>Save as template</string>
+	<key>task.template.search</key>
+	<string>Search templates</string>
+	<key>task.template.title</key>
+	<string>Task templates</string>
+	<key>task.template.unknown</key>
+	<string>The result is unknown. Refresh the list to check before discarding local edits or trying another operation.</string>
+	<key>task.template.validation</key>
+	<string>Enter a name, description and goal, and choose a valid category.</string>
 	<key>task.ui.active</key>
 	<string>Active task</string>
 	<key>task.ui.all</key>
