@@ -39,4 +39,11 @@ final class TaskPresentationTests: XCTestCase {
         XCTAssertEqual(AppStrings.text(.taskUITitle, language: .japanese), "タスク")
         XCTAssertEqual(try FeatureCatalog.load().features.first(where: { $0.id == "tasks" })?.nativeStatus,"in_progress")
     }
+    func testLocalizedTokenBreakdownRetainsEachCounterAndOpaqueValues() {
+        XCTAssertEqual(AppStrings.formatted(.taskUITokenBreakdown, language: .english, values: ["input":"{read}","read":"3","write":"4","output":"2"]), "Input: {read} · Cache read: 3 · Cache write: 4 · Output: 2")
+        XCTAssertEqual(TaskPresentation.durationText(90061, language: .japanese), "1日 1時間")
+        XCTAssertEqual(TaskPresentation.durationText(3661, language: .english), "1h 1m")
+        XCTAssertEqual(TaskPresentation.durationText(-1, language: .english), "0s")
+    }
+
 }

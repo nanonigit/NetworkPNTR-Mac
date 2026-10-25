@@ -1,4 +1,6 @@
 import XCTest
+import AppKit
+import SwiftUI
 import ArtexCore
 @testable import ArtexMac
 
@@ -54,4 +56,16 @@ final class TaskScreenModelTests: XCTestCase {
         try XCTUnwrap(api.reply).resume(throwing: CancellationError())
         let succeeded = await save.value; XCTAssertFalse(succeeded); XCTAssertFalse(model.isSubmitting); XCTAssertNil(model.store.mutationFailure)
     }
+    @MainActor func testDialogFailureBelongsOnlyToItsSubmission() async throws {
+        let api = TaskScreenTransport(); let model = TaskScreenModel(store: TaskStore(service: TaskService(client: api)))
+        XCTAssertTrue(model.beginDelete(try record())); _ = await model.submit()
+        XCTAssertNotNil(model.dialogFailure)
+        model.closeDialog(); XCTAssertTrue(model.beginRename(try record()))
+        XCTAssertNil(model.dialogFailure); XCTAssertFalse(model.dialogUncertain)
+        model.renameDraft = "  "
+        let sentBefore = api.paths.count
+        _ = await model.submit(); XCTAssertNotNil(model.dialogFailure); XCTAssertFalse(model.dialogUncertain)
+        XCTAssertEqual(api.paths.count, sentBefore); XCTAssertEqual(model.renameDraft, "  ")
+    }
+
 }
