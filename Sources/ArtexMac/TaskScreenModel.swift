@@ -25,15 +25,15 @@ struct TaskDialog: Identifiable {
     private(set) var isSubmitting = false
     @ObservationIgnored private var selectionTask: Task<Void, Never>?
     @ObservationIgnored private var lifecycle = UUID()
-    init(store: TaskStore, creationService: TaskCreationService? = nil, stagingUploader: (any TaskStagingUploading)? = nil) {
+    init(store: TaskStore, creationService: TaskCreationService? = nil, stagingUploader: (any TaskStagingUploading)? = nil, templateService: TaskTemplateService? = nil) {
         self.store = store
-        creation = creationService.map { TaskCreationModel(store: store, service: $0, uploader: stagingUploader) }
+        creation = creationService.map { TaskCreationModel(store: store, service: $0, uploader: stagingUploader, templateService: templateService) }
     }
     func beginCreate() -> Bool {
         guard !busy, dialog == nil, let creation else { return false }
         return creation.open() != nil
     }
-    var busy: Bool { isSubmitting || store.isMutating || creation?.isSubmitting == true || creation?.isUploading == true || creation?.isPicking == true }
+    var busy: Bool { isSubmitting || store.isMutating || creation?.isSubmitting == true || creation?.isUploading == true || creation?.isPicking == true || creation?.templateManager?.context != nil || creation?.templateManager?.isMutating == true }
     func select(_ id: String?) {
         selectionTask?.cancel()
         selectionTask = Task { await store.select(id: id) }

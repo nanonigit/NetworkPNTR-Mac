@@ -43,7 +43,7 @@ enum TaskTemplateReceipt { case saved(TaskTemplateOption), deleted(Int64) }
     private(set) var failure: AppErrorMessage?
     private(set) var listFailure: AppErrorMessage?
     private(set) var categoryFailure: AppErrorMessage?
-    var query = ""
+    private(set) var query = ""
     @ObservationIgnored var onReceipt: (@MainActor (TaskTemplateReceipt) -> Void)?
     @ObservationIgnored private let service: TaskTemplateService
     @ObservationIgnored private var baseline = TaskTemplateDraft()
@@ -66,6 +66,7 @@ enum TaskTemplateReceipt { case saved(TaskTemplateOption), deleted(Int64) }
         }
         return context?.id
     }
+    func setQuery(_ value: String, contextID: UUID) { guard context?.id == contextID else { return }; query = value }
     func close(contextID: UUID) { guard context?.id == contextID, !isMutating else { return }; suspend() }
     func suspend() { context = nil; pendingDecision = nil; readTicket = UUID(); isLoading = false }
     func reset() {
@@ -101,14 +102,23 @@ enum TaskTemplateReceipt { case saved(TaskTemplateOption), deleted(Int64) }
         pendingDecision = .init(editorID: editorID, action: .localDiscard)
     }
     @discardableResult func resolveDecision(id: UUID, confirm: Bool, contextID: UUID) async -> Bool {
+        let resolution = resolveNow(id: id, confirm: confirm, contextID: contextID)
+        if let worker = resolution.worker { return await worker.value }
+        return resolution.completed
+    }
+    func resolveDecisionFromUI(id: UUID, confirm: Bool, contextID: UUID) { _ = resolveNow(id: id, confirm: confirm, contextID: contextID) }
+    private func resolveNow(id: UUID, confirm: Bool, contextID: UUID) -> (completed: Bool, worker: Task<Bool,Never>?) {
         guard context?.id == contextID, !isMutating, let decision = pendingDecision,
-              decision.id == id, decision.editorID == editorID else { return false }
+              decision.id == id, decision.editorID == editorID else { return (false,nil) }
         pendingDecision = nil
-        guard confirm else { return false }
+        guard confirm else { return (false,nil) }
         switch decision.action {
-        case let .replace(value,selected): replace(value,id:selected); return true
-        case .localDiscard: uncertain = false; failure = nil; replace(.init(),id:nil); return true
-        case let .delete(row): return await remove(row)
+        case let .replace(value,selected): replace(value,id:selected); return (true,nil)
+        case .localDiscard: uncertain = false; failure = nil; replace(.init(),id:nil); return (true,nil)
+        case let .delete(row):
+            let life = lifetime
+            isMutating = true; failure = nil
+            return (false,Task { await self.remove(row,life:life) })
         }
     }
     private func replace(_ value: TaskTemplateDraft, id: Int64?) {
@@ -162,9 +172,7 @@ enum TaskTemplateReceipt { case saved(TaskTemplateOption), deleted(Int64) }
             uncertain = false; onReceipt?(.saved(value)); return true
         } catch { guard life == lifetime else { return false }; mutationFailed(error); return false }
     }
-    private func remove(_ row: TaskTemplateOption) async -> Bool {
-        let life = lifetime
-        isMutating = true; failure = nil
+    private func remove(_ row: TaskTemplateOption, life: UUID) async -> Bool {
         defer { isMutating = false }
         do {
             let id = try await service.delete(id:row.id)

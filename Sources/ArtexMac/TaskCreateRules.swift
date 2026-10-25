@@ -30,20 +30,34 @@ import SwiftUI
         TaskCreationBindings.rule(model: model, contextID: contextID, ruleID: ruleID, key: key, fallback: fallback)
     }
     var body: some View {
+        TaskRuleEditorRow(enabled:field(\.enabled,false),action:field(\.action,.block),kind:field(\.kind,.exactDomain),pattern:field(\.pattern,""),note:field(\.note,"")) { model.removeRule(id:ruleID,contextID:contextID) }
+    }
+}
+
+@MainActor struct TaskRuleEditorRow: View {
+    @Binding var enabled: Bool
+    @Binding var action: TaskInterceptRuleDraft.Action
+    @Binding var kind: TaskInterceptRuleDraft.Kind
+    @Binding var pattern: String
+    @Binding var note: String
+    let onRemove: () -> Void
+    @Environment(\.locale) private var locale
+    private func s(_ key: AppStringKey) -> String { AppStrings.text(key,language:.preferred(in:[locale.identifier])) }
+    var body: some View {
         VStack(alignment: .leading, spacing: 8) {
             HStack {
-                Toggle(s(.taskCreateRuleEnabled), isOn: field(\.enabled, false))
-                Picker(s(.taskCreateRuleAction), selection: field(\.action, .block)) {
+                Toggle(s(.taskCreateRuleEnabled), isOn: $enabled)
+                Picker(s(.taskCreateRuleAction), selection: $action) {
                     Text(s(.taskCreateBlock)).tag(TaskInterceptRuleDraft.Action.block)
                     Text(s(.taskCreateAllow)).tag(TaskInterceptRuleDraft.Action.allow)
                 }
-                Button(s(.taskCreateRemoveRule), systemImage: "minus.circle", role: .destructive) { model.removeRule(id: ruleID, contextID: contextID) }.labelStyle(.iconOnly)
+                Button(s(.taskCreateRemoveRule), systemImage: "minus.circle", role: .destructive) { onRemove() }.labelStyle(.iconOnly)
             }
-            Picker(s(.taskCreateRuleKind), selection: field(\.kind, .exactDomain)) {
+            Picker(s(.taskCreateRuleKind), selection: $kind) {
                 ForEach(TaskInterceptRuleDraft.Kind.allCases, id: \.self) { kind in Text(s(kindKey(kind))).tag(kind) }
             }
-            TextField(s(.taskCreatePattern), text: field(\.pattern, "")).textFieldStyle(.roundedBorder)
-            TextField(s(.taskCreateNote), text: field(\.note, "")).textFieldStyle(.roundedBorder)
+            TextField(s(.taskCreatePattern), text: $pattern).textFieldStyle(.roundedBorder)
+            TextField(s(.taskCreateNote), text: $note).textFieldStyle(.roundedBorder)
             Divider()
         }
     }

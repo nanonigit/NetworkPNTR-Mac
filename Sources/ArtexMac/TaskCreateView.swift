@@ -10,6 +10,7 @@ import SwiftUI
     private func field<Value>(_ key: WritableKeyPath<TaskCreationForm, Value>, _ fallback: Value) -> Binding<Value> {
         TaskCreationBindings.field(model: model, contextID: contextID, key: key, fallback: fallback)
     }
+    private var managerBusy: Bool { model.templateManager?.context != nil || model.templateManager?.isMutating == true }
     var body: some View {
         let decisionID = model.pendingTemplate?.id
         VStack(alignment: .leading, spacing: 12) {
@@ -61,7 +62,10 @@ import SwiftUI
         } message: { decision in
             Text(s(.taskCreateReplaceHelp) + "\n" + decision.template.name)
         }
-        .interactiveDismissDisabled(model.isSubmitting || model.isPicking || model.isUploading)
+        .sheet(item: Binding(get: { model.templateManager?.context }, set: { if $0 == nil, let manager = model.templateManager, let owner = manager.context?.id { manager.close(contextID:owner) } })) { owner in
+            if let manager = model.templateManager { TaskTemplateManagerView(model:manager,contextID:owner.id) }
+        }
+        .interactiveDismissDisabled(model.isSubmitting || model.isPicking || model.isUploading || managerBusy)
         .task { await model.load(contextID: contextID) }
     }
     private var templatePicker: some View {
@@ -72,6 +76,11 @@ import SwiftUI
                 if let id = model.selectedTemplateID, !(model.templates.value ?? []).contains(where: { $0.id == id }) { Text(unavailable(id)).tag(id) }
             }
             .disabled(model.isUploading || model.isPicking)
+            HStack {
+                Button(s(.taskTemplateManage)) { _ = model.openTemplateManager(asSeed:false,contextID:contextID) }
+                Button(s(.taskTemplateSaveAs)) { _ = model.openTemplateManager(asSeed:true,contextID:contextID) }
+                    .disabled(ChatText.trim(model.form.draft.description).isEmpty || ChatText.trim(model.form.draft.goal).isEmpty)
+            }.disabled(model.templateManager == nil || managerBusy || model.isLoading || model.isPicking || model.isUploading)
             if let error = model.templates.failure { Text(error.text(language: language)).font(.caption).foregroundStyle(.red) }
         }
     }

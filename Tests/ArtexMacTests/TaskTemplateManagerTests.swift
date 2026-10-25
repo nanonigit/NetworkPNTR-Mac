@@ -176,4 +176,20 @@ final class TaskTemplateManagerTests: XCTestCase {
         }
     }
 
+    @MainActor func testDeleteInvalidatesReadsStartedBeforeMutation() async throws {
+        let (api,model) = make(); api.holdReads = true
+        let context = try XCTUnwrap(model.open(seed:nil,templates:[try api.row(7),try api.row(8)]))
+        let pending = Task { await model.load(contextID:context) }; try await reached { api.reads.count == 2 }
+        model.requestDelete(contextID:context,editorID:model.editorID)
+        let result = await model.resolveDecision(id:try XCTUnwrap(model.pendingDecision).id,confirm:true,contextID:context)
+        XCTAssertTrue(result)
+        let rows = try JSONSerialization.jsonObject(with:api.data(7))
+        let stale = try JSONSerialization.data(withJSONObject:["templates":[rows]])
+        api.reads["/api/task-templates"]?.resume(returning:.init(status:200,body:stale))
+        api.reads["/api/task-categories"]?.resume(returning:.init(status:503,body:Data()))
+        await pending.value
+        XCTAssertEqual(model.templates.map(\.id),[8]); XCTAssertEqual(model.selectedID,8)
+        XCTAssertNil(model.categoryFailure); XCTAssertFalse(model.isLoading)
+    }
+
 }
