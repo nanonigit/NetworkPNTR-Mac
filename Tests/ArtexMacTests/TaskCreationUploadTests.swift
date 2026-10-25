@@ -139,4 +139,24 @@ final class TaskCreationUploadTests: XCTestCase {
         parent.reset(); XCTAssertNil(model.context); XCTAssertEqual(model.uploadCount,0)
     }
 
+    @MainActor func testSelectedFileScopesLastUntilUploadCleanupAndStaleSelectionNeverAcquires() async throws {
+        let (api,model) = make(); let context = try XCTUnwrap(model.open()); api.hold = true
+        var starts = 0, stops = 0
+        let access = ChatFileAccess(start: { _ in starts += 1; return true },stop: { _ in stops += 1 })
+        let pending = Task { try await TaskCreationUploadSelection.upload(self.files,contextID:context,language:.english,model:model,access:access) }
+        try await reached { api.replies.count == 1 }
+        XCTAssertEqual(starts,1); XCTAssertEqual(stops,0)
+        model.close(contextID:context); XCTAssertEqual(stops,0)
+        api.replies[0].resume(returning:[try api.attachment(draft:model.draftID)])
+        let success = try await pending.value; XCTAssertFalse(success); XCTAssertEqual(stops,1)
+        let stale = try await TaskCreationUploadSelection.upload(files,contextID:context,language:.english,model:model,access:access)
+        XCTAssertFalse(stale); XCTAssertEqual(starts,1)
+        let next = try XCTUnwrap(model.open()); api.hold = false
+        let fresh = try await TaskCreationUploadSelection.upload(files,contextID:next,language:.japanese,model:model,access:access)
+        XCTAssertTrue(fresh); XCTAssertEqual(starts,2); XCTAssertEqual(stops,2)
+        let unscoped = ChatFileAccess(start: { _ in false },stop: { _ in XCTFail("Unacquired scope released") })
+        let normal = try await TaskCreationUploadSelection.upload(files,contextID:next,language:.english,model:model,access:unscoped)
+        XCTAssertTrue(normal)
+    }
+
 }
