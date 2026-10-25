@@ -50,4 +50,12 @@ final class TaskCreationTests: XCTestCase {
         XCTAssertEqual(Array(result[0].goal.utf8),Array("\u{FEFF}é한".utf8))
     }
 
+    func testCreationLabelsAreBilingualCatalogEntries() {
+        XCTAssertEqual(AppStrings.text(.taskCreateTitle, language: .english), "New task")
+        XCTAssertEqual(AppStrings.text(.taskCreateTitle, language: .japanese), "新しいタスク")
+        for key in AppStringKey.allCases where key.rawValue.hasPrefix("task.create.") {
+            for language in AppLanguage.allCases { XCTAssertNotEqual(AppStrings.text(key,language:language),key.rawValue) }
+        }
+    }
+
 }

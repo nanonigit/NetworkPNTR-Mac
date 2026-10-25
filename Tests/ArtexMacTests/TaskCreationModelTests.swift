@@ -78,4 +78,21 @@ final class TaskCreationModelTests: XCTestCase {
         let result = await model.submit(contextID:id); XCTAssertTrue(result); XCTAssertNil(model.context); XCTAssertEqual(model.form.draft.goal,"")
         XCTAssertEqual(api.calls.filter { $0.0 == "POST" }.count,1); XCTAssertFalse(api.calls.contains { $0.1 == "/api/active" })
     }
+    @MainActor func testCreationViewRetainsFieldsAcrossLanguageAndParentReset() async throws {
+        let api = CreationTestAPI(); let store = TaskStore(service: TaskService(client: api))
+        let parent = TaskScreenModel(store: store, creationService: TaskCreationService(client: api))
+        XCTAssertTrue(parent.beginCreate()); let model = try XCTUnwrap(parent.creation); let id = try XCTUnwrap(model.context).id
+        await model.load(contextID:id)
+        model.update(\.draft.description,value:"literal 中文 한국어",contextID:id); model.update(\.draft.goal,value:"goal",contextID:id)
+        model.addRule(contextID:id)
+        for language in AppLanguage.allCases {
+            let hosting = NSHostingView(rootView: TaskCreateView(model:model,contextID:id).environment(\.locale,language.locale))
+            hosting.frame = NSRect(x:0,y:0,width:650,height:700); hosting.layoutSubtreeIfNeeded()
+            XCTAssertTrue(hosting.fittingSize.width.isFinite); XCTAssertNil(hosting.window)
+            XCTAssertEqual(model.form.draft.description,"literal 中文 한국어")
+        }
+        XCTAssertEqual(api.calls.filter { $0.0 == "POST" }.count,0)
+        parent.reset(); XCTAssertNil(model.context); XCTAssertEqual(model.form.draft.description,"")
+    }
+
 }
