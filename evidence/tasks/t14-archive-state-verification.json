@@ -1,0 +1,84 @@
+{
+  "phase": "T14 archive state and screen lifetime integration",
+  "baseline": "e75ae371ad777ffd1eecdd28d2781a6519b05591",
+  "reference_sha256": {
+    "web/src/app/(main)/function/tasks/page.tsx": "f1fb3304b87085c78c84cbc5bcc71117a63a281d3a17a22e438b4b2f357f6ef3",
+    "server/task_archives.go": "c41acbe891e921f3a90299102e00c746a5f6c3a6f92a48c55a5a9e3c09368c35"
+  },
+  "swift": {
+    "total": 452,
+    "passed": 451,
+    "skipped_existing_ax": 1,
+    "failed": 0
+  },
+  "python": {
+    "total": 62,
+    "failed": 0
+  },
+  "focused": {
+    "core": 13,
+    "mac": 2
+  },
+  "store_coverage": {
+    "branches": {
+      "count": 0,
+      "covered": 0,
+      "notcovered": 0,
+      "percent": 0
+    },
+    "functions": {
+      "count": 45,
+      "covered": 42,
+      "percent": 93.33333333333333
+    },
+    "instantiations": {
+      "count": 45,
+      "covered": 42,
+      "percent": 93.33333333333333
+    },
+    "lines": {
+      "count": 138,
+      "covered": 135,
+      "percent": 97.82608695652173
+    },
+    "mcdc": {
+      "count": 0,
+      "covered": 0,
+      "notcovered": 0,
+      "percent": 0
+    },
+    "regions": {
+      "count": 130,
+      "covered": 116,
+      "notcovered": 14,
+      "percent": 89.23076923076924
+    }
+  },
+  "red_green": [
+    "672cffe -> 53fe613:8 Core cases",
+    "1587b62 -> final:2 screen cases plus5 expanded Core cases"
+  ],
+  "signed_build": "build-only and strict signature pass",
+  "catalog": "unchanged; export check pass",
+  "review": "no remaining concrete blocker",
+  "live_mutations": false,
+  "native_window_opened": false,
+  "vm_started": false,
+  "parity_inventory": {
+    "features": 21,
+    "routes": 27,
+    "handlers": 243,
+    "native_workflow_parity": "pending"
+  },
+  "acceptance_pending": [
+    "archive native UI and shared mutation gate",
+    "archive restore delete retry and bulk action workspace",
+    "actual VM/browser archive jobs and restart durability",
+    "native en/ja AX keyboard visual comparison",
+    "full21workflow acceptance",
+    "native cloud egress",
+    "kernel reliability",
+    "clean Mac runtime without Docker Desktop",
+    "distribution"
+  ]
+}

@@ -130,4 +130,59 @@ final class TaskArchiveStoreTests: XCTestCase {
         api.held[0].resume(returning:page([row()])); await cycle.value
         XCTAssertNil(model.list.value); XCTAssertFalse(model.isRefreshing); XCTAssertEqual(model.pendingRestoreIDs,Set([7]))
     }
+    @MainActor func testExactUnicodeFiltersAndSelectionReconcileOnlyAfterSuccess() async throws {
+        let api = ArchiveReadAPI(); let model = TaskArchiveStore(service:TaskArchiveService(client:api))
+        api.replies = [page([row(),row(9),row(10,state:"archiving")])]; await model.refresh()
+        model.setAll(selected:true,owner:model.viewOwner); XCTAssertEqual(model.selectedIDs,Set([7,9]))
+        model.setAll(selected:false,owner:UUID()); XCTAssertEqual(model.selectedIDs,Set([7,9]))
+        api.replies = [page([row(state:"restoring"),row(9)])]; await model.refresh()
+        XCTAssertEqual(model.selectedIDs,Set([9])); model.setAll(selected:false,owner:model.viewOwner); XCTAssertTrue(model.selectedIDs.isEmpty)
+        XCTAssertTrue(model.configure(page:1,size:20,query:"é",state:"é")); let first = model.viewOwner
+        XCTAssertTrue(model.configure(page:1,size:20,query:"e\u{301}",state:"e\u{301}")); XCTAssertNotEqual(first,model.viewOwner)
+        XCTAssertEqual(Array(model.query.utf8),Array("e\u{301}".utf8)); let same = model.viewOwner
+        XCTAssertTrue(model.configure(page:1,size:20,query:"e\u{301}",state:"e\u{301}")); XCTAssertEqual(same,model.viewOwner)
+        XCTAssertFalse(model.configure(page:1,size:101,query:"",state:nil))
+        XCTAssertFalse(model.configure(page:1,size:20,query:"",state:String(repeating:"a",count:129)))
+    }
+    @MainActor func testSelectedDetailPreservesStaleValueAndStopInvalidatesLateDetail() async throws {
+        let api = ArchiveReadAPI(); let model = TaskArchiveStore(service:TaskArchiveService(client:api))
+        api.replies = [reply(row())]; await model.select(7); XCTAssertEqual(model.detail.value?.id,7)
+        api.replies = [reply(status:503)]; await model.refreshSelected()
+        XCTAssertTrue(model.detail.isStale); XCTAssertEqual(model.detail.value?.id,7); XCTAssertNotNil(model.detail.failure)
+        await model.select(-1); XCTAssertEqual(model.selectedID,7)
+        api.hold = true; let work = Task { await model.refreshSelected() }; try await reached { api.held.count == 1 }
+        model.stop(); api.held[0].resume(returning:reply(row(state:"restoring"))); await work.value
+        XCTAssertEqual(model.detail.value?.state,"ready"); XCTAssertTrue(model.detail.isStale); XCTAssertFalse(model.detail.isLoading)
+    }
+    @MainActor func testPending200AndFailedStateDoNotClaimRemovalAndCancelledProbeIsDiscarded() async throws {
+        let api = ArchiveReadAPI(); let model = TaskArchiveStore(service:TaskArchiveService(client:api))
+        XCTAssertTrue(model.observeAcceptedRestore(try receipt(),owner:model.sessionOwner)); let revision = model.reconciliationRevision
+        api.replies = [page([]),reply(row(state:"restore_failed"))]; await model.refresh()
+        XCTAssertEqual(model.pendingRestoreIDs,Set([7])); XCTAssertTrue(model.removedAfterRestoreIDs.isEmpty)
+        XCTAssertEqual(model.reconciliationRevision,revision); XCTAssertNil(model.reconciliationFailure)
+        api.hold = true; let cycle = Task { await model.refresh() }; try await reached { api.held.count == 1 }
+        api.held[0].resume(returning:page([])); try await reached { api.held.count == 2 }
+        cycle.cancel(); api.held[1].resume(returning:reply(status:404)); await cycle.value
+        XCTAssertEqual(model.pendingRestoreIDs,Set([7])); XCTAssertEqual(model.reconciliationRevision,revision)
+    }
+    @MainActor func testPollingSleepFailureAndPrecancelledReadsTerminateWithoutRequests() async throws {
+        let api = ArchiveReadAPI(); let model = TaskArchiveStore(service:TaskArchiveService(client:api),sleep:{ _ in throw CancellationError() })
+        api.replies = [page([])]; await model.run(); XCTAssertFalse(model.isPolling); XCTAssertEqual(api.calls.count,1)
+        let work = Task { await model.refresh(); await model.select(9); await model.run() }; work.cancel(); await work.value
+        XCTAssertEqual(api.calls.count,1); XCTAssertNil(model.selectedID); XCTAssertFalse(model.isPolling)
+    }
+
+    @MainActor func testManualSelectionWinsOverCycleDetailAndPrecancelledSelectPreservesIt() async throws {
+        let api = ArchiveReadAPI(); let model = TaskArchiveStore(service:TaskArchiveService(client:api))
+        api.replies = [reply(row())]; await model.select(7)
+        api.hold = true; let cycle = Task { await model.refresh() }; try await reached { api.held.count == 1 }
+        api.held[0].resume(returning:page([row(),row(9)])); try await reached { api.held.count == 2 }
+        let selection = Task { await model.select(9) }; try await reached { api.held.count == 3 }
+        api.held[2].resume(returning:reply(row(9))); await selection.value
+        api.held[1].resume(returning:reply(row())); await cycle.value
+        XCTAssertEqual(model.selectedID,9); XCTAssertEqual(model.detail.value?.id,9); XCTAssertFalse(model.detail.isStale)
+        let cancelled = Task { await model.select(nil) }; cancelled.cancel(); await cancelled.value
+        XCTAssertEqual(model.selectedID,9); XCTAssertEqual(model.detail.value?.id,9); XCTAssertEqual(api.calls.count,4)
+    }
+
 }

@@ -208,3 +208,5 @@ T13 checkpoint:93739acRED→90dea30GREEN8; da81515Unicode count collision runtim
 
 T14 archive state requirements: retained paginated/search/state reads, page-local checkbox selection, single-flight two-second polling, selected-detail ownership, and accepted-restore identity reconciliation. Only a detail404 for a captured accepted restore may notify live-task refresh; page disappearance, unrelated404, failed reads and stale sessions cannot. Stop retains pending receipts; authentication reset clears them. Native tabs/actions/runtime parity remain subsequent gates.
 TDD controlled stale-list/detail/reset/stop/cancel/polling and404 ownership before implementation; review, full regression, signed build and exact-head CI.
+
+T14 checkpoint:13Core+2Mac new cases; full452Swift(451pass/1existingAXskip),62Python pass; store97.83%lines/89.23%regions, signedbuild/strictsignature and catalog/baseline checks pass, reviewed. Read ownership/polling/accepted404 and retained screen lifecycle implemented; native archive views/actions/sharedgate/livejobs/browser/full21/cloud/kernel/release remain open. See tasks-archive-state-verification.md.

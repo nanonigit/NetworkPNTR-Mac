@@ -12,6 +12,7 @@ struct TaskDialog: Identifiable {
 /// Window-owned inputs and captured dialog owners survive language changes and sidebar navigation.
 @MainActor @Observable final class TaskScreenModel {
     let store: TaskStore
+    let archives: TaskArchiveStore?
     let creation: TaskCreationModel?
     let bulk: TaskBulkWorkspace?
     let categories: TaskCategoryWorkspace?
@@ -28,8 +29,9 @@ struct TaskDialog: Identifiable {
     private(set) var isSubmitting = false
     @ObservationIgnored private var selectionTask: Task<Void, Never>?
     @ObservationIgnored private var lifecycle = UUID()
-    init(store: TaskStore, creationService: TaskCreationService? = nil, stagingUploader: (any TaskStagingUploading)? = nil, templateService: TaskTemplateService? = nil, categoryService: TaskCategoryService? = nil, bulkService: TaskService? = nil) {
+    init(store: TaskStore, creationService: TaskCreationService? = nil, stagingUploader: (any TaskStagingUploading)? = nil, templateService: TaskTemplateService? = nil, categoryService: TaskCategoryService? = nil, bulkService: TaskService? = nil, archiveService: TaskArchiveService? = nil) {
         self.store = store
+        archives = archiveService.map { TaskArchiveStore(service:$0) }
         let workspace = categoryService.map { TaskCategoryWorkspace(service:$0,store:store) }
         categories = workspace
         bulk = bulkService.map { TaskBulkWorkspace(store:store,service:$0,categoryService:categoryService,catalog:workspace) }
@@ -107,9 +109,9 @@ struct TaskDialog: Identifiable {
         let ticket = lifecycle; await store.refreshList()
         if ticket == lifecycle, !Task.isCancelled { await store.refreshSelected() }
     }
-    func stop() { bulk?.suspend(); categories?.suspend(); lifecycle = UUID(); selectionTask?.cancel(); selectionTask = nil; creation?.suspendAttachments(); store.stop() }
+    func stop() { archives?.stop(); bulk?.suspend(); categories?.suspend(); lifecycle = UUID(); selectionTask?.cancel(); selectionTask = nil; creation?.suspendAttachments(); store.stop() }
     func reset() {
-        stop(); bulk?.reset(); categories?.reset(); categoryFilter = .all; creation?.reset(); store.reset(); dialog = nil; renameDraft = ""; query = ""; status = nil
+        stop(); archives?.reset(); bulk?.reset(); categories?.reset(); categoryFilter = .all; creation?.reset(); store.reset(); dialog = nil; renameDraft = ""; query = ""; status = nil
         sort = .id; ascending = false; deletionOptions = .init(); dialogUncertain = false; dialogFailure = nil
     }
 }
