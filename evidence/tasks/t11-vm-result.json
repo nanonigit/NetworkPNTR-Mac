@@ -1,0 +1,40 @@
+{
+  "boot": {
+    "bootAttempts": 1,
+    "cooperativeStop": true,
+    "credentialLogCheckPassed": true,
+    "diagnostics": [],
+    "formatStageObserved": true,
+    "freshAuth": true,
+    "isolationVerified": true,
+    "logAuditComplete": true,
+    "machineStopped": true,
+    "passed": true,
+    "protectedStatus": 401,
+    "reachedReady": true
+  },
+  "exercise": {
+    "categoryName": "T11 renamed é 日本語",
+    "checks": [
+      "initial_empty",
+      "category_created",
+      "duplicate_rejected",
+      "category_renamed",
+      "template_created",
+      "template_cleared",
+      "template_relinked",
+      "category_deleted_link_cleared",
+      "single_missing_rejected",
+      "batch_missing_rejected",
+      "template_deleted",
+      "final_empty"
+    ],
+    "ruleNote": "fixture {name} é",
+    "rulePattern": "example.invalid",
+    "templateDescription": "Description é ﻿ interior 中文 한국어",
+    "templateGoal": "Local contract fixture only"
+  },
+  "passed": true,
+  "stage": "complete",
+  "terminalSuccess": true
+}

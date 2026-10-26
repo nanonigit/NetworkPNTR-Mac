@@ -1,0 +1,21 @@
+{
+  "checks": [
+    "initial_empty",
+    "category_created",
+    "duplicate_rejected",
+    "category_renamed",
+    "template_created",
+    "template_cleared",
+    "template_relinked",
+    "category_deleted_link_cleared",
+    "single_missing_rejected",
+    "batch_missing_rejected",
+    "template_deleted",
+    "final_empty"
+  ],
+  "categoryName": "T11 renamed é 日本語",
+  "templateDescription": "Description é ﻿ interior 中文 한국어",
+  "templateGoal": "Local contract fixture only",
+  "rulePattern": "example.invalid",
+  "ruleNote": "fixture {name} é"
+}
