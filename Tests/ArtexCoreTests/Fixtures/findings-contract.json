@@ -1,0 +1,37 @@
+{
+  "baseline": "e75ae371ad777ffd1eecdd28d2781a6519b05591",
+  "source_sha256": {
+    "server/dto.go": "3676ad9814c02120297b727a3582e47d347d57fe4c0b9ff7b64d77b5f8b0693a",
+    "server/server.go": "2239ad23fad1ec680f6ec2927439892575d037fe1521b73445f0956504341b7f",
+    "server/findings_groups.go": "2f8b94f64b51dd36e4f28d5236e3d81670e8ea8024c4b397531421e4bd1fddd8",
+    "db/findings.go": "4f6cd87bbd8cf3265804e1292b04c3d2ce7085bce7eb8c90906e10820ac0e0e6",
+    "db/finding_assets.go": "fbbcd562c5d3286a6bad097b8f96c09f65e553627692bda3bf04d1cb31b29200",
+    "web/src/lib/api.ts": "18b4529a99b508964348bf83b7777597ca3cb80a64565380e1b1320005700fe1",
+    "web/src/lib/types.ts": "469cf531c8b257579bf2eb8ca6b632ef05973f6019ef6f5389d0ab9d48e79309"
+  },
+  "record": {
+    "id": "9007199254740993",
+    "finding_id": "9007199254740993",
+    "vulnclass": "CWE-79",
+    "name": "﻿é 中文 한국어",
+    "severity": "high",
+    "status": "pending",
+    "summary": "Summary é ﻿ 日本語 中文 한국어",
+    "evidence": "Literal {name} /state/app/data no execution",
+    "report": "# Report\n\né ﻿ 中文 한국어",
+    "task_id": "9007199254740995",
+    "task_description": "Task literal é",
+    "ts": "2026-10-22T12:00:00Z",
+    "traffic_count": 2,
+    "evidence_version": 9007199254740993,
+    "report_evidence_version": 1,
+    "report_stale": true,
+    "assets": [
+      {
+        "id": "9007199254740997",
+        "type": "endpoint",
+        "label": "https://example.invalid/é?q=中文"
+      }
+    ]
+  }
+}
