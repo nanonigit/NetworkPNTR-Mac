@@ -906,6 +906,12 @@
 	<string>ブラウザ版の詳細画面と比較して実装する予定です。</string>
 	<key>shell.taskPending</key>
 	<string>タスク詳細は移植中です</string>
+	<key>task.bulk.limit</key>
+	<string>一括停止・再開・分類移動は1回100件までです。</string>
+	<key>task.bulk.targetMissing</key>
+	<string>移動先カテゴリが見つかりません。別の移動先を選択してください。</string>
+	<key>task.bulk.unknown</key>
+	<string>処理結果が不明なタスクがあります。サーバーの状態を確認してから、再操作のブロックを明示的に解除してください。</string>
 	<key>task.category.batchValidation</key>
 	<string>カテゴリを移動するタスクを1〜100件選択してください。</string>
 	<key>task.category.nameLimit</key>

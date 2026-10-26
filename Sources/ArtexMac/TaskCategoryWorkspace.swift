@@ -181,6 +181,7 @@ struct TaskCategoryDecision: Identifiable {
             return false
         }
     }
+    func markStale() { invalidateReads(); countsStale = true }
     func refreshCatalog() async {
         guard context == nil, !isMutating, !isLoading, !Task.isCancelled else { return }
         let ticket = UUID(); readTicket = ticket; isLoading = true

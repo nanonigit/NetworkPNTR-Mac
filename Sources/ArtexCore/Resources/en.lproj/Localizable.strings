@@ -908,6 +908,12 @@
 	<string>Task details will be implemented and compared with the browser version.</string>
 	<key>shell.taskPending</key>
 	<string>Task details are being migrated</string>
+	<key>task.bulk.limit</key>
+	<string>Pause, resume and category moves accept at most 100 tasks at once.</string>
+	<key>task.bulk.targetMissing</key>
+	<string>The destination category is unavailable. Select another destination.</string>
+	<key>task.bulk.unknown</key>
+	<string>Some task results are unknown. Check server state before explicitly clearing the retry block.</string>
 	<key>task.category.batchValidation</key>
 	<string>Select between 1 and 100 tasks for a category move.</string>
 	<key>task.category.nameLimit</key>

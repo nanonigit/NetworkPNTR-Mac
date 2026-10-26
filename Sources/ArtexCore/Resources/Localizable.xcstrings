@@ -10010,6 +10010,57 @@
           }
         }
       }
+    },
+    "task.bulk.unknown": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Some task results are unknown. Check server state before explicitly clearing the retry block."
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "処理結果が不明なタスクがあります。サーバーの状態を確認してから、再操作のブロックを明示的に解除してください。"
+          }
+        }
+      }
+    },
+    "task.bulk.limit": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Pause, resume and category moves accept at most 100 tasks at once."
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "一括停止・再開・分類移動は1回100件までです。"
+          }
+        }
+      }
+    },
+    "task.bulk.targetMissing": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The destination category is unavailable. Select another destination."
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "移動先カテゴリが見つかりません。別の移動先を選択してください。"
+          }
+        }
+      }
     }
   },
   "version": "1.0"
