@@ -126,7 +126,13 @@ struct TaskCategoryDecision: Identifiable {
         isMutating = true; invalidateReads(); failure = nil; lastChange = nil; return token
     }
     func save(contextID: UUID, editorID: UUID) async -> Bool {
-        guard editable(contextID,editorID), !isLoading, selection != .uncategorized, let token = claim() else { return false }
+        guard editable(contextID,editorID), !isLoading, selection != .uncategorized else { return false }
+        if selection == .new, let inline = context?.inlineOwner,
+           let existing = categories.first(where: { $0.name.lowercased().utf8.elementsEqual(ChatText.trim(name).lowercased().utf8) }) {
+            replace(.category(existing.id),name:existing.name); failure = nil; lastChange = nil
+            onCatalog?(categories); onChange?(.saved(existing),inline); context = nil; return true
+        }
+        guard let token = claim() else { return false }
         let life = lifetime, inline = context?.inlineOwner, selection = selection, name = name
         return await finish(token:token,life:life,inline:inline) {
             let row: TaskCategoryRecord

@@ -32,7 +32,7 @@ import SwiftUI
                     if model.selection != .uncategorized {
                         TextField(s(.taskUIName),text:TaskCategoryBindings.name(model:model,contextID:contextID,editorID:editor)).textFieldStyle(.roundedBorder).disabled(blocked)
                     } else { Text(s(.taskUIUncategorized)).font(.headline) }
-                    if !inline { taskList(editor:editor) }
+                    if !inline, model.selection != .new { taskList(editor:editor) }
                 }.frame(maxWidth:.infinity,alignment:.leading)
             }
             if let failure = model.categoryFailure { Text(failure.text(language:language)).foregroundStyle(.red) }
@@ -77,7 +77,7 @@ import SwiftUI
         ScrollView {
             VStack(alignment:.leading,spacing:10) {
                 Button(s(.taskCategoryUINew),systemImage:"plus") { model.select(.new,contextID:contextID,editorID:editor) }
-                targetButton(s(.taskUIUncategorized),selection:.uncategorized,target:nil,editor:editor)
+                targetButton(f(.taskCategoryUICount,["name":s(.taskUIUncategorized),"count":String(model.tasks.filter{$0.categoryId == nil}.count)]),selection:.uncategorized,target:nil,editor:editor)
                 ForEach(model.categories) { category in
                     targetButton(f(.taskCategoryUICount,["name":category.name,"count":String(category.taskCount)]),selection:.category(category.id),target:category.id,editor:editor)
                 }
