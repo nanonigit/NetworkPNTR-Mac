@@ -3,6 +3,8 @@ import importlib.util
 from pathlib import Path
 import sys
 import unittest
+import subprocess
+from unittest.mock import patch, Mock
 
 SCRIPTS = Path(__file__).resolve().parents[2] / 'script'
 sys.path.insert(0, str(SCRIPTS))
@@ -47,3 +49,31 @@ class ArchiveReferenceTests(unittest.TestCase):
                 return {'tasks': [], 'active': '9999'}
         with self.assertRaises(RuntimeError):
             reference.live(ForeignActive(), set())
+
+    def test_late_live_response_cannot_complete(self):
+        class Empty:
+            def api(self, *args):
+                return {'tasks': [], 'active': ''}
+        times = iter([0, 0, 46])
+        with patch.object(reference.time, 'monotonic', side_effect=lambda: next(times)):
+            with self.assertRaises(RuntimeError):
+                reference.live(Empty(), set())
+
+    def test_process_failure_and_stop_timeout_never_report_success(self):
+        class API:
+            token = None
+            def request(self, method, path):
+                return (200, {'initialized': False, 'setup_token_required': True}) if path == '/api/auth/status' else (401, {})
+            def api(self, *args):
+                return {'token': 'fixture-only'}
+        for mode in ['launch', 'dead', 'stop_timeout']:
+            with self.subTest(mode=mode), patch.object(reference.platform, 'system', return_value='Linux'), patch.object(reference.os, 'getuid', return_value=1000), patch.dict(reference.os.environ, {'ARTEX_DISPOSABLE_REFERENCE': '1'}), patch.object(reference.seed, 'validate_environment'), patch.object(reference.seed, 'main'), patch.object(reference.control, 'audit'), patch.object(reference, 'Client', API), patch.object(reference.Path, 'open', return_value=Mock(__enter__=Mock(return_value=Mock()), __exit__=Mock(return_value=False))):
+                process = Mock(); process.poll.return_value = 1 if mode == 'dead' else None
+                if mode == 'stop_timeout':
+                    process.wait.side_effect = [subprocess.TimeoutExpired('fixture', 20), subprocess.TimeoutExpired('fixture', 10), -9]
+                with patch.object(reference.subprocess, 'Popen', side_effect=OSError('launch failed') if mode == 'launch' else None, return_value=process), patch('builtins.print') as output:
+                    with self.assertRaises((OSError, RuntimeError, subprocess.TimeoutExpired)):
+                        reference.main()
+                    output.assert_not_called()
+                if mode == 'stop_timeout':
+                    process.kill.assert_called_once(); self.assertEqual(process.wait.call_count, 3)
