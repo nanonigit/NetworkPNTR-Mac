@@ -1,0 +1,64 @@
+{
+  "phase": "T10 category native UI software checkpoint",
+  "baseline": "e75ae371ad777ffd1eecdd28d2781a6519b05591",
+  "reference_sha256": {
+    "web/src/app/(main)/function/tasks/page.tsx": "f1fb3304b87085c78c84cbc5bcc71117a63a281d3a17a22e438b4b2f357f6ef3",
+    "server/task_categories.go": "e176138a0e97eb4276bdeeb56c4fae8a65e61e29535a2232cfc1df6ae71cd1dc",
+    "db/task_categories.go": "8ea63311836d844b61032876ba1f8652ddf81b573adcf01c3c32db3bacb5db8e"
+  },
+  "swift": {
+    "total": 405,
+    "passed": 404,
+    "skipped_existing_ax": 1,
+    "failed": 0
+  },
+  "python": {
+    "total": 60,
+    "failed": 0
+  },
+  "focused": {
+    "workspace": 15,
+    "projection": 3
+  },
+  "line_coverage": {
+    "TaskCategoryChange.swift": {
+      "count": 36,
+      "covered": 36,
+      "percent": 100
+    },
+    "TaskCategoryView.swift": {
+      "count": 409,
+      "covered": 288,
+      "percent": 70.4156479217604
+    },
+    "TaskCategoryWorkspace.swift": {
+      "count": 247,
+      "covered": 238,
+      "percent": 96.35627530364373
+    }
+  },
+  "local_build": "build-only successful",
+  "signature": "strict verification successful",
+  "catalog": {
+    "keys_per_locale": 26,
+    "locales": [
+      "en",
+      "ja"
+    ],
+    "packaged_values_and_placeholders": "match"
+  },
+  "review": "no remaining concrete blocker",
+  "native_windows_opened": false,
+  "live_requests": false,
+  "vm_started": false,
+  "actual_browser_native_acceptance": "pending",
+  "not_completed": [
+    "main table general bulk workflows",
+    "native browser visual and interaction acceptance",
+    "category CRUD and movement durable guest parity",
+    "full 21 feature acceptance",
+    "native cloud egress",
+    "guest stability",
+    "production distribution"
+  ]
+}

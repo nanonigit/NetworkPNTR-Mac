@@ -126,7 +126,7 @@ struct TaskCategoryDecision: Identifiable {
         isMutating = true; invalidateReads(); failure = nil; lastChange = nil; return token
     }
     func save(contextID: UUID, editorID: UUID) async -> Bool {
-        guard editable(contextID,editorID), !isLoading, selection != .uncategorized else { return false }
+        guard editable(contextID,editorID), !isLoading, !Task.isCancelled, selection != .uncategorized else { return false }
         if selection == .new, let inline = context?.inlineOwner,
            let existing = categories.first(where: { $0.name.lowercased().utf8.elementsEqual(ChatText.trim(name).lowercased().utf8) }) {
             replace(.category(existing.id),name:existing.name); failure = nil; lastChange = nil
