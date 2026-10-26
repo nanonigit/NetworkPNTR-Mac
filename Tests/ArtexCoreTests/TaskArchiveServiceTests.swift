@@ -151,4 +151,19 @@ final class TaskArchiveServiceTests: XCTestCase {
         task["status"] = "done"; task["archive_blocked_by_task_id"] = NSNull(); XCTAssertTrue(TaskArchiveSemantics.canArchive(try record()))
     }
 
+    func testCounterNamesRetainByteIdentityAndCannotHideNegativeEntries() throws {
+        let original = String(decoding:data(),as:UTF8.self)
+        let key = #""skills":{"e\u0301":2}"#
+        let changed = original.replacingOccurrences(of:key,with:#""skills":{"é":2,"e\u0301":3,"\ufeffraw_key":4,"raw_key":5}"#)
+        XCTAssertNotEqual(changed,original)
+        let row = try BackendJSONCoding.decode(TaskArchiveRecord.self,from:Data(changed.utf8))
+        XCTAssertEqual(row.aggregateStats.skills.count,4)
+        XCTAssertEqual(row.aggregateStats.skills["é"],2); XCTAssertEqual(row.aggregateStats.skills["e\u{301}"],3)
+        XCTAssertEqual(row.aggregateStats.skills["\u{FEFF}raw_key"],4); XCTAssertEqual(row.aggregateStats.skills["raw_key"],5)
+        for values in [#""skills":{"é":-1,"e\u0301":3}"#,#""skills":{"é":3,"e\u0301":-1}"#] {
+            let invalid = original.replacingOccurrences(of:key,with:values)
+            XCTAssertThrowsError(try BackendJSONCoding.decode(TaskArchiveRecord.self,from:Data(invalid.utf8)))
+        }
+    }
+
 }
