@@ -32,3 +32,18 @@ class ArchiveReferenceTests(unittest.TestCase):
         times = iter([0, 0, 46])
         with self.assertRaises(RuntimeError):
             reference.poll_archive(lambda: (200, {'id': 7, 'task_id': 7101, 'state': 'ready'}), 7, 7101, 'ready', set(), clock=lambda: next(times))
+
+    def test_raw_archive_fields_and_active_owner_are_checked(self):
+        row = {'task_id': 7101, 'state': 'ready', 'progress': 100, 'original_status': 'done', 'error': '', 'warnings': [],
+               'original_size': 100, 'compressed_size': 50, 'sha256': 'a' * 64, 'data_counts': {'tasks': 1, 'explorations': 1},
+               'category_id': 7100, 'category_name': 'T17 archive category', 'task_name': reference.seed.NAME,
+               'task_description': reference.seed.DESCRIPTION, 'task_goal': reference.seed.GOAL}
+        reference.ready(row, 7101)
+        for changed in [{**row, 'error': 'failure'}, {**row, 'warnings': ['warning']}]:
+            with self.assertRaises(RuntimeError):
+                reference.ready(changed, 7101)
+        class ForeignActive:
+            def api(self, *args):
+                return {'tasks': [], 'active': '9999'}
+        with self.assertRaises(RuntimeError):
+            reference.live(ForeignActive(), set())
