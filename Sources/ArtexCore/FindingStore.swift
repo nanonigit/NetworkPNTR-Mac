@@ -30,10 +30,8 @@ public struct FindingDetailSelection: Equatable, Sendable {
     @ObservationIgnored let sleep: @MainActor (Duration) async throws -> Void
     @ObservationIgnored var activityOwner = UUID()
     @ObservationIgnored private var viewReadTicket = UUID()
-    @ObservationIgnored private var filterFingerprint = Data()
     public init(service: FindingService,sleep: @escaping @MainActor (Duration) async throws -> Void = {try await Task.sleep(for:$0)}) {
         self.service = service; self.sleep = sleep
-        filterFingerprint = Data((try! filters.path("/filters",includeScope:false)).utf8)
     }
     @discardableResult public func configureFilters(_ query: FindingQuery) -> Bool {
         guard !isMutating, !Task.isCancelled else { return false }
@@ -44,7 +42,7 @@ public struct FindingDetailSelection: Equatable, Sendable {
             let current = Data(try filters.path("/filters",maximum:200,includeScope:false).utf8)
             filters = copy; configurationFailure = nil
             guard current != fingerprint else { return true }
-            filterFingerprint = fingerprint; invalidateReads(); viewOwner = UUID()
+            invalidateReads(); viewOwner = UUID()
             _ = flat.configure(page:1,size:flat.size); flat.read.invalidate(clear:true)
             _ = groups.configure(page:1,size:groups.size); groups.read.invalidate(clear:true)
             groupPages = [:]; expandedGroups = []; tree.invalidate(clear:true); assetScope = nil
@@ -72,7 +70,7 @@ public struct FindingDetailSelection: Equatable, Sendable {
         if previous != (page,size) { invalidateReads(); viewOwner = UUID() }; configurationFailure = nil; return true
     }
     @discardableResult public func configureGroup(_ key: String,page: Int64,size: Int,owner: UUID) -> Bool {
-        guard !isMutating, owner == viewOwner, view == .grouped, visibleGroupKeys.contains(key),
+        guard !isMutating, !Task.isCancelled, owner == viewOwner, view == .grouped, visibleGroupKeys.contains(key),
               expandedGroups.contains(key), let state = groupPages[key] else { return false }
         return state.configure(page:page,size:size)
     }
@@ -143,9 +141,9 @@ public struct FindingDetailSelection: Equatable, Sendable {
         }
         guard current(ticket) else { return }; await refreshSelected()
     }
-    public func stop() { invalidateReads(); activityOwner = UUID(); viewOwner = UUID() }
+    public func stop() { invalidateReads(includeStats:true); activityOwner = UUID(); viewOwner = UUID() }
     public func reset() {
-        stop(); sessionOwner = UUID(); view = .flat; filters = .init(); filterFingerprint = Data()
+        stop(); sessionOwner = UUID(); view = .flat; filters = .init()
         flat.reset(); groups.reset(); groupPages = [:]; expandedGroups = []
         tree.invalidate(clear:true); stats.invalidate(clear:true); detail.invalidate(clear:true)
         selectedDetail = nil; selectedIDs = []; assetScope = nil; configurationFailure = nil
@@ -155,9 +153,10 @@ public struct FindingDetailSelection: Equatable, Sendable {
         return expandedGroups.intersection(visibleGroupKeys).sorted().flatMap{groupPages[$0]?.read.value?.items ?? []}
     }
     var visibleGroupKeys: Set<String> { Set(groups.read.value?.items.map{$0.taskId ?? "__unassigned__"} ?? []) }
-    func invalidateReads() {
+    func invalidateReads(includeStats: Bool = false) {
         viewReadTicket = UUID(); isRefreshingView = false
-        flat.read.invalidate(); groups.read.invalidate(); tree.invalidate(); stats.invalidate(); detail.invalidate()
+        flat.read.invalidate(); groups.read.invalidate(); tree.invalidate(); detail.invalidate()
+        if includeStats { stats.invalidate() }
         for page in groupPages.values { page.read.invalidate() }
     }
     private func refreshFlat() async {
