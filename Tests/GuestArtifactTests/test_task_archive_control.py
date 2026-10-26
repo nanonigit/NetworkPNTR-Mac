@@ -1,0 +1,78 @@
+"""Fault injection is confined to one synthetic guest archive and never overwrites."""
+import hashlib
+import importlib.util
+import os
+from pathlib import Path
+import sys
+import tempfile
+import unittest
+from unittest.mock import patch
+
+SCRIPTS = Path(__file__).resolve().parents[2] / 'script'
+sys.path.insert(0, str(SCRIPTS))
+spec = importlib.util.spec_from_file_location('archive_control', SCRIPTS / 'task_archive_fixture_control.py')
+control = importlib.util.module_from_spec(spec)
+spec.loader.exec_module(control)
+
+
+class ArchiveControlTests(unittest.TestCase):
+    def test_host_refused_before_database_or_files(self):
+        with patch.object(control, 'validate_environment', side_effect=RuntimeError('host refused')), patch.object(control, 'query') as query:
+            for operation in [lambda: control.audit(), lambda: control.set_package_hidden(True, 7, 'a' * 64)]:
+                with self.assertRaises(RuntimeError):
+                    operation()
+            query.assert_not_called()
+
+    def test_invalid_identity_or_operation_refused_before_query(self):
+        with patch.object(control, 'validate_environment', return_value={}), patch.object(control, 'query') as query:
+            for hidden, identifier, digest in [(1, 7, 'a' * 64), (True, True, 'a' * 64), (True, 0, 'a' * 64), (True, 2 ** 63, 'a' * 64), (True, 7, 'private'), (True, 7, 'A' * 64)]:
+                with self.assertRaises(RuntimeError):
+                    control.set_package_hidden(hidden, identifier, digest)
+            query.assert_not_called()
+
+    def test_hide_and_repair_preserve_exact_bytes_and_refuse_existing_destination(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory).resolve(); parent = root / 'archives/tasks'; parent.mkdir(parents=True)
+            package = parent / 'task-7101-7.tar.zst'; data = b'fixed archive fixture\x00bytes'; package.write_bytes(data)
+            digest = hashlib.sha256(data).hexdigest()
+            row = {'id': 7, 'task_id': 7101, 'state': 'ready', 'archive_path': str(package), 'sha256': digest, 'task_name': control.NAME, 'task_goal': control.GOAL}
+            with patch.object(control, 'DATA_ROOT', root), patch.object(control, 'validate_environment', return_value={}), patch.object(control, 'query', side_effect=lambda *args: dict(row)):
+                hidden = control.set_package_hidden(True, 7, digest)
+                self.assertEqual(hidden['operation'], 'hide'); self.assertFalse(package.exists())
+                backup = parent / 'task-7101-7.tar.zst.t17-quarantine'; self.assertEqual(backup.read_bytes(), data)
+                row['state'] = 'restore_failed'; package.write_bytes(b'keep')
+                with self.assertRaises(RuntimeError):
+                    control.set_package_hidden(False, 7, digest)
+                self.assertEqual(package.read_bytes(), b'keep'); self.assertEqual(backup.read_bytes(), data)
+                package.unlink(); repaired = control.set_package_hidden(False, 7, digest)
+                self.assertEqual(repaired['operation'], 'repair'); self.assertFalse(backup.exists()); self.assertEqual(package.read_bytes(), data)
+
+    def test_foreign_owner_name_state_hash_path_or_symlink_never_moves(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory).resolve(); parent = root / 'archives/tasks'; parent.mkdir(parents=True)
+            package = parent / 'task-7101-7.tar.zst'; package.write_bytes(b'fixed')
+            digest = hashlib.sha256(b'fixed').hexdigest()
+            row = {'id': 7, 'task_id': 7101, 'state': 'ready', 'archive_path': str(package), 'sha256': digest, 'task_name': control.NAME, 'task_goal': control.GOAL}
+            for key, value in [('id', 8), ('task_id', 7102), ('task_name', 'different'), ('state', 'restoring'), ('sha256', 'b' * 64), ('archive_path', '/etc/private')]:
+                with self.subTest(field=key), patch.object(control, 'DATA_ROOT', root), patch.object(control, 'validate_environment', return_value={}), patch.object(control, 'query', return_value={**row, key: value}):
+                    with self.assertRaises(RuntimeError):
+                        control.set_package_hidden(True, 7, digest)
+                    self.assertEqual(package.read_bytes(), b'fixed')
+            outside = root / 'outside'; outside.write_bytes(b'fixed'); package.unlink(); package.symlink_to(outside)
+            with patch.object(control, 'DATA_ROOT', root), patch.object(control, 'validate_environment', return_value={}), patch.object(control, 'query', return_value=row):
+                with self.assertRaises(RuntimeError):
+                    control.set_package_hidden(True, 7, digest)
+            self.assertEqual(outside.read_bytes(), b'fixed')
+
+    def test_audit_requires_all_typed_zero_counts(self):
+        zeros = {key: 0 for key in control.AUDIT_KEYS}
+        with patch.object(control, 'validate_environment', return_value={}), patch.object(control, 'query', return_value=zeros):
+            self.assertTrue(control.audit()['fixture_audit'])
+        for value in [{}, {**zeros, 'activity': 1}, {**zeros, 'llm_usage': False}, {**zeros, 'profiles': '0'}]:
+            with patch.object(control, 'validate_environment', return_value={}), patch.object(control, 'query', return_value=value):
+                with self.assertRaises(RuntimeError):
+                    control.audit()
+
+
+if __name__ == '__main__':
+    unittest.main()
