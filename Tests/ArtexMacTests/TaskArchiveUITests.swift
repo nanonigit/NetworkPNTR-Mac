@@ -180,4 +180,18 @@ final class TaskArchiveUITests: XCTestCase {
         XCTAssertEqual(api.calls.filter{!$0.hasPrefix("GET")}.count,2); screen.stop()
     }
 
+    @MainActor func testRestoreReconciliationWaitsForCategoryGateRelease() async throws {
+        let (api,screen) = try await make(); let archives = try XCTUnwrap(screen.archives)
+        XCTAssertTrue(screen.setTaskTab(.archived)); let gate = try XCTUnwrap(screen.store.beginCategoryMutation())
+        let before = api.calls.filter{$0 == "GET /api/tasks"}.count
+        XCTAssertTrue(archives.observeAcceptedRestore(try BackendJSONCoding.decode(TaskArchiveRecord.self,from:Data(row(state:"restore_queued").utf8)),owner:archives.sessionOwner))
+        await archives.refresh(); screen.archiveReconciled()
+        for _ in 0..<30 { await Task.yield() }
+        XCTAssertEqual(api.calls.filter{$0 == "GET /api/tasks"}.count,before)
+        api.tasks[0]["name"] = "reload after category gate"
+        screen.store.finishCategoryMutation(ticket:gate,change:nil)
+        try await reached { api.calls.filter{$0 == "GET /api/tasks"}.count > before && !screen.isRefreshingAfterArchive }
+        XCTAssertEqual(screen.store.list.value?.first?.name,"reload after category gate"); screen.stop()
+    }
+
 }
