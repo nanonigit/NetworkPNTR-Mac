@@ -44,6 +44,17 @@ final class FindingScreenModelTests: XCTestCase {
         XCTAssertEqual(api.methods,["GET","PATCH"]); XCTAssertNotNil(screen.store.lastConfirmation)
         let body = try XCTUnwrap(JSONSerialization.jsonObject(with:XCTUnwrap(api.bodies.last!)) as? [String:Any])
         XCTAssertEqual(Array(try XCTUnwrap(body["name"] as? String).utf8),Array("changed e\u{301} 中文 한국어".utf8))
+        XCTAssertNil(body["status"])
+    }
+    @MainActor func testStatusConfirmationSendsOnlyCapturedStatus() async throws {
+        let api = FindingScreenAPI(), screen = try await ready(api)
+        XCTAssertTrue(screen.beginStatus(try target(screen),status:.confirmed))
+        var object = try XCTUnwrap(JSONSerialization.jsonObject(with:row()) as? [String:Any]); object["status"] = "confirmed"
+        api.response = .init(status:200,body:try JSONSerialization.data(withJSONObject:object))
+        screen.nameDraft = "must not be sent"
+        let saved = await submit(screen); XCTAssertTrue(saved)
+        let body = try XCTUnwrap(JSONSerialization.jsonObject(with:XCTUnwrap(api.bodies.last!)) as? [String:String])
+        XCTAssertEqual(body,["status":"confirmed"])
     }
     @MainActor func testOldViewDialogNeverSubstitutesFreshOwner() async throws {
         let api = FindingScreenAPI(), screen = try await ready(api)
@@ -124,5 +135,20 @@ final class FindingScreenModelTests: XCTestCase {
         screen.close(dialogID:UUID()); XCTAssertEqual(screen.dialog?.id,dialog.id)
         let saved = await screen.submit(dialogID:UUID()); XCTAssertFalse(saved); XCTAssertEqual(api.methods,["GET"])
         screen.close(dialogID:dialog.id); XCTAssertTrue(screen.setView(.asset))
+    }
+    @MainActor func testUnsentEditDraftSurvivesStopButNotCancelOrAuthenticationReset() async throws {
+        let api = FindingScreenAPI(), screen = try await ready(api); let record = try target(screen)
+        XCTAssertTrue(screen.beginEdit(record)); let old = try XCTUnwrap(screen.dialog)
+        let literal = "\u{FEFF}unsent e\u{301} 中文 한국어"
+        screen.nameDraft = literal; screen.classDraft = "custom e\u{301}"; screen.severityDraft = .critical
+        screen.stop(); XCTAssertNil(screen.dialog)
+        let stale = await screen.submit(dialogID:old.id); XCTAssertFalse(stale)
+        XCTAssertTrue(screen.beginEdit(record)); XCTAssertNotEqual(screen.dialog?.viewOwner,old.viewOwner)
+        XCTAssertEqual(Array(screen.nameDraft.utf8),Array(literal.utf8)); XCTAssertEqual(screen.classDraft,"custom e\u{301}"); XCTAssertEqual(screen.severityDraft,.critical)
+        screen.close(dialogID:try XCTUnwrap(screen.dialog).id); XCTAssertTrue(screen.beginEdit(record)); XCTAssertEqual(screen.nameDraft,record.name)
+        screen.nameDraft = literal; screen.stop(); screen.reset()
+        api.response = .init(status:200,body:try JSONSerialization.data(withJSONObject:["items":[JSONSerialization.jsonObject(with:row())],"total":1,"page":1,"page_size":20]))
+        await screen.store.refreshView(); XCTAssertTrue(screen.beginEdit(record)); XCTAssertEqual(screen.nameDraft,record.name)
+        XCTAssertEqual(api.methods,["GET","GET"])
     }
 }
