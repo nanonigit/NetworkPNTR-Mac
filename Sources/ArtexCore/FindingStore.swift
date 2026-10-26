@@ -30,6 +30,10 @@ public struct FindingDetailSelection: Equatable, Sendable {
     public internal(set) var mutationFailure: AppErrorMessage?
     @ObservationIgnored var mutationTicket: FindingMutationTicket?
     public private(set) var isRefreshingView = false
+    public internal(set) var isPolling = false
+    public internal(set) var isStatsPolling = false
+    @ObservationIgnored var viewPollTicket: UUID?
+    @ObservationIgnored var statsPollTicket: UUID?
     @ObservationIgnored let service: FindingService
     @ObservationIgnored let sleep: @MainActor (Duration) async throws -> Void
     @ObservationIgnored var activityOwner = UUID()
@@ -145,7 +149,7 @@ public struct FindingDetailSelection: Equatable, Sendable {
         }
         guard current(ticket) else { return }; await refreshSelected()
     }
-    public func stop() { invalidateReads(includeStats:true); activityOwner = UUID(); viewOwner = UUID() }
+    public func stop() { stopPolling(); invalidateReads(includeStats:true); activityOwner = UUID(); viewOwner = UUID() }
     public func reset() {
         stop(); sessionOwner = UUID(); view = .flat; filters = .init()
         flat.reset(); groups.reset(); groupPages = [:]; expandedGroups = []
