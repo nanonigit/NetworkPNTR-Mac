@@ -151,4 +151,19 @@ final class FindingScreenModelTests: XCTestCase {
         await screen.store.refreshView(); XCTAssertTrue(screen.beginEdit(record)); XCTAssertEqual(screen.nameDraft,record.name)
         XCTAssertEqual(api.methods,["GET","GET"])
     }
+    @MainActor func testRetainedDraftNeverCrossesFindingIdentityOrReplaysSubmittedEdit() async throws {
+        let api = FindingScreenAPI(), screen = try await ready(api); let record = try target(screen)
+        XCTAssertTrue(screen.beginEdit(record)); screen.nameDraft = "draft for seven"; screen.stop()
+        var eight = try XCTUnwrap(JSONSerialization.jsonObject(with:row(name:"eight")) as? [String:Any]); eight["id"] = "8"; eight["finding_id"] = "8"
+        api.response = .init(status:200,body:try JSONSerialization.data(withJSONObject:["items":[eight],"total":1,"page":1,"page_size":20]))
+        await screen.store.refreshView(); XCTAssertTrue(screen.beginEdit(try target(screen))); XCTAssertEqual(screen.nameDraft,"eight")
+        screen.close(dialogID:try XCTUnwrap(screen.dialog).id)
+        api.response = .init(status:200,body:try JSONSerialization.data(withJSONObject:["items":[JSONSerialization.jsonObject(with:row())],"total":1,"page":1,"page_size":20]))
+        await screen.store.refreshView(); XCTAssertTrue(screen.beginEdit(record)); screen.nameDraft = "submitted edit"; api.hold = true
+        let work = Task { await self.submit(screen) }; try await reached { api.held != nil }; screen.stop()
+        try XCTUnwrap(api.held).resume(returning:.init(status:500,body:Data()))
+        let result = await work.value; XCTAssertFalse(result)
+        XCTAssertTrue(screen.store.acknowledgeUnknown("7",owner:screen.store.sessionOwner,revision:screen.store.unknownRevision))
+        XCTAssertTrue(screen.beginEdit(record)); XCTAssertEqual(screen.nameDraft,record.name)
+    }
 }

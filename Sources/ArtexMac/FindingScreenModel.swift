@@ -11,6 +11,14 @@ struct FindingDialog: Identifiable {
     let unknownRevision: UUID
 }
 
+private struct FindingEditDraft {
+    let session: UUID
+    let findingID: String
+    let name: String
+    let vulnclass: String
+    let severity: FindingSeverity?
+}
+
 /// One authenticated window owns drafts and immutable confirmation contexts.
 @MainActor @Observable final class FindingScreenModel {
     static let preferenceKey = "findings.screen.preferences.v1"
@@ -25,6 +33,7 @@ struct FindingDialog: Identifiable {
     private(set) var isSubmitting = false
     @ObservationIgnored private let preferences: UserDefaults?
     @ObservationIgnored private var lifecycle = UUID()
+    @ObservationIgnored private var retainedEdit: FindingEditDraft?
 
     init(store: FindingStore,preferences: UserDefaults? = nil) {
         self.store = store; self.preferences = preferences
@@ -44,20 +53,24 @@ struct FindingDialog: Identifiable {
         guard canOpen(target) else { return false }
         open(.edit(target)); nameDraft = target.name; classDraft = target.vulnclass
         severityDraft = FindingSeverity(rawValue:target.severity)
+        if let draft = retainedEdit, draft.session == store.sessionOwner, draft.findingID == target.findingId {
+            nameDraft = draft.name; classDraft = draft.vulnclass; severityDraft = draft.severity
+        }
+        retainedEdit = nil
         return true
     }
     @discardableResult func beginStatus(_ target: FindingRecord,status: FindingStatus) -> Bool {
-        guard canOpen(target) else { return false }; open(.status(target,status)); return true
+        guard canOpen(target) else { return false }; retainedEdit = nil; open(.status(target,status)); return true
     }
     @discardableResult func beginDelete(_ target: FindingRecord) -> Bool {
-        guard canOpen(target) else { return false }; open(.delete(target)); return true
+        guard canOpen(target) else { return false }; retainedEdit = nil; open(.delete(target)); return true
     }
     @discardableResult func beginAcknowledgement(_ id: String) -> Bool {
         guard !busy, dialog == nil, store.unknownIDs.contains(id), !Task.isCancelled else { return false }
         open(.acknowledge(id)); return true
     }
     func close(dialogID: UUID) {
-        guard !busy, dialog?.id == dialogID else { return }; clearDialog()
+        guard !busy, dialog?.id == dialogID else { return }; retainedEdit = nil; clearDialog()
     }
     @discardableResult func submit(dialogID: UUID) async -> Bool {
         guard !busy, !dialogUncertain, !Task.isCancelled, let context = dialog, context.id == dialogID,
@@ -90,8 +103,14 @@ struct FindingDialog: Identifiable {
         }
         return false
     }
-    func stop() { lifecycle = UUID(); clearDialog(); store.stop() }
-    func reset() { lifecycle = UUID(); clearDialog(); searchDraft = ""; store.reset() }
+    func stop() {
+        if !busy, !dialogUncertain, let context = dialog, context.sessionOwner == store.sessionOwner,
+           case .edit(let row) = context.kind, let id = row.findingId {
+            retainedEdit = FindingEditDraft(session:context.sessionOwner,findingID:id,name:nameDraft,vulnclass:classDraft,severity:severityDraft)
+        }
+        lifecycle = UUID(); clearDialog(); store.stop()
+    }
+    func reset() { lifecycle = UUID(); retainedEdit = nil; clearDialog(); searchDraft = ""; store.reset() }
 
     private func canOpen(_ target: FindingRecord) -> Bool {
         guard !busy, dialog == nil, !Task.isCancelled, store.unknownIDs.isEmpty, target.canMutate else { return false }

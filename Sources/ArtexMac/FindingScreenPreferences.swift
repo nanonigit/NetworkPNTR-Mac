@@ -17,12 +17,13 @@ struct FindingScreenPreferences: Codable {
         task = store.filters.task; sort = store.filters.sort.rawValue
     }
     func validated() -> (FindingView,FindingQuery)? {
+        let knownSeverity = severity.flatMap(FindingSeverity.init(rawValue:))
+        let knownStatus = status.flatMap(FindingStatus.init(rawValue:))
         guard version == 1, let view = FindingView(rawValue:view), let sort = FindingSort(rawValue:sort),
-              severity == nil || FindingSeverity(rawValue:severity!) != nil,
-              status == nil || FindingStatus(rawValue:status!) != nil,
+              severity == nil || knownSeverity != nil, status == nil || knownStatus != nil,
               vulnclass.utf8.count <= 8192,
               task == "all" || task == "__unassigned__" || Self.canonicalID(task) else { return nil }
-        return (view,.init(severity:severity.flatMap(FindingSeverity.init(rawValue:)),status:status.flatMap(FindingStatus.init(rawValue:)),vulnclass:vulnclass,task:task,sort:sort))
+        return (view,.init(severity:knownSeverity,status:knownStatus,vulnclass:vulnclass,task:task,sort:sort))
     }
     private static func canonicalID(_ value: String) -> Bool {
         guard let number = Int64(value), number > 0 else { return false }; return String(number) == value
