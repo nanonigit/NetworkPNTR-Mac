@@ -102,3 +102,18 @@ extension FindingStoreTests {
         XCTAssertEqual(model.flat.read.value?.items.first?.id,"9")
     }
 }
+
+extension FindingStoreTests {
+    @MainActor func testHeldTreeSurvivesScopeCursorChangeAndExplicitRefreshCanReloadIt() async throws {
+        let api = FindingStateAPI(); let model = FindingStore(service:FindingService(client:api)); XCTAssertTrue(model.setView(.asset))
+        api.replies = [FST.tree,FST.page(["7"])]; await model.refreshView()
+        api.hold = true; let old = Task{await model.refreshView(forceTree:true)}; try await FST.reached{api.held.count == 1}
+        XCTAssertTrue(model.selectAsset("r:é",owner:model.viewOwner)); XCTAssertTrue(model.configureFlat(page:2,size:20)); XCTAssertTrue(model.tree.isLoading)
+        api.hold = false; api.replies = [FST.page(["9"],page:2)]; await model.refreshView()
+        XCTAssertEqual(api.calls.count,4); XCTAssertEqual(model.flat.read.value?.items.first?.id,"9"); XCTAssertTrue(model.tree.isLoading)
+        api.held[0].resume(returning:FST.tree); _ = await old.value
+        XCTAssertEqual(api.calls.count,4); XCTAssertFalse(model.tree.isLoading); XCTAssertFalse(model.tree.isStale); XCTAssertEqual(model.tree.value?.nodes.count,2)
+        api.replies = [FST.tree,FST.page(["9"],page:2)]; await model.refreshView(forceTree:true)
+        XCTAssertEqual(api.calls.count,6); XCTAssertEqual(api.calls.filter{$0.path.contains("asset-tree")}.count,3)
+    }
+}

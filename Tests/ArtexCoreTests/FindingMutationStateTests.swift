@@ -98,3 +98,33 @@ extension FindingMutationStateTests {
         XCTAssertTrue(model.acknowledgeUnknown("7",owner:session,revision:model.unknownRevision))
     }
 }
+
+extension FindingMutationStateTests {
+    @MainActor func testConfirmedGroupMutationChangesOnlyMatchingCachesAndSelection() async throws {
+        let api = FindingStateAPI()
+        let store = FindingStore(service:FindingService(client:api)); XCTAssertTrue(store.setView(.grouped))
+        api.replies = [FST.groups(["11","__unassigned__"])]; await store.refreshView()
+        api.replies = [FST.page(["7"],size:10)]; await store.setGroupExpanded("11",expanded:true,owner:store.viewOwner)
+        api.replies = [FST.page(["8"],size:10)]; await store.setGroupExpanded("__unassigned__",expanded:true,owner:store.viewOwner)
+        store.setAllVisible(selected:true,owner:store.viewOwner); XCTAssertEqual(store.selectedIDs,["7","8"])
+        api.replies = [FST.reply(FST.row(name:"changed"))]
+        guard case .confirmed(.updated(let row)) = await store.update(try FST.record(),patch:.init(name:"changed"),owner:store.viewOwner) else {return XCTFail("group edit")}
+        XCTAssertEqual(store.groupPages["11"]?.read.value?.items.first?.name,"changed")
+        XCTAssertEqual(store.groupPages["__unassigned__"]?.read.value?.items.first?.id,"8"); XCTAssertTrue(store.groups.read.isStale)
+        api.replies = [FST.reply(#"{"deleted":true,"id":7}"#)]
+        guard case .confirmed = await store.delete(row,owner:store.viewOwner) else {return XCTFail("group delete")}
+        XCTAssertTrue(store.groupPages["11"]!.read.value!.items.isEmpty); XCTAssertEqual(store.groupPages["__unassigned__"]?.read.value?.items.first?.id,"8")
+        XCTAssertEqual(store.selectedIDs,["8"])
+    }
+    @MainActor func testLateErrorsAfterStopOrResetDoNotBecomeNewSessionPresentation() async throws {
+        for reset in [false,true] {
+            let api = FindingStateAPI(); let model = await ready(api); let target = try FST.record(); api.hold = true
+            let work = Task {await model.delete(target,owner:model.viewOwner)}; try await FST.reached{api.held.count == 1}
+            if reset {model.reset()} else {model.stop()}
+            api.held[0].resume(throwing:BackendAPIError.invalidResponse)
+            guard case .discarded = await work.value else {return XCTFail("late error presentation")}
+            XCTAssertNil(model.mutationFailure); XCTAssertNil(model.lastConfirmation); XCTAssertFalse(model.isMutating)
+            XCTAssertEqual(model.unknownIDs,reset ? [] : ["7"])
+        }
+    }
+}

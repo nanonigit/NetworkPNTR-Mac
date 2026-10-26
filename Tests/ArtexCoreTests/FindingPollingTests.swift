@@ -56,3 +56,23 @@ extension FindingPollingTests {
         XCTAssertEqual(api.calls.count,5); XCTAssertEqual(model.flat.read.value?.items.first?.id,"8"); XCTAssertFalse(model.isPolling)
     }
 }
+
+extension FindingPollingTests {
+    @MainActor func testCancelledInitialAssetTreeIsStillPendingForReplacementLoop() async throws {
+        let api = FindingStateAPI(); let model = FindingStore(service:FindingService(client:api)); XCTAssertTrue(model.setView(.asset)); api.hold = true
+        let old = Task{await model.runView()}; try await FST.reached{api.held.count == 1}; old.cancel(); api.held[0].resume(returning:FST.tree); await old.value
+        XCTAssertNil(model.tree.value); XCTAssertFalse(model.isPolling)
+        api.hold = false; api.replies = [FST.tree,FST.page(["7"])]; await model.runView()
+        XCTAssertEqual(api.calls.count,3); XCTAssertEqual(model.tree.value?.nodes.count,2); XCTAssertEqual(model.flat.read.value?.items.first?.id,"7")
+    }
+    @MainActor func testOldCancelledTreeCannotRearmOverNewerCompletedSnapshot() async throws {
+        let api = FindingStateAPI(); let model = FindingStore(service:FindingService(client:api)); XCTAssertTrue(model.setView(.asset)); api.hold = true
+        let old = Task{await model.runView()}; try await FST.reached{api.held.count == 1}; model.stop()
+        let new = Task{await model.runView()}; try await FST.reached{api.held.count == 2}
+        api.hold = false; api.replies = [FST.page(["8"])]; api.held[1].resume(returning:FST.tree); await new.value
+        old.cancel(); api.held[0].resume(returning:FST.tree); await old.value
+        api.replies = [FST.page(["9"])]; await model.refreshView()
+        XCTAssertEqual(api.calls.count,4); XCTAssertEqual(api.calls.filter{$0.path.contains("asset-tree")}.count,2)
+        XCTAssertFalse(model.tree.isStale); XCTAssertEqual(model.flat.read.value?.items.first?.id,"9")
+    }
+}
