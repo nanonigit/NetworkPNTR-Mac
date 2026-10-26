@@ -108,7 +108,7 @@ final class FindingServiceTests: XCTestCase {
         for status in [201,202,204,400,500] {
             api.add(try record(),status:status); do { _ = try await service.detail(id:large); XCTFail("status accepted") } catch {}
         }
-        api.add(String(repeating:"x",count:4*1024*1024+1)); do { _ = try await service.detail(id:large); XCTFail("oversize response") } catch {}
+        api.add(try record() + String(repeating:" ",count:4*1024*1024)); do { _ = try await service.detail(id:large); XCTFail("oversize response") } catch {}
         let target = try decode(record()); do { _ = try await service.update(target,patch:.init(name:String(repeating:"x",count:65537))); XCTFail("oversize write") } catch {}
         let calls = api.calls.count; api.cancel = true; api.add(try record())
         let operation = Task { try await service.detail(id:large) }; do { _ = try await operation.value; XCTFail("post dispatch cancellation") } catch {}
@@ -121,7 +121,7 @@ final class FindingServiceTests: XCTestCase {
         XCTAssertEqual(FindingStatus.allCases.count,9); XCTAssertEqual(FindingSeverity.allCases.count,4)
         for language in AppLanguage.allCases {
             for error in [FindingInputError.invalidID,.query,.patch,.readOnly,.bodyLimit] {
-                let text = AppErrorMessage(error).text(language:language); XCTAssertFalse(text.isEmpty); XCTAssertFalse(text.contains("中文")); XCTAssertFalse(text.contains("한국어"))
+                let text = AppErrorMessage(error).text(language:language); XCTAssertEqual(text,AppStrings.text(error.key,language:language)); XCTAssertFalse(text.isEmpty); XCTAssertFalse(text.contains("中文")); XCTAssertFalse(text.contains("한국어"))
             }
         }
     }
@@ -167,5 +167,58 @@ extension FindingServiceTests {
         api.add(equivalent); let distinct = try await service.assetTree(); XCTAssertEqual(distinct.nodes.count,2)
         api.add(#"{"nodes":null,"finding_total":0,"truncated":true,"dropped_kinds":["endpoint"]}"#)
         let empty = try await service.assetTree(); XCTAssertTrue(empty.nodes.isEmpty); XCTAssertTrue(empty.truncated)
+    }
+}
+
+extension FindingServiceTests {
+    @MainActor func testAllEightPinnedBrowserQueryProjectionsMatchDecodedNativeWire() async throws {
+        struct Case: Decodable {
+            struct Query: Decodable { let page: Int64; let pageSize: Int; let severity: String; let status: String; let vulnclass: String; let task: String; let query: String; let sort: String; let assetScope: String? }
+            let name: String; let operation: String; let query: Query; let expected: [String:String]
+        }
+        struct Fixture: Decodable { let baseline: String; let cases: [Case] }
+        let url = try XCTUnwrap(Bundle.module.url(forResource:"Fixtures/findings-browser-filters",withExtension:"json"))
+        let fixture = try JSONDecoder().decode(Fixture.self,from:Data(contentsOf:url)); XCTAssertEqual(fixture.cases.count,8)
+        XCTAssertEqual(fixture.baseline,"e75ae371ad777ffd1eecdd28d2781a6519b05591")
+        for item in fixture.cases {
+            let api = FindingAPI(), service = FindingService(client:api), q = item.query
+            let native = FindingQuery(page:q.page,size:q.pageSize,severity:FindingSeverity(rawValue:q.severity),status:FindingStatus(rawValue:q.status),vulnclass:q.vulnclass,task:q.task,search:q.query,sort:FindingSort(rawValue:q.sort)!,assetScope:q.assetScope)
+            switch item.operation {
+            case "flat": api.add(page([],page:q.page,size:q.pageSize)); _ = try await service.list(native)
+            case "group": api.add("{\"items\":[],\"total\":0,\"finding_total\":0,\"page\":\(q.page),\"page_size\":\(q.pageSize)}"); _ = try await service.groups(native)
+            case "tree": api.add(#"{"nodes":[],"finding_total":0,"truncated":false}"#); _ = try await service.assetTree(native)
+            default: XCTFail("unknown fixture"); continue
+            }
+            let components = try XCTUnwrap(URLComponents(string:api.calls[0].1))
+            let params = Dictionary(uniqueKeysWithValues:(components.queryItems ?? []).map{($0.name,$0.value ?? "")})
+            XCTAssertEqual(params,item.expected,item.name)
+        }
+    }
+    @MainActor func testCompoundPatchFailureDispatchesOnceAndNeverInfersRollbackOrRetries() async throws {
+        let api = FindingAPI(), service = FindingService(client:api), target = try decode(record())
+        for status in [400,404,500] {
+            api.add(#"{"error":"private SQL /state/path 한국어"}"#,status:status)
+            let before = api.calls.count
+            do { _ = try await service.update(target,patch:.init(name:"changed",severity:.low,status:.confirmed)); XCTFail("failed patch confirmed") }
+            catch { XCTAssertEqual(AppErrorMessage(error).text(language:.english).contains("private SQL"),false) }
+            XCTAssertEqual(api.calls.count,before+1); XCTAssertEqual(api.calls.last?.0,"PATCH")
+        }
+        api.add(try record()); api.cancel = true
+        let operation = Task { try await service.update(target,patch:.init(status:.pending)) }
+        do { _ = try await operation.value; XCTFail("cancelled write confirmed") } catch {}
+        XCTAssertEqual(api.calls.count,4)
+    }
+    @MainActor func testMultiNodeCycleDuplicatesRejectButBestEffortSourceLimitCanBeExceeded() async throws {
+        let api = FindingAPI(), service = FindingService(client:api)
+        let cycle = treeJSON.replacingOccurrences(of:"\"key\":\"c:1\",",with:"\"key\":\"c:1\",\"parent\":\"a:2\",")
+        api.add(cycle); do { _ = try await service.assetTree(); XCTFail("multi-node cycle") } catch {}
+        let template = #"{"key":"r:KEY.invalid","kind":"root_domain","label":"raw","self":1,"total":1,"critical":0,"high":1,"medium":0,"low":0,"last_found_at":"raw"}"#
+        let nodes = (0..<3001).map{template.replacingOccurrences(of:"KEY",with:String($0))}.joined(separator:",")
+        api.add("{\"nodes\":["+nodes+"],\"finding_total\":3001,\"truncated\":true,\"dropped_kinds\":[\"endpoint\",\"service\"]}")
+        let retained = try await service.assetTree(); XCTAssertEqual(retained.nodes.count,3001); XCTAssertTrue(retained.truncated)
+        api.add("{\"items\":["+groupJSON+","+groupJSON+"],\"total\":2,\"finding_total\":4,\"page\":1,\"page_size\":10}")
+        do { _ = try await service.groups(); XCTFail("duplicate aggregate owner") } catch {}
+        api.add(#"{"total":1,"pending":0,"critical":0,"high":1,"medium":0,"low":0,"vulnclasses":[],"tasks":[{"id":7,"description":"x","count":1},{"id":"7","description":"y","count":1}]}"#)
+        do { _ = try await service.stats(); XCTFail("duplicate stats task") } catch {}
     }
 }
