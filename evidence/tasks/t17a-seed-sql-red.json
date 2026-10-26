@@ -1,0 +1,17 @@
+{
+  "image": "sha256:87ae72b5cd651612003313a3ee0f76f5681d16426fe7b0ee276fa77a3ce68cad",
+  "seed_sha256": "7f896528271755d2c921cf75d601adf1d67a13f23a78a435cd6de74de9444509",
+  "schema_sha256": "17f0f9e28e1a587f48e8723dfc84b5daf25887642e54b12801f95f1fcaea4002",
+  "passed": false,
+  "isolation": {
+    "network": "none",
+    "host_bind_mounts": false,
+    "published_ports": false,
+    "privileged": false
+  },
+  "stage": "seed",
+  "owned_container_removed": true,
+  "original_browser_unchanged": true,
+  "failure": "actual fixed seed transaction rejected",
+  "source_diagnosis": "category INSERT omits required nkey from pinned schema"
+}
