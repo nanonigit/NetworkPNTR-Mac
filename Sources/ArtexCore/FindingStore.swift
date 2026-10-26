@@ -40,6 +40,7 @@ public struct FindingDetailSelection: Equatable, Sendable {
     @ObservationIgnored var activityOwner = UUID()
     @ObservationIgnored private var viewReadTicket = UUID()
     @ObservationIgnored private var treeRequest: UUID? = UUID()
+    @ObservationIgnored private var treeAttemptOwner = UUID()
     public init(service: FindingService,sleep: @escaping @MainActor (Duration) async throws -> Void = {try await Task.sleep(for:$0)}) {
         self.service = service; self.sleep = sleep
     }
@@ -142,11 +143,14 @@ public struct FindingDetailSelection: Equatable, Sendable {
         case .asset:
             if let request = treeRequest {
                 let query = filters
+                var cancelled = false
                 await tree.refresh { [service] in
                     guard self.treeRequest == request else { throw CancellationError() }
-                    self.treeRequest = nil
-                    return try await service.assetTree(query)
+                    self.treeRequest = nil; self.treeAttemptOwner = request
+                    do { return try await service.assetTree(query) }
+                    catch { if error is CancellationError { cancelled = true }; throw error }
                 }
+                if cancelled || Task.isCancelled, treeAttemptOwner == request, treeRequest == nil { treeRequest = UUID() }
                 guard current(ticket) else { return false }
             }
             await refreshFlat()
@@ -160,7 +164,7 @@ public struct FindingDetailSelection: Equatable, Sendable {
             }
         }
         guard current(ticket) else { return false }; await refreshSelected()
-        return current(ticket) && (view != .asset || treeRequest == nil)
+        return current(ticket) && (view != .asset || treeRequest == nil && !tree.isLoading)
     }
     public func stop() { stopPolling(); invalidateReads(includeStats:true,includeTree:true); activityOwner = UUID(); viewOwner = UUID() }
     public func reset() {
@@ -178,7 +182,7 @@ public struct FindingDetailSelection: Equatable, Sendable {
     func invalidateReads(includeStats: Bool = false,includeTree: Bool = false) {
         viewReadTicket = UUID(); isRefreshingView = false
         flat.read.invalidate(); groups.read.invalidate(); detail.invalidate()
-        if includeTree { tree.invalidate(); treeRequest = UUID() }
+        if includeTree { tree.invalidate(); treeAttemptOwner = UUID(); treeRequest = UUID() }
         if includeStats { stats.invalidate() }
         for page in groupPages.values { page.read.invalidate() }
     }
