@@ -4,6 +4,7 @@ import importlib.util
 import os
 from pathlib import Path
 import sys
+import subprocess
 import tempfile
 import unittest
 from unittest.mock import patch
@@ -72,6 +73,20 @@ class ArchiveControlTests(unittest.TestCase):
             with patch.object(control, 'validate_environment', return_value={}), patch.object(control, 'query', return_value=value):
                 with self.assertRaises(RuntimeError):
                     control.audit()
+
+    def test_non_regular_package_is_refused_without_blocking(self):
+        program = """import sys
+from pathlib import Path
+sys.path.insert(0,sys.argv[1])
+import task_archive_fixture_control as c
+try: c.package_digest(Path(sys.argv[2]))
+except RuntimeError: print('nonregular refused');sys.exit(0)
+sys.exit(1)
+"""
+        with tempfile.TemporaryDirectory() as directory:
+            fifo = Path(directory) / 'fixture-fifo'; os.mkfifo(fifo)
+            result = subprocess.run([sys.executable, '-c', program, str(SCRIPTS), str(fifo)], capture_output=True, text=True, timeout=2)
+            self.assertEqual(result.returncode, 0); self.assertEqual(result.stdout.strip(), 'nonregular refused')
 
 
 if __name__ == '__main__':
