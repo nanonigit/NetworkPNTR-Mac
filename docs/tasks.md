@@ -241,3 +241,6 @@ F2 checkpoint: owned Findings read/page/store, separate5sec view/stats loops and
 
 
 F3.1 order: requirements/design -> missing coordinator RED -> bounded preferences and captured dialog GREEN -> stale owner/held mutation/unknown episode/Unicode tests -> review/full regressions/signed build/exact-head CI. F3.2 controls and F4/F5 remain open.
+
+
+F3.1 checkpoint: captured edit/status/delete/uncertainty contexts and bounded browser-equivalent preferences implemented. Missing API RED cd266a7; reviewer draft-loss regression RED81db173 (3 assertions) -> f503a45 GREEN13. Full563Swift (562pass/1existingAXskip),86Python pass; screen92.17%/preferences100%lines; signed build-only, strict signature, localization/baseline checks and read-only re-review pass. Findings remains pending. Next F3.2 native en/ja controls/presentation/RootView retention/read scheduling/offscreen tests; actual UI after manual unlock, F4/F5/full21/cloud/kernel/clean-Mac/release remain open.

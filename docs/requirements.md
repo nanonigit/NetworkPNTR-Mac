@@ -111,3 +111,6 @@ F2 Findings state requirements: retain flat20/group10 and independent expanded-g
 
 
 F3.1 adds captured native screen confirmations and bounded browser-equivalent view/filter preferences; see findings-screen-design.md. Actual controls, visual/keyboard/AX comparison and full Findings remain pending.
+
+
+F3.1 completed finite coordinator checks only; F3.2 must connect the per-window coordinator and implement native controls. Keep Findings pending until that integration. Unsent drafts survive stop only for the same session/finding; dispatched or uncertain edits never become replayable drafts.

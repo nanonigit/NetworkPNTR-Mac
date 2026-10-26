@@ -1,0 +1,84 @@
+{
+  "phase": "F3.1",
+  "scope": "native screen coordinator and bounded preferences only; controls and visual/runtime acceptance pending",
+  "baseline": "e75ae371ad777ffd1eecdd28d2781a6519b05591",
+  "source_commit": "f503a453157f432db819d1116abaa747d3c3c856",
+  "swift": {
+    "total": 563,
+    "passed": 562,
+    "existing_accessibility_skip": 1,
+    "failures": 0
+  },
+  "python": {
+    "total": 86,
+    "passed": 86,
+    "failures": 0
+  },
+  "focused_cases": 13,
+  "line_coverage": {
+    "FindingScreenModel.swift": {
+      "count": 115,
+      "covered": 106,
+      "percent": 92.17391304347827
+    },
+    "FindingScreenPreferences.swift": {
+      "count": 23,
+      "covered": 23,
+      "percent": 100
+    }
+  },
+  "executed_source_sha256": {
+    "Sources/ArtexMac/FindingScreenModel.swift": "86594ab4db9d58536f96213ee08d76d11b9e63bab5bc4bee8ee228806447bfaf",
+    "Sources/ArtexMac/FindingScreenPreferences.swift": "907e4fcaa24bee42865365823de2b2b0589dd136c0470a2b4a78db205af6c9c5",
+    "Tests/ArtexMacTests/FindingScreenModelTests.swift": "815e4ce492ce9ecaad533577292ee5f0d940464c9cacb60ab6dd50c61aa9ba82"
+  },
+  "red_commits": {
+    "missing_coordinator": "cd266a7",
+    "unsent_draft_loss": "81db173"
+  },
+  "draft_red_assertions": 3,
+  "preference_max_bytes": 32768,
+  "persisted_fields": [
+    "version",
+    "view",
+    "severity",
+    "status",
+    "vulnclass",
+    "task",
+    "sort"
+  ],
+  "excluded_fields": [
+    "search",
+    "pages",
+    "asset_scope",
+    "selection",
+    "reports",
+    "edit_drafts"
+  ],
+  "captured_confirmation_owners": [
+    "view",
+    "session",
+    "uncertainty_revision"
+  ],
+  "edit_and_status_payloads_separate": true,
+  "uncertain_write_automatic_replay": false,
+  "unsent_draft_identity": [
+    "session",
+    "standalone_finding_id"
+  ],
+  "pending_gate_retained_until_terminal": true,
+  "review": "initial unsent-draft loss repaired and read-only re-review passed",
+  "signed_build_only": true,
+  "strict_signature": true,
+  "localization_export_check": true,
+  "pinned_inventory_check": true,
+  "live_ui_vm_or_artex_writes": false,
+  "feature_status": "pending",
+  "remaining": [
+    "F3.2 native controls/localization/presentation and root window integration",
+    "actual en/ja browser/native visual keyboard accessibility comparison after manual unlock",
+    "F4 disposable VM and pinned reference operations",
+    "F5 export traffic report lineage deepen retest",
+    "full21 cloud egress kernel reliability clean-Mac release"
+  ]
+}

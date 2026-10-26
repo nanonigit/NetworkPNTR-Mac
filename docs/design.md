@@ -90,3 +90,6 @@ F2 follows findings-state-design.md: owned finite read/page slots and retained F
 
 
 F3.1 follows findings-screen-design.md: retained window coordinator, captured view/session/unknown revision, no replay, bounded preference storage excluding search/cursors/private drafts. Lazyweb metadata and fetched table practice inform subsequent native list/detail controls.
+
+
+F3.1 separates unsent edit draft lifetime from immutable confirmation ownership. See findings-screen-verification.md and bugs/findings-screen-draft.md. No UI or runtime acceptance is inferred from 13 coordinator tests.
