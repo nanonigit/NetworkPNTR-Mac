@@ -32,7 +32,7 @@ public enum TaskMutationConfirmation: Sendable {
     @ObservationIgnored private let service: TaskService
     @ObservationIgnored private let sleep: @MainActor (Duration) async throws -> Void
     @ObservationIgnored private var externalTicket: (id: UUID, life: UUID, kind: ExternalKind)?
-    private enum ExternalKind { case category, bulk }
+    private enum ExternalKind { case category, bulk, archive }
     @ObservationIgnored private var lifetime = UUID()
     @ObservationIgnored private var activity = UUID()
     @ObservationIgnored private var listTicket = UUID()
@@ -101,6 +101,14 @@ public enum TaskMutationConfirmation: Sendable {
             if let tasks = list.value { list.value = change.applying(to:tasks) }
             if let task = detail.value { detail.value = change.applying(to:[task]).first }
         }
+        list.isStale = true; detail.isStale = true
+    }
+
+    public func beginArchiveMutation() -> UUID? { beginExternalMutation(kind:.archive) }
+    public func finishArchiveMutation(ticket: UUID) {
+        guard let owner = externalTicket, owner.id == ticket, owner.kind == .archive else { return }
+        externalTicket = nil; isMutating = false; invalidateReads()
+        guard owner.life == lifetime else { return }
         list.isStale = true; detail.isStale = true
     }
 

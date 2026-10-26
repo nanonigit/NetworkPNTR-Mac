@@ -18,6 +18,8 @@ import Observation
     public private(set) var reconciliationFailure: AppErrorMessage?
     public private(set) var isRefreshing = false
     public private(set) var isPolling = false
+    public var isMutating: Bool { mutationTicket != nil }
+    @ObservationIgnored private var mutationTicket: (id: UUID, session: UUID)?
     public var pendingRestoreIDs: Set<Int64> { Set(pending.keys) }
     @ObservationIgnored private let service: TaskArchiveService
     @ObservationIgnored private let sleep: @MainActor (Duration) async throws -> Void
@@ -32,7 +34,7 @@ import Observation
     }
     /// The caller explicitly chooses the page; search/state UI changes should pass page1.
     @discardableResult public func configure(page: Int64, size: Int, query: String, state: String?) -> Bool {
-        guard page > 0, (1...100).contains(size), page-1 <= Int64.max/Int64(size), query.utf8.count <= 4096, (state?.utf8.count ?? 0) <= 128 else { return false }
+        guard !isMutating, page > 0, (1...100).contains(size), page-1 <= Int64.max/Int64(size), query.utf8.count <= 4096, (state?.utf8.count ?? 0) <= 128 else { return false }
         let nextState = state == "" ? nil : state
         guard self.page != page || self.size != size || !self.query.utf8.elementsEqual(query.utf8) || !sameBytes(self.state,nextState) else { return true }
         invalidateReads(); self.page = page; self.size = size; self.query = query; self.state = nextState
@@ -40,19 +42,19 @@ import Observation
         return true
     }
     public func setSelected(_ id: Int64, selected: Bool, owner: UUID) {
-        guard owner == viewOwner, let row = list.value?.items.first(where:{$0.id == id}), !TaskArchiveSemantics.processing(row.state) else { return }
+        guard !isMutating, owner == viewOwner, let row = list.value?.items.first(where:{$0.id == id}), !TaskArchiveSemantics.processing(row.state) else { return }
         if selected { selectedIDs.insert(id) } else { selectedIDs.remove(id) }
     }
     public func setAll(selected: Bool, owner: UUID) {
         for row in list.value?.items ?? [] { setSelected(row.id,selected:selected,owner:owner) }
     }
     public func select(_ id: Int64?) async {
-        guard !Task.isCancelled, id.map({$0 > 0}) ?? true else { return }
+        guard !isMutating, !Task.isCancelled, id.map({$0 > 0}) ?? true else { return }
         if selectedID != id { selectedID = id; detailTicket = UUID(); detail = .init() }
         await refreshSelected()
     }
     public func refreshSelected() async {
-        guard let id = selectedID, !detail.isLoading, !Task.isCancelled else { return }
+        guard !isMutating, let id = selectedID, !detail.isLoading, !Task.isCancelled else { return }
         let ticket = UUID(); detailTicket = ticket; detail.isLoading = true
         defer { if detailTicket == ticket { detail.isLoading = false } }
         do {
@@ -70,8 +72,23 @@ import Observation
         pending[receipt.id] = Pending(taskID:receipt.taskId); removedAfterRestoreIDs.remove(receipt.id)
         return true
     }
+    /// A validated batch receipt is associated with the task captured before dispatch.
+    @discardableResult public func observeAcceptedRestore(_ receipt: TaskArchiveBatchItem, taskID: Int64, owner: UUID) -> Bool {
+        guard owner == sessionOwner, receipt.ok, receipt.queued, taskID > 0,
+              let id = receipt.archiveId, id == Int64(receipt.id) else { return false }
+        pending[id] = Pending(taskID:taskID); removedAfterRestoreIDs.remove(id); return true
+    }
+    public func beginMutation() -> UUID? {
+        guard !isMutating, !Task.isCancelled else { return nil }
+        let id = UUID(); mutationTicket = (id,sessionOwner); invalidateReads(); return id
+    }
+    public func finishMutation(ticket: UUID, clearSelection: Bool) {
+        guard let captured = mutationTicket, captured.id == ticket else { return }
+        mutationTicket = nil; invalidateReads()
+        if captured.session == sessionOwner, clearSelection { selectedIDs = [] }
+    }
     public func refresh() async {
-        guard !isRefreshing, !Task.isCancelled else { return }
+        guard !isMutating, !isRefreshing, !Task.isCancelled else { return }
         let ticket = UUID(); readTicket = ticket; isRefreshing = true; list.isLoading = true
         defer { if readTicket == ticket { isRefreshing = false; list.isLoading = false } }
         do {
