@@ -2,7 +2,6 @@
 import hashlib
 import json
 import os
-from pathlib import Path
 import re
 import stat
 import subprocess
@@ -43,7 +42,7 @@ def audit():
 
 
 def package_digest(path):
-    descriptor = os.open(path, os.O_RDONLY | os.O_NOFOLLOW)
+    descriptor = os.open(path, os.O_RDONLY | os.O_NOFOLLOW | os.O_NONBLOCK)
     with os.fdopen(descriptor, 'rb') as stream:
         before = os.fstat(stream.fileno())
         if not stat.S_ISREG(before.st_mode) or before.st_uid != os.getuid() or not 0 < before.st_size <= 8 * 1024 * 1024:

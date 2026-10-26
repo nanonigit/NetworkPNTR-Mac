@@ -74,6 +74,32 @@ class ArchiveControlTests(unittest.TestCase):
                 with self.assertRaises(RuntimeError):
                     control.audit()
 
+    def test_changed_bytes_or_oversized_package_never_moves(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory).resolve(); parent = root / 'archives/tasks'; parent.mkdir(parents=True)
+            package = parent / 'task-7101-7.tar.zst'; digest = hashlib.sha256(b'expected').hexdigest()
+            row = {'id': 7, 'task_id': 7101, 'state': 'ready', 'archive_path': str(package), 'sha256': digest, 'task_name': control.NAME, 'task_goal': control.GOAL}
+            for size in [7, 8 * 1024 * 1024 + 1]:
+                with package.open('wb') as stream:
+                    stream.write(b'changed'); stream.truncate(size)
+                with patch.object(control, 'DATA_ROOT', root), patch.object(control, 'validate_environment', return_value={}), patch.object(control, 'query', return_value=row):
+                    with self.assertRaises(RuntimeError):
+                        control.set_package_hidden(True, 7, digest)
+                self.assertTrue(package.is_file()); self.assertEqual(package.stat().st_size, size)
+                self.assertFalse(package.with_name(package.name + '.t17-quarantine').exists())
+
+    def test_query_failure_is_bounded_and_does_not_expose_child_output(self):
+        for result in [subprocess.CompletedProcess([], 1, b'private password'), subprocess.CompletedProcess([], 0, b'x' * 8193),
+                       subprocess.CompletedProcess([], 0, b'not-json private'), subprocess.CompletedProcess([], 0, b'[]')]:
+            with patch.object(control.subprocess, 'run', return_value=result) as run:
+                with self.assertRaises(RuntimeError) as failure:
+                    control.query({'PGPASSWORD': 'secret'}, 'fixed SQL')
+                self.assertNotIn('private', str(failure.exception)); self.assertNotIn('secret', str(failure.exception))
+                self.assertEqual(run.call_args.kwargs['timeout'], 15); self.assertEqual(run.call_args.kwargs['stderr'], subprocess.DEVNULL)
+        with patch.object(control.subprocess, 'run', side_effect=subprocess.TimeoutExpired('psql', 15)):
+            with self.assertRaises(RuntimeError):
+                control.query({}, 'fixed SQL')
+
     def test_non_regular_package_is_refused_without_blocking(self):
         program = """import sys
 from pathlib import Path

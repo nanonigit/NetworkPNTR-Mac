@@ -1,0 +1,47 @@
+{
+  "phase": "T17b",
+  "scope": "native archive API/runtime/restart and independent pinned backend comparison; no UI acceptance",
+  "swift": {
+    "total": 501,
+    "passed": 500,
+    "existing_accessibility_skip": 1,
+    "failures": 0
+  },
+  "python": {
+    "total": 84,
+    "passed": 84,
+    "failures": 0
+  },
+  "focused": {
+    "archive_core": 14,
+    "fixture_client": 5,
+    "guest_control": 8,
+    "probe_cli": 1,
+    "reference": 6
+  },
+  "coverage_lines": {
+    "TaskArchiveExercise.swift": {
+      "covered": 225,
+      "total": 234
+    },
+    "TaskArchiveFixtureClient.swift": {
+      "covered": 71,
+      "total": 74
+    }
+  },
+  "actual_native_boots": 3,
+  "native_cooperative_stops": 3,
+  "reference_backend_starts": 3,
+  "reference_cooperative_stops": 3,
+  "normalized_checks": 19,
+  "workspace_files": 3,
+  "workspace_bytes": 1056,
+  "comparison_equal": true,
+  "reference_cleanup_confirmed": true,
+  "browser_baseline": "e75ae371ad777ffd1eecdd28d2781a6519b05591",
+  "native_candidate_promoted": false,
+  "native_cloud_egress": "pending",
+  "full_21_workflow_ui_acceptance": "pending",
+  "visual_ax_keyboard_comparison": "deferred until manual unlock",
+  "kernel_reliability": "open; one passing 3-boot experiment does not resolve earlier faults"
+}

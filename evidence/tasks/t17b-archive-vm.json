@@ -1,0 +1,116 @@
+{
+  "kind": "actual native VZ run",
+  "candidate_promoted": false,
+  "source_commit": "e75ae371ad777ffd1eecdd28d2781a6519b05591",
+  "backend_sha256": "0ebad83ddda276b03b415d64ce30af44e7a587860f3b660c12563462a0ac5e80",
+  "artifact_hashes": {
+    "kernelSHA256": "8e57308787c420cb42e4c4ea80e6def6438a52232692c010dc4609bb9bf21879",
+    "initramfsSHA256": "88de8582409a9ad861a69035f056e65953b36803fbc77b391e0a9deb77e335ba",
+    "systemDiskSHA256": "82e32042ec52dd316c74357d3ce5ef4dbbaf76c22a16a1dc73c925bc38fb9346"
+  },
+  "runtime_path": "/usr/bin:/bin",
+  "probe_sha256": "2b1e7eefc3ebb85ab75c8be3065957541fd9fef94fb673c50c8d5c22ce93a297",
+  "fixture_hashes": {
+    "seed": "5966a7aa3c40da2b19cdc2df37935fde3582a8c6aff6ee74102ec95edb493d15",
+    "control": "ce39c18a94253a23b22a355b1fa8bc16a058b2f52c8f70438b13ffd131163617"
+  },
+  "result": {
+    "bootAttempts": 3,
+    "boots": [
+      {
+        "authentication": "freshSetup",
+        "cooperativeStop": true,
+        "cpuCount": 1,
+        "credentialLogCheckPassed": true,
+        "diagnostics": [],
+        "formatStageObserved": true,
+        "index": 1,
+        "isolationVerified": true,
+        "logAuditComplete": true,
+        "machineStopped": true,
+        "passed": true,
+        "protectedStatus": 401,
+        "reachedReady": true
+      },
+      {
+        "authentication": "persistedSession",
+        "cooperativeStop": true,
+        "cpuCount": 1,
+        "credentialLogCheckPassed": true,
+        "diagnostics": [],
+        "formatStageObserved": false,
+        "index": 2,
+        "isolationVerified": true,
+        "logAuditComplete": true,
+        "machineStopped": true,
+        "passed": true,
+        "protectedStatus": 401,
+        "reachedReady": true
+      },
+      {
+        "authentication": "persistedSession",
+        "cooperativeStop": true,
+        "cpuCount": 1,
+        "credentialLogCheckPassed": true,
+        "diagnostics": [],
+        "formatStageObserved": false,
+        "index": 3,
+        "isolationVerified": true,
+        "logAuditComplete": true,
+        "machineStopped": true,
+        "passed": true,
+        "protectedStatus": 401,
+        "reachedReady": true
+      }
+    ],
+    "exercise": {
+      "checks": [
+        "initial_terminal_tasks",
+        "initial_workspace_bytes",
+        "bulk_archive_accepted",
+        "bulk_archive_ready",
+        "live_rows_removed",
+        "workspace_files_removed",
+        "restore_failure_observed",
+        "explicit_retry_accepted",
+        "first_task_restored",
+        "first_workspace_restored",
+        "second_delete_accepted",
+        "second_archive_removed",
+        "first_rearchive_accepted",
+        "first_ready_for_restart",
+        "persisted_archive_ready",
+        "restart_restore_accepted",
+        "restart_task_restored",
+        "restart_workspace_restored",
+        "second_task_stays_deleted"
+      ],
+      "files": [
+        {
+          "path": "tasks/7101/workspace/fixture-é.txt",
+          "sha256": "844a35e0bcb6bf65694d9e7270b6118cb500cdfeef531a4102f7a8f889bf663c",
+          "size": 32
+        },
+        {
+          "path": "tasks/7101/workspace/empty.bin",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "size": 0
+        },
+        {
+          "path": "tasks/7102/workspace/fixture.bin",
+          "sha256": "785b0751fc2c53dc14a4ce3d800e69ef9ce1009eb327ccf458afe09c242c26c9",
+          "size": 1024
+        }
+      ],
+      "passed": true,
+      "taskDescription": "Archive fixture é ﻿ interior 中文 한국어",
+      "taskName": "﻿é 中文 한국어"
+    },
+    "expectedCPUCount": 1,
+    "machineStopped": true,
+    "passed": true,
+    "seedConfirmed": true,
+    "stage": "complete",
+    "terminalSuccess": true
+  }
+}

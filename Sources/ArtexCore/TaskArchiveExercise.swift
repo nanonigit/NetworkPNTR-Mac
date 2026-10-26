@@ -59,7 +59,8 @@ public struct TaskArchiveExerciseReport: Encodable, Equatable, Sendable {
         try Task.checkCancellation(); progress("initial_terminal_tasks")
         try await fixture.verifyNoAgentActivity(); try Task.checkCancellation()
         try verifyLive(try await tasks.list(),expected:[7101,7102])
-        guard try await archives.list().items.isEmpty else { throw failure("initial archive list") }
+        let initialArchives = try await archives.list()
+        guard initialArchives.items.isEmpty, initialArchives.total == 0 else { throw failure("initial archive list") }
         var checks = [Self.beforeRestartChecks[0]]
         let proofs = try await verifyFiles(taskIDs:[7101,7102],present:true); checks.append(Self.beforeRestartChecks[1])
         progress("bulk_archive")
@@ -77,18 +78,18 @@ public struct TaskArchiveExerciseReport: Encodable, Equatable, Sendable {
         let first = try await archives.detail(id:firstID); try verifyReady(first,task:7101)
         let target = TaskArchiveFixtureTarget(archiveID:firstID,sha256:first.sha256!)
         try Task.checkCancellation(); try await fixture.setPackageHidden(true,target:target); try Task.checkCancellation()
-        _ = try await archives.restore(id:firstID)
+        try verifyReceipt(try await archives.restore(id:firstID),task:7101)
         let failed = try await waitState(id:firstID,task:7101,desired:"restore_failed",waiting:["restore_queued","restoring"])
         guard failed.hasError else { throw failure("missing restore failure") }; checks.append(Self.beforeRestartChecks[6])
         try await fixture.setPackageHidden(false,target:target); try Task.checkCancellation()
         progress("explicit_retry")
-        _ = try await archives.retry(failed); checks.append(Self.beforeRestartChecks[7])
+        try verifyReceipt(try await archives.retry(failed),task:7101); checks.append(Self.beforeRestartChecks[7])
         try await waitRemoved(id:firstID,task:7101,waiting:["restore_queued","restoring"])
         try await waitLive([7101]); try verifyTask(try await tasks.detail(id:"7101"),id:7101); checks.append(Self.beforeRestartChecks[8])
         _ = try await verifyFiles(taskIDs:[7101],present:true); checks.append(Self.beforeRestartChecks[9])
         progress("delete_second")
         try verifyReady(try await archives.detail(id:secondID),task:7102)
-        _ = try await archives.delete(id:secondID); checks.append(Self.beforeRestartChecks[10])
+        try verifyReceipt(try await archives.delete(id:secondID),task:7102); checks.append(Self.beforeRestartChecks[10])
         try await waitRemoved(id:secondID,task:7102,waiting:["delete_queued","deleting"])
         try await requireMissingTask("7102")
         try await requireMissingFile("archives/tasks/task-7102-\(secondID).tar.zst")
@@ -98,7 +99,7 @@ public struct TaskArchiveExerciseReport: Encodable, Equatable, Sendable {
         let ready = try await waitState(id:queued.id,task:7101,desired:"ready",waiting:["archive_queued","archiving"])
         try await waitLive([])
         let page = try await archives.list()
-        guard page.items.count == 1, page.items[0].id == ready.id else { throw failure("restart archive set") }
+        guard page.total == 1, page.items.count == 1, page.items[0].id == ready.id else { throw failure("restart archive set") }
         try verifyReady(page.items[0],task:7101)
         try await fixture.verifyNoAgentActivity(); try Task.checkCancellation()
         checks.append(Self.beforeRestartChecks[13]); progress("before_restart_complete")
@@ -112,21 +113,25 @@ public struct TaskArchiveExerciseReport: Encodable, Equatable, Sendable {
         try await fixture.verifyNoAgentActivity(); try Task.checkCancellation()
         try verifyLive(try await tasks.list(),expected:[])
         let page = try await archives.list()
-        guard page.items.count == 1, page.items[0].id == checkpoint.archiveID else { throw failure("persisted archive set") }
+        guard page.total == 1, page.items.count == 1, page.items[0].id == checkpoint.archiveID else { throw failure("persisted archive set") }
         let ready = try await archives.detail(id:checkpoint.archiveID); try verifyReady(ready,task:7101)
         guard ready.sha256 == checkpoint.packageSHA256 else { throw failure("persisted archive digest") }
         var checks = checkpoint.checks + [Self.expectedChecks[14]]
-        _ = try await archives.restore(id:ready.id); checks.append(Self.expectedChecks[15])
+        try verifyReceipt(try await archives.restore(id:ready.id),task:7101); checks.append(Self.expectedChecks[15])
         try await waitRemoved(id:ready.id,task:7101,waiting:["restore_queued","restoring"])
         try await waitLive([7101]); let restored = try await tasks.detail(id:"7101"); try verifyTask(restored,id:7101)
         checks.append(Self.expectedChecks[16])
         _ = try await verifyFiles(taskIDs:[7101],present:true); checks.append(Self.expectedChecks[17])
         try await requireMissingTask("7102"); _ = try await verifyFiles(taskIDs:[7102],present:false)
-        guard try await archives.list().items.isEmpty else { throw failure("final archive set") }
+        let finalArchives = try await archives.list()
+        guard finalArchives.items.isEmpty, finalArchives.total == 0 else { throw failure("final archive set") }
         try await fixture.verifyNoAgentActivity(); try Task.checkCancellation()
         checks.append(Self.expectedChecks[18]); progress("archive_exercise_complete")
         return .init(checks:checks,files:checkpoint.files,taskName:restored.name,taskDescription:restored.description,
                      passed:checks == Self.expectedChecks && Self.validProofs(checkpoint.files))
+    }
+    private func verifyReceipt(_ row: TaskArchiveRecord, task: Int64) throws {
+        guard row.taskId == task else { throw failure("queued archive owner") }
     }
     private func verifyTask(_ row: TaskRecord, id: Int64) throws {
         guard row.id == String(id), row.explorationId == id, row.status == "done", !row.paused, !row.queued, row.inFlight == 0,
@@ -141,7 +146,7 @@ public struct TaskArchiveExerciseReport: Encodable, Equatable, Sendable {
     }
     private func verifyReady(_ row: TaskArchiveRecord, task: Int64) throws {
         guard row.taskId == task, row.state == "ready", row.progress == 100, row.originalStatus == "done", !row.hasError,
-              row.warningCount == 0, row.originalSize > 0, row.compressedSize > 0, row.sha256.map(Self.validSHA) ?? false,
+              row.warningCount == 0, row.originalSize > 0, row.compressedSize > 0, row.sha256.map({Self.validSHA($0)}) ?? false,
               row.dataCounts["tasks"] == 1, row.dataCounts["explorations"] == 1,
               row.categoryId == 7100, row.categoryName == "T17 archive category", same(row.taskName,task == 7101 ? Self.name : "T17 second"),
               same(row.taskDescription,task == 7101 ? Self.description : "Archive fixture second"), same(row.taskGoal,Self.goal) else { throw failure("ready archive metadata") }
@@ -176,8 +181,9 @@ public struct TaskArchiveExerciseReport: Encodable, Equatable, Sendable {
             try check(deadline)
             let snapshot = try await tasks.list(); try check(deadline)
             let ids = Set(snapshot.tasks.map(\.id))
-            guard ids.isSubset(of:["7101","7102"]) else { throw failure("foreign live tasks") }
-            if ids == Set(expected.map(String.init)) { try verifyLive(snapshot,expected:expected); return }
+            let fixtureIDs: Set<String> = ["7101","7102"], expectedIDs = Set(expected.map(String.init))
+            guard ids.isSubset(of:fixtureIDs), snapshot.activeID.map({fixtureIDs.contains($0)}) ?? true else { throw failure("foreign live tasks") }
+            if ids == expectedIDs, snapshot.activeID.map({expectedIDs.contains($0)}) ?? true { try verifyLive(snapshot,expected:expected); return }
             if attempt < 119 { try await sleep(.milliseconds(200)) }
         }
         throw failure("live task polling limit")
@@ -210,4 +216,53 @@ public struct TaskArchiveExerciseReport: Encodable, Equatable, Sendable {
     private func same(_ a: String,_ b: String) -> Bool { a.utf8.elementsEqual(b.utf8) }
     private func check(_ deadline: ContinuousClock.Instant) throws { try Task.checkCancellation(); guard now() <= deadline else { throw failure("stage deadline") } }
     private func failure(_ stage: String) -> RuntimeError { .integrity("archive exercise "+stage) }
+}
+
+public enum TaskArchiveProbeStage: String, Encodable, Sendable {
+    case preparing, boot, authentication, seed, beforeRestart, afterRestart, shutdown, complete
+}
+public enum TaskArchiveAuthenticationProof: String, Encodable, Sendable { case freshSetup, persistedSession }
+public struct TaskArchiveBootReport: Encodable, Sendable {
+    public let index: Int
+    public let reachedReady: Bool
+    public let authentication: TaskArchiveAuthenticationProof?
+    public let protectedStatus: Int?
+    public let cpuCount: Int
+    public let cooperativeStop: Bool
+    public let machineStopped: Bool
+    public let diagnostics: [GuestBootDiagnostic]
+    public let isolationVerified: Bool
+    public let credentialLogCheckPassed: Bool
+    public let formatStageObserved: Bool
+    public let logAuditComplete: Bool
+    public let passed: Bool
+    public init(index: Int, reachedReady: Bool, authentication: TaskArchiveAuthenticationProof?, protectedStatus: Int?, cpuCount: Int,
+                cooperativeStop: Bool, machineStopped: Bool, audit: GuestBootLogAudit) {
+        self.index = index; self.reachedReady = reachedReady; self.authentication = authentication; self.protectedStatus = protectedStatus; self.cpuCount = cpuCount
+        self.cooperativeStop = cooperativeStop; self.machineStopped = machineStopped; diagnostics = audit.diagnostics
+        isolationVerified = audit.isolationWitnessesPresent; credentialLogCheckPassed = audit.credentialsAbsent
+        formatStageObserved = audit.formatStageObserved; logAuditComplete = audit.complete
+        passed = (1...3).contains(index) && reachedReady && authentication == (index == 1 ? .freshSetup : .persistedSession)
+            && protectedStatus == 401 && cpuCount > 0 && cooperativeStop && machineStopped && diagnostics.isEmpty
+            && isolationVerified && credentialLogCheckPassed && logAuditComplete && formatStageObserved == (index == 1)
+    }
+}
+public struct TaskArchiveRunReport: Encodable, Sendable {
+    public let stage: TaskArchiveProbeStage
+    public let bootAttempts: Int
+    public let expectedCPUCount: Int
+    public let boots: [TaskArchiveBootReport]
+    public let seedConfirmed: Bool
+    public let exercise: TaskArchiveExerciseReport?
+    public let terminalSuccess: Bool
+    public let machineStopped: Bool
+    public let passed: Bool
+    @MainActor public init(stage: TaskArchiveProbeStage, bootAttempts: Int, expectedCPUCount: Int, boots: [TaskArchiveBootReport],
+                          seedConfirmed: Bool, exercise: TaskArchiveExerciseReport?, terminalSuccess: Bool, machineStopped: Bool) {
+        self.stage = stage; self.bootAttempts = bootAttempts; self.expectedCPUCount = expectedCPUCount; self.boots = boots
+        self.seedConfirmed = seedConfirmed; self.exercise = exercise; self.terminalSuccess = terminalSuccess; self.machineStopped = machineStopped
+        passed = stage == .complete && bootAttempts == 3 && expectedCPUCount > 0 && boots.map(\.index) == [1,2,3]
+            && boots.allSatisfy{$0.passed && $0.cpuCount == expectedCPUCount} && seedConfirmed && terminalSuccess && machineStopped
+            && exercise?.passed == true && exercise?.checks == TaskArchiveExercise.expectedChecks
+    }
 }

@@ -4,6 +4,11 @@ import XCTest
 @MainActor private final class ArchiveExerciseAPI: BackendJSONTransport, TaskArchiveFixtureControlling {
     var live: Set<Int64> = [7101,7102]
     var records: [Int64:(task:Int64,state:String)] = [:]
+    var laggedActive: [String] = []
+    var laggedLists: [Set<Int64>] = []
+    var partialBatch = false
+    var rejectHide = false
+    var auditFailure = false
     var next: Int64 = 31
     var hidden = false
     var pending = false
@@ -17,10 +22,10 @@ import XCTest
     var controls: [String] = []
     var audits = 0
     var onRead: (() -> Void)?
-    func verifyNoAgentActivity() async throws { audits += 1 }
+    func verifyNoAgentActivity() async throws { audits += 1; if auditFailure { throw RuntimeError.integrity("fixture audit failed") } }
     func setPackageHidden(_ value: Bool, target: TaskArchiveFixtureTarget) async throws {
         XCTAssertEqual(records[target.archiveID]?.task,7101); XCTAssertEqual(target.sha256,String(repeating:"a",count:64))
-        hidden = value; controls.append(value ? "hide" : "repair")
+        controls.append(value ? "hide" : "repair"); if value && rejectHide { throw RuntimeError.integrity("fixture hide rejected") }; hidden = value
     }
     func archive(_ id: Int64,_ task: Int64,_ state: String, overrideTask: Int64? = nil) throws -> BackendHTTPResponse {
         let name = task == 7101 ? TaskArchiveExercise.name : "T17 second", description = task == 7101 ? TaskArchiveExercise.description : "Archive fixture second"
@@ -37,7 +42,10 @@ import XCTest
     }
     func send(method: String,path: String,body: Data?,bearer: String?) async throws -> BackendHTTPResponse {
         calls.append((method,path)); if method == "GET" { onRead?() }
-        if path == "/api/tasks" { return try ChatTestTransport.response(["tasks":try live.sorted().map{try task($0)},"active":""]) }
+        if path == "/api/tasks" {
+            let visible = laggedLists.isEmpty ? live : laggedLists.removeFirst()
+            return try ChatTestTransport.response(["tasks":try visible.sorted().map{try task($0)},"active":laggedActive.isEmpty ? "" : laggedActive.removeFirst()])
+        }
         if path.hasPrefix("/api/tasks/"), method == "GET" {
             let id = Int64(path.split(separator:"/").last!)!; return live.contains(id) ? try ChatTestTransport.response(task(id)) : .init(status:404,body:Data())
         }
@@ -58,7 +66,9 @@ import XCTest
         }
         if path == "/api/tasks/archive/batch" {
             var items: [[String:Any]] = []
-            for task in [7102,7101] as [Int64] { let id = next; next += 1; records[id] = (task,pending ? "archiving" : "ready"); live.remove(task); items.append(["id":String(task),"ok":true,"queued":true,"archive_id":id]) }
+            for task in [7102,7101] as [Int64] {
+                if partialBatch && task == 7102 { items.append(["id":"7102","ok":false,"queued":false]); continue }
+                let id = next; next += 1; records[id] = (task,pending ? "archiving" : "ready"); live.remove(task); items.append(["id":String(task),"ok":true,"queued":true,"archive_id":id]) }
             return try ChatTestTransport.response(["items":items],status:202)
         }
         if path.hasPrefix("/api/tasks/"), path.hasSuffix("/archive") {
@@ -141,6 +151,70 @@ final class TaskArchiveExerciseTests: XCTestCase {
             } catch {}
             XCTAssertEqual(api.singleWrites,index); XCTAssertNotEqual(api.calls.last?.0,"GET")
         }
+    }
+
+    @MainActor func testLiveRegistryLagIsPolledWithoutAnotherMutation() async throws {
+        let api = ArchiveExerciseAPI(); var sleeps = 0
+        let exercise = TaskArchiveExercise(client:api,fixture:api,sleep:{_ in sleeps += 1},progress:{ stage in
+            if stage == "bulk_archive" { api.laggedLists = [[7101,7102],[7102]] }
+            if stage == "explicit_retry" { api.laggedLists = [[]] }
+        })
+        let checkpoint = try await exercise.runBeforeRestart(); XCTAssertGreaterThanOrEqual(sleeps,3)
+        XCTAssertEqual(checkpoint.checks,TaskArchiveExercise.beforeRestartChecks); XCTAssertEqual(api.singleWrites,4)
+    }
+    @MainActor func testLateReadyResponseFailsStageDeadlineBeforeFaultMutation() async throws {
+        let api = ArchiveExerciseAPI(); let base = ContinuousClock().now; var ticks = 0
+        let exercise = TaskArchiveExercise(client:api,fixture:api,sleep:{_ in},now:{ ticks += 1; return base.advanced(by:.seconds(ticks > 2 ? 60 : 0)) })
+        do { _ = try await exercise.runBeforeRestart(); XCTFail("late ready accepted") } catch {}
+        XCTAssertEqual(api.calls.filter{$0.0 != "GET"}.count,1); XCTAssertTrue(api.controls.isEmpty)
+    }
+    @MainActor func testAuditOrFaultRejectionStopsBeforeUnprovenOperations() async throws {
+        for auditFailure in [true,false] {
+            let api = ArchiveExerciseAPI(); api.auditFailure = auditFailure; api.rejectHide = !auditFailure
+            do { _ = try await TaskArchiveExercise(client:api,fixture:api,sleep:{_ in}).runBeforeRestart(); XCTFail("failed fixture control accepted") } catch {}
+            if auditFailure { XCTAssertTrue(api.calls.isEmpty) }
+            else { XCTAssertEqual(api.calls.filter{$0.0 != "GET"}.count,1); XCTAssertEqual(api.controls,["hide"]) }
+        }
+    }
+    @MainActor func testPartialBatchAcceptanceDoesNotAdvanceOrRetry() async throws {
+        let api = ArchiveExerciseAPI(); api.partialBatch = true
+        do { _ = try await TaskArchiveExercise(client:api,fixture:api,sleep:{_ in}).runBeforeRestart(); XCTFail("partial acceptance claimed full exercise") } catch {}
+        XCTAssertEqual(api.calls.filter{$0.0 != "GET"}.count,1); XCTAssertEqual(api.calls.last?.0,"POST"); XCTAssertTrue(api.controls.isEmpty)
+    }
+    @MainActor func testByteChangedCheckpointAndPrecancelledRunNeverStart() async throws {
+        let api = ArchiveExerciseAPI(); let exercise = TaskArchiveExercise(client:api,fixture:api,sleep:{_ in})
+        let checkpoint = try await exercise.runBeforeRestart(); var root = try XCTUnwrap(JSONSerialization.jsonObject(with:JSONEncoder().encode(checkpoint)) as? [String:Any])
+        var files = try XCTUnwrap(root["files"] as? [[String:Any]]); files[0]["path"] = "tasks/7101/workspace/fixture-é.txt"; root["files"] = files
+        let changed = try JSONDecoder().decode(TaskArchiveCheckpoint.self,from:JSONSerialization.data(withJSONObject:root)); let count = api.calls.count
+        do { _ = try await exercise.runAfterRestart(changed); XCTFail("NFC path accepted for NFD fixture") } catch {}
+        XCTAssertEqual(api.calls.count,count)
+        let cancelled = Task { try await exercise.runBeforeRestart() }; cancelled.cancel()
+        do { _ = try await cancelled.value; XCTFail("precancelled run accepted") } catch {}
+        XCTAssertEqual(api.calls.count,count)
+    }
+
+    @MainActor func testTransientActivePointerFromSeparateSnapshotIsWaitedOut() async throws {
+        let api = ArchiveExerciseAPI(); var sleeps = 0
+        let exercise = TaskArchiveExercise(client:api,fixture:api,sleep:{_ in sleeps += 1},progress:{ stage in if stage == "bulk_archive" { api.laggedActive = ["7101"] } })
+        let checkpoint = try await exercise.runBeforeRestart(); XCTAssertEqual(checkpoint.checks,TaskArchiveExercise.beforeRestartChecks)
+        XCTAssertGreaterThanOrEqual(sleeps,1); XCTAssertEqual(api.singleWrites,4)
+    }
+
+    @MainActor func testRunReportRequiresThreeAuditedPersistentBootsAndTerminalProof() async throws {
+        let api = ArchiveExerciseAPI(); let exercise = TaskArchiveExercise(client:api,fixture:api,sleep:{_ in})
+        let checkpoint = try await exercise.runBeforeRestart(); let result = try await exercise.runAfterRestart(checkpoint)
+        func boot(_ index: Int, format: Bool? = nil, auth: TaskArchiveAuthenticationProof? = nil, stop: Bool = true) -> TaskArchiveBootReport {
+            let audit = GuestBootLogAudit(diagnostics:[],credentialsAbsent:true,isolationWitnessesPresent:true,formatStageObserved:format ?? (index == 1),complete:true)
+            return .init(index:index,reachedReady:true,authentication:auth ?? (index == 1 ? .freshSetup : .persistedSession),protectedStatus:401,cpuCount:1,cooperativeStop:stop,machineStopped:true,audit:audit)
+        }
+        let valid = [boot(1),boot(2),boot(3)]
+        func passed(_ boots: [TaskArchiveBootReport], attempts: Int = 3, stage: TaskArchiveProbeStage = .complete, seeded: Bool = true, cpu: Int = 1, terminal: Bool = true) -> Bool {
+            TaskArchiveRunReport(stage:stage,bootAttempts:attempts,expectedCPUCount:cpu,boots:boots,seedConfirmed:seeded,exercise:result,terminalSuccess:terminal,machineStopped:true).passed
+        }
+        XCTAssertTrue(passed(valid)); XCTAssertFalse(passed(Array(valid.prefix(2))))
+        XCTAssertFalse(passed([boot(1),boot(2,format:true),boot(3)])); XCTAssertFalse(passed([boot(1),boot(2,auth:.freshSetup),boot(3)]))
+        XCTAssertFalse(passed([boot(1),boot(2),boot(3,stop:false)])); XCTAssertFalse(passed(valid,attempts:4))
+        XCTAssertFalse(passed(valid,stage:.shutdown)); XCTAssertFalse(passed(valid,seeded:false)); XCTAssertFalse(passed(valid,cpu:2)); XCTAssertFalse(passed(valid,terminal:false))
     }
 
 }

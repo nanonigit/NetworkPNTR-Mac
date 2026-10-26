@@ -16,7 +16,7 @@ import XCTest
     }
 }
 final class TaskArchiveFixtureClientTests: XCTestCase {
-    private let hash = String(repeating:"a",count:64)
+    private let fixtureDigest = String(repeating:"a",count:64)
     private var audit: String { #"{"fixture_audit":true,"uid":1000,"counts":{"foreign_tasks":0,"foreign_archives":0,"profiles":0,"activity":0,"conversations":0,"llm_usage":0,"llm_records":0}}"# }
     @MainActor func testOnlyFixedGuestToolRouteAndTypedAuditProof() async throws {
         let api = FixtureToolAPI(); try api.append(audit)
@@ -29,17 +29,17 @@ final class TaskArchiveFixtureClientTests: XCTestCase {
         XCTAssertEqual(control.seedSHA256.count,64); XCTAssertEqual(control.controlSHA256.count,64)
     }
     @MainActor func testPackageProofMustMatchEveryCapturedIdentityField() async throws {
-        let valid = "{\"fixture_control\":true,\"operation\":\"hide\",\"archive_id\":7,\"task_id\":7101,\"sha256\":\""+hash+"\",\"uid\":1000}"
-        let variants = [valid,valid.replacingOccurrences(of:"7101",with:"7102"),valid.replacingOccurrences(of:"\"hide\"",with:"\"repair\""),valid.replacingOccurrences(of:"1000",with:"0"),valid.replacingOccurrences(of:hash,with:String(repeating:"b",count:64))]
+        let valid = "{\"fixture_control\":true,\"operation\":\"hide\",\"archive_id\":7,\"task_id\":7101,\"sha256\":\""+fixtureDigest+"\",\"uid\":1000}"
+        let variants = [valid,valid.replacingOccurrences(of:"7101",with:"7102"),valid.replacingOccurrences(of:"\"hide\"",with:"\"repair\""),valid.replacingOccurrences(of:"1000",with:"0"),valid.replacingOccurrences(of:fixtureDigest,with:String(repeating:"b",count:64))]
         for (index,json) in variants.enumerated() {
             let api = FixtureToolAPI(); try api.append(json); let control = try TaskArchiveFixtureClient(client:api)
-            do { try await control.setPackageHidden(true,target:.init(archiveID:7,sha256:hash)); if index != 0 { XCTFail("foreign package proof accepted") } }
+            do { try await control.setPackageHidden(true,target:.init(archiveID:7,sha256:fixtureDigest)); if index != 0 { XCTFail("foreign package proof accepted") } }
             catch { if index == 0 { throw error } }
         }
     }
     @MainActor func testUnsafeTargetAndMalformedErrorOrNonzeroAuditNeverSucceed() async throws {
         let api = FixtureToolAPI(); let control = try TaskArchiveFixtureClient(client:api)
-        for target in [TaskArchiveFixtureTarget(archiveID:0,sha256:hash),.init(archiveID:7,sha256:"private code") ] {
+        for target in [TaskArchiveFixtureTarget(archiveID:0,sha256:fixtureDigest),.init(archiveID:7,sha256:"private code") ] {
             do { try await control.setPackageHidden(true,target:target); XCTFail("invalid target accepted") } catch {}
         }
         XCTAssertTrue(api.calls.isEmpty)

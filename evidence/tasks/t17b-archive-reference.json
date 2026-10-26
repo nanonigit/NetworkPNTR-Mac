@@ -1,0 +1,94 @@
+{
+  "passed": true,
+  "image": "sha256:735d063ffd4290be40a870c4c77f6a6f9ad16ae306262e2e21e3865cd9c2b91d",
+  "source_commit": "e75ae371ad777ffd1eecdd28d2781a6519b05591",
+  "backend_binary_matches_vm": true,
+  "isolation": {
+    "network": "none",
+    "host_binds": 0,
+    "published_ports": 0,
+    "read_only_root": true,
+    "privileged": false,
+    "state": "fresh tmpfs",
+    "uid": 1000
+  },
+  "exit_code": 0,
+  "normalized_exercise_equal": true,
+  "private_logs_copied": true,
+  "cleanup": true,
+  "logs_complete": true,
+  "owned_container_absent": true,
+  "original_browser_unchanged": true,
+  "reference": {
+    "exercise": {
+      "checks": [
+        "initial_terminal_tasks",
+        "initial_workspace_bytes",
+        "bulk_archive_accepted",
+        "bulk_archive_ready",
+        "live_rows_removed",
+        "workspace_files_removed",
+        "restore_failure_observed",
+        "explicit_retry_accepted",
+        "first_task_restored",
+        "first_workspace_restored",
+        "second_delete_accepted",
+        "second_archive_removed",
+        "first_rearchive_accepted",
+        "first_ready_for_restart",
+        "persisted_archive_ready",
+        "restart_restore_accepted",
+        "restart_task_restored",
+        "restart_workspace_restored",
+        "second_task_stays_deleted"
+      ],
+      "files": [
+        {
+          "path": "tasks/7101/workspace/fixture-é.txt",
+          "size": 32,
+          "sha256": "844a35e0bcb6bf65694d9e7270b6118cb500cdfeef531a4102f7a8f889bf663c"
+        },
+        {
+          "path": "tasks/7101/workspace/empty.bin",
+          "size": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "path": "tasks/7102/workspace/fixture.bin",
+          "size": 1024,
+          "sha256": "785b0751fc2c53dc14a4ce3d800e69ef9ce1009eb327ccf458afe09c242c26c9"
+        }
+      ],
+      "taskName": "﻿é 中文 한국어",
+      "taskDescription": "Archive fixture é ﻿ interior 中文 한국어",
+      "passed": true
+    },
+    "backend_starts": 3,
+    "cooperative_stops": 3,
+    "fresh_setup": true,
+    "persisted_session": true
+  },
+  "candidate_promoted": false,
+  "retained_unsuccessful_attempts": [
+    {
+      "stage": "prepare",
+      "reason": "Docker canonical capability name assertion",
+      "cleanup": true,
+      "original_browser_unchanged": true
+    },
+    {
+      "stage": "before_restart_initial_page",
+      "reason": "reference rejected source items:null",
+      "cleanup": true,
+      "original_browser_unchanged": true
+    },
+    {
+      "stage": "private_log_collection",
+      "reason": "exercise matched but Docker copy-out failed; runner exited1",
+      "exercise_passed": true,
+      "runner_passed": false,
+      "cleanup": true,
+      "original_browser_unchanged": true
+    }
+  ]
+}
