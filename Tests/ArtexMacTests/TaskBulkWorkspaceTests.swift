@@ -1,4 +1,6 @@
 import XCTest
+import AppKit
+import SwiftUI
 @testable import ArtexCore
 @testable import ArtexMac
 
@@ -153,6 +155,34 @@ final class TaskBulkWorkspaceTests: XCTestCase {
         try await reached { !model.isMutating }
         XCTAssertEqual(model.items.map(\.state),[.notStarted,.notStarted]); XCTAssertEqual(model.completedCount,0)
         XCTAssertTrue(model.uncertainIDs.isEmpty); XCTAssertFalse(api.calls.contains{$0.0 == "DELETE"}); XCTAssertFalse(store.isMutating)
+    }
+
+    @MainActor func testScreenGatesAndStaleBindingsPreserveCapturedBulkDialog() async throws {
+        let (api,_,store) = try await make()
+        let screen = TaskScreenModel(store:store,creationService:TaskCreationService(client:api),categoryService:TaskCategoryService(client:api),bulkService:TaskService(client:api))
+        let model = try XCTUnwrap(screen.bulk), epoch = model.viewOwner
+        let checkbox = TaskBulkBindings.selected(screen:screen,id:"7",owner:epoch); checkbox.wrappedValue = true
+        XCTAssertTrue(screen.beginBulk(.delete)); let first = try XCTUnwrap(model.context).id
+        let old = TaskBulkBindings.presentation(model:model,contextID:first)
+        let option = TaskBulkBindings.cleanup(model:model,contextID:first,key:\.deleteFiles)
+        XCTAssertFalse(screen.beginCreate()); XCTAssertFalse(screen.beginCategories()); XCTAssertTrue(screen.busy)
+        checkbox.wrappedValue = false; XCTAssertEqual(model.selectedIDs,Set(["7"]))
+        model.close(contextID:first); XCTAssertTrue(screen.beginBulk(.delete)); let next = try XCTUnwrap(model.context).id
+        old.wrappedValue = nil; option.wrappedValue = true
+        XCTAssertEqual(model.context?.id,next); XCTAssertFalse(model.options.deleteFiles)
+        screen.stop(); checkbox.wrappedValue = false; XCTAssertEqual(model.selectedIDs,Set(["7"]))
+        screen.reset(); XCTAssertTrue(model.selectedIDs.isEmpty); XCTAssertTrue(model.uncertainIDs.isEmpty)
+    }
+    @MainActor func testOffscreenEnglishJapaneseBulkViewsKeepSelectionWithoutRequests() async throws {
+        let (api,model,_) = try await make(); select(["7","8"],model); XCTAssertTrue(model.begin(.delete))
+        let owner = try XCTUnwrap(model.context).id, before = api.calls.count
+        for language in AppLanguage.allCases {
+            let host = NSHostingView(rootView:TaskBulkView(model:model,contextID:owner).environment(\.locale,language.locale))
+            host.frame = NSRect(x:0,y:0,width:600,height:650); host.layoutSubtreeIfNeeded()
+            XCTAssertNil(host.window); XCTAssertTrue(host.fittingSize.width.isFinite)
+            XCTAssertEqual(model.selectedIDs,Set(["7","8"])); XCTAssertEqual(model.context?.id,owner)
+        }
+        XCTAssertEqual(api.calls.count,before)
     }
 
 }
