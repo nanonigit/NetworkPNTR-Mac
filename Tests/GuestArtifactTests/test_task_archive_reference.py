@@ -77,3 +77,15 @@ class ArchiveReferenceTests(unittest.TestCase):
                     output.assert_not_called()
                 if mode == 'stop_timeout':
                     process.kill.assert_called_once(); self.assertEqual(process.wait.call_count, 3)
+
+    def test_empty_page_accepts_explicit_null_but_requires_items_key(self):
+        class API:
+            def __init__(self, page):
+                self.page = page
+            def api(self, *args):
+                return self.page
+        value = {'page': 1, 'size': 20, 'total': 0, 'items': None}
+        self.assertEqual(reference.page(API(value), 0), [])
+        for bad in [{'page': 1, 'size': 20, 'total': 0}, {**value, 'total': 1}, {**value, 'items': {}}]:
+            with self.assertRaises(RuntimeError):
+                reference.page(API(bad), 0)
