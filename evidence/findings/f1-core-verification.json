@@ -1,0 +1,57 @@
+{
+  "phase": "F1",
+  "baseline": "e75ae371ad777ffd1eecdd28d2781a6519b05591",
+  "scope": "typed finite Findings contracts and executed source-query projection only",
+  "swift": {
+    "total": 517,
+    "passed": 516,
+    "existing_ax_skip": 1,
+    "failures": 0
+  },
+  "python": {
+    "total": 86,
+    "passed": 86,
+    "failures": 0
+  },
+  "finding_focused_cases": 16,
+  "browser_projection_cases": 8,
+  "line_coverage": {
+    "FindingAggregates.swift": {
+      "count": 78,
+      "covered": 77,
+      "percent": 98.71794871794873
+    },
+    "FindingModels.swift": {
+      "count": 75,
+      "covered": 74,
+      "percent": 98.66666666666667
+    },
+    "FindingService.swift": {
+      "count": 130,
+      "covered": 129,
+      "percent": 99.23076923076923
+    }
+  },
+  "source_api_sha256": "18b4529a99b508964348bf83b7777597ca3cb80a64565380e1b1320005700fe1",
+  "source_function_sha256": "6a98d554bf6172094f793f7a89339372a94e25d7ae75b66738c1b8d0c695dcce",
+  "known_write_severities": 4,
+  "known_write_statuses": 9,
+  "soft_tree_budget_regression": {
+    "source_target": 3000,
+    "valid_nodes_accepted": 3001,
+    "red_commit": "e53b981",
+    "green_commit": "2fdd717"
+  },
+  "native_response_limit_bytes": 4194304,
+  "native_patch_body_limit_bytes": 65536,
+  "native_search_class_scope_limit_bytes": 8192,
+  "raw_user_unicode_preserved": true,
+  "feature_map_status": "pending",
+  "actual_guest_reference_gate": "pending",
+  "native_ui_gate": "pending",
+  "automatic_write_retries": false,
+  "source_patch_atomic": false,
+  "browser_deployment_changed": false,
+  "vm_policy_changed": false,
+  "candidate_promoted": false
+}
