@@ -218,7 +218,9 @@ final class TaskCategoryWorkspaceTests: XCTestCase {
         let old = try XCTUnwrap(api.reads["/api/task-categories"])
         XCTAssertTrue(screen.beginCreate()); let creation = try XCTUnwrap(screen.creation), owner = try XCTUnwrap(creation.context).id
         let loading = Task { await creation.load(contextID:owner) }; try await reached { api.reads.count == 5 }
+        screen.categoryFilter = .category(8)
         old.resume(returning:try api.response(["categories":[api.row(9)]])); await background.value
+        XCTAssertEqual(screen.categoryFilter,.all)
         api.reads["/api/task-categories"]?.resume(returning:try api.response(["categories":[api.row(8)]]))
         api.reads["/api/companies"]?.resume(returning:try api.response([["id":1,"name":"company"]]))
         api.reads["/api/llm/profiles"]?.resume(returning:try api.response(["profiles":[]]))
@@ -250,6 +252,16 @@ final class TaskCategoryWorkspaceTests: XCTestCase {
         otherAPI.reads["/api/tasks"]?.resume(returning:try otherAPI.response(["tasks":[],"active":""]))
         await otherLoad.value; XCTAssertEqual(other.selection,.uncategorized)
 
+    }
+
+    @MainActor func testPrecancelledExistingNameSaveLeavesParentAndContextUntouched() async throws {
+        let (api,model,_) = make(); let parent = UUID(), owner = try XCTUnwrap(model.open(tasks:[],inlineOwner:parent))
+        await model.load(contextID:owner); model.setName("category 8",contextID:owner,editorID:model.editorID)
+        var receipts = 0; model.onChange = { _,_ in receipts += 1 }; let count = api.calls.count, editor = model.editorID
+        let cancelled = Task { await model.save(contextID:owner,editorID:editor) }; cancelled.cancel()
+        let saved = await cancelled.value
+        XCTAssertFalse(saved); XCTAssertEqual(model.context?.id,owner); XCTAssertEqual(receipts,0)
+        XCTAssertEqual(model.name,"category 8"); XCTAssertEqual(api.calls.count,count)
     }
 
 }
