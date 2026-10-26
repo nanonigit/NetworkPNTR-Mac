@@ -22,6 +22,9 @@ public enum TaskMutationConfirmation: Sendable {
 @MainActor @Observable public final class TaskStore {
     public private(set) var list = TaskReadState<[TaskRecord]>()
     public private(set) var detail = TaskReadState<TaskRecord>()
+    /// Changes only when an owned read attempt commits a value or a safe error.
+    public private(set) var listReadRevision = UUID()
+    public private(set) var detailReadRevision = UUID()
     public private(set) var activeID: String?
     public private(set) var selectedID: String?
     public private(set) var lastConfirmation: TaskMutationConfirmation?
@@ -51,10 +54,10 @@ public enum TaskMutationConfirmation: Sendable {
             let snapshot = try await service.list()
             guard listTicket == ticket, !Task.isCancelled else { return }
             list.value = snapshot.tasks; activeID = snapshot.activeID
-            list.failure = nil; list.isStale = false
+            list.failure = nil; list.isStale = false; listReadRevision = UUID()
         } catch {
             guard listTicket == ticket, !Task.isCancelled else { return }
-            list.failure = AppErrorMessage(error); list.isStale = true
+            list.failure = AppErrorMessage(error); list.isStale = true; listReadRevision = UUID()
         }
     }
 
@@ -77,10 +80,10 @@ public enum TaskMutationConfirmation: Sendable {
         do {
             let task = try await service.detail(id: id)
             guard detailTicket == ticket, selectedID == id, !Task.isCancelled else { return }
-            detail.value = task; detail.failure = nil; detail.isStale = false
+            detail.value = task; detail.failure = nil; detail.isStale = false; detailReadRevision = UUID()
         } catch {
             guard detailTicket == ticket, selectedID == id, !Task.isCancelled else { return }
-            detail.failure = AppErrorMessage(error); detail.isStale = true
+            detail.failure = AppErrorMessage(error); detail.isStale = true; detailReadRevision = UUID()
         }
     }
 

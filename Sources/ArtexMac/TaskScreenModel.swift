@@ -23,6 +23,7 @@ struct TaskDialog: Identifiable {
     private(set) var archiveQueryDraft = ""
     private(set) var isRefreshingAfterArchive = false
     @ObservationIgnored private var archiveRefreshTask: Task<Void,Never>?
+    @ObservationIgnored private var archiveGateWatch: UUID?
     @ObservationIgnored private var archiveRefreshPending = false
     @ObservationIgnored private var archiveRefreshTicket = UUID()
     @ObservationIgnored private var handledReconciliation: UUID?
@@ -92,21 +93,48 @@ struct TaskDialog: Identifiable {
         guard !archives.removedAfterRestoreIDs.isEmpty else { return }
         categories?.markStale(); scheduleArchiveRefresh()
     }
+    private var archiveReadsAvailable: Bool { !store.isMutating && !store.list.isLoading && !store.detail.isLoading }
+    private func observeArchiveReadGate() {
+        guard archiveGateWatch == nil else { return }
+        let gate = UUID(), life = lifecycle; archiveGateWatch = gate
+        withObservationTracking {
+            _ = store.isMutating; _ = store.list.isLoading; _ = store.detail.isLoading
+        } onChange: { [weak self] in
+            Task { @MainActor [weak self] in
+                guard let self, self.archiveGateWatch == gate else { return }
+                self.archiveGateWatch = nil
+                guard self.lifecycle == life, self.archiveRefreshPending else { return }
+                self.scheduleArchiveRefresh()
+            }
+        }
+    }
     private func scheduleArchiveRefresh() {
-        // Preserve an in-flight read and coalesce new receipts into a subsequent full cycle.
-        archiveRefreshPending = true
+        // Retain pending work through occupied mutation/read gates and coalesce overlapping notices.
+        archiveRefreshPending = true; isRefreshingAfterArchive = true
         guard archiveRefreshTask == nil else { return }
-        let ticket = UUID(), life = lifecycle; archiveRefreshTicket = ticket; isRefreshingAfterArchive = true
+        guard archiveReadsAvailable else { observeArchiveReadGate(); return }
+        archiveGateWatch = nil
+        let ticket = UUID(), life = lifecycle; archiveRefreshTicket = ticket
         archiveRefreshTask = Task { [weak self] in
             guard let self else { return }
-            defer { if self.archiveRefreshTicket == ticket { self.isRefreshingAfterArchive = false; self.archiveRefreshTask = nil } }
+            defer {
+                if self.archiveRefreshTicket == ticket {
+                    self.isRefreshingAfterArchive = false; self.archiveRefreshTask = nil
+                    if self.archiveRefreshPending, self.lifecycle == life, !Task.isCancelled { self.scheduleArchiveRefresh() }
+                }
+            }
             repeat {
                 guard self.lifecycle == life, !Task.isCancelled else { return }
+                guard self.archiveReadsAvailable else { self.archiveRefreshPending = true; return }
                 self.archiveRefreshPending = false
+                let listRevision = self.store.listReadRevision
                 await self.store.refreshList()
                 guard self.lifecycle == life, !Task.isCancelled else { return }
+                guard self.store.listReadRevision != listRevision, self.archiveReadsAvailable else { self.archiveRefreshPending = true; return }
+                let selected = self.store.selectedID, detailRevision = self.store.detailReadRevision
                 await self.store.refreshSelected()
                 guard self.lifecycle == life, !Task.isCancelled else { return }
+                if selected != nil, selected == self.store.selectedID, self.store.detailReadRevision == detailRevision { self.archiveRefreshPending = true; return }
                 await self.categories?.refreshCatalog()
                 guard self.lifecycle == life, !Task.isCancelled else { return }
                 if self.taskTab == .archived { await self.archives?.refresh() }
@@ -198,7 +226,7 @@ struct TaskDialog: Identifiable {
         if ticket == lifecycle, !Task.isCancelled { await store.refreshSelected() }
     }
     func stop() {
-        archiveRefreshTask?.cancel(); archiveRefreshTask = nil; archiveRefreshPending = false; archiveRefreshTicket = UUID(); isRefreshingAfterArchive = false
+        archiveRefreshTask?.cancel(); archiveRefreshTask = nil; archiveRefreshPending = false; archiveGateWatch = nil; archiveRefreshTicket = UUID(); isRefreshingAfterArchive = false
         archiveActions?.suspend(); archives?.stop(); bulk?.suspend(); categories?.suspend(); lifecycle = UUID(); selectionTask?.cancel(); selectionTask = nil; creation?.suspendAttachments(); store.stop() }
     func reset() {
         stop(); taskTab = .live; archiveQueryDraft = ""; handledReconciliation = nil; archiveActions?.reset(); archives?.reset(); bulk?.reset(); categories?.reset(); categoryFilter = .all; creation?.reset(); store.reset(); dialog = nil; renameDraft = ""; query = ""; status = nil

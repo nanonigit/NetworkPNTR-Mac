@@ -194,4 +194,28 @@ final class TaskArchiveUITests: XCTestCase {
         XCTAssertEqual(screen.store.list.value?.first?.name,"reload after category gate"); screen.stop()
     }
 
+    @MainActor func testMutationInvalidatingHeldReloadKeepsRequestPending() async throws {
+        let (api,screen) = try await make(); let actions = try XCTUnwrap(screen.archiveActions)
+        api.holdTasks = true; XCTAssertTrue(screen.beginArchive(try XCTUnwrap(screen.store.list.value?.first)))
+        api.write = .init(status:202,body:Data(row(state:"archive_queued").utf8)); _ = await actions.submit(contextID:try XCTUnwrap(actions.context).id)
+        try await reached { api.heldTasks.count == 1 }
+        let revision = screen.store.listReadRevision, gate = try XCTUnwrap(screen.store.beginCategoryMutation())
+        screen.store.finishCategoryMutation(ticket:gate,change:nil)
+        api.heldTasks[0].resume(returning:.init(status:200,body:try JSONSerialization.data(withJSONObject:["tasks":api.tasks,"active":"7"])))
+        try await reached { api.heldTasks.count == 2 }; XCTAssertEqual(screen.store.listReadRevision,revision)
+        api.tasks[0]["name"] = "fresh owned read"
+        api.heldTasks[1].resume(returning:.init(status:200,body:try JSONSerialization.data(withJSONObject:["tasks":api.tasks,"active":"7"])))
+        try await reached { !screen.isRefreshingAfterArchive }; XCTAssertNotEqual(screen.store.listReadRevision,revision)
+        XCTAssertEqual(screen.store.list.value?.first?.name,"fresh owned read"); screen.stop()
+    }
+    @MainActor func testResetRevokesPendingGateObservationWithoutNewReads() async throws {
+        let (api,screen) = try await make(); let archives = try XCTUnwrap(screen.archives)
+        XCTAssertTrue(screen.setTaskTab(.archived)); let gate = try XCTUnwrap(screen.store.beginCategoryMutation())
+        XCTAssertTrue(archives.observeAcceptedRestore(try BackendJSONCoding.decode(TaskArchiveRecord.self,from:Data(row(state:"restore_queued").utf8)),owner:archives.sessionOwner))
+        await archives.refresh(); screen.archiveReconciled(); XCTAssertTrue(screen.isRefreshingAfterArchive)
+        let count = api.calls.count; screen.reset(); screen.store.finishCategoryMutation(ticket:gate,change:nil)
+        for _ in 0..<30 { await Task.yield() }
+        XCTAssertEqual(api.calls.count,count); XCTAssertFalse(screen.isRefreshingAfterArchive); XCTAssertNil(screen.store.list.value)
+    }
+
 }
