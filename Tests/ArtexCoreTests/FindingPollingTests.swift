@@ -39,3 +39,20 @@ final class FindingPollingTests: XCTestCase {
         api.replies = [FST.stats]; await failing.runStats(); XCTAssertFalse(failing.isStatsPolling)
     }
 }
+
+extension FindingPollingTests {
+    @MainActor func testAssetResumeWaitsForHeldMutationBeforeItsInitialSnapshot() async throws {
+        let api = FindingStateAPI(); var sleeps: [CheckedContinuation<Void,Error>] = []
+        let model = FindingStore(service:FindingService(client:api),sleep:{_ in try await withCheckedThrowingContinuation{sleeps.append($0)}})
+        XCTAssertTrue(model.setView(.asset)); api.replies = [FST.tree,FST.page(["7"])]; await model.refreshView()
+        let target = try FST.record(); api.hold = true
+        let write = Task {await model.update(target,patch:.init(name:"changed"),owner:model.viewOwner)}; try await FST.reached{api.held.count == 1}
+        model.stop(); var started = false
+        let view = Task {started = true;await model.runView()}
+        try await FST.reached{started && (!model.isPolling || sleeps.count == 1)}
+        XCTAssertTrue(model.isPolling); XCTAssertEqual(sleeps.count,1); XCTAssertEqual(api.calls.count,3)
+        api.hold = false; api.replies = [FST.tree,FST.page(["8"])]; api.held[0].resume(returning:FST.reply(FST.row(name:"changed"))); _ = await write.value
+        if let pause = sleeps.first {pause.resume()}; await view.value
+        XCTAssertEqual(api.calls.count,5); XCTAssertEqual(model.flat.read.value?.items.first?.id,"8"); XCTAssertFalse(model.isPolling)
+    }
+}

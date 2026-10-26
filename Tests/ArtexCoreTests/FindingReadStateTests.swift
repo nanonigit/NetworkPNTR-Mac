@@ -56,3 +56,20 @@ final class FindingReadStateTests: XCTestCase {
         state.reset(); XCTAssertEqual(state.page,1); XCTAssertEqual(state.size,20)
     }
 }
+
+extension FindingReadStateTests {
+    @MainActor func testCorrectiveReadCanBeInvalidatedCancelledOrFailWithoutRevivingOldCursor() async throws {
+        let state = FindingPageState<FindingPage>(size:20,maximum:200); var held: CheckedContinuation<FindingPage,Error>?
+        XCTAssertTrue(state.configure(page:9,size:20))
+        let old = Task {await state.refresh {p,s in if p == 9 {return try self.page(p,total:0,size:s)}; return try await withCheckedThrowingContinuation{held=$0}}}
+        try await FST.reached{held != nil}; XCTAssertEqual(state.page,1); XCTAssertTrue(state.configure(page:5,size:10))
+        held!.resume(returning:try page(1,total:0,size:20)); assertFalse(await old.value); XCTAssertEqual(state.page,5); XCTAssertNil(state.read.value)
+        XCTAssertTrue(state.configure(page:9,size:20))
+        assertFalse(await state.refresh{p,s in if p == 9 {return try self.page(p,total:0,size:s)};throw BackendAPIError.status(500)})
+        XCTAssertEqual(state.page,1); XCTAssertTrue(state.read.isStale); XCTAssertNotNil(state.read.failure)
+        held = nil; XCTAssertTrue(state.configure(page:9,size:20))
+        let cancelled = Task {await state.refresh {p,s in if p == 9 {return try self.page(p,total:0,size:s)};return try await withCheckedThrowingContinuation{held=$0}}}
+        try await FST.reached{held != nil}; cancelled.cancel(); held!.resume(returning:try page(1,total:0,size:20)); assertFalse(await cancelled.value)
+        XCTAssertNil(state.read.value); XCTAssertFalse(state.read.isLoading)
+    }
+}
