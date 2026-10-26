@@ -166,4 +166,36 @@ final class TaskArchiveServiceTests: XCTestCase {
         }
     }
 
+    func testRawMapPathsAndBoundedJSONSyntax() throws {
+        let original = String(decoding:data(),as:UTF8.self), key = #""skills":{"e\u0301":2}"#
+        let first = original.replacingOccurrences(of:key,with:#""skills":{"é":2,"e\u0301":3,"\ufeffraw_key":4,"raw_key":5}"#)
+        let second = String(decoding:data(id:8,task:9),as:UTF8.self).replacingOccurrences(of:key,with:#""skills":{"e\u0301":7}"#)
+        let pageData = Data((#"{"items":["# + first + "," + second + #"],"total":2,"page":1,"size":20}"#).utf8)
+        let page = try BackendJSONCoding.decode(TaskArchivePage.self,from:pageData)
+        XCTAssertEqual(page.items[0].aggregateStats.skills["e\u{301}"],3); XCTAssertEqual(page.items[1].aggregateStats.skills["e\u{301}"],7)
+        XCTAssertEqual(Set(page.items[0].aggregateStats.skills.entries.map(\.id)).count,4)
+        for raw in [#""skills":{}"#,#""skills":null"#] {
+            let value = try BackendJSONCoding.decode(TaskArchiveRecord.self,from:Data(original.replacingOccurrences(of:key,with:raw).utf8))
+            XCTAssertTrue(value.aggregateStats.skills.isEmpty)
+        }
+        for raw in [#""skills":{"x":-1}"#,#""skills":{"x":9223372036854775808}"#,#""skills":{"x":true}"#,#""skills":{"x":null}"#,#""skills":{"x":1.0}"#,#""skills":{"x":1e2}"#,#""skills":{"x":01}"#,#""skills":{"x":+1}"#,#""skills":{"x":1,"x":2}"#,#""skills":{"x":"1"}"#] {
+            XCTAssertThrowsError(try BackendJSONCoding.decode(TaskArchiveRecord.self,from:Data(original.replacingOccurrences(of:key,with:raw).utf8)))
+        }
+        func withIgnored(_ raw: String) -> Data { Data((String(original.dropLast()) + #", "ignored":"# + raw + "}").utf8) }
+        for token in ["[]","{}","[true,false,null,-1,1.25e+2,1E2,-1e-2,0.0,-0]",#""escaped\"slash\\\uD83D\uDE00""#,#"{"data_counts":{"x":"not a counter"},"aggregate_stats":{"skills":{"x":"ignored"}}}"#] {
+            let value = try BackendJSONCoding.decode(TaskArchiveRecord.self,from:withIgnored(token)); XCTAssertEqual(value.id,big)
+        }
+        for token in ["tru","true false","1e","1.","--1","[1,]",#"{"x":1,}"#,#""\u00ZZ""#,#""\uD800""#] {
+            XCTAssertThrowsError(try BackendJSONCoding.decode(TaskArchiveRecord.self,from:withIgnored(token)))
+        }
+        XCTAssertThrowsError(try BackendJSONCoding.decode(TaskArchiveRecord.self,from:withIgnored(String(repeating:"[",count:130)+"0"+String(repeating:"]",count:130))))
+        XCTAssertThrowsError(try BackendJSONCoding.decode(TaskArchiveRecord.self,from:Data((original+" trailing").utf8)))
+        XCTAssertThrowsError(try BackendJSONCoding.decode(TaskArchiveRecord.self,from:Data(original.dropLast().utf8)))
+        for alias in [#", "dataCounts":{"x":-1}}"#,#", "aggregate__stats":{"skills":{"x":-1}}}"#] {
+            XCTAssertThrowsError(try BackendJSONCoding.decode(TaskArchiveRecord.self,from:Data((String(original.dropLast())+alias).utf8)))
+        }
+        var huge = data(); huge.append(Data(repeating:32,count:4*1024*1024))
+        XCTAssertThrowsError(try BackendJSONCoding.decode(TaskArchiveRecord.self,from:huge))
+    }
+
 }

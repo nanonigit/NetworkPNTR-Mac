@@ -1,0 +1,68 @@
+{
+  "phase": "T13 archive Core only",
+  "baseline": "e75ae371ad777ffd1eecdd28d2781a6519b05591",
+  "reference_sha256": {
+    "server/task_archives.go": "c41acbe891e921f3a90299102e00c746a5f6c3a6f92a48c55a5a9e3c09368c35",
+    "db/task_archives.go": "83147eb4aa040ee4b06cac5d10f13921b4d47f026679dc80f60ea62ca3d4af94",
+    "db/task_archives_restore.go": "ca9c9daeb4749a13fbffe3918d357422e3b599648f516ea7439e28019cd36e3b",
+    "web/src/lib/api.ts": "18b4529a99b508964348bf83b7777597ca3cb80a64565380e1b1320005700fe1",
+    "web/src/lib/types.ts": "469cf531c8b257579bf2eb8ca6b632ef05973f6019ef6f5389d0ab9d48e79309"
+  },
+  "swift": {
+    "total": 437,
+    "passed": 436,
+    "skipped_existing_ax": 1,
+    "failed": 0
+  },
+  "python": {
+    "total": 62,
+    "failed": 0
+  },
+  "focused_cases": 10,
+  "line_coverage": {
+    "TaskArchiveCountMap.swift": {
+      "count": 130,
+      "covered": 128,
+      "percent": 98.46153846153847
+    },
+    "TaskArchiveModels.swift": {
+      "count": 80,
+      "covered": 76,
+      "percent": 95
+    },
+    "TaskArchiveSemantics.swift": {
+      "count": 17,
+      "covered": 17,
+      "percent": 100
+    },
+    "TaskArchiveService.swift": {
+      "count": 84,
+      "covered": 84,
+      "percent": 100
+    }
+  },
+  "signed_build": "build-only and strict signature pass",
+  "catalog": {
+    "keys_per_locale": 35,
+    "locales": [
+      "en",
+      "ja"
+    ],
+    "packaged_values": "match"
+  },
+  "review": "no remaining concrete blocker",
+  "live_mutations": false,
+  "native_window_opened": false,
+  "vm_started": false,
+  "acceptance_pending": [
+    "archive workspace and polling",
+    "pending restore404 reconciliation",
+    "native archive/live UI and bulk integration",
+    "real archive/restore/delete jobs",
+    "restart durability",
+    "full21workflow and visual acceptance",
+    "native cloud egress",
+    "kernel reliability",
+    "distribution"
+  ]
+}

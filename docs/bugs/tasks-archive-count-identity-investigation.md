@@ -1,0 +1,9 @@
+# T13 archive count-key identity investigation
+
+Collect/reproduce: raw valid JSON carried NFC é, NFD e\u0301, FEFF-prefixed and ordinary keys. Initial [String:Int64] projection retained3instead of4, returned the NFC value for NFD lookup and accepted one negative/positive collision order. da81515 actual runtimeRED3assertions. No user data/VM/live mutation. A separate keyed-container probe also collapsed keys; JSONSerialization mutable containers preserved NFC/NFD but dropped leading FEFF, so neither round trip was a valid repair.
+
+Five Whys: Swift dictionary key equality uses canonical equivalence -> Go/JS source key identity differs -> dynamic count maps reused ordinary metadata decoding -> initial single-NFD fixture verified spelling but not simultaneous distinct keys -> malformed/negative tests lacked collision ordering. Fishbone: language identity, JSON decoding, dynamic map schema, negative validation after overwrite, test diversity.
+
+Repair: scoped raw walker extracts only known count maps into ordered entries with byte-based Data IDs and lookup. JSONDecoder validates each string token; strict Int64/nonnegative/duplicate-byte validation precedes storage. Full syntax traversal is bounded by4MiB/depth128 and rejects ambiguous known count-field aliases. ArchiveRecord/Page route into this codec via BackendJSONCoding; unrelated model decoding unchanged. Unknown nested lookalikes are ignored as normal metadata projection. Use the sanctioned codec, not independent keyed decode or JSONSerialization for these records.
+
+Verify/prevent: b5e2647 GREEN9 then10cases includes multi-item page map isolation, all4names/IDs, both negative orders, null/empty, malformed/overflow/fraction/escaping/depth/size/path cases. Full437Swift(436pass/1existingAXskip),62Python; reviewed/signed package. Counts retain exact Int64 precision and names are not translated. Actual archive jobs, native state/UI and persistence remain separate acceptance gates.
