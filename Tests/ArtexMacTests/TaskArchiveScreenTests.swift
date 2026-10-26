@@ -4,8 +4,12 @@ import ArtexCore
 
 @MainActor private final class ArchiveScreenAPI: BackendJSONTransport {
     var calls = 0
+    var tasks: [[String:Any]] = []
+    var writeReply = BackendHTTPResponse(status:503,body:Data())
     func send(method: String,path: String,body: Data?,bearer: String?) async throws -> BackendHTTPResponse {
-        calls += 1; return .init(status:503,body:Data())
+        calls += 1
+        if method == "GET", path == "/api/tasks" { return .init(status:200,body:try JSONSerialization.data(withJSONObject:["tasks":tasks,"active":"7"])) }
+        return writeReply
     }
 }
 final class TaskArchiveScreenTests: XCTestCase {
@@ -28,4 +32,21 @@ final class TaskArchiveScreenTests: XCTestCase {
         let api = ArchiveScreenAPI(); let screen = TaskScreenModel(store:TaskStore(service:TaskService(client:api)))
         XCTAssertNil(screen.archives); screen.stop(); screen.reset(); XCTAssertEqual(api.calls,0)
     }
+    @MainActor func testArchiveActionsShareScreenBusyAndValidBulkReceiptClearsMainSelection() async throws {
+        let api = ArchiveScreenAPI()
+        let path = URL(fileURLWithPath:#filePath).deletingLastPathComponent().deletingLastPathComponent().appendingPathComponent("ArtexCoreTests/Fixtures/task-contract.json")
+        let object = try XCTUnwrap(JSONSerialization.jsonObject(with:Data(contentsOf:path)) as? [String:Any])
+        var row = try XCTUnwrap(object["task"] as? [String:Any]); row["id"] = "7"; row["status"] = "paused"; row["archive_blocked_by_task_id"] = ""
+        api.tasks = [row]
+        let screen = TaskScreenModel(store:TaskStore(service:TaskService(client:api)),bulkService:TaskService(client:api),archiveService:TaskArchiveService(client:api))
+        await screen.store.refreshList(); let task = try XCTUnwrap(screen.store.list.value?.first), bulk = try XCTUnwrap(screen.bulk)
+        bulk.setSelected("7",selected:true,owner:bulk.viewOwner)
+        XCTAssertTrue(screen.beginSelectedArchive()); XCTAssertTrue(screen.busy); XCTAssertFalse(screen.beginDelete(task))
+        let actions = try XCTUnwrap(screen.archiveActions), id = try XCTUnwrap(actions.context).id
+        api.writeReply = .init(status:202,body:Data(#"{"items":[{"id":"7","ok":false,"queued":false}]}"#.utf8))
+        _ = await actions.submit(contextID:id); XCTAssertTrue(bulk.selectedIDs.isEmpty)
+        actions.close(contextID:id); XCTAssertFalse(screen.busy); XCTAssertTrue(screen.beginArchive(task))
+        screen.stop(); XCTAssertNil(actions.context); XCTAssertFalse(screen.busy)
+    }
+
 }
