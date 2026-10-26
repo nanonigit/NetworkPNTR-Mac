@@ -31,7 +31,8 @@ public enum TaskMutationConfirmation: Sendable {
     public private(set) var isPolling = false
     @ObservationIgnored private let service: TaskService
     @ObservationIgnored private let sleep: @MainActor (Duration) async throws -> Void
-    @ObservationIgnored private var categoryTicket: (id: UUID, life: UUID)?
+    @ObservationIgnored private var externalTicket: (id: UUID, life: UUID, kind: ExternalKind)?
+    private enum ExternalKind { case category, bulk }
     @ObservationIgnored private var lifetime = UUID()
     @ObservationIgnored private var activity = UUID()
     @ObservationIgnored private var listTicket = UUID()
@@ -84,19 +85,54 @@ public enum TaskMutationConfirmation: Sendable {
     }
 
     public func beginCategoryMutation() -> UUID? {
-        guard !isMutating else { return nil }
-        let id = UUID(); categoryTicket = (id,lifetime); isMutating = true; invalidateReads()
+        beginExternalMutation(kind:.category)
+    }
+    private func beginExternalMutation(kind: ExternalKind) -> UUID? {
+        guard !isMutating, !Task.isCancelled else { return nil }
+        let id = UUID(); externalTicket = (id,lifetime,kind); isMutating = true; invalidateReads()
         mutationFailure = nil; mutationUncertain = false; lastConfirmation = nil
         return id
     }
     public func finishCategoryMutation(ticket: UUID, change: TaskCategoryChange?) {
-        guard let owner = categoryTicket, owner.id == ticket else { return }
-        categoryTicket = nil; isMutating = false; invalidateReads()
+        guard let owner = externalTicket, owner.id == ticket, owner.kind == .category else { return }
+        externalTicket = nil; isMutating = false; invalidateReads()
         guard owner.life == lifetime else { return }
         if let change {
             if let tasks = list.value { list.value = change.applying(to:tasks) }
             if let task = detail.value { detail.value = change.applying(to:[task]).first }
         }
+        list.isStale = true; detail.isStale = true
+    }
+
+    public func beginBulkMutation() -> UUID? { beginExternalMutation(kind:.bulk) }
+    @discardableResult public func applyBulkChange(ticket: UUID, change: TaskBulkChange) -> Bool {
+        guard let owner = externalTicket, owner.id == ticket, owner.kind == .bulk, owner.life == lifetime else { return false }
+        invalidateReads(); list.isStale = true; detail.isStale = true
+        switch change {
+        case .deleted(let result):
+            list.value?.removeAll { $0.id == result.deleted }
+            if activeID == result.deleted { activeID = nil }
+            if selectedID == result.deleted { selectedID = nil; detail = .init() }
+        case .controlled(let items):
+            func project(_ original: TaskRecord) -> TaskRecord {
+                var row = original
+                if let item = items.first(where:{$0.id == row.id && $0.ok}), let status = item.status {
+                    row.status = status; row.paused = status == "paused"; row.queued = item.queued
+                }
+                return row
+            }
+            list.value = list.value?.map(project); detail.value = detail.value.map(project)
+        case .moved(let result):
+            let change = TaskCategoryChange.batchAssigned(result)
+            if let rows = list.value { list.value = change.applying(to:rows) }
+            if let row = detail.value { detail.value = change.applying(to:[row]).first }
+        }
+        return true
+    }
+    public func finishBulkMutation(ticket: UUID) {
+        guard let owner = externalTicket, owner.id == ticket, owner.kind == .bulk else { return }
+        externalTicket = nil; isMutating = false; invalidateReads()
+        guard owner.life == lifetime else { return }
         list.isStale = true; detail.isStale = true
     }
 

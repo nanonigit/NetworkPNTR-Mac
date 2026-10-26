@@ -11,14 +11,14 @@ public struct TaskRecord: Decodable, Sendable, Equatable, Identifiable {
     public let pinnedAt: String?
     public let description: String
     public let goal: String
-    public let status: String
+    public internal(set) var status: String
     public let createdAt: String
     public let createdUnix: Int64
     public let completedAt: String
     public let completedUnix: Int64
     public let lastActivityUnix: Int64
-    public let paused: Bool
-    public let queued: Bool
+    public internal(set) var paused: Bool
+    public internal(set) var queued: Bool
     public let tokens: TaskTokenCounts
     public let goalsTotal: Int64
     public let goalsMet: Int64
