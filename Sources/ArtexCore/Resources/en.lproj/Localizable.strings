@@ -908,6 +908,76 @@
 	<string>Task details will be implemented and compared with the browser version.</string>
 	<key>shell.taskPending</key>
 	<string>Task details are being migrated</string>
+	<key>task.archive.actionUnavailable</key>
+	<string>This archive state does not allow that action.</string>
+	<key>task.archive.batchValidation</key>
+	<string>Select between 1 and 100 valid items.</string>
+	<key>task.archive.phase.compact_database</key>
+	<string>Compacting database</string>
+	<key>task.archive.phase.compact_traffic</key>
+	<string>Compacting traffic</string>
+	<key>task.archive.phase.compress</key>
+	<string>Compressing</string>
+	<key>task.archive.phase.consume_package</key>
+	<string>Finishing restore</string>
+	<key>task.archive.phase.database_restored</key>
+	<string>Database restored</string>
+	<key>task.archive.phase.delete_metadata</key>
+	<string>Deleting archive metadata</string>
+	<key>task.archive.phase.failed</key>
+	<string>Failed</string>
+	<key>task.archive.phase.interrupted</key>
+	<string>Interrupted</string>
+	<key>task.archive.phase.queued</key>
+	<string>Queued</string>
+	<key>task.archive.phase.ready</key>
+	<string>Ready</string>
+	<key>task.archive.phase.restore_database</key>
+	<string>Restoring database</string>
+	<key>task.archive.phase.restore_files</key>
+	<string>Restoring files</string>
+	<key>task.archive.phase.restore_traffic</key>
+	<string>Restoring traffic</string>
+	<key>task.archive.phase.snapshot_database</key>
+	<string>Saving database snapshot</string>
+	<key>task.archive.phase.snapshot_traffic</key>
+	<string>Saving traffic snapshot</string>
+	<key>task.archive.phase.stage_files</key>
+	<string>Staging files</string>
+	<key>task.archive.phase.stage_package_delete</key>
+	<string>Preparing package deletion</string>
+	<key>task.archive.phase.starting</key>
+	<string>Starting</string>
+	<key>task.archive.phase.verify_package</key>
+	<string>Verifying package</string>
+	<key>task.archive.queryLimits</key>
+	<string>Use a valid page, size and search within the allowed limits.</string>
+	<key>task.archive.state.archive_failed</key>
+	<string>Archive failed</string>
+	<key>task.archive.state.archive_queued</key>
+	<string>Archive queued</string>
+	<key>task.archive.state.archiving</key>
+	<string>Archiving</string>
+	<key>task.archive.state.delete_failed</key>
+	<string>Deletion failed</string>
+	<key>task.archive.state.delete_queued</key>
+	<string>Deletion queued</string>
+	<key>task.archive.state.deleting</key>
+	<string>Deleting</string>
+	<key>task.archive.state.ready</key>
+	<string>Ready</string>
+	<key>task.archive.state.restore_failed</key>
+	<string>Restore failed</string>
+	<key>task.archive.state.restore_queued</key>
+	<string>Restore queued</string>
+	<key>task.archive.state.restoring</key>
+	<string>Restoring</string>
+	<key>task.archive.unknownPhase</key>
+	<string>Unknown processing phase</string>
+	<key>task.archive.unknownState</key>
+	<string>Unknown archive state</string>
+	<key>task.archive.validation</key>
+	<string>Use a valid task or archive identifier.</string>
 	<key>task.bulk.all</key>
 	<string>All visible tasks selected</string>
 	<key>task.bulk.checkbox</key>

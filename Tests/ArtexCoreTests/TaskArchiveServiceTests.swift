@@ -49,7 +49,7 @@ final class TaskArchiveServiceTests: XCTestCase {
         XCTAssertEqual(Data(try XCTUnwrap(decoded["q"]).utf8),Data(query.utf8)); XCTAssertEqual(decoded["state"],state)
         try api.enqueue(["items":NSNull(),"total":0,"page":1,"size":20]); let empty = try await service.list(); XCTAssertTrue(empty.items.isEmpty)
         XCTAssertEqual(api.calls[1].path,"/api/task-archives?page=1&size=20")
-        for bad in [["total":0,"page":1,"size":20] as [String:Any],["items":[],"total":-1,"page":1,"size":20],["items":[],"total":0,"page":2,"size":20],["items":[object(data()),object(data())],"total":2,"page":1,"size":20]] {
+        for bad in [["total":0,"page":1,"size":20] as [String:Any],["items":[],"total":-1,"page":1,"size":20],["items":[],"total":0,"page":2,"size":20],["items":[try object(data()),try object(data())],"total":2,"page":1,"size":20]] {
             try api.enqueue(bad); await rejected { _ = try await service.list() }
         }
     }
@@ -93,7 +93,7 @@ final class TaskArchiveServiceTests: XCTestCase {
         let count = api.calls.count
         for ids in [[],[0],[-1],Array(repeating:Int64(8),count:101)] { await rejected { _ = try await service.deleteBatch(ids:ids) } }
         for ids in [[],["0"],["7/../x"],(1...101).map(String.init)] { await rejected { _ = try await service.queueBatch(taskIDs:ids) } }
-        await rejected { _ = try await service.list(page:0) }; await rejected { _ = try await service.list(size:101) }
+        await rejected { _ = try await service.list(page:0) }; await rejected { _ = try await service.list(page:Int64.min) }; await rejected { _ = try await service.list(size:0) }; await rejected { _ = try await service.list(size:101) }
         await rejected { _ = try await service.list(page:Int64.max,size:100) }; await rejected { _ = try await service.list(query:String(repeating:"x",count:4097)) }
         await rejected { _ = try await service.list(state:String(repeating:"x",count:129)) }; await rejected { _ = try await service.detail(id:0) }
         XCTAssertEqual(api.calls.count,count)
@@ -119,4 +119,36 @@ final class TaskArchiveServiceTests: XCTestCase {
         do { _ = try await after.value; XCTFail("Postcancel accepted") } catch { XCTAssertTrue(error is CancellationError) }
         XCTAssertEqual(api.calls.count,count+1)
     }
+    func testStateEligibilityAndLabelsUseExplicitEnglishJapanese() throws {
+        XCTAssertEqual(TaskArchiveSemantics.states.count,10); XCTAssertEqual(TaskArchiveSemantics.phases.count,19)
+        for state in TaskArchiveSemantics.states {
+            let key = TaskArchiveSemantics.stateKey(state)
+            XCTAssertNotEqual(key,.taskArchiveUnknownState)
+            XCTAssertNotEqual(AppStrings.text(key,language:.english),AppStrings.text(key,language:.japanese))
+            let row = try BackendJSONCoding.decode(TaskArchiveRecord.self,from:data(state:state))
+            XCTAssertEqual(TaskArchiveSemantics.canRestore(row),["ready","restore_failed"].contains(state))
+            XCTAssertEqual(TaskArchiveSemantics.canDelete(row),["ready","delete_failed"].contains(state))
+            XCTAssertEqual(TaskArchiveSemantics.canRetry(row),["archive_failed","restore_failed","delete_failed"].contains(state))
+            XCTAssertEqual(TaskArchiveSemantics.processing(state),["archive_queued","archiving","restore_queued","restoring","delete_queued","deleting"].contains(state))
+        }
+        for phase in TaskArchiveSemantics.phases {
+            let key = TaskArchiveSemantics.phaseKey(phase); XCTAssertNotEqual(key,.taskArchiveUnknownPhase)
+            XCTAssertNotEqual(AppStrings.text(key,language:.english),AppStrings.text(key,language:.japanese))
+        }
+        XCTAssertEqual(TaskArchiveSemantics.stateKey("한국어 unknown"),.taskArchiveUnknownState)
+        XCTAssertEqual(TaskArchiveSemantics.phaseKey("未知"),.taskArchiveUnknownPhase)
+        for error in [TaskArchiveInputError.invalid,.queryLimits,.batch,.action] {
+            XCTAssertEqual(AppErrorText.text(error,language:.english),AppErrorMessage(error).text(language:.english))
+            XCTAssertNotEqual(AppErrorMessage(error).text(language:.english),AppErrorMessage(error).text(language:.japanese))
+        }
+        let url = try XCTUnwrap(Bundle.module.url(forResource:"task-contract",withExtension:"json",subdirectory:"Fixtures"))
+        let root = try object(Data(contentsOf:url)); var task = try XCTUnwrap(root["task"] as? [String:Any])
+        task["status"] = "paused"; task["queued"] = false; task["archive_blocked_by_task_id"] = "7"
+        func record() throws -> TaskRecord { try BackendJSONCoding.decode(TaskRecord.self,from:JSONSerialization.data(withJSONObject:task)) }
+        XCTAssertFalse(TaskArchiveSemantics.canArchive(try record())); XCTAssertTrue(TaskArchiveSemantics.canArchive(try record(),batch:true))
+        task["queued"] = true; XCTAssertFalse(TaskArchiveSemantics.canArchive(try record(),batch:true))
+        task["queued"] = false; task["status"] = "running"; XCTAssertFalse(TaskArchiveSemantics.canArchive(try record(),batch:true))
+        task["status"] = "done"; task["archive_blocked_by_task_id"] = NSNull(); XCTAssertTrue(TaskArchiveSemantics.canArchive(try record()))
+    }
+
 }

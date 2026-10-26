@@ -906,6 +906,76 @@
 	<string>ブラウザ版の詳細画面と比較して実装する予定です。</string>
 	<key>shell.taskPending</key>
 	<string>タスク詳細は移植中です</string>
+	<key>task.archive.actionUnavailable</key>
+	<string>現在のアーカイブ状態ではこの操作はできません。</string>
+	<key>task.archive.batchValidation</key>
+	<string>有効な対象を1〜100件選択してください。</string>
+	<key>task.archive.phase.compact_database</key>
+	<string>データベースを整理中</string>
+	<key>task.archive.phase.compact_traffic</key>
+	<string>通信記録を整理中</string>
+	<key>task.archive.phase.compress</key>
+	<string>圧縮中</string>
+	<key>task.archive.phase.consume_package</key>
+	<string>復元を完了中</string>
+	<key>task.archive.phase.database_restored</key>
+	<string>データベース復元済み</string>
+	<key>task.archive.phase.delete_metadata</key>
+	<string>保管情報を削除中</string>
+	<key>task.archive.phase.failed</key>
+	<string>失敗</string>
+	<key>task.archive.phase.interrupted</key>
+	<string>中断</string>
+	<key>task.archive.phase.queued</key>
+	<string>待機中</string>
+	<key>task.archive.phase.ready</key>
+	<string>準備完了</string>
+	<key>task.archive.phase.restore_database</key>
+	<string>データベースを復元中</string>
+	<key>task.archive.phase.restore_files</key>
+	<string>ファイルを復元中</string>
+	<key>task.archive.phase.restore_traffic</key>
+	<string>通信記録を復元中</string>
+	<key>task.archive.phase.snapshot_database</key>
+	<string>データベースを保存中</string>
+	<key>task.archive.phase.snapshot_traffic</key>
+	<string>通信記録を保存中</string>
+	<key>task.archive.phase.stage_files</key>
+	<string>ファイルを準備中</string>
+	<key>task.archive.phase.stage_package_delete</key>
+	<string>パッケージ削除を準備中</string>
+	<key>task.archive.phase.starting</key>
+	<string>開始中</string>
+	<key>task.archive.phase.verify_package</key>
+	<string>パッケージを検証中</string>
+	<key>task.archive.queryLimits</key>
+	<string>ページ・表示件数・検索条件を上限内で指定してください。</string>
+	<key>task.archive.state.archive_failed</key>
+	<string>保管失敗</string>
+	<key>task.archive.state.archive_queued</key>
+	<string>保管待ち</string>
+	<key>task.archive.state.archiving</key>
+	<string>保管中</string>
+	<key>task.archive.state.delete_failed</key>
+	<string>削除失敗</string>
+	<key>task.archive.state.delete_queued</key>
+	<string>削除待ち</string>
+	<key>task.archive.state.deleting</key>
+	<string>削除中</string>
+	<key>task.archive.state.ready</key>
+	<string>準備完了</string>
+	<key>task.archive.state.restore_failed</key>
+	<string>復元失敗</string>
+	<key>task.archive.state.restore_queued</key>
+	<string>復元待ち</string>
+	<key>task.archive.state.restoring</key>
+	<string>復元中</string>
+	<key>task.archive.unknownPhase</key>
+	<string>不明な処理段階</string>
+	<key>task.archive.unknownState</key>
+	<string>不明なアーカイブ状態</string>
+	<key>task.archive.validation</key>
+	<string>有効なタスクまたはアーカイブのIDを指定してください。</string>
 	<key>task.bulk.all</key>
 	<string>表示中のすべてを選択</string>
 	<key>task.bulk.checkbox</key>
