@@ -3,7 +3,10 @@ import Foundation
 public enum BackendJSONCoding {
     public static func decode<T: Decodable>(_ type: T.Type, from data: Data) throws -> T {
         let decoder = JSONDecoder(); decoder.keyDecodingStrategy = .convertFromSnakeCase
-        do { return try decoder.decode(type, from: data) }
+        do {
+            if type == TaskArchiveRecord.self || type == TaskArchivePage.self { return try TaskArchiveWire.decode(type,from:data) }
+            return try decoder.decode(type, from: data)
+        }
         catch { throw BackendAPIError.invalidResponse }
     }
     public static func encode<T: Encodable>(_ value: T) throws -> Data {

@@ -17,17 +17,17 @@ public struct TaskArchiveTokenStats: Decodable, Sendable {
 }
 public struct TaskArchiveAggregateStats: Decodable, Sendable {
     public let tokens: TaskArchiveTokenStats?
-    public let skills: [String:Int64]
-    public let tools: [String:Int64]
-    public let findings: [String:Int64]
+    public let skills: TaskArchiveCountMap
+    public let tools: TaskArchiveCountMap
+    public let findings: TaskArchiveCountMap
     private enum CodingKeys: String, CodingKey { case tokens, skills, tools, findings }
-    init() { tokens = nil; skills = [:]; tools = [:]; findings = [:] }
+    init() { tokens = nil; skills = .init(); tools = .init(); findings = .init() }
     public init(from decoder: any Decoder) throws {
         let c = try decoder.container(keyedBy:CodingKeys.self)
         tokens = try c.decodeIfPresent(TaskArchiveTokenStats.self,forKey:.tokens)
-        skills = try c.decodeIfPresent([String:Int64].self,forKey:.skills) ?? [:]
-        tools = try c.decodeIfPresent([String:Int64].self,forKey:.tools) ?? [:]
-        findings = try c.decodeIfPresent([String:Int64].self,forKey:.findings) ?? [:]
+        skills = try c.decodeIfPresent(TaskArchiveCountMap.self,forKey:.skills) ?? .init()
+        tools = try c.decodeIfPresent(TaskArchiveCountMap.self,forKey:.tools) ?? .init()
+        findings = try c.decodeIfPresent(TaskArchiveCountMap.self,forKey:.findings) ?? .init()
         guard [skills,tools,findings].allSatisfy({$0.values.allSatisfy({$0 >= 0})}) else { throw BackendAPIError.invalidResponse }
     }
 }
@@ -45,7 +45,7 @@ public struct TaskArchiveRecord: Decodable, Identifiable, Sendable {
     public let categoryName: String?
     public let sourceTaskIds: [Int64]
     public let remainingTimeoutSeconds: Int64
-    public let dataCounts: [String:Int64]
+    public let dataCounts: TaskArchiveCountMap
     public let aggregateStats: TaskArchiveAggregateStats
     public let archivedAt: String?
     public let requestedAt: String, createdAt: String, updatedAt: String
@@ -68,7 +68,7 @@ public struct TaskArchiveRecord: Decodable, Identifiable, Sendable {
         categoryId = try c.decodeIfPresent(Int64.self,forKey:.categoryId); categoryName = try c.decodeIfPresent(String.self,forKey:.categoryName)
         sourceTaskIds = try c.decodeIfPresent([Int64].self,forKey:.sourceTaskIds) ?? []
         remainingTimeoutSeconds = try c.decode(Int64.self,forKey:.remainingTimeoutSeconds)
-        dataCounts = try c.decodeIfPresent([String:Int64].self,forKey:.dataCounts) ?? [:]
+        dataCounts = try c.decodeIfPresent(TaskArchiveCountMap.self,forKey:.dataCounts) ?? .init()
         aggregateStats = try c.decodeIfPresent(TaskArchiveAggregateStats.self,forKey:.aggregateStats) ?? .init()
         archivedAt = try c.decodeIfPresent(String.self,forKey:.archivedAt)
         requestedAt = try c.decode(String.self,forKey:.requestedAt); createdAt = try c.decode(String.self,forKey:.createdAt); updatedAt = try c.decode(String.self,forKey:.updatedAt)
