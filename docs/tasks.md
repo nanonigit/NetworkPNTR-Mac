@@ -210,3 +210,6 @@ T14 archive state requirements: retained paginated/search/state reads, page-loca
 TDD controlled stale-list/detail/reset/stop/cancel/polling and404 ownership before implementation; review, full regression, signed build and exact-head CI.
 
 T14 checkpoint:13Core+2Mac new cases; full452Swift(451pass/1existingAXskip),62Python pass; store97.83%lines/89.23%regions, signedbuild/strictsignature and catalog/baseline checks pass, reviewed. Read ownership/polling/accepted404 and retained screen lifecycle implemented; native archive views/actions/sharedgate/livejobs/browser/full21/cloud/kernel/release remain open. See tasks-archive-state-verification.md.
+
+T15 archive action requirements: capture explicit single/batch archive, restore, permanent delete and failed-state retry contexts; share exclusion with TaskStore category/bulk/ordinary operations and archive reads.202means accepted only, no optimistic deletion/restoration. Reordered partial batch receipts remain per-ID, never auto retry uncertainty. Capture unknown task/archive identity sets with explicit acknowledgement; cancellation/reset/stop must not unlock in-flight writes prematurely. Native UI and real-job/browser acceptance remain required.
+TDD gates first, then captured action model and screen integration; controlled held-write/cancel/reset/partial/identity/limits tests; review/full regressions/build/CI.
