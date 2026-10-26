@@ -25,9 +25,9 @@ extension FindingStore {
     public func delete(_ target: FindingRecord,owner: UUID) async -> FindingMutationOutcome {
         await perform(target,owner:owner) { [service] in .deleted(try await service.delete(target)) }
     }
-    @discardableResult public func acknowledgeUnknown(_ id: String,owner: UUID) -> Bool {
-        guard !isMutating, !Task.isCancelled, owner == sessionOwner, unknownIDs.contains(id) else { return false }
-        unknownIDs.remove(id); if unknownIDs.isEmpty { mutationFailure = nil }; return true
+    @discardableResult public func acknowledgeUnknown(_ id: String,owner: UUID,revision: UUID) -> Bool {
+        guard !isMutating, !Task.isCancelled, owner == sessionOwner, revision == unknownRevision, unknownIDs.contains(id) else { return false }
+        unknownIDs.remove(id); unknownRevision = UUID(); if unknownIDs.isEmpty { mutationFailure = nil }; return true
     }
     private func canBegin(_ target: FindingRecord,owner: UUID) -> Bool {
         guard !isMutating, !Task.isCancelled, unknownIDs.isEmpty, owner == viewOwner, target.canMutate, let id = target.findingId else { return false }
@@ -44,27 +44,28 @@ extension FindingStore {
         do {
             let confirmation = try await action()
             guard ticket.session == sessionOwner else { return .discarded }
-            guard ticket.activity == activityOwner else { unknownIDs.insert(id); return .discarded }
+            guard ticket.activity == activityOwner else { recordUnknown(ticket.findingID); return .discarded }
             // A service already checks post-dispatch cancellation; keep this handoff boundary explicit too.
             try Task.checkCancellation()
             apply(confirmation); lastConfirmation = confirmation; return .confirmed(confirmation)
         } catch {
             guard ticket.session == sessionOwner else { return .discarded }
-            unknownIDs.insert(id)
+            recordUnknown(ticket.findingID)
             guard ticket.activity == activityOwner else { return .discarded }
             mutationFailure = AppErrorMessage(error); return .unconfirmed
         }
     }
+    private func recordUnknown(_ id: String) { unknownIDs.insert(id); unknownRevision = UUID() }
     private func apply(_ mutation: FindingConfirmedMutation) {
         let pages = [flat] + Array(groupPages.values)
         switch mutation {
         case .updated(let row):
             for state in pages {
                 state.read.mutateCached { value in
-                    var copy = value; copy.items = value.items.map{$0.findingId == row.findingId ? row : $0}; return copy
+                    var copy = value; copy.items = value.items.map{$0.findingId == row.findingId && !$0.inherited ? row : $0}; return copy
                 }
             }
-            if detail.value?.findingId == row.findingId { detail.mutateCached{_ in row} }
+            if detail.value?.findingId == row.findingId, selectedDetail?.contextTaskID == nil, detail.value?.inherited == false { detail.mutateCached{_ in row} }
         case .deleted(let receipt):
             let id = String(receipt.id)
             for state in pages {

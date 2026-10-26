@@ -30,8 +30,8 @@ final class FindingMutationStateTests: XCTestCase {
             guard case .notStarted = await model.delete(target,owner:owner) else {return XCTFail("unknown replay")}
             XCTAssertEqual(api.calls.count,count)
             api.replies = [FST.page(["7"])]; await model.refreshView(); XCTAssertEqual(model.unknownIDs,["7"])
-            XCTAssertFalse(model.acknowledgeUnknown("7",owner:UUID())); XCTAssertFalse(model.acknowledgeUnknown("8",owner:session))
-            XCTAssertTrue(model.acknowledgeUnknown("7",owner:session)); XCTAssertTrue(model.unknownIDs.isEmpty)
+            XCTAssertFalse(model.acknowledgeUnknown("7",owner:UUID(),revision:model.unknownRevision)); XCTAssertFalse(model.acknowledgeUnknown("8",owner:session,revision:model.unknownRevision))
+            XCTAssertTrue(model.acknowledgeUnknown("7",owner:session,revision:model.unknownRevision)); XCTAssertTrue(model.unknownIDs.isEmpty)
         }
     }
     @MainActor func testInvalidOrStaleTargetsAndLocalValidationNeverDispatch() async throws {
@@ -89,10 +89,12 @@ extension FindingMutationStateTests {
         let api = FindingStateAPI(); let model = await ready(api); let target = try FST.record(), session = model.sessionOwner
         api.replies = [FST.reply(status:400)]
         guard case .unconfirmed = await model.update(target,patch:.init(name:"A"),owner:model.viewOwner) else {return XCTFail("missing A")}
-        let acknowledgeA = {model.acknowledgeUnknown("7",owner:session)}
+        let revisionA = model.unknownRevision
+        let acknowledgeA = {model.acknowledgeUnknown("7",owner:session,revision:revisionA)}
         XCTAssertTrue(acknowledgeA())
         api.replies = [FST.reply(status:500)]
         guard case .unconfirmed = await model.update(target,patch:.init(name:"B"),owner:model.viewOwner) else {return XCTFail("missing B")}
         XCTAssertFalse(acknowledgeA()); XCTAssertEqual(model.unknownIDs,["7"])
+        XCTAssertTrue(model.acknowledgeUnknown("7",owner:session,revision:model.unknownRevision))
     }
 }
