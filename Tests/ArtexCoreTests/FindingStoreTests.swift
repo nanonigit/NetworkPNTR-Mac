@@ -68,3 +68,26 @@ final class FindingStoreTests: XCTestCase {
         api.held[2].resume(returning:FST.page(["9"])); await cancelled.value; XCTAssertNil(model.flat.read.value); XCTAssertFalse(model.flat.read.isLoading)
     }
 }
+
+extension FindingStoreTests {
+    @MainActor func testWholeTableStatsRemainOwnedAcrossViewFilterAndCursorChanges() async throws {
+        let api = FindingStateAPI(); api.hold = true; let model = FindingStore(service:FindingService(client:api))
+        let stats = Task { await model.refreshStats() }; try await FST.reached{api.held.count == 1}
+        XCTAssertTrue(model.configureFilters(.init(search:"new filter"))); XCTAssertTrue(model.setView(.grouped)); XCTAssertTrue(model.configureGroups(page:2,size:10))
+        api.held[0].resume(returning:FST.stats); await stats.value
+        XCTAssertEqual(model.stats.value?.total,2); XCTAssertFalse(model.stats.isStale); XCTAssertFalse(model.stats.isLoading)
+    }
+}
+
+extension FindingStoreTests {
+    @MainActor func testPrecancelledGroupConfigurationPreservesItsCursorAndCache() async throws {
+        let api = FindingStateAPI(), model = FindingStore(service:FindingService(client:FindingStateAPI()))
+        let store = FindingStore(service:FindingService(client:api)); XCTAssertTrue(store.setView(.grouped))
+        api.replies = [FST.groups(["11"])]; await store.refreshView()
+        api.replies = [FST.page(["7"],size:10)]; await store.setGroupExpanded("11",expanded:true,owner:store.viewOwner)
+        let cancelled = Task { withUnsafeCurrentTask{$0?.cancel()}; return store.configureGroup("11",page:2,size:20,owner:store.viewOwner) }
+        let accepted = await cancelled.value; XCTAssertFalse(accepted)
+        XCTAssertEqual(store.groupPages["11"]?.page,1); XCTAssertEqual(store.groupPages["11"]?.read.value?.items.first?.id,"7")
+        XCTAssertEqual(model.flat.page,1)
+    }
+}
