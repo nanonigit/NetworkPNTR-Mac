@@ -67,3 +67,5 @@ T8 follows task-template-management-design.md: full native template manager (lis
 T9 follows task-category-core-design.md: finite category CRUD and assignment service; explicit null, validated schema/ownership/partial receipts, no agent activation. Native manager and full UI/runtime comparison remain required.
 
 T10 follows task-category-ui-design.md with a retained per-window category workspace, typed receipts into task store and creation, context/editor/decision/lifetime tickets. No locale-driven reconstruction.
+
+T11 follows task-catalog-runtime-design.md: finite injectable production-client exercise, one-boot safe report and private memory-vault provisioning, complete stopped-log audit and explicit terminal success. Preserve failed disks/logs; no default-image promotion or retry-until-green.
