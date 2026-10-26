@@ -71,3 +71,5 @@ T10 follows task-category-ui-design.md with a retained per-window category works
 T11 follows task-catalog-runtime-design.md: finite injectable production-client exercise, one-boot safe report and private memory-vault provisioning, complete stopped-log audit and explicit terminal success. Preserve failed disks/logs; no default-image promotion or retry-until-green.
 
 T12 follows tasks-bulk-design.md: retained window-owned bulk workspace and immutable context snapshots share the TaskStore external mutation gate with category operations; pure confirmed projections do not activate agents. Captured epoch/dialog IDs guard bindings, sequential deletion and progress; unknown-ID block requires explicit acknowledgement.
+
+T13 follows tasks-archive-core-design.md: bounded finite service/direct decoding, safe error/warning presence projections, typed en-ja state/phase labels and separate acceptance semantics. Permutation validation honors source topological ordering.
