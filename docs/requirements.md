@@ -114,3 +114,6 @@ F3.1 adds captured native screen confirmations and bounded browser-equivalent vi
 
 
 F3.1 completed finite coordinator checks only; F3.2 must connect the per-window coordinator and implement native controls. Keep Findings pending until that integration. Unsent drafts survive stop only for the same session/finding; dispatched or uncertain edits never become replayable drafts.
+
+
+F3.2 exposes native flat/grouped/asset Findings views, six stats, server filters/search/sort and independent pagers, cross-page selection, read-only provenance/detail, captured edit/status/delete/unknown confirmation and task navigation. Retain per-authenticated-window state across sidebar/locale; logout clears private state. All strings en/ja; literal content unchanged. Advanced F5 controls remain explicitly pending. Offscreen tests do not close actual browser/keyboard/AX acceptance.

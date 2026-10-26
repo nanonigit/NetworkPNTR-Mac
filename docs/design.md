@@ -93,3 +93,6 @@ F3.1 follows findings-screen-design.md: retained window coordinator, captured vi
 
 
 F3.1 separates unsent edit draft lifetime from immutable confirmation ownership. See findings-screen-verification.md and bugs/findings-screen-draft.md. No UI or runtime acceptance is inferred from 13 coordinator tests.
+
+
+F3.2: native split list/detail, asset source-list with iterative raw-UTF8 keyed expansion, explicit filters and bounded page sizes. A gate-aware coalescing read coordinator schedules latest owned queries without cancelling same-query asset tree on scope/page changes. Separate stats/view five-second loops retain F2 semantics; owner-captured bindings reject stale callbacks. RootView owns the coordinator per authentication identity. Lazyweb desktop issue-list search9599af57-1296-4997-8ef8-aca8713d1a4a yielded adjacent aboard/linear metadata (top0.511), not inspected screenshots. Existing fetched table practice and macOS split-inspector guidance inform structure; pinned browser controls remain authoritative.
