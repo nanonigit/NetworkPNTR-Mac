@@ -11,6 +11,7 @@ import SwiftUI
     var status = 200
     var readStatus = 200
     var taskRows: [[String:Any]] = []
+    var categoryRows: [[String:Any]]?
     var pending: [CheckedContinuation<BackendHTTPResponse,Error>] = []
     var reads: [String:CheckedContinuation<BackendHTTPResponse,Error>] = [:]
     func row(_ id: Int64 = 8) -> [String:Any] { ["id":id,"name":"category \(id)","task_count":0,"created_at":"c","updated_at":"u"] }
@@ -20,7 +21,7 @@ import SwiftUI
         if method == "GET" {
             if readStatus != 200 { return try response(["error":"private read"],status:readStatus) }
             if holdReads { return try await withCheckedThrowingContinuation { reads[path] = $0 } }
-            if path == "/api/task-categories" { return try response(["categories":[row(8),row(9)]]) }
+            if path == "/api/task-categories" { return try response(["categories":categoryRows ?? [row(8),row(9)]]) }
             return try response(["tasks":taskRows,"active":""])
         }
         if hold { return try await withCheckedThrowingContinuation { pending.append($0) } }
@@ -226,6 +227,21 @@ final class TaskCategoryWorkspaceTests: XCTestCase {
         await loading.value
         XCTAssertEqual(creation.categories.value?.map(\.id),[9]); XCTAssertEqual(creation.companies.value?.map(\.id),[1])
         XCTAssertNotNil(creation.profiles.value); XCTAssertNotNil(creation.sources.value); XCTAssertFalse(creation.isLoading)
+    }
+
+    @MainActor func testInitialSelectionUsesBothCatalogAndTaskResponses() async throws {
+        let (emptyAPI,empty,_) = make(); emptyAPI.categoryRows = []
+        let first = try XCTUnwrap(empty.open(tasks:[])); await empty.load(contextID:first)
+        XCTAssertEqual(empty.selection,.new)
+        let (api,model,_) = make(); api.categoryRows = []; api.holdReads = true
+        let owner = try XCTUnwrap(model.open(tasks:[]))
+        let loading = Task { await model.load(contextID:owner) }; try await reached { api.reads.count == 2 }
+        api.reads["/api/task-categories"]?.resume(returning:try api.response(["categories":[]]))
+        for _ in 0..<50 { await Task.yield() }
+        XCTAssertEqual(model.selection,.new)
+        var uncategorized = try taskRow("7"); uncategorized["category_id"] = NSNull(); uncategorized["category_name"] = NSNull()
+        api.reads["/api/tasks"]?.resume(returning:try api.response(["tasks":[uncategorized],"active":""]))
+        await loading.value; XCTAssertEqual(model.selection,.uncategorized)
     }
 
 }
