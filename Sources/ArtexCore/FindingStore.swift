@@ -25,6 +25,10 @@ public struct FindingDetailSelection: Equatable, Sendable {
     public private(set) var sessionOwner = UUID()
     public private(set) var configurationFailure: AppErrorMessage?
     public internal(set) var isMutating = false
+    public internal(set) var unknownIDs = Set<String>()
+    public internal(set) var lastConfirmation: FindingConfirmedMutation?
+    public internal(set) var mutationFailure: AppErrorMessage?
+    @ObservationIgnored var mutationTicket: FindingMutationTicket?
     public private(set) var isRefreshingView = false
     @ObservationIgnored let service: FindingService
     @ObservationIgnored let sleep: @MainActor (Duration) async throws -> Void
@@ -147,6 +151,7 @@ public struct FindingDetailSelection: Equatable, Sendable {
         flat.reset(); groups.reset(); groupPages = [:]; expandedGroups = []
         tree.invalidate(clear:true); stats.invalidate(clear:true); detail.invalidate(clear:true)
         selectedDetail = nil; selectedIDs = []; assetScope = nil; configurationFailure = nil
+        unknownIDs = []; lastConfirmation = nil; mutationFailure = nil
     }
     var visibleRecords: [FindingRecord] {
         if view != .grouped { return flat.read.value?.items ?? [] }

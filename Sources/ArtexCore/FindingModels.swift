@@ -67,8 +67,8 @@ public struct FindingRecord: Decodable, Sendable, Identifiable {
     }
 }
 public struct FindingPage: Decodable, Sendable {
-    public let items: [FindingRecord]
-    public let total: Int64
+    public internal(set) var items: [FindingRecord]
+    public internal(set) var total: Int64
     public let page: Int64
     public let pageSize: Int
     private enum CodingKeys: String, CodingKey { case items, total, page, pageSize }
