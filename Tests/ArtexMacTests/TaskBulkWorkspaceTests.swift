@@ -139,4 +139,20 @@ final class TaskBulkWorkspaceTests: XCTestCase {
         let result = await task.value; XCTAssertFalse(result); XCTAssertFalse(model.isMutating)
         XCTAssertFalse(api.calls.contains{$0.0 == "DELETE"})
     }
+    @MainActor func testAuthenticationFailureStopsRemainingDeletionRequests() async throws {
+        for status in [401,403] {
+            let (api,model,_) = try await make(); select(["7","8"],model); api.statuses["7"] = status
+            XCTAssertTrue(model.begin(.delete)); _ = await model.submit(contextID:try XCTUnwrap(model.context).id)
+            XCTAssertEqual(model.items.map(\.state),[.rejected,.notStarted]); XCTAssertEqual(model.selectedIDs,Set(["7","8"]))
+            XCTAssertEqual(api.calls.filter{$0.0 == "DELETE"}.count,1); XCTAssertTrue(model.uncertainIDs.isEmpty)
+        }
+    }
+    @MainActor func testQueuedSameSessionCancellationReportsEveryIDNotStarted() async throws {
+        let (api,model,store) = try await make(); select(["7","8"],model); XCTAssertTrue(model.begin(.delete))
+        model.submitFromUI(contextID:try XCTUnwrap(model.context).id); model.suspend()
+        try await reached { !model.isMutating }
+        XCTAssertEqual(model.items.map(\.state),[.notStarted,.notStarted]); XCTAssertEqual(model.completedCount,0)
+        XCTAssertTrue(model.uncertainIDs.isEmpty); XCTAssertFalse(api.calls.contains{$0.0 == "DELETE"}); XCTAssertFalse(store.isMutating)
+    }
+
 }
