@@ -1,0 +1,208 @@
+{
+  "phase": "T16 native archive UI and refresh ownership",
+  "baseline": "e75ae371ad777ffd1eecdd28d2781a6519b05591",
+  "reference_sha256": {
+    "web/src/app/(main)/function/tasks/page.tsx": "f1fb3304b87085c78c84cbc5bcc71117a63a281d3a17a22e438b4b2f357f6ef3",
+    "web/src/components/table-pagination.tsx": "69b05610d2c6e9250c33ec6b934bd7bac4a2cf3b5fd1628a199ce4114c5def3c"
+  },
+  "swift": {
+    "total": 482,
+    "passed": 481,
+    "skipped_existing_ax": 1,
+    "failed": 0
+  },
+  "python": {
+    "total": 62,
+    "failed": 0
+  },
+  "focused_ui_cases": 13,
+  "coverage": {
+    "TaskArchiveActionView.swift": {
+      "branches": {
+        "count": 0,
+        "covered": 0,
+        "notcovered": 0,
+        "percent": 0
+      },
+      "functions": {
+        "count": 46,
+        "covered": 38,
+        "percent": 82.6086956521739
+      },
+      "instantiations": {
+        "count": 46,
+        "covered": 38,
+        "percent": 82.6086956521739
+      },
+      "lines": {
+        "count": 233,
+        "covered": 217,
+        "percent": 93.13304721030042
+      },
+      "mcdc": {
+        "count": 0,
+        "covered": 0,
+        "notcovered": 0,
+        "percent": 0
+      },
+      "regions": {
+        "count": 92,
+        "covered": 68,
+        "notcovered": 24,
+        "percent": 73.91304347826086
+      }
+    },
+    "TaskArchivePanel.swift": {
+      "branches": {
+        "count": 0,
+        "covered": 0,
+        "notcovered": 0,
+        "percent": 0
+      },
+      "functions": {
+        "count": 70,
+        "covered": 34,
+        "percent": 48.57142857142857
+      },
+      "instantiations": {
+        "count": 70,
+        "covered": 34,
+        "percent": 48.57142857142857
+      },
+      "lines": {
+        "count": 311,
+        "covered": 218,
+        "percent": 70.09646302250803
+      },
+      "mcdc": {
+        "count": 0,
+        "covered": 0,
+        "notcovered": 0,
+        "percent": 0
+      },
+      "regions": {
+        "count": 125,
+        "covered": 44,
+        "notcovered": 81,
+        "percent": 35.199999999999996
+      }
+    },
+    "TaskArchivePresentation.swift": {
+      "branches": {
+        "count": 0,
+        "covered": 0,
+        "notcovered": 0,
+        "percent": 0
+      },
+      "functions": {
+        "count": 16,
+        "covered": 15,
+        "percent": 93.75
+      },
+      "instantiations": {
+        "count": 16,
+        "covered": 15,
+        "percent": 93.75
+      },
+      "lines": {
+        "count": 40,
+        "covered": 37,
+        "percent": 92.5
+      },
+      "mcdc": {
+        "count": 0,
+        "covered": 0,
+        "notcovered": 0,
+        "percent": 0
+      },
+      "regions": {
+        "count": 51,
+        "covered": 40,
+        "notcovered": 11,
+        "percent": 78.43137254901961
+      }
+    },
+    "TaskScreenModel.swift": {
+      "branches": {
+        "count": 0,
+        "covered": 0,
+        "notcovered": 0,
+        "percent": 0
+      },
+      "functions": {
+        "count": 85,
+        "covered": 76,
+        "percent": 89.41176470588236
+      },
+      "instantiations": {
+        "count": 86,
+        "covered": 77,
+        "percent": 89.53488372093024
+      },
+      "lines": {
+        "count": 290,
+        "covered": 274,
+        "percent": 94.48275862068965
+      },
+      "mcdc": {
+        "count": 0,
+        "covered": 0,
+        "notcovered": 0,
+        "percent": 0
+      },
+      "regions": {
+        "count": 193,
+        "covered": 156,
+        "notcovered": 37,
+        "percent": 80.82901554404145
+      }
+    }
+  },
+  "red_green": [
+    "b7b41ee missing UI API RED -> 8941083 GREEN5",
+    "63deef0 held live refresh runtime RED2fail -> f461396 GREEN10",
+    "02e36e6 mutation gate runtime RED2fail -> 654a6c2 GREEN13",
+    "ca36ced unknown status fallback RED -> final GREEN13"
+  ],
+  "catalog": {
+    "new_keys_per_locale": 44,
+    "locales": [
+      "en",
+      "ja"
+    ],
+    "packaged_values": "match",
+    "english_cjk": "none",
+    "owned_hangul": "none",
+    "literal_user_cjk": "preserved"
+  },
+  "signed_build": "build-only and strict signature pass",
+  "design_evidence": {
+    "lazyweb_query": "desktop archive restore table",
+    "metadata_references": [
+      {
+        "site_id": 244047,
+        "name": "Amplitude archive table"
+      },
+      {
+        "site_id": 246478,
+        "name": "Harvest archived people"
+      }
+    ],
+    "coverage": "moderate metadata only",
+    "copy_reference": "https://raw.githubusercontent.com/pbakaus/impeccable/main/.claude/skills/impeccable/reference/clarify.md"
+  },
+  "review": "no remaining concrete blocker",
+  "native_window_opened": false,
+  "live_mutations": false,
+  "vm_started": false,
+  "acceptance_pending": [
+    "visible archive and live native/browser comparison",
+    "real VM archive restore delete retry jobs and restart durability",
+    "en/ja keyboard AX layout comparison after unlock",
+    "full21workflow parity",
+    "native cloud egress",
+    "kernel reliability",
+    "clean Mac without Docker Desktop",
+    "distribution"
+  ]
+}

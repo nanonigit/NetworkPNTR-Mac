@@ -124,7 +124,7 @@ final class TaskArchiveUITests: XCTestCase {
     }
 
     func testArchiveCatalogCoversBothLanguagesAndCompletePlaceholders() throws {
-        let keys = AppStringKey.allCases.filter{$0.rawValue.hasPrefix("task.archive.ui.")}; XCTAssertEqual(keys.count,43)
+        let keys = AppStringKey.allCases.filter{$0.rawValue.hasPrefix("task.archive.ui.")}; XCTAssertEqual(keys.count,44)
         let expression = try NSRegularExpression(pattern:"\\{([a-z]+)\\}")
         for key in keys {
             for language in AppLanguage.allCases {

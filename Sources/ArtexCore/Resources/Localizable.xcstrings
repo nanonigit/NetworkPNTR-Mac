@@ -11880,6 +11880,23 @@
           }
         }
       }
+    },
+    "task.archive.ui.originalUnknown": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Unknown original status"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "元の状態は不明"
+          }
+        }
+      }
     }
   },
   "version": "1.0"

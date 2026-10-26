@@ -8,6 +8,9 @@ enum TaskArchivePresentation {
         if !row.taskDescription.isEmpty { return row.taskDescription }
         return AppStrings.formatted(.taskUIUnnamed,language:language,values:["id":String(row.taskId)])
     }
+    static func originalStatus(_ row: TaskArchiveRecord, language: AppLanguage) -> String {
+        TaskPresentation.statuses.contains(row.originalStatus) ? DashboardLabels.text(row.originalStatus,domain:.task,language:language) : AppStrings.text(.taskArchiveUIOriginalUnknown,language:language)
+    }
     static func dataTotal(_ rows: [TaskArchiveRecord]) -> Decimal { rows.reduce(Decimal.zero) { sum,row in row.dataCounts.values.reduce(sum){$0+Decimal($1)} } }
     static func compressedTotal(_ rows: [TaskArchiveRecord]) -> Decimal { rows.reduce(Decimal.zero){$0+Decimal($1.compressedSize)} }
     static func number(_ value: Decimal, language: AppLanguage, fraction: Int = 0) -> String {

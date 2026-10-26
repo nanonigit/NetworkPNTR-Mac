@@ -1006,6 +1006,8 @@
 	<string>元のサイズ: {size}</string>
 	<key>task.archive.ui.originalStatus</key>
 	<string>元の状態</string>
+	<key>task.archive.ui.originalUnknown</key>
+	<string>元の状態は不明</string>
 	<key>task.archive.ui.page</key>
 	<string>{pages} ページ中 {page} ページ</string>
 	<key>task.archive.ui.pageSize</key>

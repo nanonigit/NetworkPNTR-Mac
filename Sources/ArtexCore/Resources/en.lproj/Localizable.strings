@@ -1008,6 +1008,8 @@
 	<string>Original size: {size}</string>
 	<key>task.archive.ui.originalStatus</key>
 	<string>Original status</string>
+	<key>task.archive.ui.originalUnknown</key>
+	<string>Unknown original status</string>
 	<key>task.archive.ui.page</key>
 	<string>Page {page} of {pages}</string>
 	<key>task.archive.ui.pageSize</key>

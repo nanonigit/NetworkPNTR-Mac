@@ -72,7 +72,7 @@ import SwiftUI
                     Text("#"+String(row.taskId)+" · "+row.taskDescription).font(.caption).foregroundStyle(.secondary).lineLimit(1)
                 }.help(TaskArchivePresentation.title(row,language:language)+"\n"+row.taskDescription)
             }.width(min:160,ideal:210)
-            TableColumn(s(.taskArchiveUIOriginalStatus)) { row in Text(DashboardLabels.text(row.originalStatus,domain:.task,language:language)) }.width(min:80,ideal:100)
+            TableColumn(s(.taskArchiveUIOriginalStatus)) { row in Text(TaskArchivePresentation.originalStatus(row,language:language)) }.width(min:80,ideal:100)
             TableColumn(s(.taskUICategory)) { row in Text(row.categoryName?.isEmpty == false ? row.categoryName! : s(.taskUIUncategorized)).lineLimit(1) }.width(min:80,ideal:110)
             TableColumn(s(.taskArchiveUIArchivedAt)) { row in Text(date(row.archivedAt ?? row.requestedAt)).font(.caption) }.width(min:110,ideal:140)
             TableColumn(s(.taskArchiveUICompressedSize)) { row in
