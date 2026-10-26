@@ -972,6 +972,93 @@
 	<string>Restore queued</string>
 	<key>task.archive.state.restoring</key>
 	<string>Restoring</string>
+	<key>task.archive.ui.accepted</key>
+	<string>Accepted (queued)</string>
+	<key>task.archive.ui.actions</key>
+	<string>Actions</string>
+	<key>task.archive.ui.archive</key>
+	<string>Archive tasks</string>
+	<key>task.archive.ui.archiveHelp</key>
+	<string>Queue these tasks for archiving. They leave Live tasks after archiving succeeds.</string>
+	<key>task.archive.ui.archivedAt</key>
+	<string>Archived / requested</string>
+	<key>task.archive.ui.compressedSize</key>
+	<string>Compressed size</string>
+	<key>task.archive.ui.compression</key>
+	<string>{size} ({percent}% saved)</string>
+	<key>task.archive.ui.dataCount</key>
+	<string>Data rows</string>
+	<key>task.archive.ui.delete</key>
+	<string>Permanently delete archives</string>
+	<key>task.archive.ui.deleteHelp</key>
+	<string>Permanently delete these archives and their archived data. This cannot be undone.</string>
+	<key>task.archive.ui.deleteTotals</key>
+	<string>Archived data: {rows} rows, {size}.</string>
+	<key>task.archive.ui.empty</key>
+	<string>No archived tasks</string>
+	<key>task.archive.ui.emptyHelp</key>
+	<string>Archive a paused or finished task from Live tasks.</string>
+	<key>task.archive.ui.live</key>
+	<string>Live tasks</string>
+	<key>task.archive.ui.next</key>
+	<string>Next page</string>
+	<key>task.archive.ui.noMatch</key>
+	<string>No archives match these filters. Change the search or state filter.</string>
+	<key>task.archive.ui.originalSize</key>
+	<string>Original size: {size}</string>
+	<key>task.archive.ui.originalStatus</key>
+	<string>Original status</string>
+	<key>task.archive.ui.page</key>
+	<string>Page {page} of {pages}</string>
+	<key>task.archive.ui.pageSize</key>
+	<string>Items per page</string>
+	<key>task.archive.ui.previous</key>
+	<string>Previous page</string>
+	<key>task.archive.ui.processingState</key>
+	<string>Archive progress</string>
+	<key>task.archive.ui.progress</key>
+	<string>{phase} · {percent}%</string>
+	<key>task.archive.ui.queuedNotice</key>
+	<string>Accepted items are queued. The operation may still fail; check progress in Archived tasks.</string>
+	<key>task.archive.ui.restore</key>
+	<string>Restore tasks</string>
+	<key>task.archive.ui.restoreHelp</key>
+	<string>Queue these archives for restoration. Tasks return to Live tasks after restoration succeeds.</string>
+	<key>task.archive.ui.retry</key>
+	<string>Retry failed operation</string>
+	<key>task.archive.ui.retryHelp</key>
+	<string>Retry the failed archive, restoration or deletion operation for this item.</string>
+	<key>task.archive.ui.rowAction</key>
+	<string>{action} — task #{id}</string>
+	<key>task.archive.ui.search</key>
+	<string>Search archived tasks</string>
+	<key>task.archive.ui.selectPage</key>
+	<string>Select eligible items on this page</string>
+	<key>task.archive.ui.selectRow</key>
+	<string>Select archived task #{id}</string>
+	<key>task.archive.ui.selected</key>
+	<string>{count} selected</string>
+	<key>task.archive.ui.state</key>
+	<string>Archive state</string>
+	<key>task.archive.ui.summary</key>
+	<string>Accepted: {ok} · Rejected: {failed} · Unconfirmed: {unknown} · Not started: {pending}</string>
+	<key>task.archive.ui.tab</key>
+	<string>Archived tasks</string>
+	<key>task.archive.ui.total</key>
+	<string>{count} archived items</string>
+	<key>task.archive.ui.unknownButton</key>
+	<string>Review unconfirmed results</string>
+	<key>task.archive.ui.unknownConfirm</key>
+	<string>Allow another attempt after checking</string>
+	<key>task.archive.ui.unknownHelp</key>
+	<string>Some operation results are unconfirmed. Check these tasks and archives before allowing another attempt. Acknowledging does not retry them.</string>
+	<key>task.archive.ui.unknownIDs</key>
+	<string>Task IDs: {tasks}
+Archive IDs: {archives}</string>
+	<key>task.archive.ui.warnings</key>
+	<string>Background warnings: {count}. Check the archive before continuing.</string>
+	<key>task.archive.ui.workerError</key>
+	<string>The background operation failed. Check the state before retrying.</string>
 	<key>task.archive.unknownPhase</key>
 	<string>Unknown processing phase</string>
 	<key>task.archive.unknownState</key>

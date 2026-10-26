@@ -2,6 +2,8 @@ import ArtexCore
 import Foundation
 import Observation
 
+enum TaskScreenTab: Hashable { case live, archived }
+
 struct TaskDialog: Identifiable {
     enum Kind { case rename, delete }
     let id = UUID()
@@ -17,6 +19,12 @@ struct TaskDialog: Identifiable {
     let creation: TaskCreationModel?
     let bulk: TaskBulkWorkspace?
     let categories: TaskCategoryWorkspace?
+    private(set) var taskTab: TaskScreenTab = .live
+    private(set) var archiveQueryDraft = ""
+    private(set) var isRefreshingAfterArchive = false
+    @ObservationIgnored private var archiveRefreshTask: Task<Void,Never>?
+    @ObservationIgnored private var archiveRefreshTicket = UUID()
+    @ObservationIgnored private var handledReconciliation: UUID?
     var categoryFilter: TaskCategoryFilter = .all
     var query = ""
     var status: String?
@@ -43,10 +51,61 @@ struct TaskDialog: Identifiable {
         archiveActions?.onReceipt = { [weak self] captured in
             guard let self else { return }
             self.categories?.markStale()
-            if captured.kind == .archive, captured.batch, let selectedBulk = self.bulk { selectedBulk.clearSelection(owner:selectedBulk.viewOwner) }
+            if captured.kind == .archive {
+                if captured.batch, let selectedBulk = self.bulk { selectedBulk.clearSelection(owner:selectedBulk.viewOwner) }
+                self.transitionTab(.archived)
+            }
+            self.scheduleArchiveRefresh()
         }
         categories?.onCatalog = { [weak self] rows in self?.receivedCatalog(rows) }
         categories?.onChange = { [weak self] change,owner in self?.creation?.receiveCategory(change,inlineOwner:owner) }
+    }
+    @discardableResult func setTaskTab(_ value: TaskScreenTab) -> Bool {
+        guard !busy, dialog == nil, creation?.context == nil, value != .archived || archives != nil else { return false }
+        transitionTab(value); return true
+    }
+    private func transitionTab(_ value: TaskScreenTab) {
+        guard taskTab != value else { return }
+        store.stop(); archives?.stop(); taskTab = value
+    }
+    func runTaskTab() async {
+        switch taskTab { case .live: await store.run(); case .archived: await archives?.run() }
+    }
+    func setArchiveDraft(_ value: String, owner: UUID) {
+        guard !busy, archives?.viewOwner == owner else { return }; archiveQueryDraft = value
+    }
+    @discardableResult func configureArchives(page: Int64, size: Int, query: String, state: String?, owner: UUID) -> Bool {
+        guard !busy, dialog == nil, creation?.context == nil, let archives, archives.viewOwner == owner,
+              archives.configure(page:page,size:size,query:query,state:state) else { return false }
+        archiveQueryDraft = query; return true
+    }
+    func setArchiveSelected(_ id: Int64, selected: Bool, owner: UUID) {
+        guard !busy, dialog == nil, creation?.context == nil else { return }; archives?.setSelected(id,selected:selected,owner:owner)
+    }
+    func selectArchivePage(selected: Bool, owner: UUID) {
+        guard !busy, dialog == nil, creation?.context == nil else { return }; archives?.setAll(selected:selected,owner:owner)
+    }
+    func archiveReconciled() {
+        guard let archives, handledReconciliation != archives.reconciliationRevision else { return }
+        handledReconciliation = archives.reconciliationRevision
+        guard !archives.removedAfterRestoreIDs.isEmpty else { return }
+        categories?.markStale(); scheduleArchiveRefresh()
+    }
+    private func scheduleArchiveRefresh() {
+        archiveRefreshTask?.cancel()
+        let ticket = UUID(), life = lifecycle; archiveRefreshTicket = ticket; isRefreshingAfterArchive = true
+        archiveRefreshTask = Task { [weak self] in
+            guard let self else { return }
+            defer { if self.archiveRefreshTicket == ticket { self.isRefreshingAfterArchive = false; self.archiveRefreshTask = nil } }
+            guard self.lifecycle == life, !Task.isCancelled else { return }
+            await self.store.refreshList()
+            guard self.lifecycle == life, !Task.isCancelled else { return }
+            await self.store.refreshSelected()
+            guard self.lifecycle == life, !Task.isCancelled else { return }
+            await self.categories?.refreshCatalog()
+            guard self.lifecycle == life, !Task.isCancelled else { return }
+            if self.taskTab == .archived { await self.archives?.refresh() }
+        }
     }
     func beginArchive(_ task: TaskRecord) -> Bool {
         guard !busy, dialog == nil, creation?.context == nil else { return false }
@@ -128,12 +187,15 @@ struct TaskDialog: Identifiable {
     }
     func refresh() async {
         guard !busy else { return }
+        if taskTab == .archived { await archives?.refresh(); return }
         let ticket = lifecycle; await store.refreshList()
         if ticket == lifecycle, !Task.isCancelled { await store.refreshSelected() }
     }
-    func stop() { archiveActions?.suspend(); archives?.stop(); bulk?.suspend(); categories?.suspend(); lifecycle = UUID(); selectionTask?.cancel(); selectionTask = nil; creation?.suspendAttachments(); store.stop() }
+    func stop() {
+        archiveRefreshTask?.cancel(); archiveRefreshTask = nil; archiveRefreshTicket = UUID(); isRefreshingAfterArchive = false
+        archiveActions?.suspend(); archives?.stop(); bulk?.suspend(); categories?.suspend(); lifecycle = UUID(); selectionTask?.cancel(); selectionTask = nil; creation?.suspendAttachments(); store.stop() }
     func reset() {
-        stop(); archiveActions?.reset(); archives?.reset(); bulk?.reset(); categories?.reset(); categoryFilter = .all; creation?.reset(); store.reset(); dialog = nil; renameDraft = ""; query = ""; status = nil
+        stop(); taskTab = .live; archiveQueryDraft = ""; handledReconciliation = nil; archiveActions?.reset(); archives?.reset(); bulk?.reset(); categories?.reset(); categoryFilter = .all; creation?.reset(); store.reset(); dialog = nil; renameDraft = ""; query = ""; status = nil
         sort = .id; ascending = false; deletionOptions = .init(); dialogUncertain = false; dialogFailure = nil
     }
 }

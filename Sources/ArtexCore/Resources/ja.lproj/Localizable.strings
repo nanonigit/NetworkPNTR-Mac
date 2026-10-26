@@ -970,6 +970,93 @@
 	<string>復元待ち</string>
 	<key>task.archive.state.restoring</key>
 	<string>復元中</string>
+	<key>task.archive.ui.accepted</key>
+	<string>受付済み（処理待ち）</string>
+	<key>task.archive.ui.actions</key>
+	<string>操作</string>
+	<key>task.archive.ui.archive</key>
+	<string>タスクをアーカイブ</string>
+	<key>task.archive.ui.archiveHelp</key>
+	<string>対象タスクのアーカイブを予約します。成功後にライブタスクから移動します。</string>
+	<key>task.archive.ui.archivedAt</key>
+	<string>保管日時 / 受付日時</string>
+	<key>task.archive.ui.compressedSize</key>
+	<string>圧縮サイズ</string>
+	<key>task.archive.ui.compression</key>
+	<string>{size}（{percent}% 削減）</string>
+	<key>task.archive.ui.dataCount</key>
+	<string>データ行数</string>
+	<key>task.archive.ui.delete</key>
+	<string>アーカイブを完全削除</string>
+	<key>task.archive.ui.deleteHelp</key>
+	<string>対象アーカイブと保管されたデータを完全に削除します。この操作は取り消せません。</string>
+	<key>task.archive.ui.deleteTotals</key>
+	<string>保管データ: {rows} 行、{size}。</string>
+	<key>task.archive.ui.empty</key>
+	<string>アーカイブはありません</string>
+	<key>task.archive.ui.emptyHelp</key>
+	<string>ライブタスクから停止済み・終了済みタスクをアーカイブできます。</string>
+	<key>task.archive.ui.live</key>
+	<string>ライブタスク</string>
+	<key>task.archive.ui.next</key>
+	<string>次のページ</string>
+	<key>task.archive.ui.noMatch</key>
+	<string>条件に一致するアーカイブはありません。検索や状態を変更してください。</string>
+	<key>task.archive.ui.originalSize</key>
+	<string>元のサイズ: {size}</string>
+	<key>task.archive.ui.originalStatus</key>
+	<string>元の状態</string>
+	<key>task.archive.ui.page</key>
+	<string>{pages} ページ中 {page} ページ</string>
+	<key>task.archive.ui.pageSize</key>
+	<string>1ページの件数</string>
+	<key>task.archive.ui.previous</key>
+	<string>前のページ</string>
+	<key>task.archive.ui.processingState</key>
+	<string>アーカイブの進捗</string>
+	<key>task.archive.ui.progress</key>
+	<string>{phase}・{percent}%</string>
+	<key>task.archive.ui.queuedNotice</key>
+	<string>受付済みの項目は処理待ちです。その後失敗する場合があるため、アーカイブ一覧で進捗を確認してください。</string>
+	<key>task.archive.ui.restore</key>
+	<string>タスクを復元</string>
+	<key>task.archive.ui.restoreHelp</key>
+	<string>対象アーカイブの復元を予約します。成功後にライブタスクへ戻ります。</string>
+	<key>task.archive.ui.retry</key>
+	<string>失敗した操作を再試行</string>
+	<key>task.archive.ui.retryHelp</key>
+	<string>この項目で失敗したアーカイブ・復元・削除の操作を再試行します。</string>
+	<key>task.archive.ui.rowAction</key>
+	<string>タスク #{id}: {action}</string>
+	<key>task.archive.ui.search</key>
+	<string>アーカイブを検索</string>
+	<key>task.archive.ui.selectPage</key>
+	<string>このページの選択可能な項目を選択</string>
+	<key>task.archive.ui.selectRow</key>
+	<string>アーカイブ済みタスク #{id} を選択</string>
+	<key>task.archive.ui.selected</key>
+	<string>{count} 件選択中</string>
+	<key>task.archive.ui.state</key>
+	<string>処理状態</string>
+	<key>task.archive.ui.summary</key>
+	<string>受付 {ok}・拒否 {failed}・結果不明 {unknown}・未開始 {pending}</string>
+	<key>task.archive.ui.tab</key>
+	<string>アーカイブ</string>
+	<key>task.archive.ui.total</key>
+	<string>アーカイブ {count} 件</string>
+	<key>task.archive.ui.unknownButton</key>
+	<string>結果不明の項目を確認</string>
+	<key>task.archive.ui.unknownConfirm</key>
+	<string>確認したので再操作を許可</string>
+	<key>task.archive.ui.unknownHelp</key>
+	<string>結果が確認できない操作があります。対象タスクとアーカイブを確認してから再操作を許可してください。確認しても自動再試行はしません。</string>
+	<key>task.archive.ui.unknownIDs</key>
+	<string>タスクID: {tasks}
+アーカイブID: {archives}</string>
+	<key>task.archive.ui.warnings</key>
+	<string>処理の警告が {count} 件あります。アーカイブの状態を確認してください。</string>
+	<key>task.archive.ui.workerError</key>
+	<string>バックグラウンド処理に失敗しました。状態を確認してから再試行してください。</string>
 	<key>task.archive.unknownPhase</key>
 	<string>不明な処理段階</string>
 	<key>task.archive.unknownState</key>

@@ -8,6 +8,7 @@ import SwiftUI
     private var language: AppLanguage { .preferred(in: [locale.identifier]) }
     private func s(_ key: AppStringKey) -> String { AppStrings.text(key, language: language) }
     var body: some View {
+        let archiveID = model.archiveActions?.context?.id
         let bulkID = model.bulk?.context?.id
         let ack = model.bulk?.acknowledgement
         let ackID = ack?.id
@@ -28,6 +29,16 @@ import SwiftUI
                 Button(s(.taskUIRefresh), systemImage: "arrow.clockwise") { Task { await model.refresh() } }
                     .keyboardShortcut("r", modifiers: .command).disabled(model.busy)
             }
+            if model.archives != nil {
+                Picker(s(.taskUITitle),selection:Binding(get:{model.taskTab},set:{_ = model.setTaskTab($0)})) {
+                    Text(s(.taskArchiveUILive)).tag(TaskScreenTab.live)
+                    Text(s(.taskArchiveUITab)).tag(TaskScreenTab.archived)
+                }.pickerStyle(.segmented).disabled(model.busy || model.dialog != nil || model.creation?.context != nil)
+            }
+            if let actions = model.archiveActions { TaskArchiveNotice(screen:model,model:actions) }
+            if model.taskTab == .archived, let archives = model.archives {
+                TaskArchivePanel(screen:model,model:archives)
+            } else {
             filters
             if let bulk = model.bulk {
                 TaskBulkToolbar(screen:model,model:bulk,visibleIDs:TaskPresentation.rows(model.store.list.value ?? [],query:model.query,status:model.status,category:model.categoryFilter,sort:model.sort,ascending:model.ascending,now:Int64(Date().timeIntervalSince1970)).map(\.id))
@@ -45,6 +56,7 @@ import SwiftUI
                 taskTable.frame(minWidth: 380)
                 TaskDetailView(model: model).frame(minWidth: 280, idealWidth: 350, maxWidth: 480)
             }
+            }
         }
         .padding(20).navigationTitle(s(.taskUITitle))
         .sheet(item: Binding(get: { model.dialog }, set: { if $0 == nil, let sheetID { model.closeDialog(id: sheetID) } })) { context in TaskDialogView(model: model, contextID: context.id) }
@@ -53,6 +65,9 @@ import SwiftUI
         }
         .sheet(item: model.categories.map { TaskCategoryBindings.presentation(model:$0,contextID:categoryID) } ?? .constant(nil)) { owner in
             if let workspace = model.categories { TaskCategoryView(model:workspace,contextID:owner.id) }
+        }
+        .sheet(item:model.archiveActions.map { TaskArchiveBindings.presentation(model:$0,contextID:archiveID) } ?? .constant(nil)) { owner in
+            if let actions = model.archiveActions { TaskArchiveActionView(model:actions,contextID:owner.id) }
         }
         .sheet(item:model.bulk.map { TaskBulkBindings.presentation(model:$0,contextID:bulkID) } ?? .constant(nil)) { owner in
             if let bulk = model.bulk { TaskBulkView(model:bulk,contextID:owner.id) }
@@ -63,14 +78,16 @@ import SwiftUI
         } message: {
             Text(s(.taskBulkUnlockHelp) + "\n" + (ack?.ids.sorted().prefix(30).map { "#"+$0 }.joined(separator:", ") ?? ""))
         }
+        .onChange(of:model.archives?.reconciliationRevision) { _,_ in model.archiveReconciled() }
         .onChange(of:model.store.list.value?.map(\.id)) { _,_ in model.bulk?.reconcileSelection() }
         .task { await model.categories?.refreshCatalog() }
-        .task {
+        .task(id:model.taskTab) {
             if let id = requestedID {
+                _ = model.setTaskTab(.live)
                 requestedID = nil; model.query = ""; model.status = nil; model.categoryFilter = .all
                 await model.store.select(id: id)
             }
-            await model.store.run()
+            await model.runTaskTab()
         }
         .onDisappear { model.stop() }
     }

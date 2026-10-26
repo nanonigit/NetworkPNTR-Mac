@@ -126,6 +126,10 @@ import SwiftUI
             Button(s(.taskBulkPause)) { _ = screen.beginBulk(.control(.pause)) }.disabled(model.eligibleCount(.pause) == 0)
             Button(s(.taskBulkResume)) { _ = screen.beginBulk(.control(.resume)) }.disabled(model.eligibleCount(.resume) == 0)
             Button(s(.taskBulkMove)) { _ = screen.beginBulk(.move) }.disabled(!model.canMove || model.selectedIDs.isEmpty)
+            if screen.archiveActions != nil {
+                Button(s(.taskArchiveUIArchive),systemImage:"archivebox") { _ = screen.beginSelectedArchive() }
+                    .disabled(!(screen.store.list.value ?? []).contains { model.selectedIDs.contains($0.id) && TaskArchiveSemantics.canArchive($0,batch:true) })
+            }
             Button(s(.taskBulkDelete),role:.destructive) { _ = screen.beginBulk(.delete) }.disabled(model.selectedIDs.isEmpty)
         }.controlSize(.small).disabled(screen.busy || screen.dialog != nil || screen.creation?.context != nil)
     }

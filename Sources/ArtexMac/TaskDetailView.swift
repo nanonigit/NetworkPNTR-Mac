@@ -59,6 +59,9 @@ import SwiftUI
                 if let action = TaskPresentation.controlAction(task.status) {
                     Button(action == .pause ? s(.taskUIPause) : s(.taskUIResume)) { Task { await model.control(task) } }
                 }
+                if model.archiveActions != nil {
+                    Button(s(.taskArchiveUIArchive),systemImage:"archivebox") { _ = model.beginArchive(task) }.disabled(!TaskArchiveSemantics.canArchive(task))
+                }
                 Button(s(.taskUIDelete), role: .destructive) { _ = model.beginDelete(task) }
             }
         }.disabled(model.busy)
