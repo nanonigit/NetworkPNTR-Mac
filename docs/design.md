@@ -87,3 +87,6 @@ T17b Core exercise contract: required guest-only fixture control for quarantine/
 F1 follows findings-core-design.md: typed finite read/triage/delete contracts only, with all advanced Findings workflows retained as later required gates. Infrastructure only; Lazyweb out of scope. No feature/UI/runtime acceptance from Core tests.
 
 F2 follows findings-state-design.md: owned finite read/page slots and retained Findings workspace, cross-page export selection, captured mutations with conservative uncertainty across4xx/stop/reset, no automatic replay. Backend state only; Lazyweb out of scope.
+
+
+F3.1 follows findings-screen-design.md: retained window coordinator, captured view/session/unknown revision, no replay, bounded preference storage excluding search/cursors/private drafts. Lazyweb metadata and fetched table practice inform subsequent native list/detail controls.
