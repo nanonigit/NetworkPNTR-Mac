@@ -22,7 +22,7 @@ import XCTest
     }
     func archive(_ id: Int64,_ task: Int64,_ state: String) throws -> BackendHTTPResponse {
         let name = task == 7101 ? TaskArchiveExercise.name : "T17 second", description = task == 7101 ? TaskArchiveExercise.description : "Archive fixture second"
-        return try ChatTestTransport.response(["id":id,"task_id":wrongOwner ? 99 : task,"state":state,"phase":"ready","progress":state == "ready" ? 100 : 0,"format_version":3,"sha256":String(repeating:"a",count:64),"original_size":100,"compressed_size":50,"task_name":name,"task_description":description,"task_goal":TaskArchiveExercise.goal,"original_status":"done","category_id":7100,"category_name":"T17 archive category","remaining_timeout_seconds":0,"data_counts":["tasks":1,"explorations":1],"requested_at":"r","created_at":"c","updated_at":"u"])
+        return try ChatTestTransport.response(["error":state == "restore_failed" ? "fixed missing fixture package" : "","id":id,"task_id":wrongOwner ? 99 : task,"state":state,"phase":"ready","progress":state == "ready" ? 100 : 0,"format_version":3,"sha256":String(repeating:"a",count:64),"original_size":100,"compressed_size":50,"task_name":name,"task_description":description,"task_goal":TaskArchiveExercise.goal,"original_status":"done","category_id":7100,"category_name":"T17 archive category","remaining_timeout_seconds":0,"data_counts":["tasks":1,"explorations":1],"requested_at":"r","created_at":"c","updated_at":"u"])
     }
     func task(_ id: Int64) throws -> [String:Any] {
         let url = try XCTUnwrap(Bundle.module.url(forResource:"task-contract",withExtension:"json",subdirectory:"Fixtures"))
@@ -41,13 +41,18 @@ import XCTest
         }
         if path.hasPrefix("/api/workspace/download?") {
             let name = URLComponents(string:path)?.queryItems?.first?.value ?? ""
+            if name.hasPrefix("archives/tasks/") {
+                let exists = records.contains { name == "archives/tasks/task-\($0.value.task)-\($0.key).tar.zst" }
+                return .init(status:exists ? 200 : 404,body:Data())
+            }
             let file = try XCTUnwrap(TaskArchiveExercise.files.first{$0.path.utf8.elementsEqual(name.utf8)})
             if !live.contains(file.taskID) { return .init(status:404,body:Data()) }
             return .init(status:200,body:badFile ? Data("wrong bytes".utf8) : file.data)
         }
         if path.hasPrefix("/api/task-archives?") {
-            let values = try records.sorted{$0.key < $1.key}.map { try JSONSerialization.jsonObject(with:archive($0.key,$0.value.task,$0.value.state).body) }
-            return try ChatTestTransport.response(["items":values,"total":values.count,"page":1,"size":20])
+            // Keep raw fixture JSON; a Foundation object roundtrip strips leading FEFF values.
+            let values = try records.sorted{$0.key < $1.key}.map { String(decoding:try archive($0.key,$0.value.task,$0.value.state).body,as:UTF8.self) }
+            return .init(status:200,body:Data("{\"items\":[\(values.joined(separator:","))],\"total\":\(values.count),\"page\":1,\"size\":20}".utf8))
         }
         if path == "/api/tasks/archive/batch" {
             var items: [[String:Any]] = []
