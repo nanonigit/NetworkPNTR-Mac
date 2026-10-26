@@ -73,3 +73,5 @@ T11 follows task-catalog-runtime-design.md: finite injectable production-client 
 T12 follows tasks-bulk-design.md: retained window-owned bulk workspace and immutable context snapshots share the TaskStore external mutation gate with category operations; pure confirmed projections do not activate agents. Captured epoch/dialog IDs guard bindings, sequential deletion and progress; unknown-ID block requires explicit acknowledgement.
 
 T13 follows tasks-archive-core-design.md: bounded finite service/direct decoding, safe error/warning presence projections, typed en-ja state/phase labels and separate acceptance semantics. Permutation validation honors source topological ordering.
+
+T14 archive state requirements: retained paginated/search/state reads, page-local checkbox selection, single-flight two-second polling, selected-detail ownership, and accepted-restore identity reconciliation. Only a detail404 for a captured accepted restore may notify live-task refresh; page disappearance, unrelated404, failed reads and stale sessions cannot. Stop retains pending receipts; authentication reset clears them. Native tabs/actions/runtime parity remain subsequent gates.
