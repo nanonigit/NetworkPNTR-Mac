@@ -33,7 +33,8 @@ public struct TaskCatalogExerciseReport: Codable, Equatable, Sendable {
         let template = try await templates.create(draft)
         guard TaskTemplateDraft(template).sameBytes(as:draft) else { throw failure() }; checks.append(expectedChecks[4])
         draft.name = "T11 updated e\u{301}"; draft.categoryId = nil; draft.interceptRules = []
-        _ = try await templates.update(id:template.id,draft:draft)
+        let clearedReceipt = try await templates.update(id:template.id,draft:draft)
+        guard TaskTemplateDraft(clearedReceipt).sameBytes(as:draft) else { throw failure() }
         let cleared = try await templates.list()
         guard cleared.count == 1, cleared[0].id == template.id, TaskTemplateDraft(cleared[0]).sameBytes(as:draft) else { throw failure() }
         checks.append(expectedChecks[5])
