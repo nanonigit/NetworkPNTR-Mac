@@ -11,6 +11,8 @@ import XCTest
     var badName = false
     var wrongOwner = false
     var wrongReceipt = false
+    var mismatchedSingleReceipt: Int?
+    var singleWrites = 0
     var calls: [(String,String)] = []
     var controls: [String] = []
     var audits = 0
@@ -20,9 +22,9 @@ import XCTest
         XCTAssertEqual(records[target.archiveID]?.task,7101); XCTAssertEqual(target.sha256,String(repeating:"a",count:64))
         hidden = value; controls.append(value ? "hide" : "repair")
     }
-    func archive(_ id: Int64,_ task: Int64,_ state: String) throws -> BackendHTTPResponse {
+    func archive(_ id: Int64,_ task: Int64,_ state: String, overrideTask: Int64? = nil) throws -> BackendHTTPResponse {
         let name = task == 7101 ? TaskArchiveExercise.name : "T17 second", description = task == 7101 ? TaskArchiveExercise.description : "Archive fixture second"
-        return try ChatTestTransport.response(["error":state == "restore_failed" ? "fixed missing fixture package" : "","id":id,"task_id":wrongOwner ? 99 : task,"state":state,"phase":"ready","progress":state == "ready" ? 100 : 0,"format_version":3,"sha256":String(repeating:"a",count:64),"original_size":100,"compressed_size":50,"task_name":name,"task_description":description,"task_goal":TaskArchiveExercise.goal,"original_status":"done","category_id":7100,"category_name":"T17 archive category","remaining_timeout_seconds":0,"data_counts":["tasks":1,"explorations":1],"requested_at":"r","created_at":"c","updated_at":"u"])
+        return try ChatTestTransport.response(["error":state == "restore_failed" ? "fixed missing fixture package" : "","id":id,"task_id":overrideTask ?? (wrongOwner ? 99 : task),"state":state,"phase":"ready","progress":state == "ready" ? 100 : 0,"format_version":3,"sha256":String(repeating:"a",count:64),"original_size":100,"compressed_size":50,"task_name":name,"task_description":description,"task_goal":TaskArchiveExercise.goal,"original_status":"done","category_id":7100,"category_name":"T17 archive category","remaining_timeout_seconds":0,"data_counts":["tasks":1,"explorations":1],"requested_at":"r","created_at":"c","updated_at":"u"])
     }
     func task(_ id: Int64) throws -> [String:Any] {
         let url = try XCTUnwrap(Bundle.module.url(forResource:"task-contract",withExtension:"json",subdirectory:"Fixtures"))
@@ -60,17 +62,20 @@ import XCTest
             return try ChatTestTransport.response(["items":items],status:202)
         }
         if path.hasPrefix("/api/tasks/"), path.hasSuffix("/archive") {
+            singleWrites += 1
             let task = Int64(path.split(separator:"/")[2])!, id = next; next += 1; records[id] = (task,"ready"); live.remove(task)
-            let row = try archive(id,task,wrongReceipt ? "ready" : "archive_queued"); return .init(status:202,body:row.body)
+            let row = try archive(id,task,wrongReceipt ? "ready" : "archive_queued",overrideTask:singleWrites == mismatchedSingleReceipt ? 99 : nil); return .init(status:202,body:row.body)
         }
         let id = Int64(path.split(separator:"/")[2])!
         guard let record = records[id] else { return .init(status:404,body:Data()) }
         if method == "DELETE" {
-            records.removeValue(forKey:id); return .init(status:202,body:try archive(id,record.task,"delete_queued").body)
+            singleWrites += 1
+            records.removeValue(forKey:id); return .init(status:202,body:try archive(id,record.task,"delete_queued",overrideTask:singleWrites == mismatchedSingleReceipt ? 99 : nil).body)
         }
         if method == "POST", path.hasSuffix("/restore") {
+            singleWrites += 1
             if hidden { records[id] = (record.task,"restore_failed") } else { records.removeValue(forKey:id); live.insert(record.task) }
-            return .init(status:202,body:try archive(id,record.task,"restore_queued").body)
+            return .init(status:202,body:try archive(id,record.task,"restore_queued",overrideTask:singleWrites == mismatchedSingleReceipt ? 99 : nil).body)
         }
         return try archive(id,record.task,record.state)
     }
@@ -125,4 +130,17 @@ final class TaskArchiveExerciseTests: XCTestCase {
         do { _ = try await exercise.runAfterRestart(checkpoint); XCTFail("foreign archive accepted") } catch {}
         XCTAssertEqual(api.calls.filter{$0.0 != "GET"}.count,writes)
     }
+    @MainActor func testEverySingle202TaskOwnerMustMatchBeforeAnyFurtherRequest() async throws {
+        for index in 1...5 {
+            let api = ArchiveExerciseAPI(); api.mismatchedSingleReceipt = index
+            let exercise = TaskArchiveExercise(client:api,fixture:api,sleep:{_ in})
+            do {
+                let checkpoint = try await exercise.runBeforeRestart()
+                _ = try await exercise.runAfterRestart(checkpoint)
+                XCTFail("A queued receipt for another task was accepted")
+            } catch {}
+            XCTAssertEqual(api.singleWrites,index); XCTAssertNotEqual(api.calls.last?.0,"GET")
+        }
+    }
+
 }
