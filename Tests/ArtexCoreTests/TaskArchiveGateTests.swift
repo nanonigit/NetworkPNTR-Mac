@@ -26,4 +26,15 @@ final class TaskArchiveGateTests: XCTestCase {
         store.finishMutation(ticket:UUID(),clearSelection:true); XCTAssertTrue(store.isMutating)
         store.finishMutation(ticket:gate,clearSelection:true); XCTAssertFalse(store.isMutating); XCTAssertTrue(store.list.isStale)
     }
+    @MainActor func testBatchRestoreTrackingRequiresSuccessfulIdentityAndSession() throws {
+        let api = ChatTestTransport(); let store = TaskArchiveStore(service:TaskArchiveService(client:api))
+        func item(_ json: String) throws -> TaskArchiveBatchItem { try BackendJSONCoding.decode(TaskArchiveBatchItem.self,from:Data(json.utf8)) }
+        let valid = try item(#"{"id":"17","archive_id":17,"ok":true,"queued":true}"#)
+        XCTAssertFalse(store.observeAcceptedRestore(valid,taskID:7,owner:UUID()))
+        XCTAssertFalse(store.observeAcceptedRestore(valid,taskID:0,owner:store.sessionOwner))
+        XCTAssertFalse(store.observeAcceptedRestore(try item(#"{"id":"17","archive_id":18,"ok":true,"queued":true}"#),taskID:7,owner:store.sessionOwner))
+        XCTAssertFalse(store.observeAcceptedRestore(try item(#"{"id":"17","archive_id":17,"ok":false,"queued":false}"#),taskID:7,owner:store.sessionOwner))
+        XCTAssertTrue(store.observeAcceptedRestore(valid,taskID:7,owner:store.sessionOwner)); XCTAssertEqual(store.pendingRestoreIDs,Set([17]))
+    }
+
 }

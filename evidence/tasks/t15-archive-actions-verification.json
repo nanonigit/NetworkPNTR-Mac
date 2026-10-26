@@ -1,0 +1,118 @@
+{
+  "phase": "T15 archive action model and shared mutation gates",
+  "baseline": "e75ae371ad777ffd1eecdd28d2781a6519b05591",
+  "reference_sha256": {
+    "web/src/app/(main)/function/tasks/page.tsx": "f1fb3304b87085c78c84cbc5bcc71117a63a281d3a17a22e438b4b2f357f6ef3",
+    "server/task_archives.go": "c41acbe891e921f3a90299102e00c746a5f6c3a6f92a48c55a5a9e3c09368c35"
+  },
+  "swift": {
+    "total": 469,
+    "passed": 468,
+    "skipped_existing_ax": 1,
+    "failed": 0
+  },
+  "python": {
+    "total": 62,
+    "failed": 0
+  },
+  "focused": {
+    "gate_core": 3,
+    "action_model": 13,
+    "screen_integration_total": 3,
+    "screen_integration_added": 1
+  },
+  "coverage": {
+    "TaskArchiveStore.swift": {
+      "branches": {
+        "count": 0,
+        "covered": 0,
+        "notcovered": 0,
+        "percent": 0
+      },
+      "functions": {
+        "count": 49,
+        "covered": 46,
+        "percent": 93.87755102040816
+      },
+      "instantiations": {
+        "count": 49,
+        "covered": 46,
+        "percent": 93.87755102040816
+      },
+      "lines": {
+        "count": 153,
+        "covered": 150,
+        "percent": 98.0392156862745
+      },
+      "mcdc": {
+        "count": 0,
+        "covered": 0,
+        "notcovered": 0,
+        "percent": 0
+      },
+      "regions": {
+        "count": 142,
+        "covered": 128,
+        "notcovered": 14,
+        "percent": 90.14084507042254
+      }
+    },
+    "TaskArchiveWorkspace.swift": {
+      "branches": {
+        "count": 0,
+        "covered": 0,
+        "notcovered": 0,
+        "percent": 0
+      },
+      "functions": {
+        "count": 52,
+        "covered": 48,
+        "percent": 92.3076923076923
+      },
+      "instantiations": {
+        "count": 52,
+        "covered": 48,
+        "percent": 92.3076923076923
+      },
+      "lines": {
+        "count": 151,
+        "covered": 147,
+        "percent": 97.35099337748345
+      },
+      "mcdc": {
+        "count": 0,
+        "covered": 0,
+        "notcovered": 0,
+        "percent": 0
+      },
+      "regions": {
+        "count": 139,
+        "covered": 125,
+        "notcovered": 14,
+        "percent": 89.92805755395683
+      }
+    }
+  },
+  "red_green": [
+    "d6c8891 -> 223af7d:2 gate cases, expanded3",
+    "2315c7c -> d645872:9 model cases, expanded13",
+    "46f0766 -> final:screen integration"
+  ],
+  "signed_build": "build-only and strict signature pass",
+  "catalog": "no new entries; export check passes",
+  "review": "no remaining concrete blocker",
+  "live_mutations": false,
+  "vm_started": false,
+  "native_window_opened": false,
+  "acceptance_pending": [
+    "native archive tabs dialogs toolbar and bulk results UI",
+    "real VM/browser archive restore delete retry jobs",
+    "durability and actual task reappearance after404",
+    "en/ja AX keyboard visual comparison after unlock",
+    "full21workflow parity",
+    "native cloud egress",
+    "kernel reliability",
+    "Docker-stopped clean Mac runtime",
+    "distribution"
+  ]
+}

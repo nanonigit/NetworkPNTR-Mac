@@ -83,7 +83,7 @@ final class TaskArchiveWorkspaceTests: XCTestCase {
     @MainActor func testHeldWriteExcludesOtherMutationsAndResetWaitsForTerminal() async throws {
         let (api,model,live,cold) = try await make(); XCTAssertTrue(model.begin(.restore,archives:[try record()]))
         let id = try XCTUnwrap(model.context).id; api.hold = true; let work = Task { await model.submit(contextID:id) }
-        try await reached { api.held.count == 1 }; XCTAssertTrue(live.isMutating); XCTAssertTrue(cold.isMutating)
+        try await reached { api.held.count == 1 }; let duplicate = await model.submit(contextID:id); XCTAssertFalse(duplicate); XCTAssertEqual(api.writes.count,1); XCTAssertTrue(live.isMutating); XCTAssertTrue(cold.isMutating)
         XCTAssertNil(live.beginBulkMutation()); XCTAssertNil(live.beginCategoryMutation()); XCTAssertFalse(cold.configure(page:2,size:20,query:"",state:nil))
         model.reset(); live.reset(); cold.reset(); XCTAssertTrue(model.isSubmitting); XCTAssertTrue(live.isMutating); XCTAssertTrue(cold.isMutating)
         XCTAssertFalse(model.begin(.delete,archives:[try record()])); api.held[0].resume(returning:reply(row(state:"restore_queued")))
@@ -118,4 +118,49 @@ final class TaskArchiveWorkspaceTests: XCTestCase {
         model.submitFromUI(contextID:id); model.cancel(contextID:id)
         try await reached { !model.isSubmitting }; XCTAssertEqual(model.items.map(\.state),[.notStarted]); XCTAssertTrue(api.writes.isEmpty)
     }
+    @MainActor func testResetBeforeWorkerDispatchAndColdGateFailureDoNotSend() async throws {
+        let (api,model,live,cold) = try await make(); XCTAssertTrue(model.begin(.restore,archives:[try record()])); let id = try XCTUnwrap(model.context).id
+        let occupied = try XCTUnwrap(cold.beginMutation()); _ = await model.submit(contextID:id)
+        XCTAssertFalse(live.isMutating); XCTAssertTrue(cold.isMutating); XCTAssertFalse(model.hasSubmitted); XCTAssertTrue(api.writes.isEmpty)
+        cold.finishMutation(ticket:occupied,clearSelection:false)
+        model.submitFromUI(contextID:id); model.reset(); live.reset(); cold.reset()
+        XCTAssertTrue(model.isSubmitting); XCTAssertTrue(live.isMutating); XCTAssertTrue(cold.isMutating)
+        try await reached { !model.isSubmitting }; XCTAssertTrue(api.writes.isEmpty); XCTAssertTrue(model.items.isEmpty)
+        XCTAssertFalse(live.isMutating); XCTAssertFalse(cold.isMutating)
+    }
+    @MainActor func testLimitsEligibilityAndColdSingleEndpointAfterFiltering() async throws {
+        let (api,model,_,_) = try await make()
+        let rows = try (1...101).map { id -> TaskRecord in
+            var seed = api.tasks[0]; seed["id"] = String(id)
+            return try BackendJSONCoding.decode(TaskRecord.self,from:JSONSerialization.data(withJSONObject:seed))
+        }
+        XCTAssertFalse(model.beginArchive(rows,batch:true)); XCTAssertTrue(model.beginArchive(Array(rows.prefix(100)),batch:true))
+        model.close(contextID:try XCTUnwrap(model.context).id)
+        XCTAssertFalse(model.begin(.delete,archives:Array(repeating:try record(),count:101)))
+        XCTAssertFalse(model.begin(.retry,archives:[try record()])); XCTAssertFalse(model.begin(.retry,archives:[try record(state:"restore_failed"),try record(18,state:"delete_failed")]))
+        XCTAssertTrue(model.begin(.restore,archives:[try record(),try record(18,state:"delete_failed")]))
+        api.replies = [reply(row(state:"restore_queued"))]; _ = await model.submit(contextID:try XCTUnwrap(model.context).id)
+        XCTAssertEqual(api.writes.last?.1,"/api/task-archives/17/restore"); XCTAssertEqual(model.items.first?.state,.accepted)
+    }
+    @MainActor func testStaleAcknowledgementCannotClearReplacement() async throws {
+        let (api,model,_,_) = try await make(); XCTAssertTrue(model.begin(.delete,archives:[try record()])); let id = try XCTUnwrap(model.context).id
+        api.replies = [reply("{}",status:503)]; _ = await model.submit(contextID:id); model.close(contextID:id)
+        model.requestAcknowledgement(); let first = try XCTUnwrap(model.acknowledgement).id
+        model.resolveAcknowledgement(id:first,accept:false); model.requestAcknowledgement(); let replacement = try XCTUnwrap(model.acknowledgement).id
+        model.resolveAcknowledgement(id:first,accept:true); XCTAssertEqual(model.acknowledgement?.id,replacement)
+        XCTAssertEqual(model.uncertainArchiveIDs,Set([17])); model.resolveAcknowledgement(id:replacement,accept:true)
+        XCTAssertTrue(model.uncertainTaskIDs.isEmpty); XCTAssertTrue(model.uncertainArchiveIDs.isEmpty)
+    }
+
+    @MainActor func testDeleteBatchPartialReceiptsDoNotClaimRemovalAndPrecancelDoesNotSend() async throws {
+        let (api,model,_,cold) = try await make()
+        XCTAssertTrue(model.begin(.delete,archives:[try record(),try record(18,task:8)])); let id = try XCTUnwrap(model.context).id
+        let cancelled = Task { await model.submit(contextID:id) }; cancelled.cancel(); _ = await cancelled.value
+        XCTAssertFalse(model.hasSubmitted); XCTAssertTrue(api.writes.isEmpty)
+        api.replies = [reply(#"{"items":[{"id":"18","ok":true,"queued":true,"archive_id":18},{"id":"17","ok":false,"queued":false,"archive_id":17}]}"#)]
+        _ = await model.submit(contextID:id); XCTAssertEqual(api.writes.first?.0,"POST"); XCTAssertEqual(api.writes.first?.1,"/api/task-archives/delete/batch")
+        XCTAssertEqual(model.items.map(\.state),[.accepted,.rejected]); XCTAssertEqual(cold.list.value?.items.count,3)
+        XCTAssertTrue(cold.pendingRestoreIDs.isEmpty); XCTAssertTrue(cold.removedAfterRestoreIDs.isEmpty)
+    }
+
 }
