@@ -1,0 +1,85 @@
+{
+  "phase": "F2",
+  "scope": "owned finite Findings state, mutation outcomes and polling; no UI/runtime acceptance",
+  "baseline": "e75ae371ad777ffd1eecdd28d2781a6519b05591",
+  "swift": {
+    "total": 550,
+    "passed": 549,
+    "existing_accessibility_skip": 1,
+    "failures": 0
+  },
+  "python": {
+    "total": 86,
+    "passed": 86,
+    "failures": 0
+  },
+  "focused_cases": {
+    "read_page": 6,
+    "store": 10,
+    "mutation": 10,
+    "poll": 7,
+    "total": 33
+  },
+  "line_coverage": {
+    "FindingMutationState.swift": {
+      "count": 81,
+      "covered": 80,
+      "percent": 98.76543209876543
+    },
+    "FindingPolling.swift": {
+      "count": 24,
+      "covered": 24,
+      "percent": 100
+    },
+    "FindingReadState.swift": {
+      "count": 47,
+      "covered": 47,
+      "percent": 100
+    },
+    "FindingStore.swift": {
+      "count": 203,
+      "covered": 199,
+      "percent": 98.0295566502463
+    }
+  },
+  "executed_source_sha256": {
+    "Sources/ArtexCore/FindingReadState.swift": "1aa9dea79312a1c02907f3ba5c22a177e7df464206ea4cf24f061a2fc83382f3",
+    "Sources/ArtexCore/FindingStore.swift": "c1becac06e37a6894516153e2c3f1c11c4a220a6507447cede48f9e5dd3b833c",
+    "Sources/ArtexCore/FindingMutationState.swift": "22266ac2fc29b1132baeba2b03bb350d97cf7f9b6780a3efa4407024db67d6cc",
+    "Sources/ArtexCore/FindingPolling.swift": "33f4933c2e91f8eac82207892e810dfcb2471176072b42277eb9afe2430fea01",
+    "Sources/ArtexCore/FindingModels.swift": "a535d2279199b638d43077bb6a63bfb41e1acf19bbb163822fa265968be02d0f"
+  },
+  "flat_default_size": 20,
+  "group_default_size": 10,
+  "view_stats_poll_seconds": 5,
+  "page_corrective_reads_maximum": 1,
+  "cross_page_selection": true,
+  "stats_independent_from_filters": true,
+  "tree_independent_from_scope_page": true,
+  "tree_cancel_rearms_only_owned_attempt": true,
+  "contextual_inherited_detail_preserved": true,
+  "uncertainty_ack_requires_session_and_episode": true,
+  "mutation_gate_retained_until_terminal": true,
+  "automatic_write_retries": false,
+  "post_handoff_4xx_may_be_partial": true,
+  "runtime_regression_red_commits": [
+    "31ab09f",
+    "9e69190",
+    "7c87a43",
+    "84a4705",
+    "e003111"
+  ],
+  "runtime_regression_green_commits": [
+    "3842275",
+    "fa43622",
+    "8fc667d",
+    "6997175",
+    "c102087"
+  ],
+  "actual_guest_operations": false,
+  "native_ui_acceptance": "pending",
+  "feature_map_findings_status": "pending",
+  "browser_deployment_changed": false,
+  "vm_policy_changed": false,
+  "candidate_promoted": false
+}
