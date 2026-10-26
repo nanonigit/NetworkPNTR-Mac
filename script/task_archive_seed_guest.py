@@ -32,7 +32,7 @@ DO $$ BEGIN
  OR EXISTS (SELECT 1 FROM intercept_pending) OR EXISTS (SELECT 1 FROM task_relations)
  THEN RAISE EXCEPTION 'fresh archive fixture required'; END IF;
 END; $$;
-INSERT INTO task_categories(id,name) VALUES (7100,'T17 archive category');
+INSERT INTO task_categories(id,name,nkey) VALUES (7100,'T17 archive category','t17 archive category');
 INSERT INTO explorations(id,description,goal,status) VALUES
  (7101,$fixture${DESCRIPTION}$fixture$,$fixture${GOAL}$fixture$,'achieved'),
  (7102,'Archive fixture second',$fixture${GOAL}$fixture$,'achieved');
@@ -76,7 +76,7 @@ def validate_paths(root):
         tasks = root / 'tasks'
         if tasks.is_symlink() or (tasks.exists() and (not tasks.is_dir() or any(tasks.iterdir()))):
             raise RuntimeError('Archive fixture refuses existing task files')
-    except OSError as error:
+    except OSError:
         raise RuntimeError('Archive fixture path validation failed') from None
 
 

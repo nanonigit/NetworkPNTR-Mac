@@ -84,6 +84,11 @@ class ArchiveSeedTests(unittest.TestCase):
                     fixture.main()
                 self.assertEqual(output.getvalue(), '')
                 files.assert_not_called(); self.assertEqual(child.call_count, 1)
+            with patch.object(fixture.subprocess, 'run', side_effect=subprocess.TimeoutExpired(['private-dsn'], 15)), contextlib.redirect_stdout(io.StringIO()) as output:
+                with self.assertRaises(RuntimeError) as raised:
+                    fixture.main()
+                self.assertNotIn('private-dsn', str(raised.exception)); self.assertEqual(output.getvalue(), '')
+                files.assert_not_called()
             with patch.object(fixture.subprocess, 'run', return_value=subprocess.CompletedProcess([], 0)) as child, contextlib.redirect_stdout(io.StringIO()) as output:
                 fixture.main()
                 args, kwargs = child.call_args

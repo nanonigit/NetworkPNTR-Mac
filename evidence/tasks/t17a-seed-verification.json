@@ -1,0 +1,51 @@
+{
+  "phase": "T17a fixed terminal archive seed prerequisites",
+  "baseline": "e75ae371ad777ffd1eecdd28d2781a6519b05591",
+  "swift": {
+    "total": 482,
+    "passed": 481,
+    "skipped_existing_ax": 1,
+    "failed": 0
+  },
+  "python": {
+    "total": 69,
+    "new_boundary_cases": 7,
+    "failed": 0
+  },
+  "actual_component": {
+    "database": "PostgreSQL in disposable cached guest-image container",
+    "ARTEX_started": false,
+    "network": "none",
+    "host_binds": false,
+    "privileged": false,
+    "terminal_tasks": 2,
+    "files": 3,
+    "bytes_verified": 1056,
+    "exact_unicode_names": true,
+    "no_live_profiles_or_usage": true,
+    "replay_rejected": true,
+    "owned_container_removed": true,
+    "original_four_browser_containers_unchanged": true
+  },
+  "red_green": [
+    "2c9a0b8 missing script RED ->7boundary cases pass",
+    "32139e1 missing nkey ->actual complete-schema NOT NULL rejection/0tasks rollback",
+    "explicit normalized nkey ->actual SQL/files readback and replay proof pass"
+  ],
+  "signed_build": "build-only and strict signature pass",
+  "review": "no remaining concrete Python/source blocker",
+  "app_source_changes": false,
+  "VM_started": false,
+  "archive_jobs_run": false,
+  "acceptance_pending": [
+    "finite Core archive exercise and VMProbe driver",
+    "actual3boot same-disk VM archive restore delete and durability",
+    "independent pinned reference backend operations",
+    "visible native/browser en-ja AX keyboard comparison after unlock",
+    "full21workflow parity",
+    "native cloud egress",
+    "kernel reliability",
+    "clean Mac without Docker Desktop",
+    "distribution"
+  ]
+}

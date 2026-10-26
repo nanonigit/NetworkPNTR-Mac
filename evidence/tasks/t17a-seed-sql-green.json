@@ -1,0 +1,61 @@
+{
+  "image": "sha256:87ae72b5cd651612003313a3ee0f76f5681d16426fe7b0ee276fa77a3ce68cad",
+  "seed_sha256": "5966a7aa3c40da2b19cdc2df37935fde3582a8c6aff6ee74102ec95edb493d15",
+  "passed": true,
+  "usage_schema_sha256": "3b3aece1c4c80bceef74d15652e1c97c972275d7c738a41938945f00588c8d39",
+  "schema_sha256": "17f0f9e28e1a587f48e8723dfc84b5daf25887642e54b12801f95f1fcaea4002",
+  "isolation": {
+    "network": "none",
+    "host_bind_mounts": false,
+    "published_ports": false,
+    "privileged": false
+  },
+  "seed": {
+    "fixture_seeded": true,
+    "terminal_task_ids": [
+      7101,
+      7102
+    ],
+    "files": [
+      {
+        "path": "tasks/7101/workspace/fixture-é.txt",
+        "size": 32,
+        "sha256": "844a35e0bcb6bf65694d9e7270b6118cb500cdfeef531a4102f7a8f889bf663c"
+      },
+      {
+        "path": "tasks/7101/workspace/empty.bin",
+        "size": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "path": "tasks/7102/workspace/fixture.bin",
+        "size": 1024,
+        "sha256": "785b0751fc2c53dc14a4ce3d800e69ef9ce1009eb327ccf458afe09c242c26c9"
+      }
+    ]
+  },
+  "proof": {
+    "row_proof": {
+      "tasks": 2,
+      "terminal": 2,
+      "names": [
+        "﻿é 中文 한국어",
+        "T17 second"
+      ],
+      "categories": 1,
+      "archives": 0,
+      "profiles": 0,
+      "activity": 0,
+      "usage": 0,
+      "conversations": 0
+    },
+    "files": 3,
+    "bytes_verified": 1056,
+    "filesystem_replay_rejected": true,
+    "SQL_replay_rejected": true,
+    "uid": 1000
+  },
+  "stage": "complete",
+  "owned_container_removed": true,
+  "original_browser_unchanged": true
+}

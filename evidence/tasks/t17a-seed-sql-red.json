@@ -1,17 +1,21 @@
 {
   "image": "sha256:87ae72b5cd651612003313a3ee0f76f5681d16426fe7b0ee276fa77a3ce68cad",
   "seed_sha256": "7f896528271755d2c921cf75d601adf1d67a13f23a78a435cd6de74de9444509",
-  "schema_sha256": "17f0f9e28e1a587f48e8723dfc84b5daf25887642e54b12801f95f1fcaea4002",
   "passed": false,
+  "usage_schema_sha256": "3b3aece1c4c80bceef74d15652e1c97c972275d7c738a41938945f00588c8d39",
+  "schema_sha256": "17f0f9e28e1a587f48e8723dfc84b5daf25887642e54b12801f95f1fcaea4002",
   "isolation": {
     "network": "none",
     "host_bind_mounts": false,
     "published_ports": false,
     "privileged": false
   },
+  "sql_diagnosis": {
+    "sql_rejected": true,
+    "nkey_not_null_violation": true,
+    "tasks_after_failure": 0
+  },
   "stage": "seed",
   "owned_container_removed": true,
-  "original_browser_unchanged": true,
-  "failure": "actual fixed seed transaction rejected",
-  "source_diagnosis": "category INSERT omits required nkey from pinned schema"
+  "original_browser_unchanged": true
 }
