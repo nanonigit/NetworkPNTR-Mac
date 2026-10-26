@@ -128,16 +128,16 @@ struct TaskCategoryDecision: Identifiable {
     func save(contextID: UUID, editorID: UUID) async -> Bool {
         guard editable(contextID,editorID), !isLoading, !Task.isCancelled, selection != .uncategorized else { return false }
         if selection == .new, let inline = context?.inlineOwner,
-           let existing = categories.first(where: { $0.name.lowercased().utf8.elementsEqual(ChatText.trim(name).lowercased().utf8) }) {
+           let existing = categories.first(where: { $0.name.lowercased().utf8.elementsEqual(ChatText.trim(self.name).lowercased().utf8) }) {
             replace(.category(existing.id),name:existing.name); failure = nil; lastChange = nil
             onCatalog?(categories); onChange?(.saved(existing),inline); context = nil; return true
         }
         guard let token = claim() else { return false }
-        let life = lifetime, inline = context?.inlineOwner, selection = selection, name = name
+        let life = lifetime, inline = context?.inlineOwner, selected = self.selection, submittedName = self.name
         return await finish(token:token,life:life,inline:inline) {
             let row: TaskCategoryRecord
-            if case .category(let id) = selection { row = try await self.service.rename(id:id,name:name) }
-            else { row = try await self.service.create(name:name) }
+            if case .category(let id) = selected { row = try await self.service.rename(id:id,name:submittedName) }
+            else { row = try await self.service.create(name:submittedName) }
             return .saved(row)
         }
     }

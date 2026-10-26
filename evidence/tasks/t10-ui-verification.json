@@ -60,5 +60,18 @@
     "native cloud egress",
     "guest stability",
     "production distribution"
-  ]
+  ],
+  "compiler_compatibility_followup": {
+    "initial_failed_run": "https://github.com/nanonigit/artex-mac/actions/runs/40258111107",
+    "failure": "closure captures local name before declaration",
+    "repair": "explicit property lookup and distinct immutable snapshot identifiers",
+    "local_regression_after_repair": {
+      "total": 405,
+      "passed": 404,
+      "skipped_existing_ax": 1,
+      "failed": 0
+    },
+    "coverage_collected": "before spelling-only capture repair",
+    "hosted_compatibility": "requires exact repair commit CI"
+  }
 }
