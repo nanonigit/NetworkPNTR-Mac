@@ -1,6 +1,9 @@
 import Foundation
 
 public enum AppStringKey: String, CaseIterable, Sendable {
+    case findingValidation = "finding.validation"
+    case findingLimits = "finding.limits"
+    case findingReadOnly = "finding.readOnly"
     case taskArchiveUIOriginalUnknown = "task.archive.ui.originalUnknown"
     case taskArchiveUILive = "task.archive.ui.live"
     case taskArchiveUITab = "task.archive.ui.tab"

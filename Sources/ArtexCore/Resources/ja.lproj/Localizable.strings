@@ -512,6 +512,12 @@
 	<string>トラフィック</string>
 	<key>feature.workspace</key>
 	<string>ワークスペース</string>
+	<key>finding.limits</key>
+	<string>発見事項のリクエストが対応上限を超えています。</string>
+	<key>finding.readOnly</key>
+	<string>継承された発見事項、または編集可能な記録がない発見事項です。変更するには元の発見事項を開いてください。</string>
+	<key>finding.validation</key>
+	<string>発見事項の識別子と編集内容を確認してください。</string>
 	<key>llm.noticeActivated</key>
 	<string>有効なモデル設定を変更しました。</string>
 	<key>llm.noticeDeleted</key>

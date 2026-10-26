@@ -512,6 +512,12 @@
 	<string>Traffic</string>
 	<key>feature.workspace</key>
 	<string>Workspace</string>
+	<key>finding.limits</key>
+	<string>The finding request exceeds the supported limits.</string>
+	<key>finding.readOnly</key>
+	<string>This finding is inherited or has no editable record. Open its original finding to make changes.</string>
+	<key>finding.validation</key>
+	<string>Check the finding identifier and edited fields.</string>
 	<key>llm.noticeActivated</key>
 	<string>Active model configuration changed.</string>
 	<key>llm.noticeDeleted</key>

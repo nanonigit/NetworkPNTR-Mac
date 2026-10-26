@@ -11897,6 +11897,57 @@
           }
         }
       }
+    },
+    "finding.validation": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Check the finding identifier and edited fields."
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "発見事項の識別子と編集内容を確認してください。"
+          }
+        }
+      }
+    },
+    "finding.limits": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The finding request exceeds the supported limits."
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "発見事項のリクエストが対応上限を超えています。"
+          }
+        }
+      }
+    },
+    "finding.readOnly": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "This finding is inherited or has no editable record. Open its original finding to make changes."
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "継承された発見事項、または編集可能な記録がない発見事項です。変更するには元の発見事項を開いてください。"
+          }
+        }
+      }
     }
   },
   "version": "1.0"
