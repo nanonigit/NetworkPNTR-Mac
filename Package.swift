@@ -7,6 +7,7 @@ let package = Package(
         .target(name: "ArtexCore", exclude: ["Resources/Localizable.xcstrings"], resources: [.process("Resources/en.lproj"), .process("Resources/ja.lproj"), .copy("Resources/feature-map.json"), .copy("Resources/auth-terms.ja.json"), .copy("Resources/auth-terms.en.json")]),
         .executableTarget(name: "ArtexMac", dependencies: ["ArtexCore"]),
         .executableTarget(name: "VMProbe", dependencies: ["ArtexCore"]),
+        .testTarget(name: "VMProbeTests", dependencies: ["VMProbe", "ArtexCore"]),
         .testTarget(name: "ArtexMacTests", dependencies: ["ArtexMac", "ArtexCore"]),
         .testTarget(name: "ArtexCoreTests", dependencies: ["ArtexCore"], resources: [.copy("Fixtures")])
     ], swiftLanguageModes: [.v6]
