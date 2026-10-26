@@ -1,0 +1,176 @@
+{
+  "baseline": "e75ae371ad777ffd1eecdd28d2781a6519b05591",
+  "source_file": "web/src/lib/api.ts",
+  "source_sha256": "18b4529a99b508964348bf83b7777597ca3cb80a64565380e1b1320005700fe1",
+  "function_sha256": "6a98d554bf6172094f793f7a89339372a94e25d7ae75b66738c1b8d0c695dcce",
+  "source_function": "function findingFilterParams(q: Omit<FindingQuery, \"page\" | \"pageSize\">): URLSearchParams {\n  const p = new URLSearchParams();\n  if (q.severity && q.severity !== \"all\") p.set(\"severity\", q.severity);\n  if (q.status && q.status !== \"all\") p.set(\"status\", q.status);\n  if (q.vulnclass && q.vulnclass !== \"all\") p.set(\"vulnclass\", q.vulnclass);\n  if (q.task && q.task !== \"all\") p.set(\"task_id\", q.task);\n  if (q.query?.trim()) p.set(\"q\", q.query.trim());\n  if (q.sort) p.set(\"sort\", q.sort);\n  if (q.assetScope) p.set(\"asset_scope\", q.assetScope);\n  return p;\n}",
+  "scope": "Executed source filter query projection only; no rendered UI/API/runtime acceptance",
+  "cases": [
+    {
+      "name": "defaults",
+      "operation": "flat",
+      "query": {
+        "page": 1,
+        "pageSize": 20,
+        "severity": "all",
+        "status": "all",
+        "vulnclass": "all",
+        "task": "all",
+        "query": "",
+        "sort": "severity"
+      },
+      "expected": {
+        "sort": "severity",
+        "page": "1",
+        "limit": "20"
+      }
+    },
+    {
+      "name": "literal_query",
+      "operation": "flat",
+      "query": {
+        "page": 2,
+        "pageSize": 50,
+        "severity": "high",
+        "status": "risk_accepted",
+        "vulnclass": "CWE+中文",
+        "task": "__unassigned__",
+        "query": "﻿ é +&= 한국어 ﻿",
+        "sort": "time",
+        "assetScope": "r:é+&"
+      },
+      "expected": {
+        "severity": "high",
+        "status": "risk_accepted",
+        "vulnclass": "CWE+中文",
+        "task_id": "__unassigned__",
+        "q": "é +&= 한국어",
+        "sort": "time",
+        "asset_scope": "r:é+&",
+        "page": "2",
+        "limit": "50"
+      }
+    },
+    {
+      "name": "nel_is_search",
+      "operation": "flat",
+      "query": {
+        "page": 1,
+        "pageSize": 20,
+        "severity": "all",
+        "status": "all",
+        "vulnclass": "all",
+        "task": "9007199254740995",
+        "query": "",
+        "sort": "severity"
+      },
+      "expected": {
+        "task_id": "9007199254740995",
+        "q": "",
+        "sort": "severity",
+        "page": "1",
+        "limit": "20"
+      }
+    },
+    {
+      "name": "bom_is_empty",
+      "operation": "flat",
+      "query": {
+        "page": 1,
+        "pageSize": 20,
+        "severity": "all",
+        "status": "all",
+        "vulnclass": "all",
+        "task": "all",
+        "query": "﻿ \t\n",
+        "sort": "severity"
+      },
+      "expected": {
+        "sort": "severity",
+        "page": "1",
+        "limit": "20"
+      }
+    },
+    {
+      "name": "group_cursor",
+      "operation": "group",
+      "query": {
+        "page": 3,
+        "pageSize": 10,
+        "severity": "all",
+        "status": "false_positive",
+        "vulnclass": "all",
+        "task": "all",
+        "query": "",
+        "sort": "time"
+      },
+      "expected": {
+        "status": "false_positive",
+        "sort": "time",
+        "page": "3",
+        "limit": "10"
+      }
+    },
+    {
+      "name": "asset_tree_keeps_root",
+      "operation": "tree",
+      "query": {
+        "page": 1,
+        "pageSize": 20,
+        "severity": "all",
+        "status": "all",
+        "vulnclass": "é",
+        "task": "all",
+        "query": "中文",
+        "sort": "severity",
+        "assetScope": "a:2"
+      },
+      "expected": {
+        "vulnclass": "é",
+        "q": "中文",
+        "sort": "severity"
+      }
+    },
+    {
+      "name": "asset_none",
+      "operation": "flat",
+      "query": {
+        "page": 1,
+        "pageSize": 20,
+        "severity": "critical",
+        "status": "all",
+        "vulnclass": "all",
+        "task": "all",
+        "query": "",
+        "sort": "severity",
+        "assetScope": "__none__"
+      },
+      "expected": {
+        "severity": "critical",
+        "sort": "severity",
+        "asset_scope": "__none__",
+        "page": "1",
+        "limit": "20"
+      }
+    },
+    {
+      "name": "all_sentinels",
+      "operation": "group",
+      "query": {
+        "page": 1,
+        "pageSize": 10,
+        "severity": "all",
+        "status": "all",
+        "vulnclass": "all",
+        "task": "all",
+        "query": "",
+        "sort": "severity"
+      },
+      "expected": {
+        "sort": "severity",
+        "page": "1",
+        "limit": "10"
+      }
+    }
+  ]
+}

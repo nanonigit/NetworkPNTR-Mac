@@ -20,10 +20,14 @@ class FindingFilterOracleTests(unittest.TestCase):
                     oracle.execute(source, [])
                 run.assert_not_called()
 
-    def test_checked_in_cases_match_the_pinned_function_when_baseline_is_available(self):
-        source = ROOT.parent / 'artex-local/source/web/src/lib/api.ts'
-        if not source.exists():
-            self.skipTest('Pinned local baseline is a hardware/development comparison gate, not copied into CI')
+    def test_checked_in_function_cases_reexecute_without_network_or_full_checkout(self):
         import json
         fixture = json.loads((ROOT / 'Tests/ArtexCoreTests/Fixtures/findings-browser-filters.json').read_text())
-        self.assertEqual(oracle.execute(source, fixture['cases']), fixture['cases'])
+        self.assertEqual(oracle.execute_function(fixture['source_function'], fixture['cases']), fixture['cases'])
+        source = ROOT.parent / 'artex-local/source/web/src/lib/api.ts'
+        if source.exists():
+            self.assertEqual(oracle.execute(source, fixture['cases']), fixture['cases'])
+        with patch.object(oracle.subprocess, 'run') as run:
+            with self.assertRaises(RuntimeError):
+                oracle.execute_function(fixture['source_function'] + 'throw new Error("refuse");', [])
+            run.assert_not_called()
