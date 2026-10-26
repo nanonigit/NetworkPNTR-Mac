@@ -94,7 +94,7 @@ public struct FindingAssetTree: Decodable, Sendable {
         nodes = try FindingWire.array(FindingAssetNode.self,in:c,key:.nodes); findingTotal = try c.decode(Int64.self,forKey:.findingTotal)
         truncated = try c.decode(Bool.self,forKey:.truncated); droppedKinds = try c.decodeIfPresent([String].self,forKey:.droppedKinds) ?? []
         let keys = Set(nodes.map(\.identity))
-        guard findingTotal >= 0, nodes.count <= 3000, keys.count == nodes.count else { throw BackendAPIError.invalidResponse }
+        guard findingTotal >= 0, keys.count == nodes.count else { throw BackendAPIError.invalidResponse }
         var parents: [Data:Data] = [:]
         for node in nodes {
             if let parent = node.parent, !parent.isEmpty {
