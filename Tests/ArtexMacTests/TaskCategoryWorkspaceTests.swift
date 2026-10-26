@@ -242,6 +242,14 @@ final class TaskCategoryWorkspaceTests: XCTestCase {
         var uncategorized = try taskRow("7"); uncategorized["category_id"] = NSNull(); uncategorized["category_name"] = NSNull()
         api.reads["/api/tasks"]?.resume(returning:try api.response(["tasks":[uncategorized],"active":""]))
         await loading.value; XCTAssertEqual(model.selection,.uncategorized)
+        let (otherAPI,other,_) = make(); otherAPI.holdReads = true
+        let otherOwner = try XCTUnwrap(other.open(tasks:[]))
+        let otherLoad = Task { await other.load(contextID:otherOwner) }; try await reached { otherAPI.reads.count == 2 }
+        other.select(.uncategorized,contextID:otherOwner,editorID:other.editorID)
+        otherAPI.reads["/api/task-categories"]?.resume(returning:try otherAPI.response(["categories":[otherAPI.row(8)]]))
+        otherAPI.reads["/api/tasks"]?.resume(returning:try otherAPI.response(["tasks":[],"active":""]))
+        await otherLoad.value; XCTAssertEqual(other.selection,.uncategorized)
+
     }
 
 }

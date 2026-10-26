@@ -195,20 +195,26 @@ struct TaskCategoryDecision: Identifiable {
         guard context?.id == contextID, !isMutating, !isLoading, !Task.isCancelled else { return }
         let ticket = UUID(); readTicket = ticket; isLoading = true
         defer { if readTicket == ticket { isLoading = false } }
+        let editor = editorID
         async let a: Void = loadCategories(ticket:ticket,owner:contextID)
         async let b: Void = loadTasks(ticket:ticket,owner:contextID)
         _ = await (a,b)
+        guard readTicket == ticket, context?.id == contextID, !Task.isCancelled else { return }
+        if !initialized, categoryFailure == nil {
+            if context?.inlineOwner == nil, editorID == editor, !isDirty, decision == nil {
+                if let row = categories.first { replace(.category(row.id),name:row.name) }
+                else if tasks.contains(where:{$0.categoryId == nil}) { replace(.uncategorized,name:"") }
+                else { replace(.new,name:"") }
+            }
+            initialized = true
+        }
     }
     private func loadCategories(ticket: UUID, owner: UUID) async {
         do {
             let values = try await service.list()
             guard readTicket == ticket, context?.id == owner, !Task.isCancelled else { return }
             categories = values; categoryFailure = nil; countsStale = false
-            if !initialized, context?.inlineOwner == nil, !isDirty, decision == nil {
-                if let row = values.first { replace(.category(row.id),name:row.name) }
-                else { replace(.uncategorized,name:"") }
-            }
-            initialized = true; onCatalog?(categories)
+            onCatalog?(categories)
         } catch { guard readTicket == ticket, context?.id == owner, !Task.isCancelled else { return }; categoryFailure = AppErrorMessage(error); countsStale = true }
     }
     private func loadTasks(ticket: UUID, owner: UUID) async {
