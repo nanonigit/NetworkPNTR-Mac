@@ -39,7 +39,7 @@ extension FindingStore {
         guard canBegin(target,owner:owner), let id = target.findingId else { return .notStarted }
         let ticket = FindingMutationTicket(session:sessionOwner,activity:activityOwner,findingID:id)
         mutationTicket = ticket; isMutating = true; mutationFailure = nil; lastConfirmation = nil
-        invalidateReads(includeStats:true)
+        invalidateReads(includeStats:true,includeTree:true)
         defer { if mutationTicket?.id == ticket.id { mutationTicket = nil; isMutating = false } }
         do {
             let confirmation = try await action()

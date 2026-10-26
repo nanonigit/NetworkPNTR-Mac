@@ -42,7 +42,7 @@ final class FindingStoreTests: XCTestCase {
         api.replies = [FST.tree,FST.page(["7"])]; await model.refreshView(); XCTAssertEqual(api.calls.count,2)
         XCTAssertTrue(model.selectAsset("r:é",owner:model.viewOwner)); let owner = model.viewOwner
         XCTAssertTrue(model.selectAsset("r:e\u{301}",owner:owner)); XCTAssertNotEqual(model.viewOwner,owner); XCTAssertEqual(model.flat.page,1)
-        api.replies = [FST.tree,FST.page(["8"])]; await model.refreshView(); XCTAssertFalse(api.calls[2].path.contains("asset_scope")); XCTAssertTrue(api.calls[3].path.contains("asset_scope"))
+        api.replies = [FST.page(["8"])]; await model.refreshView(); XCTAssertEqual(api.calls.count,3); XCTAssertTrue(api.calls[2].path.contains("asset_scope")); XCTAssertFalse(model.tree.isStale)
         XCTAssertFalse(model.selectAsset("r:missing",owner:model.viewOwner))
         XCTAssertTrue(model.configureFilters(.init(status:.fixed))); XCTAssertNil(model.assetScope); XCTAssertNil(model.tree.value)
     }
