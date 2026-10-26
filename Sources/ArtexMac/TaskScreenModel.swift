@@ -23,6 +23,7 @@ struct TaskDialog: Identifiable {
     private(set) var archiveQueryDraft = ""
     private(set) var isRefreshingAfterArchive = false
     @ObservationIgnored private var archiveRefreshTask: Task<Void,Never>?
+    @ObservationIgnored private var archiveRefreshPending = false
     @ObservationIgnored private var archiveRefreshTicket = UUID()
     @ObservationIgnored private var handledReconciliation: UUID?
     var categoryFilter: TaskCategoryFilter = .all
@@ -92,19 +93,24 @@ struct TaskDialog: Identifiable {
         categories?.markStale(); scheduleArchiveRefresh()
     }
     private func scheduleArchiveRefresh() {
-        archiveRefreshTask?.cancel()
+        // Preserve an in-flight read and coalesce new receipts into a subsequent full cycle.
+        archiveRefreshPending = true
+        guard archiveRefreshTask == nil else { return }
         let ticket = UUID(), life = lifecycle; archiveRefreshTicket = ticket; isRefreshingAfterArchive = true
         archiveRefreshTask = Task { [weak self] in
             guard let self else { return }
             defer { if self.archiveRefreshTicket == ticket { self.isRefreshingAfterArchive = false; self.archiveRefreshTask = nil } }
-            guard self.lifecycle == life, !Task.isCancelled else { return }
-            await self.store.refreshList()
-            guard self.lifecycle == life, !Task.isCancelled else { return }
-            await self.store.refreshSelected()
-            guard self.lifecycle == life, !Task.isCancelled else { return }
-            await self.categories?.refreshCatalog()
-            guard self.lifecycle == life, !Task.isCancelled else { return }
-            if self.taskTab == .archived { await self.archives?.refresh() }
+            repeat {
+                guard self.lifecycle == life, !Task.isCancelled else { return }
+                self.archiveRefreshPending = false
+                await self.store.refreshList()
+                guard self.lifecycle == life, !Task.isCancelled else { return }
+                await self.store.refreshSelected()
+                guard self.lifecycle == life, !Task.isCancelled else { return }
+                await self.categories?.refreshCatalog()
+                guard self.lifecycle == life, !Task.isCancelled else { return }
+                if self.taskTab == .archived { await self.archives?.refresh() }
+            } while self.archiveRefreshPending
         }
     }
     func beginArchive(_ task: TaskRecord) -> Bool {
@@ -192,7 +198,7 @@ struct TaskDialog: Identifiable {
         if ticket == lifecycle, !Task.isCancelled { await store.refreshSelected() }
     }
     func stop() {
-        archiveRefreshTask?.cancel(); archiveRefreshTask = nil; archiveRefreshTicket = UUID(); isRefreshingAfterArchive = false
+        archiveRefreshTask?.cancel(); archiveRefreshTask = nil; archiveRefreshPending = false; archiveRefreshTicket = UUID(); isRefreshingAfterArchive = false
         archiveActions?.suspend(); archives?.stop(); bulk?.suspend(); categories?.suspend(); lifecycle = UUID(); selectionTask?.cancel(); selectionTask = nil; creation?.suspendAttachments(); store.stop() }
     func reset() {
         stop(); taskTab = .live; archiveQueryDraft = ""; handledReconciliation = nil; archiveActions?.reset(); archives?.reset(); bulk?.reset(); categories?.reset(); categoryFilter = .all; creation?.reset(); store.reset(); dialog = nil; renameDraft = ""; query = ""; status = nil

@@ -8,12 +8,14 @@ import SwiftUI
     var calls: [String] = []
     var rows: [String] = []
     var tasks: [[String:Any]] = []
+    var readStatus = 200
     var holdTasks = false
     var heldTasks: [CheckedContinuation<BackendHTTPResponse,Error>] = []
     var write = BackendHTTPResponse(status:503,body:Data())
     func send(method: String,path: String,body: Data?,bearer: String?) async throws -> BackendHTTPResponse {
         calls.append(method+" "+path)
         if method != "GET" { return write }
+        if readStatus != 200 { return .init(status:readStatus,body:Data()) }
         if path == "/api/tasks", holdTasks { return try await withCheckedThrowingContinuation { heldTasks.append($0) } }
         if path == "/api/tasks" { return .init(status:200,body:try JSONSerialization.data(withJSONObject:["tasks":tasks,"active":"7"])) }
         if path.hasPrefix("/api/task-archives?") {
@@ -116,6 +118,66 @@ final class TaskArchiveUITests: XCTestCase {
         api.heldTasks[1].resume(returning:.init(status:200,body:try JSONSerialization.data(withJSONObject:["tasks":api.tasks,"active":"7"])))
         try await reached { !screen.isRefreshingAfterArchive }
         XCTAssertEqual(screen.store.list.value?.first?.name,"refreshed after restore"); screen.stop()
+    }
+
+    func testArchiveCatalogCoversBothLanguagesAndCompletePlaceholders() throws {
+        let keys = AppStringKey.allCases.filter{$0.rawValue.hasPrefix("task.archive.ui.")}; XCTAssertEqual(keys.count,43)
+        let expression = try NSRegularExpression(pattern:"\\{([a-z]+)\\}")
+        for key in keys {
+            for language in AppLanguage.allCases {
+                let text = AppStrings.text(key,language:language)
+                let matches = expression.matches(in:text,range:NSRange(text.startIndex...,in:text))
+                var values: [String:String] = [:]
+                for match in matches { if let range = Range(match.range(at:1),in:text) { values[String(text[range])] = "12" } }
+                let formatted = AppStrings.formatted(key,language:language,values:values)
+                XCTAssertFalse(formatted.contains("{")); XCTAssertFalse(formatted.contains("}")); XCTAssertFalse(text.isEmpty)
+                if language == .english { XCTAssertFalse(text.unicodeScalars.contains{(0x3400...0x9FFF).contains($0.value) || (0xAC00...0xD7AF).contains($0.value)}) }
+            }
+        }
+    }
+    @MainActor func testTabPollingOwnersChangeWithoutOldLoopStoppingReplacement() async throws {
+        let (_,screen) = try await make(); let archives = try XCTUnwrap(screen.archives)
+        let liveLoop = Task { await screen.runTaskTab() }; try await reached { screen.store.isPolling }
+        XCTAssertTrue(screen.setTaskTab(.archived)); XCTAssertFalse(screen.store.isPolling)
+        let archiveLoop = Task { await screen.runTaskTab() }; try await reached { archives.isPolling }
+        liveLoop.cancel(); await liveLoop.value; XCTAssertTrue(archives.isPolling)
+        screen.stop(); archiveLoop.cancel(); await archiveLoop.value; XCTAssertFalse(archives.isPolling)
+        XCTAssertEqual(screen.taskTab,.archived); screen.reset(); XCTAssertEqual(screen.taskTab,.live)
+    }
+    @MainActor func testStopAndResetDiscardHeldReceiptRefresh() async throws {
+        let (api,screen) = try await make(); let actions = try XCTUnwrap(screen.archiveActions)
+        api.holdTasks = true; XCTAssertTrue(screen.beginArchive(try XCTUnwrap(screen.store.list.value?.first)))
+        api.write = .init(status:202,body:Data(row(state:"archive_queued").utf8)); _ = await actions.submit(contextID:try XCTUnwrap(actions.context).id)
+        try await reached { api.heldTasks.count == 1 }; screen.stop(); XCTAssertFalse(screen.isRefreshingAfterArchive)
+        XCTAssertEqual(screen.taskTab,.archived); screen.reset()
+        api.heldTasks[0].resume(returning:.init(status:200,body:try JSONSerialization.data(withJSONObject:["tasks":api.tasks,"active":"7"])))
+        for _ in 0..<30 { await Task.yield() }
+        XCTAssertNil(screen.store.list.value); XCTAssertFalse(screen.isRefreshingAfterArchive); XCTAssertEqual(screen.taskTab,.live)
+    }
+    @MainActor func testOffscreenEmptyFailureArchiveConfirmationAndResultStatesNeverReplay() async throws {
+        let (api,screen) = try await make(); let archives = try XCTUnwrap(screen.archives), actions = try XCTUnwrap(screen.archiveActions)
+        api.rows = []; await archives.refresh()
+        for language in AppLanguage.allCases {
+            let host = NSHostingView(rootView:TaskArchivePanel(screen:screen,model:archives).environment(\.locale,language.locale)); host.frame = NSRect(x:0,y:0,width:1200,height:700); host.layoutSubtreeIfNeeded(); XCTAssertNil(host.window)
+        }
+        api.readStatus = 503; await archives.refresh(); XCTAssertNotNil(archives.list.failure)
+        XCTAssertTrue(screen.beginArchive(try XCTUnwrap(screen.store.list.value?.first)))
+        var owner = try XCTUnwrap(actions.context).id
+        for language in AppLanguage.allCases {
+            let host = NSHostingView(rootView:TaskArchiveActionView(model:actions,contextID:owner).environment(\.locale,language.locale)); host.frame = NSRect(x:0,y:0,width:620,height:600); host.layoutSubtreeIfNeeded()
+        }
+        XCTAssertFalse(api.calls.contains{!$0.hasPrefix("GET")})
+        api.write = .init(status:202,body:Data(row(state:"archive_queued").utf8)); _ = await actions.submit(contextID:owner)
+        for language in AppLanguage.allCases {
+            let host = NSHostingView(rootView:TaskArchiveActionView(model:actions,contextID:owner).environment(\.locale,language.locale)); host.frame = NSRect(x:0,y:0,width:620,height:600); host.layoutSubtreeIfNeeded()
+        }
+        actions.close(contextID:owner)
+        XCTAssertTrue(screen.beginArchivedAction(.delete,records:[try BackendJSONCoding.decode(TaskArchiveRecord.self,from:Data(row().utf8))])); owner = try XCTUnwrap(actions.context).id
+        api.write = .init(status:503,body:Data()); _ = await actions.submit(contextID:owner); actions.close(contextID:owner)
+        for language in AppLanguage.allCases {
+            let host = NSHostingView(rootView:TaskArchiveNotice(screen:screen,model:actions).environment(\.locale,language.locale)); host.frame = NSRect(x:0,y:0,width:1000,height:300); host.layoutSubtreeIfNeeded()
+        }
+        XCTAssertEqual(api.calls.filter{!$0.hasPrefix("GET")}.count,2); screen.stop()
     }
 
 }
