@@ -72,3 +72,27 @@ final class FindingMutationStateTests: XCTestCase {
         XCTAssertEqual(model.unknownIDs,["7"]); XCTAssertEqual(model.flat.read.value?.items.first?.id,"7"); XCTAssertFalse(model.isMutating)
     }
 }
+
+extension FindingMutationStateTests {
+    @MainActor func testGlobalEditCannotTurnInheritedContextDetailIntoEditableFinding() async throws {
+        let api = FindingStateAPI(); let model = await ready(api); let target = try FST.record()
+        api.replies = [FST.reply(FST.row(inherited:true))]; await model.select(id:"7",contextTaskID:"99",owner:model.viewOwner)
+        XCTAssertTrue(model.detail.value!.inherited); XCTAssertFalse(model.detail.value!.canMutate)
+        api.replies = [FST.reply(FST.row(name:"changed"))]
+        guard case .confirmed = await model.update(target,patch:.init(name:"changed"),owner:model.viewOwner) else {return XCTFail("global edit failed")}
+        XCTAssertEqual(model.flat.read.value?.items.first?.name,"changed"); XCTAssertEqual(model.selectedDetail?.contextTaskID,"99")
+        XCTAssertTrue(model.detail.value!.inherited); XCTAssertFalse(model.detail.value!.canMutate); XCTAssertTrue(model.detail.isStale)
+        api.replies = [FST.reply(FST.row(name:"changed",inherited:true))]; await model.refreshSelected()
+        XCTAssertTrue(model.detail.value!.inherited); XCTAssertFalse(model.detail.value!.canMutate); XCTAssertEqual(model.detail.value?.name,"changed")
+    }
+    @MainActor func testStaleAcknowledgementCannotClearLaterUncertaintyForSameID() async throws {
+        let api = FindingStateAPI(); let model = await ready(api); let target = try FST.record(), session = model.sessionOwner
+        api.replies = [FST.reply(status:400)]
+        guard case .unconfirmed = await model.update(target,patch:.init(name:"A"),owner:model.viewOwner) else {return XCTFail("missing A")}
+        let acknowledgeA = {model.acknowledgeUnknown("7",owner:session)}
+        XCTAssertTrue(acknowledgeA())
+        api.replies = [FST.reply(status:500)]
+        guard case .unconfirmed = await model.update(target,patch:.init(name:"B"),owner:model.viewOwner) else {return XCTFail("missing B")}
+        XCTAssertFalse(acknowledgeA()); XCTAssertEqual(model.unknownIDs,["7"])
+    }
+}
