@@ -7,10 +7,10 @@ extension FindingStore {
         defer { if viewPollTicket == ticket { viewPollTicket = nil; isPolling = false } }
         while viewPollTicket == ticket, !Task.isCancelled {
             let owner = viewOwner
-            await refreshView()
+            let completed = await refreshView()
             guard viewPollTicket == ticket, !Task.isCancelled else { return }
             if owner != viewOwner { continue }
-            if view == .asset { return }
+            if view == .asset, completed { return }
             do { try await sleep(.seconds(5)) } catch { return }
         }
     }

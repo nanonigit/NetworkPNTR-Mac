@@ -130,25 +130,26 @@ public struct FindingDetailSelection: Equatable, Sendable {
         guard !isMutating else { return }
         await stats.refresh { [service] in try await service.stats() }
     }
-    public func refreshView() async {
-        guard !isMutating, !isRefreshingView, !Task.isCancelled else { return }
+    @discardableResult public func refreshView() async -> Bool {
+        guard !isMutating, !isRefreshingView, !Task.isCancelled else { return false }
         let ticket = UUID(); viewReadTicket = ticket; isRefreshingView = true
         defer { if viewReadTicket == ticket { isRefreshingView = false } }
         switch view {
         case .flat: await refreshFlat()
         case .asset:
             let query = filters; await tree.refresh { [service] in try await service.assetTree(query) }
-            guard current(ticket) else { return }; await refreshFlat()
+            guard current(ticket) else { return false }; await refreshFlat()
         case .grouped:
             let query = filters
             await groups.refresh { [service] page,size in var q = query; q.page = page; q.size = size; return try await service.groups(q) }
-            guard current(ticket) else { return }
+            guard current(ticket) else { return false }
             let keys = expandedGroups.intersection(visibleGroupKeys).sorted()
             for key in keys where groupPages[key]?.read.value != nil {
-                guard current(ticket) else { return }; await refreshGroup(key)
+                guard current(ticket) else { return false }; await refreshGroup(key)
             }
         }
-        guard current(ticket) else { return }; await refreshSelected()
+        guard current(ticket) else { return false }; await refreshSelected()
+        return current(ticket)
     }
     public func stop() { stopPolling(); invalidateReads(includeStats:true); activityOwner = UUID(); viewOwner = UUID() }
     public func reset() {
