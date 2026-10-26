@@ -32,7 +32,14 @@ final class TaskCatalogExerciseTests: XCTestCase {
         for index in [0,1,2,4] {
             let api = try fixture()
             if index == 4 { api.replies[index] = .init(status:500,body:Data()) }
-            else { api.replies[index] = try ChatTestTransport.response([index == 0 ? "tasks" : index == 1 ? "categories" : "templates":[["bad":"existing"]]]) }
+            else {
+                let value: Any
+                if index == 0 {
+                    let url = try XCTUnwrap(Bundle.module.url(forResource:"task-contract",withExtension:"json",subdirectory:"Fixtures"))
+                    let root = try XCTUnwrap(JSONSerialization.jsonObject(with:Data(contentsOf:url)) as? [String:Any]); value = try XCTUnwrap(root["task"])
+                } else { value = try JSONSerialization.jsonObject(with:api.replies[index == 1 ? 3 : 6].body) }
+                api.replies[index] = try ChatTestTransport.response([index == 0 ? "tasks" : index == 1 ? "categories" : "templates":[value]])
+            }
             do { _ = try await TaskCatalogExercise.run(client:api); XCTFail("Invalid environment accepted") } catch {}
             XCTAssertEqual(api.calls.count,index+1)
         }
@@ -53,4 +60,32 @@ final class TaskCatalogExerciseTests: XCTestCase {
         do { _ = try await during.value; XCTFail("Postcancel accepted") } catch { XCTAssertTrue(error is CancellationError) }
         XCTAssertEqual(api.calls.count,1)
     }
+    @MainActor func testValidButMismatchedPatchAndReadbackCannotPass() async throws {
+        for index in [7,8,11] {
+            let api = try fixture()
+            var row = try XCTUnwrap(JSONSerialization.jsonObject(with:api.replies[7].body) as? [String:Any])
+            if index == 7 { row["name"] = "wrong name" }
+            if index == 8 { row["description"] = "Description é \u{FEFF} interior 中文 한국어" }
+            if index == 11 { row["category_id"] = 8 }
+            let object: Any
+            if index == 7 { object = row } else { object = ["templates":[row]] }
+            api.replies[index] = try ChatTestTransport.response(object)
+            do { _ = try await TaskCatalogExercise.run(client:api); XCTFail("Valid mismatched receipt accepted") } catch {}
+            XCTAssertEqual(api.calls.count,index+1)
+        }
+    }
+    @MainActor func testTerminalFailureIncompleteExerciseOrBadBootCannotPass() async throws {
+        let exercise = try await TaskCatalogExercise.run(client:fixture())
+        let audit = GuestBootLogAudit(diagnostics:[],credentialsAbsent:true,isolationWitnessesPresent:true,formatStageObserved:true,complete:true)
+        let boot = BackendPreflightReport(reachedReady:true,freshAuth:true,protectedStatus:401,cooperativeStop:true,machineStopped:true,audit:audit)
+        XCTAssertTrue(TaskCatalogRunReport(stage:.complete,boot:boot,exercise:exercise,terminalSuccess:true).passed)
+        XCTAssertFalse(TaskCatalogRunReport(stage:.complete,boot:boot,exercise:exercise,terminalSuccess:false).passed)
+        XCTAssertFalse(TaskCatalogRunReport(stage:.shutdown,boot:boot,exercise:exercise,terminalSuccess:true).passed)
+        XCTAssertFalse(TaskCatalogRunReport(stage:.complete,boot:boot,exercise:nil,terminalSuccess:true).passed)
+        let partial = TaskCatalogExerciseReport(checks:[],categoryName:exercise.categoryName,templateDescription:exercise.templateDescription,templateGoal:exercise.templateGoal,rulePattern:exercise.rulePattern,ruleNote:exercise.ruleNote)
+        XCTAssertFalse(TaskCatalogRunReport(stage:.complete,boot:boot,exercise:partial,terminalSuccess:true).passed)
+        let failed = BackendPreflightReport(reachedReady:true,freshAuth:true,protectedStatus:401,cooperativeStop:false,machineStopped:false,audit:audit)
+        XCTAssertFalse(TaskCatalogRunReport(stage:.complete,boot:failed,exercise:exercise,terminalSuccess:true).passed)
+    }
+
 }
