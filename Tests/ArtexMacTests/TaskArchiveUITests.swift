@@ -8,10 +8,13 @@ import SwiftUI
     var calls: [String] = []
     var rows: [String] = []
     var tasks: [[String:Any]] = []
+    var holdTasks = false
+    var heldTasks: [CheckedContinuation<BackendHTTPResponse,Error>] = []
     var write = BackendHTTPResponse(status:503,body:Data())
     func send(method: String,path: String,body: Data?,bearer: String?) async throws -> BackendHTTPResponse {
         calls.append(method+" "+path)
         if method != "GET" { return write }
+        if path == "/api/tasks", holdTasks { return try await withCheckedThrowingContinuation { heldTasks.append($0) } }
         if path == "/api/tasks" { return .init(status:200,body:try JSONSerialization.data(withJSONObject:["tasks":tasks,"active":"7"])) }
         if path.hasPrefix("/api/task-archives?") {
             let items = URLComponents(string:path)?.queryItems ?? []
@@ -94,4 +97,25 @@ final class TaskArchiveUITests: XCTestCase {
         XCTAssertEqual(api.calls.filter{!$0.hasPrefix("GET")}.count,1)
         XCTAssertTrue(archives.removedAfterRestoreIDs.contains(17)); XCTAssertTrue(screen.setTaskTab(.live)); screen.reset(); XCTAssertEqual(screen.taskTab,.live)
     }
+    @MainActor private func reached(_ condition: () -> Bool) async throws {
+        for _ in 0..<10000 { if condition() { return }; await Task.yield() }
+        XCTFail("Missing controlled suspension"); throw CancellationError()
+    }
+    @MainActor func testOverlappingRestoreNoticeRerunsHeldLiveRefresh() async throws {
+        let (api,screen) = try await make(); let actions = try XCTUnwrap(screen.archiveActions), archives = try XCTUnwrap(screen.archives)
+        api.holdTasks = true
+        XCTAssertTrue(screen.beginArchive(try XCTUnwrap(screen.store.list.value?.first)))
+        api.write = .init(status:202,body:Data(row(state:"archive_queued").utf8))
+        _ = await actions.submit(contextID:try XCTUnwrap(actions.context).id)
+        try await reached { api.heldTasks.count == 1 }
+        XCTAssertTrue(archives.observeAcceptedRestore(try BackendJSONCoding.decode(TaskArchiveRecord.self,from:Data(row(state:"restore_queued").utf8)),owner:archives.sessionOwner))
+        await archives.refresh(); screen.archiveReconciled()
+        api.heldTasks[0].resume(returning:.init(status:200,body:try JSONSerialization.data(withJSONObject:["tasks":api.tasks,"active":"7"])))
+        try await reached { api.heldTasks.count == 2 }
+        api.tasks[0]["name"] = "refreshed after restore"
+        api.heldTasks[1].resume(returning:.init(status:200,body:try JSONSerialization.data(withJSONObject:["tasks":api.tasks,"active":"7"])))
+        try await reached { !screen.isRefreshingAfterArchive }
+        XCTAssertEqual(screen.store.list.value?.first?.name,"refreshed after restore"); screen.stop()
+    }
+
 }
