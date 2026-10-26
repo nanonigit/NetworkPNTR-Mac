@@ -64,6 +64,9 @@ final class TaskArchiveUITests: XCTestCase {
         XCTAssertEqual(TaskArchivePresentation.pages(total:Int64.max,size:50),184467440737095517)
         XCTAssertEqual(TaskArchivePresentation.pages(total:0,size:20),1)
         XCTAssertEqual(Array(TaskArchivePresentation.title(record,language:.english).utf8),Array("\u{feff}e\u{301} 中文 한국어".utf8))
+        let unknown = try BackendJSONCoding.decode(TaskArchiveRecord.self,from:Data(row().replacingOccurrences(of:"\"original_status\":\"paused\"",with:"\"original_status\":\"한국어状态\"").utf8))
+        XCTAssertEqual(TaskArchivePresentation.originalStatus(unknown,language:.english),"Unknown original status")
+        XCTAssertEqual(TaskArchivePresentation.originalStatus(record,language:.english),"Paused")
         for language in AppLanguage.allCases {
             XCTAssertFalse(TaskArchivePresentation.compression(record,language:language).contains("private"))
             XCTAssertTrue(TaskArchivePresentation.compression(record,language:language).contains("50"))
