@@ -8,6 +8,9 @@ import SwiftUI
     private var language: AppLanguage { .preferred(in: [locale.identifier]) }
     private func s(_ key: AppStringKey) -> String { AppStrings.text(key, language: language) }
     var body: some View {
+        let bulkID = model.bulk?.context?.id
+        let ack = model.bulk?.acknowledgement
+        let ackID = ack?.id
         let sheetID = model.dialog?.id
         let creationID = model.creation?.context?.id
         let categoryID = model.categories?.context.flatMap { $0.inlineOwner == nil ? $0.id : nil }
@@ -26,6 +29,15 @@ import SwiftUI
                     .keyboardShortcut("r", modifiers: .command).disabled(model.busy)
             }
             filters
+            if let bulk = model.bulk {
+                TaskBulkToolbar(screen:model,model:bulk,visibleIDs:TaskPresentation.rows(model.store.list.value ?? [],query:model.query,status:model.status,category:model.categoryFilter,sort:model.sort,ascending:model.ascending,now:Int64(Date().timeIntervalSince1970)).map(\.id))
+                if bulk.context == nil { TaskBulkSummary(model:bulk) }
+                if let failure = bulk.failure { Text(failure.text(language:language)).foregroundStyle(.red) }
+                if !bulk.uncertainIDs.isEmpty, bulk.context == nil {
+                    Text(s(.taskBulkUnknown)).foregroundStyle(.orange)
+                    Button(s(.taskBulkUnlock)) { bulk.requestAcknowledgement() }.disabled(model.busy || model.dialog != nil || model.creation?.context != nil)
+                }
+            }
             TaskOperationNotice(store: model.store)
             if let failure = model.store.list.failure { Text(failure.text(language: language)).foregroundStyle(.red).textSelection(.enabled) }
             if model.store.list.isStale, model.store.list.value != nil { Text(s(.taskUIStale)).font(.caption).foregroundStyle(.secondary) }
@@ -42,6 +54,16 @@ import SwiftUI
         .sheet(item: model.categories.map { TaskCategoryBindings.presentation(model:$0,contextID:categoryID) } ?? .constant(nil)) { owner in
             if let workspace = model.categories { TaskCategoryView(model:workspace,contextID:owner.id) }
         }
+        .sheet(item:model.bulk.map { TaskBulkBindings.presentation(model:$0,contextID:bulkID) } ?? .constant(nil)) { owner in
+            if let bulk = model.bulk { TaskBulkView(model:bulk,contextID:owner.id) }
+        }
+        .alert(s(.taskBulkUnlockTitle),isPresented:Binding(get:{model.bulk?.acknowledgement != nil},set:{if !$0, let ackID { model.bulk?.resolveAcknowledgement(id:ackID,accept:false) }})) {
+            Button(s(.taskUICancel),role:.cancel) { if let ackID { model.bulk?.resolveAcknowledgement(id:ackID,accept:false) } }
+            Button(s(.taskBulkConfirm)) { if let ackID { model.bulk?.resolveAcknowledgement(id:ackID,accept:true) } }
+        } message: {
+            Text(s(.taskBulkUnlockHelp) + "\n" + (ack?.ids.sorted().prefix(30).map { "#"+$0 }.joined(separator:", ") ?? ""))
+        }
+        .onChange(of:model.store.list.value?.map(\.id)) { _,_ in model.bulk?.reconcileSelection() }
         .task { await model.categories?.refreshCatalog() }
         .task {
             if let id = requestedID {
@@ -79,7 +101,13 @@ import SwiftUI
         TimelineView(.periodic(from: .now, by: 1)) { context in
             let rows = TaskPresentation.rows(model.store.list.value ?? [], query: model.query, status: model.status, category:model.categoryFilter,
                                              sort: model.sort, ascending: model.ascending, now: Int64(context.date.timeIntervalSince1970))
+            let selectionOwner = model.bulk?.viewOwner
             Table(rows, selection: Binding(get: { model.store.selectedID }, set: { model.select($0) })) {
+                if let owner = selectionOwner {
+                    TableColumn(s(.taskBulkCheckbox)) { item in
+                        Toggle(AppStrings.formatted(.taskBulkSelectTask,language:language,values:["id":item.id]),isOn:TaskBulkBindings.selected(screen:model,id:item.id,owner:owner)).labelsHidden().toggleStyle(.checkbox)
+                    }.width(44)
+                }
                 TableColumn(s(.taskUIName)) { item in
                     HStack {
                         if item.pinned { Image(systemName: "pin.fill").accessibilityLabel(s(.taskUIPin)) }

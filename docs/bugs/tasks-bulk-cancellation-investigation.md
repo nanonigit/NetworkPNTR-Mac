@@ -1,0 +1,7 @@
+# T12 queued bulk cancellation investigation
+
+Collect/reproduce: after submitFromUI synchronously claimed the shared gate, a same-session suspend cancelled the worker before dispatch. No request was sent, but items stayed empty instead of reporting every captured ID as not started. ab4979c retained the actual one-assertion failure. No live task or VM involved.
+
+Five Whys: worker's first cancellation guard returned before result construction -> only loop cancellation appended pending rows -> initial pre-dispatch guard predated queue scheduling UI -> reset tests intentionally expected cleared data -> same-session suspend is distinct from session reset and needed its own case. Fishbone: lifecycle(suspend/reset), scheduling(claim/worker), result(empty/not-started), tests(pre-cancel vs post-claim), UI(progress semantics).
+
+Repair: check lifetime first; if same-lifetime worker is already cancelled, populate all captured IDs as not-started without sending. Old lifetime still returns without writing new state. Gate releases only via deferred finish, protecting category/ordinary operations. Extend401/403 chain-stop, stale ack/options/sheet, malformed batch and parent guards. Review/full427Swift(426pass,1AXskip)/62Python and signed bundle pass. No unknown ID was falsely marked succeeded; unknown in-flight cancellation still blocks retries. Keep this exact interleaving in CI; actual UI and live-task acceptance remain open.

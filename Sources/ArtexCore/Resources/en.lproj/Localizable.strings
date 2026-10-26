@@ -908,12 +908,70 @@
 	<string>Task details will be implemented and compared with the browser version.</string>
 	<key>shell.taskPending</key>
 	<string>Task details are being migrated</string>
+	<key>task.bulk.all</key>
+	<string>All visible tasks selected</string>
+	<key>task.bulk.checkbox</key>
+	<string>Select</string>
+	<key>task.bulk.clear</key>
+	<string>Clear selection</string>
+	<key>task.bulk.confirm</key>
+	<string>Confirm operation</string>
+	<key>task.bulk.delete</key>
+	<string>Delete selected tasks</string>
+	<key>task.bulk.deleteHelp</key>
+	<string>Delete each captured task in order. Cleanup choices apply to every task.</string>
 	<key>task.bulk.limit</key>
 	<string>Pause, resume and category moves accept at most 100 tasks at once.</string>
+	<key>task.bulk.mixed</key>
+	<string>Some visible tasks selected</string>
+	<key>task.bulk.more</key>
+	<string>And {count} more tasks</string>
+	<key>task.bulk.move</key>
+	<string>Move selected tasks</string>
+	<key>task.bulk.none</key>
+	<string>No visible tasks selected</string>
+	<key>task.bulk.notStarted</key>
+	<string>Not started</string>
+	<key>task.bulk.pause</key>
+	<string>Pause selected tasks</string>
+	<key>task.bulk.pauseHelp</key>
+	<string>Pause the captured running or queued tasks.</string>
+	<key>task.bulk.progress</key>
+	<string>Processed {done} of {total}</string>
+	<key>task.bulk.queued</key>
+	<string>Queued after resume: {count}</string>
+	<key>task.bulk.rejected</key>
+	<string>Rejected</string>
+	<key>task.bulk.resume</key>
+	<string>Resume selected tasks</string>
+	<key>task.bulk.resumeHelp</key>
+	<string>Resume paused tasks. This may start agent execution inside the guest.</string>
+	<key>task.bulk.selectTask</key>
+	<string>Select task {id}</string>
+	<key>task.bulk.selectVisible</key>
+	<string>Select visible tasks</string>
+	<key>task.bulk.selected</key>
+	<string>Selected tasks: {count}</string>
+	<key>task.bulk.stop</key>
+	<string>Stop remaining requests</string>
+	<key>task.bulk.succeeded</key>
+	<string>Succeeded</string>
+	<key>task.bulk.summary</key>
+	<string>Succeeded {ok}; rejected {failed}; unknown {unknown}; not started {pending}.</string>
 	<key>task.bulk.targetMissing</key>
 	<string>The destination category is unavailable. Select another destination.</string>
+	<key>task.bulk.title</key>
+	<string>Confirm bulk task operation</string>
+	<key>task.bulk.unconfirmed</key>
+	<string>Result unknown</string>
 	<key>task.bulk.unknown</key>
 	<string>Some task results are unknown. Check server state before explicitly clearing the retry block.</string>
+	<key>task.bulk.unlock</key>
+	<string>Review unknown results</string>
+	<key>task.bulk.unlockHelp</key>
+	<string>Check the server state first. Clearing this block does not undo changes or prove that the previous operation failed.</string>
+	<key>task.bulk.unlockTitle</key>
+	<string>Clear the local retry block?</string>
 	<key>task.category.batchValidation</key>
 	<string>Select between 1 and 100 tasks for a category move.</string>
 	<key>task.category.nameLimit</key>

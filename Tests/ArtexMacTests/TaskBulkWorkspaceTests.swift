@@ -86,7 +86,10 @@ final class TaskBulkWorkspaceTests: XCTestCase {
         model.close(contextID:owner); XCTAssertFalse(model.begin(.delete))
         model.requestAcknowledgement(); let ack = try XCTUnwrap(model.acknowledgement).id
         model.resolveAcknowledgement(id:UUID(),accept:true); XCTAssertEqual(model.uncertainIDs,Set(["7"]))
-        model.resolveAcknowledgement(id:ack,accept:true); XCTAssertTrue(model.uncertainIDs.isEmpty); XCTAssertTrue(model.begin(.delete))
+        model.resolveAcknowledgement(id:ack,accept:false); model.requestAcknowledgement()
+        let next = try XCTUnwrap(model.acknowledgement).id
+        model.resolveAcknowledgement(id:ack,accept:true); XCTAssertEqual(model.uncertainIDs,Set(["7"]))
+        model.resolveAcknowledgement(id:next,accept:true); XCTAssertTrue(model.uncertainIDs.isEmpty); XCTAssertTrue(model.begin(.delete))
         XCTAssertEqual(api.calls.filter{$0.0 == "DELETE"}.count,2)
     }
     @MainActor func testPauseEligibilityPartialResumeAndSelectionPolicy() async throws {
@@ -174,15 +177,32 @@ final class TaskBulkWorkspaceTests: XCTestCase {
         screen.reset(); XCTAssertTrue(model.selectedIDs.isEmpty); XCTAssertTrue(model.uncertainIDs.isEmpty)
     }
     @MainActor func testOffscreenEnglishJapaneseBulkViewsKeepSelectionWithoutRequests() async throws {
-        let (api,model,_) = try await make(); select(["7","8"],model); XCTAssertTrue(model.begin(.delete))
-        let owner = try XCTUnwrap(model.context).id, before = api.calls.count
-        for language in AppLanguage.allCases {
-            let host = NSHostingView(rootView:TaskBulkView(model:model,contextID:owner).environment(\.locale,language.locale))
-            host.frame = NSRect(x:0,y:0,width:600,height:650); host.layoutSubtreeIfNeeded()
-            XCTAssertNil(host.window); XCTAssertTrue(host.fittingSize.width.isFinite)
-            XCTAssertEqual(model.selectedIDs,Set(["7","8"])); XCTAssertEqual(model.context?.id,owner)
+        let (api,model,_) = try await make(); select(["7","8"],model); let before = api.calls.count
+        for kind: TaskBulkKind in [.delete,.move,.control(.pause),.control(.resume)] {
+            XCTAssertTrue(model.begin(kind)); let owner = try XCTUnwrap(model.context).id
+            for language in AppLanguage.allCases {
+                let host = NSHostingView(rootView:TaskBulkView(model:model,contextID:owner).environment(\.locale,language.locale))
+                host.frame = NSRect(x:0,y:0,width:600,height:650); host.layoutSubtreeIfNeeded()
+                XCTAssertNil(host.window); XCTAssertTrue(host.fittingSize.width.isFinite)
+                XCTAssertEqual(model.selectedIDs,Set(["7","8"])); XCTAssertEqual(model.context?.id,owner)
+            }
+            model.close(contextID:owner)
         }
         XCTAssertEqual(api.calls.count,before)
+    }
+
+    @MainActor func testBatchMismatchBlocksRetryWhileKnownMoveRejectionStaysExplicit() async throws {
+        let (api,model,_) = try await make(); select(["7","8"],model)
+        XCTAssertTrue(model.begin(.control(.pause))); let first = try XCTUnwrap(model.context).id
+        api.batch = ["items":[["id":"9","ok":true,"status":"paused","queued":false]]]
+        _ = await model.submit(contextID:first)
+        XCTAssertEqual(model.items.map(\.state),[.unconfirmed]); XCTAssertEqual(model.uncertainIDs,Set(["7"]))
+        model.close(contextID:first); model.setSelected("7",selected:false,owner:model.viewOwner)
+        XCTAssertTrue(model.begin(.move)); let second = try XCTUnwrap(model.context).id
+        api.statuses["batch"] = 400
+        _ = await model.submit(contextID:second)
+        XCTAssertEqual(model.items.map(\.state),[.rejected]); XCTAssertEqual(model.selectedIDs,Set(["8"]))
+        XCTAssertEqual(model.uncertainIDs,Set(["7"])); XCTAssertEqual(api.calls.filter{$0.0 == "POST"}.count,2)
     }
 
 }

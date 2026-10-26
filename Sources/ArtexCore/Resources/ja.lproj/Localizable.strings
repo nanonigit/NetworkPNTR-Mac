@@ -906,12 +906,70 @@
 	<string>ブラウザ版の詳細画面と比較して実装する予定です。</string>
 	<key>shell.taskPending</key>
 	<string>タスク詳細は移植中です</string>
+	<key>task.bulk.all</key>
+	<string>表示中のすべてを選択</string>
+	<key>task.bulk.checkbox</key>
+	<string>選択</string>
+	<key>task.bulk.clear</key>
+	<string>選択を解除</string>
+	<key>task.bulk.confirm</key>
+	<string>操作を確定</string>
+	<key>task.bulk.delete</key>
+	<string>選択したタスクを削除</string>
+	<key>task.bulk.deleteHelp</key>
+	<string>確認したタスクを1件ずつ削除します。清掃の指定はすべての対象に適用します。</string>
 	<key>task.bulk.limit</key>
 	<string>一括停止・再開・分類移動は1回100件までです。</string>
+	<key>task.bulk.mixed</key>
+	<string>表示中の一部を選択</string>
+	<key>task.bulk.more</key>
+	<string>ほか{count}件</string>
+	<key>task.bulk.move</key>
+	<string>選択したタスクを移動</string>
+	<key>task.bulk.none</key>
+	<string>表示中の選択なし</string>
+	<key>task.bulk.notStarted</key>
+	<string>未開始</string>
+	<key>task.bulk.pause</key>
+	<string>選択したタスクを停止</string>
+	<key>task.bulk.pauseHelp</key>
+	<string>対象の実行中・待機中タスクを停止します。</string>
+	<key>task.bulk.progress</key>
+	<string>処理済み {done} / {total}件</string>
+	<key>task.bulk.queued</key>
+	<string>再開後に待機中: {count}件</string>
+	<key>task.bulk.rejected</key>
+	<string>拒否</string>
+	<key>task.bulk.resume</key>
+	<string>選択したタスクを再開</string>
+	<key>task.bulk.resumeHelp</key>
+	<string>停止中のタスクを再開します。ゲスト内でエージェントの実行が始まる場合があります。</string>
+	<key>task.bulk.selectTask</key>
+	<string>タスク{id}を選択</string>
+	<key>task.bulk.selectVisible</key>
+	<string>表示中のタスクを選択</string>
+	<key>task.bulk.selected</key>
+	<string>選択中のタスク: {count}件</string>
+	<key>task.bulk.stop</key>
+	<string>残りの要求を中止</string>
+	<key>task.bulk.succeeded</key>
+	<string>成功</string>
+	<key>task.bulk.summary</key>
+	<string>成功{ok}件、拒否{failed}件、結果不明{unknown}件、未開始{pending}件。</string>
 	<key>task.bulk.targetMissing</key>
 	<string>移動先カテゴリが見つかりません。別の移動先を選択してください。</string>
+	<key>task.bulk.title</key>
+	<string>タスク一括操作の確認</string>
+	<key>task.bulk.unconfirmed</key>
+	<string>結果不明</string>
 	<key>task.bulk.unknown</key>
 	<string>処理結果が不明なタスクがあります。サーバーの状態を確認してから、再操作のブロックを明示的に解除してください。</string>
+	<key>task.bulk.unlock</key>
+	<string>結果不明の状態を確認</string>
+	<key>task.bulk.unlockHelp</key>
+	<string>先にサーバーの状態を確認してください。解除しても変更は取り消されず、以前の操作が失敗したと確定するわけではありません。</string>
+	<key>task.bulk.unlockTitle</key>
+	<string>ローカルの再操作ブロックを解除しますか？</string>
 	<key>task.category.batchValidation</key>
 	<string>カテゴリを移動するタスクを1〜100件選択してください。</string>
 	<key>task.category.nameLimit</key>

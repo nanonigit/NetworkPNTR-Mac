@@ -1,0 +1,53 @@
+{
+  "phase": "T12 main-list bulk software checkpoint",
+  "reference_commit": "e75ae371ad777ffd1eecdd28d2781a6519b05591",
+  "swift": {
+    "total": 427,
+    "passed": 426,
+    "skipped_existing_ax": 1,
+    "failed": 0
+  },
+  "python": {
+    "total": 62,
+    "failed": 0
+  },
+  "new_tests": {
+    "core_projection": 3,
+    "workspace_and_ui": 13
+  },
+  "line_coverage": {
+    "TaskBulkView.swift": {
+      "count": 272,
+      "covered": 119,
+      "percent": 43.75
+    },
+    "TaskBulkWorkspace.swift": {
+      "count": 201,
+      "covered": 178,
+      "percent": 88.55721393034825
+    }
+  },
+  "catalog": {
+    "keys_per_locale": 32,
+    "locales": [
+      "en",
+      "ja"
+    ],
+    "packaged_values_and_placeholders": "match"
+  },
+  "build": "build-only and strict signature passed",
+  "review": "no remaining concrete mutation-safety blocker",
+  "live_requests": false,
+  "vm_started": false,
+  "native_window_opened": false,
+  "acceptance_pending": [
+    "visible checkbox/keyboard/AX/layout",
+    "real guest bulk pause/resume/move/delete",
+    "bulk archive and restore",
+    "pagination",
+    "full21workflow parity",
+    "cloud egress",
+    "kernel reliability",
+    "production distribution"
+  ]
+}

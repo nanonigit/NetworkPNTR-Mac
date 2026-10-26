@@ -34,6 +34,7 @@ struct TaskBulkTotals {
     private(set) var hasSubmitted = false
     private(set) var items: [TaskBulkItem] = []
     private(set) var plannedIDs: [String] = []
+    private(set) var lastKind: TaskBulkKind?
     private(set) var totals = TaskBulkTotals()
     private(set) var warningIDs: [String] = []
     private(set) var failure: AppErrorMessage?
@@ -76,7 +77,7 @@ struct TaskBulkTotals {
         guard Set(ids).isDisjoint(with:uncertainIDs) else { failure = AppErrorMessage(key:.taskBulkUnknown); return false }
         if kind != .delete, ids.count > 100 { failure = AppErrorMessage(key:.taskBulkLimit); return false }
         guard kind != .move || categoryService != nil else { return false }
-        context = .init(kind:kind,ids:ids); plannedIDs = ids; options = .init(); targetID = nil; hasSubmitted = false
+        context = .init(kind:kind,ids:ids); plannedIDs = ids; lastKind = kind; options = .init(); targetID = nil; hasSubmitted = false
         items = []; totals = .init(); warningIDs = []; failure = nil; return true
     }
     func setOption(_ key: WritableKeyPath<TaskDeletionOptions,Bool>, value: Bool, contextID: UUID) {
@@ -96,9 +97,10 @@ struct TaskBulkTotals {
         acknowledgement = nil
         if accept { uncertainIDs.subtract(choice.ids); failure = nil }
     }
+    func cancelRemaining(contextID: UUID) { guard context?.id == contextID, isMutating else { return }; worker?.cancel() }
     func suspend() { worker?.cancel(); context = nil; acknowledgement = nil; viewOwner = UUID() }
     func reset() {
-        suspend(); lifetime = UUID(); selectedIDs = []; uncertainIDs = []; items = []; plannedIDs = []
+        suspend(); lifetime = UUID(); selectedIDs = []; uncertainIDs = []; items = []; plannedIDs = []; lastKind = nil
         totals = .init(); warningIDs = []; failure = nil; hasSubmitted = false; options = .init(); targetID = nil
     }
     func submit(contextID: UUID) async -> Bool {
@@ -119,7 +121,10 @@ struct TaskBulkTotals {
     }
     private func execute(_ captured: TaskBulkContext, token: UUID, life: UUID, options: TaskDeletionOptions, target: Int64?) async -> Bool {
         defer { store.finishBulkMutation(ticket:token); isMutating = false; worker = nil }
-        guard life == lifetime, !Task.isCancelled else { return false }
+        guard life == lifetime else { return false }
+        guard !Task.isCancelled else {
+            items = captured.ids.map { .init(id:$0,state:.notStarted) }; return false
+        }
         switch captured.kind {
         case .delete:
             for id in captured.ids {
