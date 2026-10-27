@@ -11,6 +11,8 @@ struct RootView: View {
     @State private var taskDetailID: String?
     @State private var taskScreen: TaskScreenModel?
     @State private var taskOwner: ObjectIdentifier?
+    @State private var findingScreen: FindingScreenModel?
+    @State private var findingOwner: ObjectIdentifier?
     var body: some View {
         NavigationSplitView {
             List(selection: $selection) {
@@ -56,6 +58,12 @@ struct RootView: View {
             else if selection == "chat", let session = environment.authentication, session.phase == .authenticated {
                 ChatView(session: session).id(ObjectIdentifier(session))
             }
+            else if selection == "findings", let session = environment.authentication, session.phase == .authenticated {
+                findingContent(session)
+            }
+            else if selection == "findings" {
+                ContentUnavailableView(s(.loginRequired),systemImage:"person.crop.circle",description:Text(s(.taskUILogin)))
+            }
             else if selection == "chat" {
                 ContentUnavailableView(s(.loginRequired), systemImage: "person.crop.circle", description: Text(s(.chatLogin)))
             }
@@ -91,8 +99,21 @@ struct RootView: View {
             if RuntimeFactory.diagnosticsDirectory == nil { await environment.start() }
         }
         .onChange(of: environment.authentication?.phase) { _, phase in
-            if phase != .authenticated { taskScreen?.reset(); taskDetailID = nil }
+            if phase != .authenticated { taskScreen?.reset(); findingScreen?.reset(); taskDetailID = nil }
             if phase == .needsSetup || phase == .needsLogin || phase == .unavailable { selection = "auth" }
+        }
+    }
+    @ViewBuilder private func findingContent(_ session: AuthenticationSession) -> some View {
+        if findingOwner == ObjectIdentifier(session), let findingScreen {
+            FindingsView(model:findingScreen) { id in taskDetailID = id; selection = "tasks" }
+        } else {
+            ProgressView().task {
+                guard !Task.isCancelled, session.phase == .authenticated else { return }
+                findingScreen?.reset()
+                let client = AuthenticatedBackendClient(session:session)
+                findingScreen = FindingScreenModel(store:FindingStore(service:FindingService(client:client)),preferences:.standard)
+                findingOwner = ObjectIdentifier(session)
+            }
         }
     }
     @ViewBuilder private func taskContent(_ session: AuthenticationSession) -> some View {

@@ -23,6 +23,8 @@ private struct FindingEditDraft {
 @MainActor @Observable final class FindingScreenModel {
     static let preferenceKey = "findings.screen.preferences.v1"
     let store: FindingStore
+    let reads: FindingScreenReads
+    var expandedAssets = Set<Data>()
     var searchDraft = ""
     var nameDraft = ""
     var classDraft = ""
@@ -36,18 +38,30 @@ private struct FindingEditDraft {
     @ObservationIgnored private var retainedEdit: FindingEditDraft?
 
     init(store: FindingStore,preferences: UserDefaults? = nil) {
-        self.store = store; self.preferences = preferences
+        self.store = store; self.reads = FindingScreenReads(store:store); self.preferences = preferences
         if let data = preferences?.data(forKey:Self.preferenceKey), data.count <= 32768,
            let saved = try? JSONDecoder().decode(FindingScreenPreferences.self,from:data),
            let (view,query) = saved.validated(), store.configureFilters(query) { _ = store.setView(view) }
     }
     var busy: Bool { isSubmitting || store.isMutating }
+    var controlsAvailable: Bool { !busy && dialog == nil }
     @discardableResult func configureFilters(_ query: FindingQuery) -> Bool {
         guard !busy, dialog == nil, store.configureFilters(query) else { return false }
-        searchDraft = query.search; persist(); return true
+        searchDraft = query.search; expandedAssets = []; persist(); reads.request(); return true
     }
     @discardableResult func setView(_ value: FindingView) -> Bool {
-        guard !busy, dialog == nil, store.setView(value) else { return false }; persist(); return true
+        guard !busy, dialog == nil, store.setView(value) else { return false }; persist(); reads.request(); return true
+    }
+    @discardableResult func page(page: Int64,size: Int,owner: UUID,group: String? = nil) -> Bool {
+        guard controlsAvailable, store.viewOwner == owner else { return false }
+        let accepted: Bool
+        if let group { accepted = store.configureGroup(group,page:page,size:size,owner:owner) }
+        else if store.view == .grouped { accepted = store.configureGroups(page:page,size:size) }
+        else { accepted = store.configureFlat(page:page,size:size) }
+        if accepted { reads.request() }; return accepted
+    }
+    @discardableResult func asset(_ key: String?,owner: UUID) -> Bool {
+        guard controlsAvailable, store.selectAsset(key,owner:owner) else { return false }; reads.request(); return true
     }
     @discardableResult func beginEdit(_ target: FindingRecord) -> Bool {
         guard canOpen(target) else { return false }
@@ -95,7 +109,7 @@ private struct FindingEditDraft {
         }
         guard life == lifecycle, dialog?.id == context.id, context.sessionOwner == store.sessionOwner else { return false }
         switch result {
-        case .confirmed: clearDialog(); return true
+        case .confirmed: clearDialog(); reads.request(forceTree:true); return true
         case .unconfirmed: dialogUncertain = true; dialogFailure = store.mutationFailure
         case .invalidInput: dialogFailure = store.mutationFailure
         case .discarded: dialogUncertain = !store.unknownIDs.isEmpty
@@ -108,9 +122,9 @@ private struct FindingEditDraft {
            case .edit(let row) = context.kind, let id = row.findingId {
             retainedEdit = FindingEditDraft(session:context.sessionOwner,findingID:id,name:nameDraft,vulnclass:classDraft,severity:severityDraft)
         }
-        lifecycle = UUID(); clearDialog(); store.stop()
+        lifecycle = UUID(); reads.stop(); clearDialog(); store.stop()
     }
-    func reset() { lifecycle = UUID(); retainedEdit = nil; clearDialog(); searchDraft = ""; store.reset() }
+    func reset() { lifecycle = UUID(); reads.stop(); retainedEdit = nil; clearDialog(); searchDraft = ""; expandedAssets = []; store.reset() }
 
     private func canOpen(_ target: FindingRecord) -> Bool {
         guard !busy, dialog == nil, !Task.isCancelled, store.unknownIDs.isEmpty, target.canMutate else { return false }

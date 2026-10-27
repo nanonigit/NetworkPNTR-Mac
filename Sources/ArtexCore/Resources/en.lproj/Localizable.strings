@@ -516,6 +516,124 @@
 	<string>The finding request exceeds the supported limits.</string>
 	<key>finding.readOnly</key>
 	<string>This finding is inherited or has no editable record. Open its original finding to make changes.</string>
+	<key>finding.ui.acknowledge</key>
+	<string>Acknowledge uncertain result</string>
+	<key>finding.ui.actions</key>
+	<string>Actions</string>
+	<key>finding.ui.advancedPending</key>
+	<string>Export, traffic, report generation, lineage, deepen and retest are not yet available in the Mac app.</string>
+	<key>finding.ui.all</key>
+	<string>All</string>
+	<key>finding.ui.asset</key>
+	<string>By asset</string>
+	<key>finding.ui.assets</key>
+	<string>Assets</string>
+	<key>finding.ui.cancel</key>
+	<string>Cancel</string>
+	<key>finding.ui.class</key>
+	<string>Vulnerability class</string>
+	<key>finding.ui.clear</key>
+	<string>Clear selection</string>
+	<key>finding.ui.close</key>
+	<string>Close details</string>
+	<key>finding.ui.confirm</key>
+	<string>Confirm</string>
+	<key>finding.ui.delete</key>
+	<string>Delete finding</string>
+	<key>finding.ui.deleteHelp</key>
+	<string>Permanently delete this finding? This cannot be undone.</string>
+	<key>finding.ui.details</key>
+	<string>Finding details</string>
+	<key>finding.ui.edit</key>
+	<string>Edit finding</string>
+	<key>finding.ui.empty</key>
+	<string>No findings match these filters</string>
+	<key>finding.ui.evidence</key>
+	<string>Evidence</string>
+	<key>finding.ui.flat</key>
+	<string>All findings</string>
+	<key>finding.ui.grouped</key>
+	<string>By task</string>
+	<key>finding.ui.inherited</key>
+	<string>Inherited from task {id}; read-only</string>
+	<key>finding.ui.legacy</key>
+	<string>This item has no standalone finding handle and is read-only.</string>
+	<key>finding.ui.name</key>
+	<string>Name</string>
+	<key>finding.ui.next</key>
+	<string>Next</string>
+	<key>finding.ui.noSelection</key>
+	<string>Select a finding to view its details</string>
+	<key>finding.ui.openTask</key>
+	<string>Open task {id}</string>
+	<key>finding.ui.orphan</key>
+	<string>Unassigned</string>
+	<key>finding.ui.page</key>
+	<string>Page {page} of {pages} · {total} items</string>
+	<key>finding.ui.pageSize</key>
+	<string>Rows per page</string>
+	<key>finding.ui.pending</key>
+	<string>Pending</string>
+	<key>finding.ui.previous</key>
+	<string>Previous</string>
+	<key>finding.ui.refresh</key>
+	<string>Refresh</string>
+	<key>finding.ui.report</key>
+	<string>Report</string>
+	<key>finding.ui.reportStale</key>
+	<string>This report predates the current evidence.</string>
+	<key>finding.ui.save</key>
+	<string>Save changes</string>
+	<key>finding.ui.search</key>
+	<string>Search findings</string>
+	<key>finding.ui.select</key>
+	<string>Select finding {id}</string>
+	<key>finding.ui.selectPage</key>
+	<string>Select visible findings</string>
+	<key>finding.ui.selected</key>
+	<string>{count} selected across pages</string>
+	<key>finding.ui.severity</key>
+	<string>Severity</string>
+	<key>finding.ui.sort</key>
+	<string>Sort by</string>
+	<key>finding.ui.stale</key>
+	<string>Showing previously loaded data. Refresh to check for changes.</string>
+	<key>finding.ui.status</key>
+	<string>Status</string>
+	<key>finding.ui.status.confirmed</key>
+	<string>Confirmed</string>
+	<key>finding.ui.status.duplicate</key>
+	<string>Duplicate</string>
+	<key>finding.ui.status.false_positive</key>
+	<string>False positive</string>
+	<key>finding.ui.status.fixed</key>
+	<string>Fixed</string>
+	<key>finding.ui.status.ignored</key>
+	<string>Ignored</string>
+	<key>finding.ui.status.in_progress</key>
+	<string>In progress</string>
+	<key>finding.ui.status.pending</key>
+	<string>Pending</string>
+	<key>finding.ui.status.resolved</key>
+	<string>Resolved</string>
+	<key>finding.ui.status.risk_accepted</key>
+	<string>Risk accepted</string>
+	<key>finding.ui.summary</key>
+	<string>Summary</string>
+	<key>finding.ui.task</key>
+	<string>Task</string>
+	<key>finding.ui.time</key>
+	<string>Found at</string>
+	<key>finding.ui.title</key>
+	<string>Findings</string>
+	<key>finding.ui.total</key>
+	<string>Total</string>
+	<key>finding.ui.treeTruncated</key>
+	<string>Some asset kinds are omitted from this snapshot.</string>
+	<key>finding.ui.unknown</key>
+	<string>Unconfirmed change for finding {id}</string>
+	<key>finding.ui.unknownHelp</key>
+	<string>A request may already have changed the server. Refresh and check the finding before acknowledging. Acknowledgement only unlocks further edits; it does not verify or retry the change.</string>
 	<key>finding.validation</key>
 	<string>Check the finding identifier and edited fields.</string>
 	<key>llm.noticeActivated</key>

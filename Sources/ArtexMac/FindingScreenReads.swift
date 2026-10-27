@@ -1,0 +1,57 @@
+import ArtexCore
+import Foundation
+import Observation
+
+/// Coalesce interactive refreshes behind read/write gates without cancelling a retained asset snapshot.
+@MainActor @Observable final class FindingScreenReads {
+    let store: FindingStore
+    private(set) var isPending = false
+    @ObservationIgnored private var active = false
+    @ObservationIgnored private var forceTree = false
+    @ObservationIgnored private var pending = false
+    @ObservationIgnored private var task: Task<Void,Never>?
+    @ObservationIgnored private var ticket = UUID()
+    @ObservationIgnored private var watch: UUID?
+    init(store: FindingStore) { self.store = store }
+    func activate() { active = true }
+    func request(forceTree: Bool = false) {
+        guard active else { return }
+        pending = true; self.forceTree = self.forceTree || forceTree; isPending = true; drain()
+    }
+    func stop() {
+        active = false; ticket = UUID(); watch = nil; pending = false; forceTree = false
+        task?.cancel(); task = nil; isPending = false
+    }
+    private var available: Bool { !store.isMutating && !store.isRefreshingView && (store.view != .asset || !store.tree.isLoading) }
+    private func drain() {
+        guard active, pending, task == nil else { return }
+        guard available else { observeGate(); return }
+        watch = nil
+        let owner = UUID(); ticket = owner
+        task = Task { [weak self] in
+            guard let self else { return }
+            defer {
+                if self.ticket == owner {
+                    self.task = nil
+                    if self.pending { self.drain() } else { self.isPending = false }
+                }
+            }
+            while self.active, self.ticket == owner, self.pending, !Task.isCancelled {
+                guard self.available else { self.observeGate(); return }
+                let force = self.forceTree; self.forceTree = false; self.pending = false
+                await self.store.refreshView(forceTree:force)
+            }
+        }
+    }
+    private func observeGate() {
+        guard watch == nil else { return }
+        let token = UUID(); watch = token
+        withObservationTracking {
+            _ = store.isMutating; _ = store.isRefreshingView; _ = store.view; _ = store.tree.isLoading
+        } onChange: { [weak self] in
+            Task { @MainActor [weak self] in
+                guard let self, self.watch == token else { return }; self.watch = nil; self.drain()
+            }
+        }
+    }
+}

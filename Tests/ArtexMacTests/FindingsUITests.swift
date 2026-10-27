@@ -92,4 +92,20 @@ final class FindingsUITests: XCTestCase {
         } }
         for status in FindingStatus.allCases { XCTAssertNotEqual(FindingPresentation.status(status.rawValue,language:.japanese),status.rawValue) }
     }
+    @MainActor func testReturningFromAssetRestartsViewPollingAndStopRetainsNoNewWork() async throws {
+        let api = FindingsUIAPI()
+        var sleeps: [CheckedContinuation<Void,Error>] = []
+        let screen = FindingScreenModel(store:FindingStore(service:FindingService(client:api),sleep:{ _ in
+            try await withCheckedThrowingContinuation { sleeps.append($0) }
+        }))
+        XCTAssertTrue(screen.setView(.asset)); screen.reads.activate(); screen.reads.request()
+        try await reached { !screen.reads.isPending && screen.store.tree.value != nil }
+        XCTAssertFalse(screen.store.isPolling)
+        XCTAssertTrue(screen.setView(.flat)); try await reached { !screen.reads.isPending }
+        XCTAssertTrue(screen.store.isPolling,"Flat view must restart polling after the one-shot asset view")
+        screen.stop()
+        for wait in sleeps { wait.resume(throwing:CancellationError()) }
+        let before = api.paths.count; screen.reads.request(forceTree:true)
+        await Task.yield(); XCTAssertEqual(api.paths.count,before); XCTAssertFalse(screen.reads.isPending)
+    }
 }
