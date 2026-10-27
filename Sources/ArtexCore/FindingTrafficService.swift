@@ -28,8 +28,10 @@ import Foundation
         if let context { parts.append("context_task="+(try FindingWire.canonicalID(context))) }
         return "/api/exploration/findings/"+owner+"/traffic"+suffix+(parts.isEmpty ? "" : "?"+parts.joined(separator:"&"))
     }
-    private func read<T: Decodable>(_ type: T.Type,path: String,method: String = "GET",body: Data? = nil) async throws -> T {
+    private func read<T: Decodable>(_ type: T.Type,path: String,method: String = "GET",body: Data? = nil,
+                                   onDispatch: @MainActor () throws -> Void = {}) async throws -> T {
         try Task.checkCancellation()
+        try onDispatch()
         let response = try await client.send(method:method,path:path,body:body,bearer:nil)
         try Task.checkCancellation()
         guard (200..<300).contains(response.status) else { throw BackendAPIError.status(response.status) }
@@ -106,8 +108,8 @@ extension FindingTrafficService {
         guard body.count <= 1024 * 1024 else { throw FindingInputError.bodyLimit }
         return .init(owner:owner,method:method,path:try route(owner:owner,suffix:suffix,context:contextTaskID),body:body,previousVersion:snapshot.version)
     }
-    func execute(_ request: FindingTrafficWriteRequest) async throws -> FindingTraffic {
-        let value = try await read(FindingTraffic.self,path:request.path,method:request.method,body:request.body)
+    func execute(_ request: FindingTrafficWriteRequest,onDispatch: @MainActor () throws -> Void = {}) async throws -> FindingTraffic {
+        let value = try await read(FindingTraffic.self,path:request.path,method:request.method,body:request.body,onDispatch:onDispatch)
         guard value.findingId == request.owner, value.version >= request.previousVersion,
               request.method == "POST" || value.version > request.previousVersion else {
             throw BackendAPIError.invalidResponse

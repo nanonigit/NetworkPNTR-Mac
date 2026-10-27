@@ -32,6 +32,10 @@ import Observation
         invalidate()
         if let value { self.value = change(value) }
     }
+    /// A verified write response is a fresh snapshot and supersedes older reads.
+    func acceptConfirmed(_ value: Value) {
+        generation = UUID(); self.value = value; isLoading = false; isStale = false; failure = nil
+    }
 }
 public protocol FindingPagedValue: Sendable {
     var total: Int64 { get }

@@ -1,5 +1,7 @@
 # 設計
 
+証跡のネイティブ操作前にfindings-traffic-state-design.ja.mdの状態層を実装する。世代付き読取とwindowのselection/session/activity、同期検証した固定要求を使い、取消確認後のtransport引渡しだけを送信済みとして扱う。guest能力は変更しない。
+
 F5はfindings-advanced-design.ja.mdに従い、有限な証跡読取→変更/状態→lineage/retest/deepen/report→実bytes出力→UI/実guest/固定browser比較へ進む。F5aでは画面、host書込、通信許可、agent起動を変更しない。
 
 SwiftPMの複数ターゲット、SwiftUI/AppKitのネイティブ画面、Virtualization.framework、Linux ARM64ゲストを採用する。最終形はWebViewではない。フェーズ1ではネットワーク・ディスク・共有なしの最小Linuxを起動し、シリアル出力でゲスト起動を確認する。成果物のSHA-256を固定し、起動前に検証する。
