@@ -280,3 +280,5 @@ F4b actual checkpoint: native73ac82a completed3same-disk boots with116/100Findin
 
 
 Boundary order: missing stage RED -> seven-request typed stage and three no-dispatch validation checks GREEN -> schema2 outer/probe/reference/comparator integration -> independent review/full regressions -> actual fresh3boot VM +3start isolated reference -> source-bound compare/cleanup evidence/build/exact-head CI. Do not overwrite schema1 actual reports or promote the kernel.
+
+Boundary checkpoint: native5983949 three boots and independent referencea4689b2 three starts pass schema2/123pre-restart/100persisted reads; single-field/normalization/empty/8192byte/restoration assertions match. First reference empty-name omission failure retained, focused RED/GREEN and new disposable actual pass. Full620Swift(619pass/1existingAXskip),123Python; outer/boundary lines100%, signedbuild/strictsignature/localization/inventory pass. See findings-boundary-verification.md. Actual UI after manual unlock and F5/all21/cloud/kernel/clean-Mac/release remain open.

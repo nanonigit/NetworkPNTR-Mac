@@ -1,5 +1,7 @@
 # Findingsの専用VM・固定backend比較チェックポイント
 
+schema1当時の実測記録です。後続の個別項目/schema2試験は[findings-boundary-verification.ja.md](findings-boundary-verification.ja.md)に分けて記録し、この元の証拠は変更しません。
+
 基本Findings API/状態の実測記録です。実画面・Findings全体・全21機能の受入ではありません。固定browser/backendはe75ae371ad777ffd1eecdd28d2781a6519b05591、native実装73ac82a、修正版の独立reference20b915bです。evidence/findings/f4b-api-comparison.jsonを参照してください。
 
 ## nativeの実行

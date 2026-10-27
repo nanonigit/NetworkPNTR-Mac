@@ -1,0 +1,30 @@
+{
+  "passed": false,
+  "failure": {
+    "stage": "exercise",
+    "type": "RuntimeError"
+  },
+  "cleanup": {
+    "container_removed": true,
+    "image_tag_removed": true,
+    "input_tags_removed": true,
+    "input_images_preserved": true,
+    "original_containers_preserved": true
+  },
+  "exports": {
+    "database-dump": {
+      "bytes": 258823,
+      "sha256": "2f69d0540520ab778f8ae7ae766ba33d34d11904f8d642a811ab27e7ebf5bba7"
+    },
+    "retained-logs": {
+      "bytes": 4197,
+      "sha256": "ed275b9f2b51b9785c369c0ad4703ff772403821473ac00c9822694785586ef8"
+    },
+    "executed-lines": {
+      "bytes": 2525,
+      "sha256": "60ff4b549c050d668ae7a32fbcb280e17eccb22a43720a8a3a6e494ffaba3bf4"
+    }
+  },
+  "diagnosis": "Pinned FindingDTO omits empty name; reference previously required present string",
+  "raw_state_private": true
+}

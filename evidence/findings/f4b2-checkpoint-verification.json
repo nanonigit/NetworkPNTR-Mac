@@ -1,0 +1,45 @@
+{
+  "swift_tests": {
+    "total": 620,
+    "passed": 619,
+    "existing_external_ax_skipped": 1
+  },
+  "python_tests": {
+    "total": 123,
+    "passed": 123
+  },
+  "core_line_coverage": {
+    "FindingExercise.swift": {
+      "count": 55,
+      "covered": 55,
+      "percent": 100
+    },
+    "FindingExerciseBoundaryChecks.swift": {
+      "count": 49,
+      "covered": 49,
+      "percent": 100
+    }
+  },
+  "signed_app_build_only": true,
+  "strict_signature_verified": true,
+  "localization_export_check": true,
+  "baseline_inventory_parity": true,
+  "actual_native_boots": 3,
+  "actual_reference_backend_starts": 3,
+  "pre_restart_requests": 123,
+  "persisted_requests": 100,
+  "shared_api_comparison_passed": true,
+  "checkpoint_schema": 2,
+  "visible_ui_accepted": false,
+  "kernel_promoted": false,
+  "private_state_exports": true,
+  "reviews": "Independent integration and omitted-name fix reviews: no blocker",
+  "pending": [
+    "actual native/browser visual keyboard VoiceOver after manual unlock",
+    "F5 exports traffic lineage retest deepen richer reports",
+    "all21 full workflow acceptance",
+    "native cloud egress",
+    "intermittent kernel investigation and promotion",
+    "clean Mac installation and release"
+  ]
+}

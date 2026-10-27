@@ -1,5 +1,7 @@
 # Findings native VM and fixed-backend comparison checkpoint
 
+Historical schema1 checkpoint. The later individual-field/schema2 experiment is recorded separately in [findings-boundary-verification.md](findings-boundary-verification.md); its additional assertions do not alter these original receipts.
+
 This is actual basic Findings API/state evidence. It does not accept rendered UI, the whole Findings feature or all21 workflows. Frozen browser/backend source remains e75ae371ad777ffd1eecdd28d2781a6519b05591. The native run used implementation73ac82a; corrected independent reference used20b915b. See evidence/findings/f4b-api-comparison.json.
 
 ## Actual native execution

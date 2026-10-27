@@ -1,0 +1,12 @@
+{
+  "implementation_commit": "598394965e9dfd92fce8f1edad8a980cfd596ed1",
+  "signed_probe_sha256": "53baa88c7b3c27c175219956eac1f2dd1f24cd08ad51ff5a88c66c14724a3e36",
+  "artifact_manifest_sha256": "bad8ba9aea21c927c824f015bf8bcf14e54fbaef6f922ea5e4c20b820dee84cd",
+  "artifact_hashes": {
+    "Image": "8e57308787c420cb42e4c4ea80e6def6438a52232692c010dc4609bb9bf21879",
+    "initramfs.cpio.gz": "88de8582409a9ad861a69035f056e65953b36803fbc77b391e0a9deb77e335ba",
+    "system.ext4": "82e32042ec52dd316c74357d3ce5ef4dbbaf76c22a16a1dc73c925bc38fb9346"
+  },
+  "source_commit": "e75ae371ad777ffd1eecdd28d2781a6519b05591",
+  "source_worktree_clean": true
+}
