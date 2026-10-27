@@ -1,7 +1,7 @@
 import XCTest
 @testable import ArtexCore
 
-@MainActor private final class FindingMutationExerciseWire: BackendJSONTransport {
+@MainActor final class FindingMutationExerciseWire: BackendJSONTransport {
     var rows: [String:[String:Any]] = [:]
     var calls: [(String,String)] = []
     var partialCommit = true

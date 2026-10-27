@@ -1,7 +1,7 @@
 import XCTest
 @testable import ArtexCore
 
-@MainActor private final class FindingReadExerciseWire: BackendJSONTransport {
+@MainActor final class FindingReadExerciseWire: BackendJSONTransport {
     var calls: [String] = []
     var responses: [String:BackendHTTPResponse] = [:]
     var corruptAt: Int?
