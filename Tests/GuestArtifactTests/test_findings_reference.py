@@ -132,6 +132,31 @@ class FindingsReferenceTests(unittest.TestCase):
             with patch.object(reference.check_network, 'inspect', return_value=changed), self.assertRaises(RuntimeError):
                 reference.inspect_network()
 
+    def test_individual_remote_boundaries_preserve_all_fields_and_restore_original(self):
+        import copy
+        testcase = self
+        go_space = ''.join(chr(n) for n in list(range(9,14))+[32,0x85,0xA0,0x1680,0x2028,0x2029,0x202F,0x205F,0x3000]+list(range(0x2000,0x200B)))
+        class Backend:
+            def __init__(self, corrupt=None):
+                self.row = testcase.wire_row(reference.dataset(False)[0]); self.fields = []; self.calls = 0; self.corrupt = corrupt
+            def request(self, method, path, body=None):
+                testcase.assertEqual(path, reference.BASE+'/9101'); self.calls += 1
+                if method == 'PATCH':
+                    self.fields.append(set(body))
+                    for key, value in body.items(): self.row[key] = value.strip(go_space) if key in ('name','vulnclass') else value
+                else: testcase.assertEqual(method, 'GET')
+                if self.calls == self.corrupt: self.row['summary'] = 'unexpected unrelated write'
+                return 200, copy.deepcopy(self.row)
+        backend = Backend(); client = reference.Bounded(backend)
+        proof = reference.boundaries(client)
+        self.assertEqual(client.calls, 7); self.assertEqual(proof, dict(boundaryChecks=reference.BOUNDARY_SHARED, boundaryRequestCount=7, diagnosticFieldBytes=8192))
+        self.assertEqual(backend.fields,[{'name'},{'vulnclass'},{'severity'},{'name'},{'vulnclass'},{'name','vulnclass','severity'}])
+        reference.verify_row(backend.row, reference.dataset(False)[0])
+        for index in range(1,8):
+            backend = Backend(corrupt=index); client = reference.Bounded(backend)
+            with self.assertRaises(RuntimeError): reference.boundaries(client)
+            self.assertEqual(client.calls,index)
+
     def test_host_main_refused_before_process_or_network(self):
         from unittest.mock import patch
         with patch.object(reference.platform, 'system', return_value='Darwin'), patch.object(reference.subprocess, 'Popen') as process:

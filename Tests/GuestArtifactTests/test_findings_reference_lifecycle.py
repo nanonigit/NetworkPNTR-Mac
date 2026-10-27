@@ -84,7 +84,7 @@ class ReferenceLifecycleTests(unittest.TestCase):
             stack, starts, auth = self.environment(root, processes)
             bounded = SimpleNamespace(calls=100, audits=[], audit=lambda: None)
             stack.enter_context(patch.object(reference, 'Bounded', return_value=bounded))
-            stack.enter_context(patch.object(reference, 'before_restart', return_value=dict(initialChecks=[], mutationChecks=[], partialHTTPStatus=500, beforeRequestCount=116)))
+            stack.enter_context(patch.object(reference, 'before_restart', return_value=dict(initialChecks=[], mutationChecks=[], partialHTTPStatus=500, beforeRequestCount=123)))
             stack.enter_context(patch.object(reference, 'read_snapshot', return_value=[]))
             output = io.StringIO()
             with stack, contextlib.redirect_stdout(output): reference.main()

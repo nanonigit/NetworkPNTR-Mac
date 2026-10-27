@@ -14,8 +14,9 @@ import findings_fixture_control as control
 
 class FindingCompareTests(unittest.TestCase):
     def receipts(self):
-        before = dict(schemaVersion=1, beforeRequestCount=116, initialChecks=reference.read_check_names(False),
+        before = dict(schemaVersion=2, beforeRequestCount=123, initialChecks=reference.read_check_names(False),
                       terminalChecks=['post_mutation_stats', 'post_mutation_asset_tree'],
+                      boundary=dict(sharedChecks=reference.BOUNDARY_SHARED,localChecks=reference.BOUNDARY_LOCAL,diagnosticFieldBytes=8192,requestCount=7),
                       mutation=dict(checks=reference.NATIVE_MUTATIONS, partialHTTPStatus=500, requestCount=14))
         exercise = dict(checkpoint=before, finalChecks=reference.read_check_names(True), afterRequestCount=100, passed=True)
         boots = []
@@ -26,8 +27,9 @@ class FindingCompareTests(unittest.TestCase):
         native = dict(stage='complete', bootAttempts=3, expectedCPUCount=1, boots=boots, seedConfirmed=True, terminalSuccess=True, machineStopped=True, passed=True, exercise=exercise)
         inputs = dict(provenance=dict(sourceCommit=reference.SOURCE_COMMIT, backendSHA256='a' * 64), seedSHA256='b' * 64, controlSHA256='c' * 64,
                       artifacts=dict(networkDevices=0, hostShares=0, cpuCount=1))
-        shared = dict(initialChecks=reference.read_check_names(False), finalChecks=reference.read_check_names(True), beforeRequestCount=116,
-                      afterRequestCount=100, mutationChecks=reference.SHARED_MUTATIONS, partialHTTPStatus=500, passed=True)
+        shared = dict(initialChecks=reference.read_check_names(False), finalChecks=reference.read_check_names(True), beforeRequestCount=123,
+                      afterRequestCount=100, mutationChecks=reference.SHARED_MUTATIONS, partialHTTPStatus=500, passed=True,
+                      boundaryChecks=reference.BOUNDARY_SHARED,boundaryRequestCount=7,diagnosticFieldBytes=8192)
         def audit(fresh=False, final=False):
             counts = {k: 0 for k in control.ZERO_KEYS}
             counts.update(tasks=0 if fresh else 11, explorations=0 if fresh else 11, relations=0 if fresh else 1, companies=0 if fresh else 1,
@@ -35,7 +37,7 @@ class FindingCompareTests(unittest.TestCase):
             return dict(fixture_audit=True, uid=1000, fresh=fresh, counts=counts)
         ref = dict(comparison=shared, backend_starts=3, cooperative_stops=3, fresh_setup=True, persisted_session=True, credentials_absent=True,
                    network_proof=dict(network_interfaces='lo',network_hardware_devices=0,network_nonloopback_up=0,network_external_routes=0),networkCheckerSHA256='d'*64, protected_statuses=[401]*3, sourceCommit=reference.SOURCE_COMMIT, backendSHA256='a'*64, seedSHA256='b'*64, controlSHA256='c'*64,
-                   audit_proofs=dict(seed=[audit(True), audit()], before=[audit(), audit(), audit(final=True)], after=[audit(final=True), audit(final=True)]),
+                   audit_proofs=dict(seed=[audit(True), audit()], before=[audit(), audit(), audit(), audit(final=True)], after=[audit(final=True), audit(final=True)]),
                    hostIsolation=dict(networkMode='none', user='1000:1000', readOnlyRootfs=True, privileged=False, hostMounts=0, capDropAll=True, noNewPrivileges=True, ports=0),
                    harness=dict(complete=True,originalContainersPreserved=True,inputImagesPreserved=True,containerRemoved=True,imageTagRemoved=True,inputTagsRemoved=True,exportsComplete=True))
         return native, inputs, ref
@@ -45,6 +47,20 @@ class FindingCompareTests(unittest.TestCase):
         self.assertTrue(result['passed']); self.assertFalse(result['visible_ui_accepted'])
         self.assertEqual(result['shared_mutation_checks'], reference.SHARED_MUTATIONS)
         self.assertIn('explicit_acknowledgment', result['native_only_checks'])
+
+    def test_schema_one_or_missing_boundary_coverage_is_not_accepted_as_extended_proof(self):
+        for field in ['schemaVersion','boundary']:
+            native, inputs, ref = self.receipts()
+            if field == 'schemaVersion': native['exercise']['checkpoint'][field] = 1
+            else: native['exercise']['checkpoint'].pop(field)
+            with self.assertRaises((RuntimeError,KeyError)): compare.compare(native,inputs,ref)
+        for field in ['sharedChecks','localChecks','diagnosticFieldBytes','requestCount']:
+            native,inputs,ref = self.receipts()
+            native['exercise']['checkpoint']['boundary'][field] = ['forged'] if 'Checks' in field else 999
+            with self.assertRaises(RuntimeError): compare.compare(native,inputs,ref)
+        for field in ['boundaryChecks','boundaryRequestCount','diagnosticFieldBytes']:
+            native,inputs,ref = self.receipts(); ref['comparison'][field] = ['forged'] if 'Checks' in field else 999
+            with self.assertRaises(RuntimeError): compare.compare(native,inputs,ref)
 
     def test_missing_or_changed_boot_lifecycle_never_passes_even_with_passed_true(self):
         for key in ['cooperativeStop', 'machineStopped', 'credentialLogCheckPassed', 'isolationVerified', 'logAuditComplete', 'passed', 'reachedReady']:
