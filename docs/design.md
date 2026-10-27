@@ -117,3 +117,6 @@ F4b CI repair: extract seed-to-wire conversion into an explicitly typed test-onl
 
 
 Use small typed fixture aggregate verifiers and checksum-bound initial/final JSON expectations. Match exact UTF8 labels/names/descriptions, known metadata, sorted task/group/node identities, severity buckets and timestamps. The existing bounded transport remains shared by the eventual full exercise. Keep gate count128 and90sec pre/post response checks, no retries.
+
+
+Reference math derives expectations from fixed SQL seed values independently of Swift and its aggregate JSON. A finite Findings-only client uses128calls/90sec pre/post checks, no mutation retry. Compare100initial reads, shared edit/status/partialHTTP500/readback/delete checks, and100persisted reads. Keep native-only cache/selection/uncertainty acknowledgments outside the shared projection. Bind completed VM logs/boots and reference lifecycle plus identical backend/seed/audit digests before accepting comparison.

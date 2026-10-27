@@ -138,3 +138,6 @@ F4b CI repair: the same fixed-data tests must compile on the supported hosted Sw
 
 
 F4b expanded reads: verify independent whole-table statistics, both group sorts/pages and expanded8101 pages, deduplicated asset tree/counts/order, every task node view including source/legacy provenance and context-specific detail rejection. Run the same assertions after deliberate durable edits/deletes; mock data is not runtime proof.
+
+
+F4b independent reference: use separate Python API assertions against the frozen backend in a fresh network-none nonroot container, with3backend starts/persisted auth and no task launches. Compare shared API results and source/binary/fixture hashes; do not call native uncertainty/cache checks browser UI parity.

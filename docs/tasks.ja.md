@@ -239,3 +239,6 @@ F4b CI修正順序: 失敗40466516578/head184adacをコンパイルREDとして�
 
 
 読取拡張順序: 集計/文脈API未実装RED→型付き検証器GREEN→通信/破損試験→有限読取段階へ統合→レビュー/全体確認→DEBUG probe/referenceと実3起動比較。期待JSONの生成をbackend成功の証拠にしません。
+
+
+reference順序: client/検証器未実装RED→独立ガード/絞込/本文/集計/文脈GREEN→ソース/安全性レビュー→キャッシュ済み固定入力でoffline image→実3起動→停止済みnative3起動と比較→ログ/DBdump保存後に所有referenceのみ掃除。実画面・kernel信頼性は未完了です。

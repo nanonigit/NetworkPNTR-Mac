@@ -271,3 +271,6 @@ F4b CI repair order: preserve failed run40466516578/head184adac as compile RED -
 
 
 Expanded-read sequence: missing aggregate/context API RED -> typed verifier GREEN -> wire/negative mutation checks -> bounded read-stage integration -> review/full checks -> DEBUG probe/reference and real three-boot comparison. Never infer backend success from generated expected JSON.
+
+
+Reference order: missing pure client/verifier RED -> independent guards/filters/row/aggregate/context GREEN -> source/security review -> fresh offline image from cached pinned inputs -> actual3starts -> canonical compare against stopped native3boot report -> export logs/dump then cleanup owned reference only. Full visible UI and kernel reliability gates remain open.
