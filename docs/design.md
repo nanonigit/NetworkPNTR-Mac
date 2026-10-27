@@ -114,3 +114,6 @@ Unassigned-asset presentation: identify key__none__ +kindnone, not Han/Hangul co
 
 
 F4b CI repair: extract seed-to-wire conversion into an explicitly typed test-only helper; use short statements and typed asset mapping, preserving raw values and one canonical wire key. Product code and fixture SQL remain unchanged.
+
+
+Use small typed fixture aggregate verifiers and checksum-bound initial/final JSON expectations. Match exact UTF8 labels/names/descriptions, known metadata, sorted task/group/node identities, severity buckets and timestamps. The existing bounded transport remains shared by the eventual full exercise. Keep gate count128 and90sec pre/post response checks, no retries.

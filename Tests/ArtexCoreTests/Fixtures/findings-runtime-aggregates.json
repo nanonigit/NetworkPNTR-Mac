@@ -1,0 +1,626 @@
+{
+  "seed_source_sha256": "ff65b9603ddd06704a6ace53398554f14479c5825ec0da573bc775f52036b70f",
+  "initial": {
+    "stats": {
+      "total": 33,
+      "pending": 4,
+      "critical": 9,
+      "high": 8,
+      "medium": 8,
+      "low": 8,
+      "vulnclasses": [
+        "CWE-79",
+        "CWE-89",
+        "F4 é 中文 한국어"
+      ],
+      "tasks": [
+        {
+          "id": 8111,
+          "name": "F4 task 8111 ﻿é 中文 한국어 'quoted'",
+          "description": "F4 terminal task 8111 ﻿é 中文 한국어 'quoted'",
+          "count": 1
+        },
+        {
+          "id": 8110,
+          "name": "F4 task 8110 ﻿é 中文 한국어 'quoted'",
+          "description": "F4 terminal task 8110 ﻿é 中文 한국어 'quoted'",
+          "count": 1
+        },
+        {
+          "id": 8109,
+          "name": "F4 task 8109 ﻿é 中文 한국어 'quoted'",
+          "description": "F4 terminal task 8109 ﻿é 中文 한국어 'quoted'",
+          "count": 1
+        },
+        {
+          "id": 8108,
+          "name": "F4 task 8108 ﻿é 中文 한국어 'quoted'",
+          "description": "F4 terminal task 8108 ﻿é 中文 한국어 'quoted'",
+          "count": 1
+        },
+        {
+          "id": 8107,
+          "name": "F4 task 8107 ﻿é 中文 한국어 'quoted'",
+          "description": "F4 terminal task 8107 ﻿é 中文 한국어 'quoted'",
+          "count": 1
+        },
+        {
+          "id": 8106,
+          "name": "F4 task 8106 ﻿é 中文 한국어 'quoted'",
+          "description": "F4 terminal task 8106 ﻿é 中文 한국어 'quoted'",
+          "count": 1
+        },
+        {
+          "id": 8105,
+          "name": "F4 task 8105 ﻿é 中文 한국어 'quoted'",
+          "description": "F4 terminal task 8105 ﻿é 中文 한국어 'quoted'",
+          "count": 1
+        },
+        {
+          "id": 8104,
+          "name": "F4 task 8104 ﻿é 中文 한국어 'quoted'",
+          "description": "F4 terminal task 8104 ﻿é 中文 한국어 'quoted'",
+          "count": 1
+        },
+        {
+          "id": 8103,
+          "name": "F4 task 8103 ﻿é 中文 한국어 'quoted'",
+          "description": "F4 terminal task 8103 ﻿é 中文 한국어 'quoted'",
+          "count": 1
+        },
+        {
+          "id": 8102,
+          "name": "F4 task 8102 ﻿é 中文 한국어 'quoted'",
+          "description": "F4 terminal task 8102 ﻿é 中文 한국어 'quoted'",
+          "count": 1
+        },
+        {
+          "id": 8101,
+          "name": "F4 task 8101 ﻿é 中文 한국어 'quoted'",
+          "description": "F4 terminal task 8101 ﻿é 中文 한국어 'quoted'",
+          "count": 21
+        }
+      ]
+    },
+    "groups": [
+      {
+        "task_id": null,
+        "task_name": "",
+        "task_description": "",
+        "task_status": "",
+        "count": 2,
+        "critical": 1,
+        "high": 0,
+        "medium": 0,
+        "low": 1,
+        "last_found_at": "2026-10-22T10:00:32Z"
+      },
+      {
+        "task_id": 8109,
+        "task_name": "F4 task 8109 ﻿é 中文 한국어 'quoted'",
+        "task_description": "F4 terminal task 8109 ﻿é 中文 한국어 'quoted'",
+        "task_status": "done",
+        "count": 1,
+        "critical": 1,
+        "high": 0,
+        "medium": 0,
+        "low": 0,
+        "last_found_at": "2026-10-22T10:00:28Z"
+      },
+      {
+        "task_id": 8105,
+        "task_name": "F4 task 8105 ﻿é 中文 한국어 'quoted'",
+        "task_description": "F4 terminal task 8105 ﻿é 中文 한국어 'quoted'",
+        "task_status": "done",
+        "count": 1,
+        "critical": 1,
+        "high": 0,
+        "medium": 0,
+        "low": 0,
+        "last_found_at": "2026-10-22T10:00:24Z"
+      },
+      {
+        "task_id": 8101,
+        "task_name": "F4 task 8101 ﻿é 中文 한국어 'quoted'",
+        "task_description": "F4 terminal task 8101 ﻿é 中文 한국어 'quoted'",
+        "task_status": "done",
+        "count": 21,
+        "critical": 6,
+        "high": 5,
+        "medium": 5,
+        "low": 5,
+        "last_found_at": "2026-10-22T10:00:20Z"
+      },
+      {
+        "task_id": 8110,
+        "task_name": "F4 task 8110 ﻿é 中文 한국어 'quoted'",
+        "task_description": "F4 terminal task 8110 ﻿é 中文 한국어 'quoted'",
+        "task_status": "done",
+        "count": 1,
+        "critical": 0,
+        "high": 1,
+        "medium": 0,
+        "low": 0,
+        "last_found_at": "2026-10-22T10:00:29Z"
+      },
+      {
+        "task_id": 8106,
+        "task_name": "F4 task 8106 ﻿é 中文 한국어 'quoted'",
+        "task_description": "F4 terminal task 8106 ﻿é 中文 한국어 'quoted'",
+        "task_status": "done",
+        "count": 1,
+        "critical": 0,
+        "high": 1,
+        "medium": 0,
+        "low": 0,
+        "last_found_at": "2026-10-22T10:00:25Z"
+      },
+      {
+        "task_id": 8102,
+        "task_name": "F4 task 8102 ﻿é 中文 한국어 'quoted'",
+        "task_description": "F4 terminal task 8102 ﻿é 中文 한국어 'quoted'",
+        "task_status": "done",
+        "count": 1,
+        "critical": 0,
+        "high": 1,
+        "medium": 0,
+        "low": 0,
+        "last_found_at": "2026-10-22T10:00:21Z"
+      },
+      {
+        "task_id": 8111,
+        "task_name": "F4 task 8111 ﻿é 中文 한국어 'quoted'",
+        "task_description": "F4 terminal task 8111 ﻿é 中文 한국어 'quoted'",
+        "task_status": "done",
+        "count": 1,
+        "critical": 0,
+        "high": 0,
+        "medium": 1,
+        "low": 0,
+        "last_found_at": "2026-10-22T10:00:30Z"
+      },
+      {
+        "task_id": 8107,
+        "task_name": "F4 task 8107 ﻿é 中文 한국어 'quoted'",
+        "task_description": "F4 terminal task 8107 ﻿é 中文 한국어 'quoted'",
+        "task_status": "done",
+        "count": 1,
+        "critical": 0,
+        "high": 0,
+        "medium": 1,
+        "low": 0,
+        "last_found_at": "2026-10-22T10:00:26Z"
+      },
+      {
+        "task_id": 8103,
+        "task_name": "F4 task 8103 ﻿é 中文 한국어 'quoted'",
+        "task_description": "F4 terminal task 8103 ﻿é 中文 한국어 'quoted'",
+        "task_status": "done",
+        "count": 1,
+        "critical": 0,
+        "high": 0,
+        "medium": 1,
+        "low": 0,
+        "last_found_at": "2026-10-22T10:00:22Z"
+      },
+      {
+        "task_id": 8108,
+        "task_name": "F4 task 8108 ﻿é 中文 한국어 'quoted'",
+        "task_description": "F4 terminal task 8108 ﻿é 中文 한국어 'quoted'",
+        "task_status": "done",
+        "count": 1,
+        "critical": 0,
+        "high": 0,
+        "medium": 0,
+        "low": 1,
+        "last_found_at": "2026-10-22T10:00:27Z"
+      },
+      {
+        "task_id": 8104,
+        "task_name": "F4 task 8104 ﻿é 中文 한국어 'quoted'",
+        "task_description": "F4 terminal task 8104 ﻿é 中文 한국어 'quoted'",
+        "task_status": "done",
+        "count": 1,
+        "critical": 0,
+        "high": 0,
+        "medium": 0,
+        "low": 1,
+        "last_found_at": "2026-10-22T10:00:23Z"
+      }
+    ],
+    "tree": {
+      "nodes": [
+        {
+          "key": "c:8200",
+          "parent": null,
+          "kind": "company",
+          "label": "F4 company ﻿é 中文 한국어 'quoted'",
+          "asset_id": null,
+          "company_id": 8200,
+          "self": 0,
+          "total": 26,
+          "critical": 7,
+          "high": 6,
+          "medium": 6,
+          "low": 7,
+          "last_found_at": "2026-10-22T10:00:32Z"
+        },
+        {
+          "key": "a:8201",
+          "parent": "c:8200",
+          "kind": "root_domain",
+          "label": "fixture.example.test",
+          "asset_id": 8201,
+          "company_id": 8200,
+          "self": 13,
+          "total": 19,
+          "critical": 5,
+          "high": 4,
+          "medium": 4,
+          "low": 6,
+          "last_found_at": "2026-10-22T10:00:31Z"
+        },
+        {
+          "key": "a:8202",
+          "parent": "a:8201",
+          "kind": "subdomain",
+          "label": "api.fixture.example.test",
+          "asset_id": 8202,
+          "company_id": 8200,
+          "self": 13,
+          "total": 13,
+          "critical": 3,
+          "high": 3,
+          "medium": 3,
+          "low": 4,
+          "last_found_at": "2026-10-22T10:00:31Z"
+        },
+        {
+          "key": "a:8203",
+          "parent": "c:8200",
+          "kind": "ip",
+          "label": "198.51.100.9",
+          "asset_id": 8203,
+          "company_id": 8200,
+          "self": 7,
+          "total": 7,
+          "critical": 2,
+          "high": 2,
+          "medium": 2,
+          "low": 1,
+          "last_found_at": "2026-10-22T10:00:32Z"
+        },
+        {
+          "key": "__none__",
+          "parent": null,
+          "kind": "none",
+          "label": "未关联资产",
+          "asset_id": null,
+          "company_id": null,
+          "self": 7,
+          "total": 7,
+          "critical": 2,
+          "high": 2,
+          "medium": 2,
+          "low": 1,
+          "last_found_at": "2026-10-22T10:00:30Z"
+        }
+      ],
+      "finding_total": 33,
+      "truncated": false,
+      "dropped_kinds": []
+    }
+  },
+  "persisted": {
+    "stats": {
+      "total": 31,
+      "pending": 3,
+      "critical": 7,
+      "high": 7,
+      "medium": 8,
+      "low": 9,
+      "vulnclasses": [
+        "CWE-79",
+        "CWE-89",
+        "F4 edited class é",
+        "F4 é 中文 한국어"
+      ],
+      "tasks": [
+        {
+          "id": 8111,
+          "name": "F4 task 8111 ﻿é 中文 한국어 'quoted'",
+          "description": "F4 terminal task 8111 ﻿é 中文 한국어 'quoted'",
+          "count": 1
+        },
+        {
+          "id": 8110,
+          "name": "F4 task 8110 ﻿é 中文 한국어 'quoted'",
+          "description": "F4 terminal task 8110 ﻿é 中文 한국어 'quoted'",
+          "count": 1
+        },
+        {
+          "id": 8109,
+          "name": "F4 task 8109 ﻿é 中文 한국어 'quoted'",
+          "description": "F4 terminal task 8109 ﻿é 中文 한국어 'quoted'",
+          "count": 1
+        },
+        {
+          "id": 8108,
+          "name": "F4 task 8108 ﻿é 中文 한국어 'quoted'",
+          "description": "F4 terminal task 8108 ﻿é 中文 한국어 'quoted'",
+          "count": 1
+        },
+        {
+          "id": 8107,
+          "name": "F4 task 8107 ﻿é 中文 한국어 'quoted'",
+          "description": "F4 terminal task 8107 ﻿é 中文 한국어 'quoted'",
+          "count": 1
+        },
+        {
+          "id": 8106,
+          "name": "F4 task 8106 ﻿é 中文 한국어 'quoted'",
+          "description": "F4 terminal task 8106 ﻿é 中文 한국어 'quoted'",
+          "count": 1
+        },
+        {
+          "id": 8105,
+          "name": "F4 task 8105 ﻿é 中文 한국어 'quoted'",
+          "description": "F4 terminal task 8105 ﻿é 中文 한국어 'quoted'",
+          "count": 1
+        },
+        {
+          "id": 8104,
+          "name": "F4 task 8104 ﻿é 中文 한국어 'quoted'",
+          "description": "F4 terminal task 8104 ﻿é 中文 한국어 'quoted'",
+          "count": 1
+        },
+        {
+          "id": 8103,
+          "name": "F4 task 8103 ﻿é 中文 한국어 'quoted'",
+          "description": "F4 terminal task 8103 ﻿é 中文 한국어 'quoted'",
+          "count": 1
+        },
+        {
+          "id": 8102,
+          "name": "F4 task 8102 ﻿é 中文 한국어 'quoted'",
+          "description": "F4 terminal task 8102 ﻿é 中文 한국어 'quoted'",
+          "count": 1
+        },
+        {
+          "id": 8101,
+          "name": "F4 task 8101 ﻿é 中文 한국어 'quoted'",
+          "description": "F4 terminal task 8101 ﻿é 中文 한국어 'quoted'",
+          "count": 20
+        }
+      ]
+    },
+    "groups": [
+      {
+        "task_id": 8109,
+        "task_name": "F4 task 8109 ﻿é 中文 한국어 'quoted'",
+        "task_description": "F4 terminal task 8109 ﻿é 中文 한국어 'quoted'",
+        "task_status": "done",
+        "count": 1,
+        "critical": 1,
+        "high": 0,
+        "medium": 0,
+        "low": 0,
+        "last_found_at": "2026-10-22T10:00:28Z"
+      },
+      {
+        "task_id": 8105,
+        "task_name": "F4 task 8105 ﻿é 中文 한국어 'quoted'",
+        "task_description": "F4 terminal task 8105 ﻿é 中文 한국어 'quoted'",
+        "task_status": "done",
+        "count": 1,
+        "critical": 1,
+        "high": 0,
+        "medium": 0,
+        "low": 0,
+        "last_found_at": "2026-10-22T10:00:24Z"
+      },
+      {
+        "task_id": 8101,
+        "task_name": "F4 task 8101 ﻿é 中文 한국어 'quoted'",
+        "task_description": "F4 terminal task 8101 ﻿é 中文 한국어 'quoted'",
+        "task_status": "done",
+        "count": 20,
+        "critical": 5,
+        "high": 4,
+        "medium": 5,
+        "low": 6,
+        "last_found_at": "2026-10-22T10:00:20Z"
+      },
+      {
+        "task_id": 8110,
+        "task_name": "F4 task 8110 ﻿é 中文 한국어 'quoted'",
+        "task_description": "F4 terminal task 8110 ﻿é 中文 한국어 'quoted'",
+        "task_status": "done",
+        "count": 1,
+        "critical": 0,
+        "high": 1,
+        "medium": 0,
+        "low": 0,
+        "last_found_at": "2026-10-22T10:00:29Z"
+      },
+      {
+        "task_id": 8106,
+        "task_name": "F4 task 8106 ﻿é 中文 한국어 'quoted'",
+        "task_description": "F4 terminal task 8106 ﻿é 中文 한국어 'quoted'",
+        "task_status": "done",
+        "count": 1,
+        "critical": 0,
+        "high": 1,
+        "medium": 0,
+        "low": 0,
+        "last_found_at": "2026-10-22T10:00:25Z"
+      },
+      {
+        "task_id": 8102,
+        "task_name": "F4 task 8102 ﻿é 中文 한국어 'quoted'",
+        "task_description": "F4 terminal task 8102 ﻿é 中文 한국어 'quoted'",
+        "task_status": "done",
+        "count": 1,
+        "critical": 0,
+        "high": 1,
+        "medium": 0,
+        "low": 0,
+        "last_found_at": "2026-10-22T10:00:21Z"
+      },
+      {
+        "task_id": 8111,
+        "task_name": "F4 task 8111 ﻿é 中文 한국어 'quoted'",
+        "task_description": "F4 terminal task 8111 ﻿é 中文 한국어 'quoted'",
+        "task_status": "done",
+        "count": 1,
+        "critical": 0,
+        "high": 0,
+        "medium": 1,
+        "low": 0,
+        "last_found_at": "2026-10-22T10:00:30Z"
+      },
+      {
+        "task_id": 8107,
+        "task_name": "F4 task 8107 ﻿é 中文 한국어 'quoted'",
+        "task_description": "F4 terminal task 8107 ﻿é 中文 한국어 'quoted'",
+        "task_status": "done",
+        "count": 1,
+        "critical": 0,
+        "high": 0,
+        "medium": 1,
+        "low": 0,
+        "last_found_at": "2026-10-22T10:00:26Z"
+      },
+      {
+        "task_id": 8103,
+        "task_name": "F4 task 8103 ﻿é 中文 한국어 'quoted'",
+        "task_description": "F4 terminal task 8103 ﻿é 中文 한국어 'quoted'",
+        "task_status": "done",
+        "count": 1,
+        "critical": 0,
+        "high": 0,
+        "medium": 1,
+        "low": 0,
+        "last_found_at": "2026-10-22T10:00:22Z"
+      },
+      {
+        "task_id": null,
+        "task_name": "",
+        "task_description": "",
+        "task_status": "",
+        "count": 1,
+        "critical": 0,
+        "high": 0,
+        "medium": 0,
+        "low": 1,
+        "last_found_at": "2026-10-22T10:00:31Z"
+      },
+      {
+        "task_id": 8108,
+        "task_name": "F4 task 8108 ﻿é 中文 한국어 'quoted'",
+        "task_description": "F4 terminal task 8108 ﻿é 中文 한국어 'quoted'",
+        "task_status": "done",
+        "count": 1,
+        "critical": 0,
+        "high": 0,
+        "medium": 0,
+        "low": 1,
+        "last_found_at": "2026-10-22T10:00:27Z"
+      },
+      {
+        "task_id": 8104,
+        "task_name": "F4 task 8104 ﻿é 中文 한국어 'quoted'",
+        "task_description": "F4 terminal task 8104 ﻿é 中文 한국어 'quoted'",
+        "task_status": "done",
+        "count": 1,
+        "critical": 0,
+        "high": 0,
+        "medium": 0,
+        "low": 1,
+        "last_found_at": "2026-10-22T10:00:23Z"
+      }
+    ],
+    "tree": {
+      "nodes": [
+        {
+          "key": "c:8200",
+          "parent": null,
+          "kind": "company",
+          "label": "F4 company ﻿é 中文 한국어 'quoted'",
+          "asset_id": null,
+          "company_id": 8200,
+          "self": 0,
+          "total": 24,
+          "critical": 6,
+          "high": 5,
+          "medium": 6,
+          "low": 7,
+          "last_found_at": "2026-10-22T10:00:31Z"
+        },
+        {
+          "key": "a:8201",
+          "parent": "c:8200",
+          "kind": "root_domain",
+          "label": "fixture.example.test",
+          "asset_id": 8201,
+          "company_id": 8200,
+          "self": 12,
+          "total": 18,
+          "critical": 5,
+          "high": 3,
+          "medium": 4,
+          "low": 6,
+          "last_found_at": "2026-10-22T10:00:31Z"
+        },
+        {
+          "key": "a:8202",
+          "parent": "a:8201",
+          "kind": "subdomain",
+          "label": "api.fixture.example.test",
+          "asset_id": 8202,
+          "company_id": 8200,
+          "self": 12,
+          "total": 12,
+          "critical": 3,
+          "high": 2,
+          "medium": 3,
+          "low": 4,
+          "last_found_at": "2026-10-22T10:00:31Z"
+        },
+        {
+          "key": "a:8203",
+          "parent": "c:8200",
+          "kind": "ip",
+          "label": "198.51.100.9",
+          "asset_id": 8203,
+          "company_id": 8200,
+          "self": 6,
+          "total": 6,
+          "critical": 1,
+          "high": 2,
+          "medium": 2,
+          "low": 1,
+          "last_found_at": "2026-10-22T10:00:29Z"
+        },
+        {
+          "key": "__none__",
+          "parent": null,
+          "kind": "none",
+          "label": "未关联资产",
+          "asset_id": null,
+          "company_id": null,
+          "self": 7,
+          "total": 7,
+          "critical": 1,
+          "high": 2,
+          "medium": 2,
+          "low": 2,
+          "last_found_at": "2026-10-22T10:00:30Z"
+        }
+      ],
+      "finding_total": 31,
+      "truncated": false,
+      "dropped_kinds": []
+    }
+  }
+}

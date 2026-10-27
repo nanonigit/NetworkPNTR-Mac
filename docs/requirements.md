@@ -135,3 +135,6 @@ F4 source inspection additionally found generated asset sentinel __none__/kindno
 
 
 F4b CI repair: the same fixed-data tests must compile on the supported hosted Swift toolchain without increasing compiler budgets or weakening assertions.
+
+
+F4b expanded reads: verify independent whole-table statistics, both group sorts/pages and expanded8101 pages, deduplicated asset tree/counts/order, every task node view including source/legacy provenance and context-specific detail rejection. Run the same assertions after deliberate durable edits/deletes; mock data is not runtime proof.

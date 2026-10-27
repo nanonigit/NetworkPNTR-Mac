@@ -268,3 +268,6 @@ F4b foundation checkpoint: finite transport, checksum-bound independent dataset,
 
 
 F4b CI repair order: preserve failed run40466516578/head184adac as compile RED -> typed test helper -> focused/full tests -> review -> exact-head CI. No scope reduction or job suppression.
+
+
+Expanded-read sequence: missing aggregate/context API RED -> typed verifier GREEN -> wire/negative mutation checks -> bounded read-stage integration -> review/full checks -> DEBUG probe/reference and real three-boot comparison. Never infer backend success from generated expected JSON.
