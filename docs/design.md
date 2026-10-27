@@ -123,3 +123,6 @@ Reference math derives expectations from fixed SQL seed values independently of 
 
 
 Use a separate seven-request boundary stage: GET9101, name-only, class-only, severity-only, empty-name,8192-byte class, restore three original fields. Verify every response against full independent expected row, so unrelated fields cannot change. Ordinary mutation stage stays14 requests; outer initial100+boundary7+mutation14+postaggregates2=123 within128/90sec. Add post-boundary audit, bump checkpoint to schema2 with typed boundary receipt; after-restart remains100. Independent reference compares six remote boundary checks; native local-validation receipts stay separate. Keep previous schema1 evidence historical.
+
+
+F5 follows findings-advanced-design.md: typed bounded traffic reads first, then mutations/state, lineage/retests/deepen/report, real-byte exports and native UI plus actual guest/browser acceptance. F5a has no UI, host-write, networking or agent activation changes.

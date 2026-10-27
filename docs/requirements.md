@@ -144,3 +144,6 @@ F4b independent reference: use separate Python API assertions against the frozen
 
 
 F4b boundary follow-up: real single-field name/class/severity PATCH, JS→Go whitespace normalization preserving interior FEFF/NFD/CJK, empty-name acceptance and8192UTF8-byte diagnostic field-cap acceptance. Reject empty patch, oversized64KiB body and invalid page locally with zero dispatch. Restore original9101 before the existing compound-edit/triage/deletion stage; no foreign IDs, agents or internet. Individual validation controls are native safeguards, not browser UI parity.
+
+
+F5 advanced Findings must deliver traffic evidence inspection/mutations/body downloads, lineage, retests/deepen, reports and all export scopes/formats against the frozen browser. F5a begins read-only summary/detail/byte-page contracts without narrowing the final feature; see findings-advanced-design.md. Preserve byte offsets separately from display text, exact ownership/context and unknown custom content.

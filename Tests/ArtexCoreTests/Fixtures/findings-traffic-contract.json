@@ -1,0 +1,33 @@
+{
+  "source_commit": "e75ae371ad777ffd1eecdd28d2781a6519b05591",
+  "source_hashes": {
+    "server/finding_traffic.go": "816ecb4383d34be793695cc480fc787d0d6fe5aafc0e2610334a662a61bb997b",
+    "db/finding_traffic.go": "c6c6a5d7a424c269e89418c98f1ea0ae849d405adaf6b15d2e539aab06b934db",
+    "web/src/lib/api.ts": "18b4529a99b508964348bf83b7777597ca3cb80a64565380e1b1320005700fe1",
+    "web/src/lib/types.ts": "469cf531c8b257579bf2eb8ca6b632ef05973f6019ef6f5389d0ab9d48e79309"
+  },
+  "binding": {
+    "id": "9007199254740993",
+    "finding_id": "9101",
+    "snapshot_id": "snapshot-fixture",
+    "role": "future-role",
+    "note": "\ufeffe\u0301 \u4e2d\u6587 \ud55c\uad6d\uc5b4",
+    "position": 0,
+    "created_at": "2026-10-22T10:00:00Z",
+    "snapshot": {
+      "id": "snapshot-fixture",
+      "source_traffic_id": "opaque/source+id",
+      "captured_at": 1792663200000,
+      "url": "https://fixture.invalid/",
+      "method": "POST",
+      "status": 200,
+      "content_type": "application/octet-stream",
+      "req_head": "X-Fixture: \ufeffe\u0301",
+      "resp_head": "HTTP/1.1 200 OK",
+      "req_hash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "resp_hash": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+      "req_len": 0,
+      "resp_len": 9000
+    }
+  }
+}
