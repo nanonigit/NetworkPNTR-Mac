@@ -156,3 +156,6 @@ F5b state must own summary/detail/byte-page generations and captured writes acro
 
 
 Existing FindingStore edit/delete must satisfy cancellation-checked transport handoff without changing partial-PATCH uncertainty or reset-held gate semantics. See findings-mutation-handoff-design.md.
+
+
+Task direct writes and shared category/archive/bulk lease acquisition require cancellation/activity/lifetime checks before transport or token grant. Preserve post-send uncertainty and pending-reset gate. See task-mutation-handoff-design.md.

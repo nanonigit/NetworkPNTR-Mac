@@ -1,0 +1,7 @@
+# タスク変更のhandoff監査
+
+作成/編集/操作/一括操作/削除は、準備中の取消/停止/reset後に送信しない。作成/再開はguest agentを開始し得るため、注入した試験transportだけを使う。公開API・本文/status照合・送信後不明・再取得失敗後の確定・選択・resetの終了待ちを維持する。category/archive/bulkの共有ゲート取得もbusy時の取消/停止ならtokenを返さない。その後の外部workspace送信は別途監査する。固定版/VM/通信を変えず、backendのみなのでLazyweb対象外。
+
+busyを直接ticketと既存外部ticketから一意に算出し、同期取得の再入を拒否する。ticket公開後、activity/lifetime/取消を再確認してから付与する。直接操作はTaskService内部の取消確認後callbackでhandoffを記録し、現ticket/activity/lifetimeをsend前に検証する。公開署名は内部overloadへ委譲。不正入力はrejected、送信前取消/古い準備はnotStarted、送信後失敗はunconfirmed。応答までゲートを保持し、IDを確認して解放してから既存の後続読取を行う。旧session結果の破棄、ユーザーの回復操作、自動再送しない仕様を維持する。
+
+順序は直接5操作・外部取得3種の同期取消/停止RED→ticket/lease/service修正GREEN→既存TaskStore/TaskServiceと外部workspace回帰→独立レビュー/全体/coverage/署名build/修正HEAD CI。その後に外部workspaceのhandoffとLLMStoreを監査し証跡UIへ進む。実guest agent開始・task/browser画面・外部送信・製品全体の受入とはしない。

@@ -132,3 +132,6 @@ Implement F5b state per findings-traffic-state-design.md before native evidence 
 
 
 Audit and repair the existing FindingStore handoff boundary per findings-mutation-handoff-design.md; keep public service API and backend contracts stable. Task/LLM audit remains distinct.
+
+
+Task handoff recurrence repair follows task-mutation-handoff-design.md; actor-owned direct tickets and guarded shared lease acquisition retain public contracts. External later-dispatch and LLM remain separate gates.

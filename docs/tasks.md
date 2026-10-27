@@ -306,3 +306,6 @@ Recurrence audit order: ordinary FindingStore edit/delete Observation RED -> int
 
 
 Ordinary FindingStore recurrence checkpoint: RED3b0e6f3(12cases/10assertionfailures) -> repair1108f91, focused39/full643Swift(642pass/1existingAXskip),123Python; mutation104/105/service140/140/store200/203 lines; signedbuild/strictsignature/localization/inventory pass. See findings-mutation-handoff-verification.md. Next TaskStore direct/external and LLMStore handoff audit, then native evidence controls/actual nonempty guest/browser/UI. Full goal remains open.
+
+
+Task handoff order: five direct/two synchronous boundary modes and three external acquisition kinds RED -> ticket/callback/lease GREEN -> existing service/store/workspace regression -> independent review/full checks/CI. Do not launch guest agents during these synthetic tests.
