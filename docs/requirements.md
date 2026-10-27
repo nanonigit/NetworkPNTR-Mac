@@ -147,3 +147,6 @@ F4b boundary follow-up: real single-field name/class/severity PATCH, JS→Go whi
 
 
 F5 advanced Findings must deliver traffic evidence inspection/mutations/body downloads, lineage, retests/deepen, reports and all export scopes/formats against the frozen browser. F5a begins read-only summary/detail/byte-page contracts without narrowing the final feature; see findings-advanced-design.md. Preserve byte offsets separately from display text, exact ownership/context and unknown custom content.
+
+
+F5b must provide fixed-route evidence bind/edit/remove/order with captured owner/context/snapshot, optimistic versions, exact payload fields and no automatic retries. A post-commit summary failure remains unconfirmed. State ownership/uncertainty and actual guest/UI gates remain required after the write capability.

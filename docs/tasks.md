@@ -288,3 +288,6 @@ F5 order: requirements/design -> source-bound traffic fixture and missing read A
 
 
 F5a read contract checkpoint: RED7fa5bae -> GREEN718e5cc; six traffic tests, full626Swift(625pass/1existingAXskip),123Python. Model54/54 and service32/32 lines covered; review feedback strengthens size/status tests, signed build/strict signature/localization/inventory pass. See findings-traffic-read-verification.md. Actual nonempty traffic/API/state/UI and remaining F5/full-product gates stay open.
+
+
+F5b order: pinned mutation/transaction/readback investigation -> write capability missing-API RED -> four command contracts GREEN -> adversarial membership/body/version/cancel/status tests -> independent review/full software checks. Then owned state with reverse replies/stop/reset/uncertainty/ack/conflict tests -> actual nonempty evidence and native UI. Preserve F5a pending CI40536321956 until authoritative terminal state.
