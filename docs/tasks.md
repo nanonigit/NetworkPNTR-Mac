@@ -285,3 +285,6 @@ Boundary checkpoint: native5983949 three boots and independent referencea4689b2 
 
 
 F5 order: requirements/design -> source-bound traffic fixture and missing read APIs RED -> typed read contracts/service GREEN -> adversarial identity/byte-page/cancellation checks -> independent review/full regression/coverage/signed build/exact-head CI. Then evidence mutations/state, lineage/retest/deepen/report, full-byte exports, UI and actual fixed-browser/VM comparisons. F5a alone does not accept F5.
+
+
+F5a read contract checkpoint: RED7fa5bae -> GREEN718e5cc; six traffic tests, full626Swift(625pass/1existingAXskip),123Python. Model54/54 and service32/32 lines covered; review feedback strengthens size/status tests, signed build/strict signature/localization/inventory pass. See findings-traffic-read-verification.md. Actual nonempty traffic/API/state/UI and remaining F5/full-product gates stay open.

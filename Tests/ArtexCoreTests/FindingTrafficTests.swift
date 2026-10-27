@@ -140,11 +140,18 @@ final class FindingTrafficTests: XCTestCase {
     }
     @MainActor func testStatusMalformedOversizeAndCancellationNeverRetry() async throws {
         let api=TrafficReadAPI(),service=FindingTrafficService(client:api)
+        let good: [String:Any] = ["finding_id":"9101","version":0,"report_version":0,"bindings":[]]
         for status in [201,204,302,401,404,409,422,500] {
-            try api.add(["error":"private server text"],status:status)
-            do {_ = try await service.list(findingID:"9101");XCTFail()}catch {}
+            try api.add(good,status:status)
+            do {_ = try await service.list(findingID:"9101");XCTFail()}
+            catch BackendAPIError.status(let code) {XCTAssertEqual(code,status);XCTAssertFalse((200..<300).contains(status))}
+            catch BackendAPIError.invalidResponse {XCTAssertTrue([201,204].contains(status))}
+            catch {XCTFail("unexpected status classification")}
         }
-        for body in [Data("not JSON".utf8),Data(repeating:32,count:4*1024*1024+1)] {
+        var oversized = try JSONSerialization.data(withJSONObject:good)
+        oversized.append(Data(repeating:32,count:4*1024*1024+1-oversized.count))
+        XCTAssertEqual(try BackendJSONCoding.decode(FindingTraffic.self,from:oversized).findingId,"9101")
+        for body in [Data("not JSON".utf8),oversized] {
             api.replies.append(.init(status:200,body:body));do {_ = try await service.list(findingID:"9101");XCTFail()}catch {}
         }
         let count=api.paths.count

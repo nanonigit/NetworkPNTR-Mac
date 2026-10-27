@@ -2,6 +2,8 @@
 
 F5順序: 要件/設計→固定ソースhash付き証跡データと未実装読取APIのRED→型付き契約/サービスGREEN→owner/バイトページ/キャンセルの異常系→独立レビュー/全体/coverage/署名build/修正HEAD CI。その後に変更/状態、lineage/retest/deepen/report、実bytes出力、UIと実VM/固定browser比較を行う。F5a単独ではF5を受け入れない。
 
+F5a読取契約: RED7fa5bae→GREEN718e5cc。重点6件、全Swift626件（625成功/既存AX1件保留）、Python123件。モデル54/54行・サービス32/32行を網羅し、レビュー指摘でサイズ/statusの試験を強化。署名build/厳密署名/翻訳/構成照合成功。findings-traffic-read-verification.ja.md参照。空でない実証跡/API/状態/画面と残るF5/製品全体は未完了。
+
 - [x] P0: 上流の全ナビゲーション・画面・API一覧、要件・設計・比較表・異常系テスト計画、ブラウザ実画面証跡、独立した非公開リポジトリ。
 - [ ] P1: 署名したMacアプリからDocker不要のLinux起動/停止。ホスト共有とネットワークなし。改変検出で起動を拒否。起動→停止→再起動、失敗/タイムアウトと実ウィンドウ表示を確認。
 - [ ] P2: VM内ARTEX/DB、永続化、認証付きvsock通信、クラッシュ復旧。同じfixtureのAPI・認証を比較。秘密情報と通信ポリシーを設計し拒否テスト。

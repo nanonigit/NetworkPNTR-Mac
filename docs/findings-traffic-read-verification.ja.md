@@ -1,0 +1,9 @@
+# F5a 通信証跡の読取契約チェックポイント
+
+固定版e75ae371ad777ffd1eecdd28d2781a6519b05591を基準に、証跡一覧・binding詳細・バイトページ本文の型付き読取を実装した。合成データにはソース4ファイル全体のhashを記録し、手元では固定checkoutとも照合する。CIは隣のcheckoutを要求せず、fixtureの固定版/hash形状と全応答ケースを検証する。これはソース/自動契約の証拠であり、空でない実証跡API・実画面・F5完了の証明ではない。
+
+未実装型/サービスのコンパイルRED7fa5baeを実行し、実装718e5ccで重点6件が成功。未知role、opaqueなsource ID、FEFF/NFD/CJKを含むnote/headerを保持する。正のInt64正規IDと固定GET経路でfinding/binding/contextを対応させ、呼出側Bearerや任意接続先を受け取らない。必須配列/null/空、owner不一致/重複/snapshot対応、負数/overflow/バイト進行、詳細の長さ/offset、status/サイズ/不正JSONを検証。binary表示や置換文字の表示バイト数を元本文のバイトoffsetと同一視せず、表示文字列から本文bytesを復元しない。送信前・応答後のキャンセルは再試行せず終了する。省略されたheaderは空として扱う。
+
+独立レビューで実装の阻害問題はなかった。サイズ試験の指摘に対応し、有効なJSONの後へ空白を加えて4MiB超とし、単独decodeは成功するがサービスでは拒否することを確認した。未対応statusも有効な応答を使い、JSON不正で偶然失敗する代わりに型付きエラーを照合する。この修正は試験だけで製品コードを変えない。
+
+Swift全626件（625成功・既存外部AX1件明示保留）、Python123件、重点6件が成功。LLVM行カバレッジはFindingTraffic.swift54/54、FindingTrafficService.swift32/32。署名build-only・厳密署名・翻訳export・固定構成照合も成功。依存追加なしで、このSwiftPMプロジェクトにnpm/pip依存manifestはない。画面、guest試験データ、通信方針、実通信、provider認証、agent起動、host書込能力は変更せず、backendのみなのでLazywebは対象外。空でない実証跡の読取/本文/失敗/保存比較、変更/状態、実bytesダウンロード/出力、lineage/retest/deepen/reportと解除後の実画面/キーボード/VoiceOverは未完了。findings-advanced-design.ja.md参照。
