@@ -1,0 +1,156 @@
+{
+  "phase": "F3.2",
+  "scope": "native basic Findings controls integrated with retained authenticated window state; actual UI and runtime comparison pending",
+  "baseline": "e75ae371ad777ffd1eecdd28d2781a6519b05591",
+  "source_commit": "081ec24ee0ef7149995af85171f34ca919c8d1fa",
+  "swift": {
+    "total": 578,
+    "passed": 577,
+    "existing_accessibility_skip": 1,
+    "failures": 0
+  },
+  "python": {
+    "total": 86,
+    "passed": 86,
+    "failures": 0
+  },
+  "focused_cases": {
+    "F3_2_UI": 15,
+    "F3_1_screen": 13,
+    "combined": 28
+  },
+  "line_coverage": {
+    "FindingBindings.swift": {
+      "count": 43,
+      "covered": 42,
+      "percent": 97.67441860465115
+    },
+    "FindingDetailPanel.swift": {
+      "count": 146,
+      "covered": 121,
+      "percent": 82.87671232876713
+    },
+    "FindingDialogView.swift": {
+      "count": 100,
+      "covered": 84,
+      "percent": 84
+    },
+    "FindingFilterBar.swift": {
+      "count": 155,
+      "covered": 140,
+      "percent": 90.32258064516128
+    },
+    "FindingNavigationPanels.swift": {
+      "count": 334,
+      "covered": 296,
+      "percent": 88.62275449101796
+    },
+    "FindingPresentation.swift": {
+      "count": 35,
+      "covered": 35,
+      "percent": 100
+    },
+    "FindingScreenModel.swift": {
+      "count": 146,
+      "covered": 137,
+      "percent": 93.83561643835617
+    },
+    "FindingScreenPreferences.swift": {
+      "count": 23,
+      "covered": 23,
+      "percent": 100
+    },
+    "FindingScreenReads.swift": {
+      "count": 98,
+      "covered": 98,
+      "percent": 100
+    },
+    "FindingTable.swift": {
+      "count": 131,
+      "covered": 82,
+      "percent": 62.59541984732825
+    },
+    "FindingsView.swift": {
+      "count": 186,
+      "covered": 157,
+      "percent": 84.40860215053763
+    }
+  },
+  "executed_source_sha256": {
+    "Sources/ArtexMac/FindingBindings.swift": "8eb3287c4bed3e9b6a413a7438bcc7ce03738f8d2cb01a7541a341aa678256dc",
+    "Sources/ArtexMac/FindingDetailPanel.swift": "05b263ebba20d8a963a38c665453e04257065015ec51643f287366eda3db97e5",
+    "Sources/ArtexMac/FindingDialogView.swift": "4f43a495d9750215145205abfc4ce7dfd7c195d72f53a2b483ac29317f9cc168",
+    "Sources/ArtexMac/FindingFilterBar.swift": "cb106c561b2494e500f5e82a1756fb6b6f476c97e405bcbf2d4b7f30069f918a",
+    "Sources/ArtexMac/FindingNavigationPanels.swift": "63e7d1cd9488ac5538dfdabba3f7809409f5bdced4af995a77c351a0cdaa7b4f",
+    "Sources/ArtexMac/FindingPresentation.swift": "74d172ece79d32b1c76d4758cf1af4542f6190b0d3117aaba42b7139d7ae36a4",
+    "Sources/ArtexMac/FindingScreenModel.swift": "0172c4c5c20a2fff3b46eff640fe1247e0e778f4208250b46a0aed46291aff64",
+    "Sources/ArtexMac/FindingScreenPreferences.swift": "907e4fcaa24bee42865365823de2b2b0589dd136c0470a2b4a78db205af6c9c5",
+    "Sources/ArtexMac/FindingScreenReads.swift": "a18fad934177c7140be261ba3b3bb8d5bb346366362d71f502782a21a03136ce",
+    "Sources/ArtexMac/FindingTable.swift": "3c2df9eb575b9c7116a63b7dc80ec9affc6b059c9d825fbfae36c7e567f40bcf",
+    "Sources/ArtexMac/FindingsView.swift": "9d861939f6b3a62a212d6aa9c5ae07684e4e0dd7c45e8bcaf136015cf8a8f2c8",
+    "Sources/ArtexMac/RootView.swift": "03888e4eece09aabc737af724a555039621ce09750f29b8933229e8be9e5fd52",
+    "Sources/ArtexCore/AppStrings.swift": "289559392ba3f2c63013033728e0d97c5c8a6a978a3138886a4d8cc8c55287f0",
+    "Sources/ArtexCore/Resources/Localizable.xcstrings": "6e00c7c68d081037a75b9dc31aa227436779f6a69025094553d743c2f81d9691",
+    "Sources/ArtexCore/Resources/feature-map.json": "9d2fef65667485d7a5ef9c7d51570869f6602eb6b9e0fa50b92cb3d803887edf",
+    "Tests/ArtexMacTests/FindingsUITests.swift": "74cf09b03b2a1b6811f683af082f79998fb4aaf65d0ef3d1d83a7d3265fd77c4",
+    "Tests/ArtexCoreTests/CoreTests.swift": "73d910f8405a6fd4cbe51dade62be435017a1b5056321f435db44caf73917594"
+  },
+  "red_commits": {
+    "missing_UI_API": "f140c0e",
+    "asset_to_flat_polling": "9d8ad0f",
+    "stale_callbacks_and_search": "73091e3"
+  },
+  "polling_red_assertions": 1,
+  "callback_red_cases": 3,
+  "callback_red_assertions": 5,
+  "initial_full_run_failure": "Inventory expectation still classified Findings as pending; updated explicit in_progress assertion while preserving all21 routes/features and pending checks. Final suite passes.",
+  "owned_en_ja_packaged_keys": 61,
+  "native_views": [
+    "flat",
+    "grouped_with_orphan_and_independent_pagers",
+    "asset_tree_with_raw_UTF8_identity"
+  ],
+  "offscreen_views": {
+    "languages": [
+      "en",
+      "ja"
+    ],
+    "schemes": [
+      "light",
+      "dark"
+    ],
+    "widths": [
+      900,
+      1440
+    ],
+    "display_combinations": 24,
+    "dialog_kinds": 4,
+    "detail_variants": [
+      "standalone",
+      "inherited",
+      "legacy_without_handle"
+    ],
+    "visible_UI_acceptance": false
+  },
+  "deep_forest_nodes": 4096,
+  "search_debounce_ms": 300,
+  "search_survives_page_mode_and_dialog_gate": true,
+  "detail_close_requires_view_and_selection_revision": true,
+  "asset_snapshot_retained_on_scope_and_page_changes": true,
+  "polling_restarts_after_one_shot_asset_view": true,
+  "held_write_stop_reactivation_reads_verified": true,
+  "automatic_write_retries": false,
+  "review": "Static independent review found polling/callback bugs; executed RED/GREEN and final re-review found no blocker in code scope. Visible interaction acceptance remains pending.",
+  "signed_build_only": true,
+  "strict_signature": true,
+  "packaged_localization_and_feature_map_check": true,
+  "pinned_inventory_check": true,
+  "actual_app_launch_or_VM_or_ARTEX_writes": false,
+  "feature_status": "in_progress",
+  "remaining": [
+    "actual unlocked en/ja browser/native screenshots keyboard VoiceOver and row actions",
+    "F4 disposable VM/pinned reference findings changes and durability",
+    "F5 export traffic report generation lineage deepen retest",
+    "full21 cloud egress runtime reliability clean-Mac release"
+  ]
+}

@@ -117,3 +117,6 @@ F3.1 completed finite coordinator checks only; F3.2 must connect the per-window 
 
 
 F3.2 exposes native flat/grouped/asset Findings views, six stats, server filters/search/sort and independent pagers, cross-page selection, read-only provenance/detail, captured edit/status/delete/unknown confirmation and task navigation. Retain per-authenticated-window state across sidebar/locale; logout clears private state. All strings en/ja; literal content unchanged. Advanced F5 controls remain explicitly pending. Offscreen tests do not close actual browser/keyboard/AX acceptance.
+
+
+F3.2 native basic Findings controls are now wired and in_progress. Full acceptance still requires actual unlocked browser/native keyboard/AX comparisons, F4 VM/reference changes and F5 advanced workflows. See findings-ui-verification.md; do not equate offscreen coverage with rendered acceptance.

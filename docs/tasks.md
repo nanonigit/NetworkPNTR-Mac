@@ -247,3 +247,6 @@ F3.1 checkpoint: captured edit/status/delete/uncertainty contexts and bounded br
 
 
 F3.2 order: document requirements/design -> missing bindings/presentation/read-coordinator RED -> native controls and en/ja catalog GREEN -> held tree/scope/page latest-read and mutation gate tests -> offscreen en/ja light/dark wide/narrow hosting -> review/fix/full regression/signed build/exact-head CI. Actual unlocked native/browser/keyboard/AX and F4/F5 remain required.
+
+
+F3.2 checkpoint: native three-view Findings workspace, six stats, filters/pagers/selection, detail/provenance and captured triage/delete/unknown dialogs connected to RootView; mirrored feature statusin_progress. REDf140c0e APIs; RED9d8ad0f polling1assertion; RED73091e3 callbacks3cases/5assertions -> GREEN081ec24. Full578Swift(577pass/1existingAXskip),86Python pass;15UI+13screen cases;61en/ja packaged keys, strict signed build-only and frozen baseline pass. Reads/presentation100%, model93.84%, bindings97.67%; table62.60% explicitly retains real row interaction gate. Static re-review pass. Actual UI/keyboard/AX/manualunlock, F4 VM/reference, F5 advanced/full21/cloud/kernel/clean-Mac/release remain open.

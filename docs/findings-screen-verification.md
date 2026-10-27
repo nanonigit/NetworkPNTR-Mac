@@ -12,3 +12,6 @@ The pinned browser source persists view/severity/status/vulnclass/task/sort and 
 Normalized evidence and tested file SHA256 values: evidence/findings/f3-screen-verification.json. All prior runtime fault evidence remains; no kernel candidate is promoted. See findings-screen-design.md for Lazyweb metadata limits and the fetched table practice.
 
 Next: F3.2 implement en/ja native list/group/tree/filter/pager/detail/edit controls, stable raw-byte asset identity, per-window authenticated retention and gate-aware read scheduling. Add presentation/binding/offscreen tests, then perform actual native/browser keyboard/visual/VoiceOver checks after manual unlock. F4 actual isolated VM/reference changes and F5 export/traffic/report/lineage/retest/deepen remain required. Full21/cloud/clean-Mac/release/reliability gates remain open.
+
+
+Later checkpoint: F3.2 now connects native controls and changes Findings to in_progress. See findings-ui-verification.md for current evidence and open gates; the F3.1 results above remain historical.
