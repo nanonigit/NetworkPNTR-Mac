@@ -262,3 +262,6 @@ F4b order: inspect pinned service/notification/node-sync contracts -> write Core
 
 
 Generated unassigned-asset label: missing presentation API RED, implement sentinel-scoped translation GREEN, raw/custom Unicode preservation test; reuse all Findings UI tests/review and packaged en/ja resource check. Actual visible language/AX remains after unlock.
+
+
+F4b foundation checkpoint: finite transport, checksum-bound independent dataset, full row verifier and single-use43list/33detail read stage implemented.17 focused Core cases and16 Findings UI cases pass. Full596Swift (595pass/1existingAXskip),95Python pass. This remains a partial F4b implementation: aggregate/context/mutation/probe/reference/actual three-boot stages are required. See findings-runtime-foundation-verification.md.

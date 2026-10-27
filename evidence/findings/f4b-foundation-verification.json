@@ -1,0 +1,65 @@
+{
+  "schema_version": 1,
+  "scope": "F4b finite transport, fixture, row verifier and initial read orchestration only",
+  "implementation_commit": "6a21e6665b99549c8910a26a45202598ba77ce6e",
+  "baseline_commit": "e75ae371ad777ffd1eecdd28d2781a6519b05591",
+  "baseline_inventory_parity": true,
+  "focused_core_tests": 17,
+  "focused_ui_tests": 16,
+  "swift_total": 596,
+  "swift_passed": 595,
+  "swift_explicit_ax_skips": 1,
+  "python_total": 95,
+  "python_passed": 95,
+  "python_first_attempt": {
+    "result": "94 pass / 1 environment error",
+    "reason": "node not on shell PATH",
+    "resolution": "existing /opt/homebrew/bin on PATH; same /usr/bin/python3"
+  },
+  "controlled_initial_read_requests": 76,
+  "list_vectors": 43,
+  "detail_records": 33,
+  "line_coverage": {
+    "FindingExerciseFixture.swift": {
+      "count": 151,
+      "covered": 143,
+      "percent": 94.70198675496688
+    },
+    "FindingExerciseReadChecks.swift": {
+      "count": 23,
+      "covered": 23,
+      "percent": 100
+    },
+    "FindingExerciseTransport.swift": {
+      "count": 88,
+      "covered": 86,
+      "percent": 97.72727272727273
+    },
+    "FindingExerciseVerifier.swift": {
+      "count": 33,
+      "covered": 33,
+      "percent": 100
+    }
+  },
+  "en_ja_packaged_finding_ui_keys": 62,
+  "signed_build_only": true,
+  "strict_signature_verified": true,
+  "review": "No remaining blocker in finite scope; source DTO and SQL inspected",
+  "actual_artex_api_contacted": false,
+  "actual_vm_booted": false,
+  "actual_reference_run": false,
+  "visible_ui_acceptance": false,
+  "pending": [
+    "aggregates/groups/tree",
+    "per-task/inherited/legacy context",
+    "mutation and unknown acknowledgment orchestration",
+    "DEBUG guest audit/seed/probe",
+    "independent reference runner",
+    "actual three-boot VM/reference comparison",
+    "F5 advanced Findings",
+    "all21 workflows",
+    "cloud egress",
+    "intermittent kernel reliability",
+    "clean Mac/release"
+  ]
+}
