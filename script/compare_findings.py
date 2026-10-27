@@ -43,8 +43,12 @@ def compare(native, inputs, reference):
         require(boot.get('formatStageObserved') is (index == 1) and boot.get('diagnostics') == [], 'boot format/diagnostics')
         require(boot.get('authentication') == ('freshSetup' if index == 1 else 'persistedSession'), 'persisted authentication')
     for key in ['fresh_setup','persisted_session','credentials_absent']: require(reference.get(key) is True, 'reference lifecycle')
-    number(reference.get('backend_starts'),3); number(reference.get('cooperative_stops'),3); number(reference.get('network_devices'),0)
+    number(reference.get('backend_starts'),3); number(reference.get('cooperative_stops'),3)
     require(reference.get('protected_statuses') == [401,401,401], 'reference protected API')
+    network = reference['network_proof']
+    require(type(network.get('network_interfaces')) is str and 'lo' in network['network_interfaces'].split(','), 'reference loopback evidence')
+    for key in ['network_hardware_devices','network_nonloopback_up','network_external_routes']: number(network.get(key),0)
+    require(re.fullmatch('[0-9a-f]{64}',reference.get('networkCheckerSHA256','')) is not None, 'network checker provenance')
     harness = reference['harness']
     for key in ['complete','originalContainersPreserved','inputImagesPreserved','containerRemoved','imageTagRemoved','inputTagsRemoved','exportsComplete']:
         require(harness.get(key) is True, 'reference export/cleanup')

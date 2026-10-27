@@ -10,12 +10,15 @@ import platform
 import re
 import secrets
 import subprocess
+import sys
 import time
 from urllib.parse import parse_qsl, urlencode, urlsplit
 
 from chat_upload_contract_fixture import Client
 import findings_seed_guest as seed
 import findings_fixture_control as control
+sys.path.insert(0,str(Path(__file__).resolve().parent.parent/'guest'))
+import check_network
 
 BASE = '/api/exploration/findings'
 SOURCE_COMMIT = 'e75ae371ad777ffd1eecdd28d2781a6519b05591'
@@ -351,11 +354,17 @@ def sha256_file(path, *, maximum=128 * 1024 * 1024):
     return digest.hexdigest()
 
 
+def inspect_network():
+    proof = check_network.inspect()
+    require(check_network.is_isolated(proof), 'network hardware/active links/routes')
+    return proof
+
+
 def main():
     require(platform.system() == 'Linux' and platform.machine() == 'aarch64' and os.getuid() == 1000
             and os.environ.get('ARTEX_DISPOSABLE_REFERENCE') == '1', 'isolation')
     environment = seed.validate_environment()
-    require(set(os.listdir('/sys/class/net')) == {'lo'}, 'network devices')
+    network = inspect_network()
     require(not DATA_ROOT.is_symlink() and not any(DATA_ROOT.iterdir()), 'fresh data directory')
     client = Client(); process = None; logs = []; tokens = [environment['PGPASSWORD']]
     checkpoint = result = None; before_audits = []; after_audits = []; seed_audits = []; stopped = 0
@@ -400,7 +409,7 @@ def main():
             require(len(data) <= 4 * 1024 * 1024 and all(t.encode() not in data for t in tokens), 'credential log audit')
         folder = Path(__file__).resolve().parent
         output = dict(comparison=result, backend_starts=3, cooperative_stops=stopped, fresh_setup=True, persisted_session=True,
-                      protected_statuses=[401, 401, 401], credentials_absent=True, network_devices=0, sourceCommit=SOURCE_COMMIT,
+                      protected_statuses=[401, 401, 401], credentials_absent=True, network_proof=network, networkCheckerSHA256=sha256_file(Path(check_network.__file__)), sourceCommit=SOURCE_COMMIT,
                       backendSHA256=sha256_file(Path('/opt/artex/artex')),
                       seedSHA256=sha256_file(folder/'findings_seed_guest.py'),
                       controlSHA256=sha256_file(folder/'findings_fixture_control.py'),

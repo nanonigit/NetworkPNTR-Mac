@@ -1,0 +1,7 @@
+# 停止中の仮想トンネルとreference事前検査
+
+実測の反証: reference0baa2ffは最初のbackendを起動する前、sysfs項目名の完全一致で停止しました。空DBのdumpとPostgreSQLログを保存し、所有コンテナ・派生タグ・入力の一時別名を削除。既存コンテナ/入力imageは保持しています。evidence/findings/f4b-reference-network-red.jsonを参照。この試行をAPI比較の成功には数えません。
+
+MUSUBI工程: 失敗記録保持→同一キャッシュimageとnetwork-none/read-only/nonroot/cap-drop条件で再現→flags/経路確認→不適切な代理指標を修正→危険な観測の拒否試験→修正後だけ再実行。5 Whys: sysfsに余分な名前→DockerのkernelがDOWNの仮想トンネルと機器ではないbonding_mastersを用意→名前を接続性と同一視→VMとコンテナのkernel既定値差→既存の機器/UPリンク/外部経路の3つの0を検査して再発防止。Fishbone: kernel既定値・項目名による観測・環境差・reference向け回帰不足。Timeline: native3起動成功→reference起動前失敗→同一imageの別再現→RED13155b9→観測型GREEN。
+
+元の掃除後に行った別の最小再現では、interfaceディレクトリ10、hardware0、非loopbackのUP0、外部IPv4/IPv6経路0でした。削除済みコンテナから出したsnapshotとは区別します。変更していないguest/check_network.pyを再利用し、sysfsの非ディレクトリを除外して3つの値を検査します。host側のnetwork-none・cap-drop-ALL・権限昇格不可・nonroot・root読取専用・host共有なし・port公開なしも必須です。有効リンク/機器/外部経路が1つでもあれば拒否します。checkerをhashで転送ソースに結びます。先行実装/事前修正は独立レビュー済みですが、最後の小さな再利用修正は補助agentの利用制限により、手元のソース確認と対象36試験で検証しました。修正版referenceの実測は別途必要です。

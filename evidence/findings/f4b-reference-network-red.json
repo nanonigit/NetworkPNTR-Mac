@@ -1,0 +1,94 @@
+{
+  "scope": "First actual disposable reference attempt; not API comparison acceptance",
+  "passed": false,
+  "stage": "pre-backend network check",
+  "backend_starts": 0,
+  "error": "Findings reference network devices",
+  "reference_source_commit": "0baa2ff",
+  "exports": {
+    "database-dump": {
+      "bytes": 643,
+      "sha256": "70c75ed36e40e818d3f88c5cbafeafa37abf723df6394b7fc6400f6ff66ed7ca"
+    },
+    "retained-logs": {
+      "bytes": 697,
+      "sha256": "83ec6da8c48b960e90c9a0bde554a90196620cfcb15745f811d8ebec4ec205ed"
+    }
+  },
+  "cleanup": {
+    "container_removed": true,
+    "image_tag_removed": true,
+    "input_tags_removed": true,
+    "input_images_preserved": true,
+    "original_containers_preserved": true
+  },
+  "diagnostic_scope": "Separate minimal same-image/network-none reproduction after owned reference cleanup",
+  "diagnostic": {
+    "interfaces": [
+      {
+        "name": "erspan0",
+        "flags": "0x1002",
+        "operstate": "down",
+        "hardware": false
+      },
+      {
+        "name": "gre0",
+        "flags": "0x80",
+        "operstate": "down",
+        "hardware": false
+      },
+      {
+        "name": "gretap0",
+        "flags": "0x1002",
+        "operstate": "down",
+        "hardware": false
+      },
+      {
+        "name": "ip6_vti0",
+        "flags": "0x80",
+        "operstate": "down",
+        "hardware": false
+      },
+      {
+        "name": "ip6gre0",
+        "flags": "0x80",
+        "operstate": "down",
+        "hardware": false
+      },
+      {
+        "name": "ip6tnl0",
+        "flags": "0x80",
+        "operstate": "down",
+        "hardware": false
+      },
+      {
+        "name": "ip_vti0",
+        "flags": "0x80",
+        "operstate": "down",
+        "hardware": false
+      },
+      {
+        "name": "lo",
+        "flags": "0x9",
+        "operstate": "unknown",
+        "hardware": false
+      },
+      {
+        "name": "sit0",
+        "flags": "0x80",
+        "operstate": "down",
+        "hardware": false
+      },
+      {
+        "name": "tunl0",
+        "flags": "0x80",
+        "operstate": "down",
+        "hardware": false
+      }
+    ],
+    "network_hardware_devices": 0,
+    "network_nonloopback_up": 0,
+    "network_external_routes": 0
+  },
+  "correction": "Use the existing guest hardware/active-link/external-route isolation checker; keep all three counters zero and Docker network mode none"
+}
