@@ -16,6 +16,13 @@ enum FindingExerciseFixture {
         var nodeID: String? { index < 31 ? String(15101+index) : nil }
         var taskID: String? { index < 21 ? "8101" : (index < 31 ? String(8102+index-21) : nil) }
         var timestamp: String { String(format:"2026-10-22T10:00:%02dZ",index) }
+        var taskDescription: String { taskID.map{"F4 terminal task \($0) \(FindingExerciseFixture.literal)"} ?? "" }
+        var assets: [FindingAsset] {
+            assetIDs.map { id in
+                FindingAsset(id:id,type:id == "8201" ? "root_domain" : (id == "8202" ? "subdomain" : "ip"),
+                             label:id == "8201" ? "fixture.example.test" : (id == "8202" ? "api.fixture.example.test" : "198.51.100.9"))
+            }
+        }
     }
     struct Vector: Sendable {
         let name: String
