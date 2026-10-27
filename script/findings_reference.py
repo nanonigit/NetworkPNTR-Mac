@@ -341,6 +341,16 @@ def before_restart(client):
     return dict(initialChecks=initial, mutationChecks=checks, partialHTTPStatus=500, beforeRequestCount=client.calls)
 
 
+def sha256_file(path, *, maximum=128 * 1024 * 1024):
+    digest = hashlib.sha256(); total = 0
+    with path.open('rb') as stream:
+        while True:
+            block = stream.read(min(65536, maximum-total+1))
+            if not block: break
+            total += len(block); require(total <= maximum, 'source file bound'); digest.update(block)
+    return digest.hexdigest()
+
+
 def main():
     require(platform.system() == 'Linux' and platform.machine() == 'aarch64' and os.getuid() == 1000
             and os.environ.get('ARTEX_DISPOSABLE_REFERENCE') == '1', 'isolation')
@@ -386,13 +396,14 @@ def main():
             require(code == 0, 'cooperative stop'); stopped += 1
         require(result is not None and stopped == 3, 'complete experiment')
         for log in logs:
-            data = log.read_bytes(); require(len(data) <= 4 * 1024 * 1024 and all(t.encode() not in data for t in tokens), 'credential log audit')
+            with log.open('rb') as stream: data = stream.read(4 * 1024 * 1024 + 1)
+            require(len(data) <= 4 * 1024 * 1024 and all(t.encode() not in data for t in tokens), 'credential log audit')
         folder = Path(__file__).resolve().parent
         output = dict(comparison=result, backend_starts=3, cooperative_stops=stopped, fresh_setup=True, persisted_session=True,
                       protected_statuses=[401, 401, 401], credentials_absent=True, network_devices=0, sourceCommit=SOURCE_COMMIT,
-                      backendSHA256=hashlib.sha256(Path('/opt/artex/artex').read_bytes()).hexdigest(),
-                      seedSHA256=hashlib.sha256((folder/'findings_seed_guest.py').read_bytes()).hexdigest(),
-                      controlSHA256=hashlib.sha256((folder/'findings_fixture_control.py').read_bytes()).hexdigest(),
+                      backendSHA256=sha256_file(Path('/opt/artex/artex')),
+                      seedSHA256=sha256_file(folder/'findings_seed_guest.py'),
+                      controlSHA256=sha256_file(folder/'findings_fixture_control.py'),
                       audit_proofs=dict(seed=seed_audits, before=before_audits, after=after_audits))
         print(json.dumps(output, ensure_ascii=False))
     finally:
