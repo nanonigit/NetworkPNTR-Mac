@@ -7,8 +7,9 @@ final class FindingExerciseVerifierTests: XCTestCase {
         let seed = try XCTUnwrap(JSONSerialization.jsonObject(with:Data(contentsOf:url)) as? [String:Any])
         return try XCTUnwrap(seed["rows"] as? [[String:Any]]).map { source in
             var row = source
+            row.removeValue(forKey:"node_id"); row.removeValue(forKey:"asset_ids")
             row["id"] = String(source["id"] as! Int); row["findingId"] = row["id"]
-            if let task = source["task_id"] as? Int { row["taskId"] = String(task) }
+            if let task = source["task_id"] as? Int { row["task_id"] = String(task) }
             row["assets"] = (source["asset_ids"] as? [Int] ?? []).map{["id":String($0),"type":"fixture","label":"fixture"]}
             return row
         }
@@ -26,9 +27,9 @@ final class FindingExerciseVerifierTests: XCTestCase {
     }
     func testEveryDetailFieldMismatchIsRejectedIncludingCanonicallyEquivalentUnicode() throws {
         let original = try XCTUnwrap(objects().first), expected = FindingExerciseFixture.initial[0]
-        for field in ["id","findingId","taskId","name","vulnclass","severity","status","summary","evidence","report","ts","sourceTaskId"] {
+        for field in ["id","findingId","task_id","name","vulnclass","severity","status","summary","evidence","report","ts","sourceTaskId"] {
             var raw = original
-            raw[field] = ["id","findingId","taskId","sourceTaskId"].contains(field) ? "9999" : "changed"
+            raw[field] = ["id","findingId","task_id","sourceTaskId"].contains(field) ? "9999" : "changed"
             XCTAssertThrowsError(try FindingExerciseVerifier.detail(record(raw),expected:expected),field)
         }
         for field in ["name","summary","evidence","report"] {
