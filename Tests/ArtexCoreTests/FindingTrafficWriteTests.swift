@@ -46,7 +46,11 @@ final class FindingTrafficWriteTests: XCTestCase {
         let bind=try body(api.calls[0]);XCTAssertEqual(Set(bind.keys),["traffic_refs"])
         let refs=try XCTUnwrap(bind["traffic_refs"] as? [[String:Any]]);XCTAssertEqual(refs.count,2)
         XCTAssertEqual(refs[0]["traffic_id"] as? String," \u{85} opaque+id \u{85} ")
-        XCTAssertEqual(Array(try XCTUnwrap(refs[0]["note"] as? String).utf8),Array(note.utf8))
+        // JSONSerialization can strip leading FEFF; inspect wire content with the typed decoder instead.
+        struct Ref: Decodable { let note: String }
+        struct Refs: Decodable { let trafficRefs: [Ref] }
+        let wireRefs=try BackendJSONCoding.decode(Refs.self,from:XCTUnwrap(api.calls[0].body))
+        XCTAssertEqual(Array(wireRefs.trafficRefs[0].note.utf8),Array(note.utf8))
         XCTAssertEqual(refs[1]["role"] as? String,"supporting");XCTAssertEqual(refs[1]["note"] as? String,"")
         for role in FindingTrafficRole.allCases {
             try add(api,version:old.version+2)
@@ -91,6 +95,8 @@ final class FindingTrafficWriteTests: XCTestCase {
         try add(api,version:2)
         let unchanged=try await service.apply(.bind([.init(trafficId:"existing")]),to:row,snapshot:old)
         XCTAssertEqual(unchanged.version,2)
+        try add(api,version:1)
+        do {_ = try await service.apply(.bind([.init(trafficId:"existing")]),to:row,snapshot:old);XCTFail("regressed bind version accepted")}catch {}
     }
     @MainActor func testErrorsAndCancellationDoNotReplayEvenOnConflict() async throws {
         let api=TrafficWriteAPI(),service=FindingTrafficService(client:api),row=try target(),old=try decode(FindingTraffic.self,summary())
