@@ -1,5 +1,7 @@
 # 要件と完成ゴール
 
+F5は固定版の証跡閲覧/変更/本文保存、lineage、再検証/deepen、report、全出力範囲/形式まで必要。F5aの読取契約はその第一段階であり完成範囲を狭めない。表示文字列と本文のバイトoffsetを分離し、owner/contextと未知のユーザー内容を保持する。findings-advanced-design.ja.md参照。
+
 別の非公開リポジトリnanonigit/artex-macとして、ネイティブMacアプリを作る。このApple Silicon Macで、ブラウザ・Docker Desktop・ターミナル・手動のサーバー起動なしに利用できる。画面はSwiftUI、AIのコマンド実行とDBはアプリ管理のLinux VM内に置く。
 
 ## 完成条件

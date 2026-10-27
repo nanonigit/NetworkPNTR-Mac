@@ -1,5 +1,7 @@
 # 設計
 
+F5はfindings-advanced-design.ja.mdに従い、有限な証跡読取→変更/状態→lineage/retest/deepen/report→実bytes出力→UI/実guest/固定browser比較へ進む。F5aでは画面、host書込、通信許可、agent起動を変更しない。
+
 SwiftPMの複数ターゲット、SwiftUI/AppKitのネイティブ画面、Virtualization.framework、Linux ARM64ゲストを採用する。最終形はWebViewではない。フェーズ1ではネットワーク・ディスク・共有なしの最小Linuxを起動し、シリアル出力でゲスト起動を確認する。成果物のSHA-256を固定し、起動前に検証する。
 
 構成: ArtexCore（機能一覧、状態遷移、整合性、通信契約）、ArtexMac（画面とVM管理）、VMProbe（署名した実VM検証プログラム）。画面からホストシェルを起動しない。VM状態はアプリ全体で共有しMainActorで更新する。リソースはアプリ管理、ログは上限付き、起動・停止エラーを隠さない。
