@@ -17,7 +17,7 @@ import SwiftUI
                     Form {
                         TextField(s(.findingUIName),text:draft(\.nameDraft))
                         TextField(s(.findingUIClass),text:draft(\.classDraft))
-                        Picker(s(.findingUISeverity),selection:Binding(get:{model.severityDraft?.rawValue ?? "keep"},set:{if writable { model.severityDraft = FindingSeverity(rawValue:$0) }})) {
+                        Picker(s(.findingUISeverity),selection:FindingBindings.severity(model,id:contextID)) {
                             if FindingSeverity(rawValue:row.severity) == nil { Text(row.severity).tag("keep") }
                             ForEach(FindingSeverity.allCases,id:\.rawValue) { Text(DashboardLabels.text($0.rawValue,domain:.severity,language:language)).tag($0.rawValue) }
                         }

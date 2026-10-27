@@ -20,9 +20,9 @@ private struct FindingEditDraft {
 }
 
 struct FindingSearchTicket: Hashable {
-    let owner: UUID
     let session: UUID
     let draft: Data
+    let enabled: Bool
 }
 
 /// One authenticated window owns drafts and immutable confirmation contexts.
@@ -36,17 +36,17 @@ struct FindingSearchTicket: Hashable {
     var classDraft = ""
     var severityDraft: FindingSeverity?
     private(set) var detailRevision = UUID()
-    var searchTicket: FindingSearchTicket { .init(owner:store.viewOwner,session:store.sessionOwner,draft:Data(searchDraft.utf8)) }
+    var searchTicket: FindingSearchTicket { .init(session:store.sessionOwner,draft:Data(searchDraft.utf8),enabled:controlsAvailable) }
     @discardableResult func commitSearch(_ ticket: FindingSearchTicket) -> Bool {
-        guard controlsAvailable, ticket.owner == store.viewOwner, ticket.session == store.sessionOwner, ticket.draft == Data(searchDraft.utf8) else { return false }
+        guard controlsAvailable, !Task.isCancelled, ticket.session == store.sessionOwner, ticket.draft == Data(searchDraft.utf8) else { return false }
         var query = store.filters; query.search = String(decoding:ticket.draft,as:UTF8.self)
         if query.search.utf8.elementsEqual(store.filters.search.utf8) { return true }; return configureFilters(query)
     }
     func selectDetail(id: String?,owner: UUID) async {
-        guard controlsAvailable, store.viewOwner == owner else { return }; await store.select(id:id,owner:owner)
+        guard controlsAvailable, store.viewOwner == owner else { return }; detailRevision = UUID(); await store.select(id:id,owner:owner)
     }
     func closeDetail(owner: UUID,revision: UUID) async {
-        guard controlsAvailable, store.viewOwner == owner else { return }; await selectDetail(id:nil,owner:owner)
+        guard controlsAvailable, store.viewOwner == owner, detailRevision == revision else { return }; await selectDetail(id:nil,owner:owner)
     }
     private(set) var dialog: FindingDialog?
     private(set) var dialogUncertain = false
@@ -132,7 +132,7 @@ struct FindingSearchTicket: Hashable {
         }
         guard life == lifecycle, dialog?.id == context.id, context.sessionOwner == store.sessionOwner else { return false }
         switch result {
-        case .confirmed: clearDialog(); reads.request(forceTree:true); return true
+        case .confirmed: clearDialog(); reads.request(forceTree:true,stats:true); return true
         case .unconfirmed: dialogUncertain = true; dialogFailure = store.mutationFailure
         case .invalidInput: dialogFailure = store.mutationFailure
         case .discarded: dialogUncertain = !store.unknownIDs.isEmpty
@@ -145,9 +145,9 @@ struct FindingSearchTicket: Hashable {
            case .edit(let row) = context.kind, let id = row.findingId {
             retainedEdit = FindingEditDraft(session:context.sessionOwner,findingID:id,name:nameDraft,vulnclass:classDraft,severity:severityDraft)
         }
-        lifecycle = UUID(); reads.stop(); clearDialog(); store.stop()
+        lifecycle = UUID(); detailRevision = UUID(); reads.stop(); clearDialog(); store.stop()
     }
-    func reset() { lifecycle = UUID(); reads.stop(); retainedEdit = nil; clearDialog(); searchDraft = ""; expandedAssets = []; store.reset() }
+    func reset() { lifecycle = UUID(); detailRevision = UUID(); reads.stop(); retainedEdit = nil; clearDialog(); searchDraft = ""; expandedAssets = []; store.reset() }
 
     private func canOpen(_ target: FindingRecord) -> Bool {
         guard !busy, dialog == nil, !Task.isCancelled, store.unknownIDs.isEmpty, target.canMutate else { return false }

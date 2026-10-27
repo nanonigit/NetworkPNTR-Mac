@@ -9,6 +9,7 @@ import Observation
     @ObservationIgnored private var active = false
     @ObservationIgnored private var forceTree = false
     @ObservationIgnored private var pending = false
+    @ObservationIgnored private var pendingStats = false
     @ObservationIgnored private var task: Task<Void,Never>?
     @ObservationIgnored private var ticket = UUID()
     @ObservationIgnored private var watch: UUID?
@@ -26,12 +27,12 @@ import Observation
             await self.store.runView()
         }
     }
-    func request(forceTree: Bool = false) {
+    func request(forceTree: Bool = false,stats: Bool = false) {
         guard active else { return }
-        pending = true; self.forceTree = self.forceTree || forceTree; isPending = true; drain()
+        pending = true; self.forceTree = self.forceTree || forceTree; pendingStats = pendingStats || stats; isPending = true; drain()
     }
     func stop() {
-        active = false; ticket = UUID(); watch = nil; pending = false; forceTree = false
+        active = false; ticket = UUID(); watch = nil; pending = false; forceTree = false; pendingStats = false
         pollTicket = UUID(); pollTask?.cancel()
         task?.cancel(); task = nil; isPending = false
     }
@@ -51,8 +52,9 @@ import Observation
             }
             while self.active, self.ticket == owner, self.pending, !Task.isCancelled {
                 guard self.available else { self.observeGate(); return }
-                let force = self.forceTree; self.forceTree = false; self.pending = false
+                let force = self.forceTree, stats = self.pendingStats; self.forceTree = false; self.pendingStats = false; self.pending = false
                 await self.store.refreshView(forceTree:force)
+                if stats, self.active, self.ticket == owner, !Task.isCancelled { await self.store.refreshStats() }
             }
         }
     }

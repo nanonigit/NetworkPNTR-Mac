@@ -45,7 +45,7 @@
       "title": "Findings",
       "browserPath": "/function/findings",
       "icon": "Bug",
-      "nativeStatus": "pending",
+      "nativeStatus": "in_progress",
       "phase": 3,
       "acceptance": [
         "Compare equivalent fixture data and visible controls",

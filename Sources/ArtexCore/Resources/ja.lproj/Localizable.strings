@@ -536,6 +536,8 @@
 	<string>選択を解除</string>
 	<key>finding.ui.close</key>
 	<string>詳細を閉じる</string>
+	<key>finding.ui.collapse</key>
+	<string>折りたたむ</string>
 	<key>finding.ui.confirm</key>
 	<string>確認</string>
 	<key>finding.ui.delete</key>
@@ -550,6 +552,8 @@
 	<string>条件に一致する検出結果はありません</string>
 	<key>finding.ui.evidence</key>
 	<string>根拠</string>
+	<key>finding.ui.expand</key>
+	<string>展開</string>
 	<key>finding.ui.flat</key>
 	<string>一覧</string>
 	<key>finding.ui.grouped</key>

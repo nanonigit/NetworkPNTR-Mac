@@ -8,6 +8,13 @@ struct FindingAssetRow: Identifiable {
     var id: Data { node.identity }
 }
 enum FindingPresentation {
+    static func time(_ value: String,language: AppLanguage) -> String {
+        let parser = ISO8601DateFormatter(); parser.formatOptions = [.withInternetDateTime,.withFractionalSeconds]
+        let fractional = parser.date(from:value); parser.formatOptions = [.withInternetDateTime]
+        guard let date = fractional ?? parser.date(from:value) else { return value }
+        let formatter = DateFormatter(); formatter.locale = language.locale
+        formatter.setLocalizedDateFormatFromTemplate("MMddjjmm"); return formatter.string(from:date)
+    }
     static func pages(total: Int64,size: Int) -> Int64 { total > 0 && size > 0 ? (total-1)/Int64(size)+1 : 1 }
     static func status(_ value: String,language: AppLanguage) -> String {
         guard FindingStatus(rawValue:value) != nil, let key = AppStringKey(rawValue:"finding.ui.status."+value) else { return value }

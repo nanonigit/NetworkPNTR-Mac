@@ -22,7 +22,7 @@ import SwiftUI
                                     guard model.store.viewOwner == owner, model.controlsAvailable else { return }
                                     if !model.expandedAssets.insert(row.id).inserted { model.expandedAssets.remove(row.id) }
                                 } label: { Image(systemName:model.expandedAssets.contains(row.id) ? "chevron.down" : "chevron.right") }
-                                    .buttonStyle(.plain).accessibilityLabel(row.node.label).accessibilityValue(String(model.expandedAssets.contains(row.id)))
+                                    .buttonStyle(.plain).accessibilityLabel(s(model.expandedAssets.contains(row.id) ? .findingUICollapse : .findingUIExpand)+" · "+row.node.label)
                             }
                             Button { _ = model.asset(row.node.key,owner:owner) } label: {
                                 HStack { Text(row.node.label).lineLimit(2); Spacer(); Text(String(row.node.total)).monospacedDigit().foregroundStyle(.secondary) }
@@ -53,14 +53,22 @@ import SwiftUI
                         })) {
                             if let state = model.store.groupPages[key] {
                                 FindingReadNotice(state:state.read)
-                                FindingTable(model:model,rows:state.read.value?.items ?? [],onTask:onTask).frame(height: min(500,CGFloat(max(1,state.read.value?.items.count ?? 0))*48+40))
+                                FindingTable(model:model,rows:state.read.value?.items ?? [],loaded:state.read.value != nil,loading:state.read.isLoading,onTask:onTask).frame(height: min(500,CGFloat(max(1,state.read.value?.items.count ?? 0))*48+40))
                                 FindingPager(model:model,page:state.page,size:state.size,total:state.read.value?.total ?? group.count,group:key)
                             }
                         } label: {
-                            HStack {
-                                Text(title(group)).font(.headline).lineLimit(2)
-                                if !group.taskStatus.isEmpty { Text(DashboardLabels.text(group.taskStatus,domain:.task,language:language)).font(.caption).foregroundStyle(.secondary) }
-                                Spacer(); Text(String(group.count)).monospacedDigit()
+                            VStack(alignment:.leading,spacing:4) {
+                                HStack {
+                                    if let id = group.taskId {
+                                        Button(title(group)) { if model.controlsAvailable, model.store.viewOwner == owner { onTask(id) } }.buttonStyle(.plain).help(AppStrings.formatted(.findingUIOpenTask,language:language,values:["id":id]))
+                                    } else { Text(title(group)) }
+                                    if !group.taskStatus.isEmpty { Text(DashboardLabels.text(group.taskStatus,domain:.task,language:language)).font(.caption).foregroundStyle(.secondary) }
+                                    Spacer(); Text(String(group.count)).monospacedDigit()
+                                }.font(.headline).lineLimit(2)
+                                HStack {
+                                    severity("critical",group.critical); severity("high",group.high); severity("medium",group.medium); severity("low",group.low)
+                                    Spacer(); Text(FindingPresentation.time(group.lastFoundAt,language:language))
+                                }.font(.caption).foregroundStyle(.secondary)
                             }
                         }
                     }
@@ -73,5 +81,8 @@ import SwiftUI
     private func title(_ group: FindingGroup) -> String {
         guard let id = group.taskId else { return AppStrings.text(.findingUIOrphan,language:language) }
         if !group.taskName.isEmpty { return group.taskName }; if !group.taskDescription.isEmpty { return group.taskDescription }; return "#"+id
+    }
+    private func severity(_ value: String,_ count: Int64) -> some View {
+        Text(DashboardLabels.text(value,domain:.severity,language:language)+" "+String(count)).monospacedDigit()
     }
 }

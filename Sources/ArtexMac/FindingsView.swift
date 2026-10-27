@@ -24,7 +24,7 @@ import SwiftUI
             HStack {
                 Text(s(.findingUITitle)).font(.largeTitle.bold()); Spacer()
                 if model.store.isRefreshingView || model.reads.isPending { ProgressView().controlSize(.small) }
-                Button(s(.findingUIRefresh),systemImage:"arrow.clockwise") { model.reads.request(forceTree:true) }
+                Button(s(.findingUIRefresh),systemImage:"arrow.clockwise") { model.reads.request(forceTree:true,stats:true) }
                     .keyboardShortcut("r",modifiers:.command).disabled(!model.controlsAvailable)
             }
             Picker(s(.findingUITitle),selection:Binding(get:{model.store.view.rawValue},set:{if model.store.viewOwner == owner, let view = FindingView(rawValue:$0) { _ = model.setView(view) }})) {
@@ -58,7 +58,7 @@ import SwiftUI
     private var flat: some View {
         VStack(alignment:.leading,spacing:8) {
             FindingReadNotice(state:model.store.flat.read)
-            FindingTable(model:model,rows:model.store.flat.read.value?.items ?? [],onTask:onTask)
+            FindingTable(model:model,rows:model.store.flat.read.value?.items ?? [],loaded:model.store.flat.read.value != nil,loading:model.store.flat.read.isLoading,onTask:onTask)
             FindingPager(model:model,page:model.store.flat.page,size:model.store.flat.size,total:model.store.flat.read.value?.total ?? 0,group:nil)
         }.frame(minWidth:420)
     }

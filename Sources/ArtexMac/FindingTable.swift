@@ -4,6 +4,8 @@ import SwiftUI
 @MainActor struct FindingTable: View {
     let model: FindingScreenModel
     let rows: [FindingRecord]
+    let loaded: Bool
+    let loading: Bool
     let onTask: (String) -> Void
     @Environment(\.locale) private var locale
     private var language: AppLanguage { .preferred(in:[locale.identifier]) }
@@ -28,16 +30,16 @@ import SwiftUI
                 if let id = row.taskId { Button("#"+id) { if model.store.viewOwner == owner, model.controlsAvailable { onTask(id) } }.help(AppStrings.formatted(.findingUIOpenTask,language:language,values:["id":id])) }
                 else { Text(s(.findingUIOrphan)).foregroundStyle(.secondary) }
             }.width(min:70,ideal:90)
-            TableColumn(s(.findingUITime)) { row in Text(row.ts).font(.caption).textSelection(.enabled) }.width(min:100,ideal:150)
+            TableColumn(s(.findingUITime)) { row in Text(FindingPresentation.time(row.ts,language:language)).font(.caption).textSelection(.enabled) }.width(min:100,ideal:150)
             TableColumn(s(.findingUIActions)) { row in
                 Menu(s(.findingUIActions)) {
                     Button(s(.findingUIEdit)) { if model.store.viewOwner == owner { _ = model.beginEdit(row) } }
-                    Menu(s(.findingUIStatus)) { ForEach(FindingStatus.allCases,id:\.rawValue) { status in Button(FindingPresentation.status(status.rawValue,language:language)) { if model.store.viewOwner == owner { _ = model.beginStatus(row,status:status) } } } }
+                    Menu(s(.findingUIStatus)) { ForEach(FindingStatus.allCases,id:\.rawValue) { status in Button(FindingPresentation.status(status.rawValue,language:language)) { if model.store.viewOwner == owner { _ = model.beginStatus(row,status:status) } }.disabled(status.rawValue == row.status) } }
                     Button(s(.findingUIDelete),role:.destructive) { if model.store.viewOwner == owner { _ = model.beginDelete(row) } }
                 }.disabled(!model.controlsAvailable || !row.canMutate || !model.store.unknownIDs.isEmpty)
             }.width(90)
         }
-        .overlay { if rows.isEmpty { Text(s(.findingUIEmpty)).foregroundStyle(.secondary).padding() } }
+        .overlay { if rows.isEmpty, loaded, !loading { Text(s(.findingUIEmpty)).foregroundStyle(.secondary).padding() } }
     }
 }
 

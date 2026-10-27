@@ -39,7 +39,8 @@ import SwiftUI
                 }
             }
         }.disabled(!model.controlsAvailable)
-        .task(id:Data(model.searchDraft.utf8)) {
+        .task(id:ticket) {
+            guard ticket.enabled else { return }
             do { try await Task.sleep(for:.milliseconds(300)); try Task.checkCancellation(); _ = model.commitSearch(ticket) } catch { }
         }
     }

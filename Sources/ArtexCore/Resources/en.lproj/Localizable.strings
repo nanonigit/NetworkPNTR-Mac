@@ -536,6 +536,8 @@
 	<string>Clear selection</string>
 	<key>finding.ui.close</key>
 	<string>Close details</string>
+	<key>finding.ui.collapse</key>
+	<string>Collapse</string>
 	<key>finding.ui.confirm</key>
 	<string>Confirm</string>
 	<key>finding.ui.delete</key>
@@ -550,6 +552,8 @@
 	<string>No findings match these filters</string>
 	<key>finding.ui.evidence</key>
 	<string>Evidence</string>
+	<key>finding.ui.expand</key>
+	<string>Expand</string>
 	<key>finding.ui.flat</key>
 	<string>All findings</string>
 	<key>finding.ui.grouped</key>

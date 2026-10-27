@@ -8,10 +8,17 @@ import SwiftUI
     var paths: [String] = []
     var holdTree = false
     var treeReply: CheckedContinuation<BackendHTTPResponse,Error>?
+    var holdWrite = false
+    var readStatus = 200
+    var writeReply: CheckedContinuation<BackendHTTPResponse,Error>?
     let row = #"{"id":"7","finding_id":"7","name":"\ufeffe\u0301 中文 한국어","vulnclass":"CWE-79","severity":"high","status":"pending","summary":"literal","evidence":"e","report":"report","task_id":"11","ts":"raw"}"#
     func send(method: String,path: String,body: Data?,bearer: String?) async throws -> BackendHTTPResponse {
         paths.append(path)
-        if method != "GET" { return .init(status:503,body:Data()) }
+        if method != "GET" {
+            if holdWrite { return try await withCheckedThrowingContinuation { writeReply = $0 } }
+            return .init(status:503,body:Data())
+        }
+        if readStatus != 200 { return .init(status:readStatus,body:Data()) }
         if path.contains("asset-tree") {
             if holdTree { return try await withCheckedThrowingContinuation { treeReply = $0 } }
             return tree
@@ -61,6 +68,10 @@ final class FindingsUITests: XCTestCase {
         XCTAssertEqual(rows.count,2); XCTAssertNotEqual(rows[0].id,rows[1].id); XCTAssertEqual(rows.map(\.depth),[0,1])
         XCTAssertEqual(FindingPresentation.pages(total:Int64.max,size:100),92233720368547759)
         XCTAssertEqual(FindingPresentation.status("literal 中文 한국어",language:.english),"literal 中文 한국어")
+        XCTAssertEqual(FindingPresentation.time("literal 中文 한국어",language:.japanese),"literal 中文 한국어")
+        let time = "2026-10-27T01:23:00.000Z"
+        XCTAssertNotEqual(FindingPresentation.time(time,language:.english),time)
+        XCTAssertNotEqual(FindingPresentation.time(time,language:.japanese),time)
     }
     @MainActor func testLatestAssetScopeAndPageReadWaitsForHeldTreeWithoutCancellingSnapshot() async throws {
         let (api,screen) = await make(); XCTAssertTrue(screen.setView(.asset)); api.holdTree = true
@@ -166,7 +177,79 @@ final class FindingsUITests: XCTestCase {
         let (_,screen) = await make(); let row = try XCTUnwrap(screen.store.flat.read.value?.items.first)
         XCTAssertTrue(screen.beginEdit(row)); let id = try XCTUnwrap(screen.dialog).id
         let draft = FindingBindings.draft(screen,id:id,key:\.nameDraft)
+        let severity = FindingBindings.severity(screen,id:id)
         screen.close(dialogID:id); XCTAssertTrue(screen.beginEdit(row)); screen.nameDraft = "new private draft"
         XCTAssertEqual(draft.wrappedValue,""); draft.wrappedValue = "stale"; XCTAssertEqual(screen.nameDraft,"new private draft")
+        XCTAssertEqual(severity.wrappedValue,"keep"); severity.wrappedValue = "critical"; XCTAssertEqual(screen.severityDraft,.high)
+    }
+    @MainActor func testPendingSearchResumesAfterDialogGateAndUsesCurrentFilters() async throws {
+        let (_,screen) = await make(); let row = try XCTUnwrap(screen.store.flat.read.value?.items.first)
+        screen.searchDraft = "pending literal"; let intent = screen.searchTicket
+        XCTAssertTrue(screen.beginEdit(row)); XCTAssertFalse(screen.searchTicket.enabled); XCTAssertFalse(screen.commitSearch(intent))
+        screen.close(dialogID:try XCTUnwrap(screen.dialog).id); XCTAssertTrue(screen.searchTicket.enabled)
+        XCTAssertTrue(screen.commitSearch(intent)); XCTAssertEqual(screen.store.filters.search,"pending literal")
+    }
+    @MainActor func testLatestReadAndStatsWaitForHeldWriteAndReactivationWithoutClearingUnknown() async throws {
+        let (api,screen) = await make(); let row = try XCTUnwrap(screen.store.flat.read.value?.items.first)
+        api.holdWrite = true
+        let work = Task { await screen.store.delete(row,owner:screen.store.viewOwner) }
+        try await reached { api.writeReply != nil }
+        screen.reads.activate(); screen.reads.request(stats:true)
+        XCTAssertTrue(screen.reads.isPending); let before = api.paths.count
+        for _ in 0..<10 { await Task.yield() }; XCTAssertEqual(api.paths.count,before)
+        screen.stop(); screen.reads.activate(); screen.reads.request(stats:true)
+        try XCTUnwrap(api.writeReply).resume(returning:.init(status:503,body:Data()))
+        _ = await work.value
+        try await reached { !screen.reads.isPending && screen.store.stats.value != nil }
+        XCTAssertEqual(screen.store.unknownIDs,["7"]); XCTAssertTrue(api.paths.contains{$0.contains("/stats")})
+        screen.stop()
+    }
+    func testIterativeAssetPresentationHandlesDeepValidatedForest() throws {
+        let nodes = (0..<4096).map { i -> [String:Any] in
+            var node: [String:Any] = ["key":"n:\(i)","kind":"company","label":"literal","self":0,"total":1,"critical":0,"high":1,"medium":0,"low":0,"last_found_at":"raw"]
+            if i > 0 { node["parent"] = "n:\(i-1)" }; return node
+        }
+        let tree = try BackendJSONCoding.decode(FindingAssetTree.self,from:JSONSerialization.data(withJSONObject:["nodes":nodes,"finding_total":1,"truncated":false]))
+        let rows = FindingPresentation.assetRows(tree,expanded:Set(nodes.compactMap{($0["key"] as? String).map{Data($0.utf8)}}))
+        XCTAssertEqual(rows.count,4096); XCTAssertEqual(rows.last?.depth,4095)
+    }
+    @MainActor func testDetailReadOnlyProvenanceAndFailureNoticesHostWithoutExtraRequests() async throws {
+        let (api,screen) = await make()
+        for variant in 0..<3 {
+            var object = try XCTUnwrap(JSONSerialization.jsonObject(with:Data(api.row.utf8)) as? [String:Any])
+            object["report_stale"] = true
+            if variant == 1 { object["inherited"] = true; object["source_task_id"] = "11" }
+            if variant == 2 { object["finding_id"] = NSNull(); object["status"] = "literal 中文 한국어" }
+            let row = try BackendJSONCoding.decode(FindingRecord.self,from:JSONSerialization.data(withJSONObject:object))
+            await screen.store.detail.refresh { row }
+            let before = api.paths.count
+            for language in AppLanguage.allCases {
+                let host = NSHostingView(rootView:FindingDetailPanel(model:screen,onTask:{_ in}).environment(\.locale,language.locale))
+                host.frame = NSRect(x:0,y:0,width:360,height:800); host.layoutSubtreeIfNeeded(); XCTAssertNil(host.window)
+            }
+            XCTAssertEqual(api.paths.count,before); if variant > 0 { XCTAssertFalse(screen.beginEdit(row)) }
+        }
+        api.readStatus = 503; await screen.store.refreshView(); await screen.store.refreshStats()
+        XCTAssertTrue(screen.store.flat.read.isStale); XCTAssertNotNil(screen.store.flat.read.failure)
+        let before = api.paths.count
+        let host = NSHostingView(rootView:FindingsContent(model:screen,onTask:{_ in}).environment(\.locale,AppLanguage.japanese.locale))
+        host.frame = NSRect(x:0,y:0,width:1200,height:800); host.layoutSubtreeIfNeeded(); XCTAssertEqual(api.paths.count,before)
+        screen.stop()
+    }
+    @MainActor func testFilterAndPagerBindingsPreserveRawValuesAndRejectStaleOrDialogOwners() async throws {
+        let (api,screen) = await make(); let owner = screen.store.viewOwner
+        let filter = FindingBindings.filter(screen,owner:owner,get:{$0.vulnclass},set:{$0.vulnclass = $1})
+        let literal = "literal e\u{301} 中文 한국어"; filter.wrappedValue = literal
+        XCTAssertEqual(Array(screen.store.filters.vulnclass.utf8),Array(literal.utf8)); filter.wrappedValue = "stale"; XCTAssertEqual(screen.store.filters.vulnclass,literal)
+        XCTAssertFalse(screen.page(page:2,size:20,owner:owner)); XCTAssertTrue(screen.page(page:2,size:50,owner:screen.store.viewOwner))
+        XCTAssertEqual(screen.store.flat.page,2)
+        screen.expandedAssets = [Data("literal".utf8)]; XCTAssertTrue(screen.configureFilters(screen.store.filters)); XCTAssertFalse(screen.expandedAssets.isEmpty)
+        XCTAssertTrue(screen.setView(.grouped)); await screen.store.refreshView()
+        await screen.store.setGroupExpanded("11",expanded:true,owner:screen.store.viewOwner)
+        XCTAssertTrue(screen.page(page:2,size:20,owner:screen.store.viewOwner,group:"11")); XCTAssertEqual(screen.store.groupPages["11"]?.page,2)
+        let count = api.paths.count; screen.reads.request(); XCTAssertEqual(api.paths.count,count)
+        XCTAssertTrue(screen.setView(.flat)); await screen.store.refreshView()
+        let row = try XCTUnwrap(screen.store.flat.read.value?.items.first); XCTAssertTrue(screen.beginEdit(row))
+        XCTAssertFalse(screen.page(page:3,size:20,owner:screen.store.viewOwner)); screen.stop()
     }
 }
