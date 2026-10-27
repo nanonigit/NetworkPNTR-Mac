@@ -15,17 +15,19 @@ import XCTest
 }
 @MainActor private final class FindingExerciseCombinedWire: BackendJSONTransport {
     let initial: FindingReadExerciseWire
+    let boundary: BoundaryWire
     let mutation: FindingMutationExerciseWire
     let final: FindingReadExerciseWire
     var calls = 0
     init() throws {
-        initial = try FindingReadExerciseWire(); mutation = try FindingMutationExerciseWire()
+        initial = try FindingReadExerciseWire(); boundary = try BoundaryWire(); mutation = try FindingMutationExerciseWire()
         final = try FindingReadExerciseWire(persisted:true)
     }
     func send(method: String,path: String,body: Data?,bearer: String?) async throws -> BackendHTTPResponse {
         calls += 1
         if calls <= 100 { return try await initial.send(method:method,path:path,body:body,bearer:bearer) }
-        if calls <= 114 { return try await mutation.send(method:method,path:path,body:body,bearer:bearer) }
+        if calls <= 107 { return try await boundary.send(method:method,path:path,body:body,bearer:bearer) }
+        if calls <= 121 { return try await mutation.send(method:method,path:path,body:body,bearer:bearer) }
         XCTAssertEqual(mutation.rows.count,31)
         return try await final.send(method:method,path:path,body:body,bearer:bearer)
     }
@@ -38,10 +40,12 @@ final class FindingExerciseTests: XCTestCase {
         let wire = try FindingExerciseCombinedWire(), audit = FindingExerciseAuditor()
         let before = FindingExercise(client:wire,fixture:audit)
         let checkpoint = try await before.runBeforeRestart()
-        XCTAssertEqual(wire.calls,116); XCTAssertEqual(checkpoint.beforeRequestCount,116); XCTAssertEqual(audit.calls,3)
+        XCTAssertEqual(wire.calls,123); XCTAssertEqual(checkpoint.beforeRequestCount,123); XCTAssertEqual(audit.calls,4)
+        XCTAssertEqual(checkpoint.schemaVersion,2); XCTAssertEqual(checkpoint.boundary.requestCount,7)
+        XCTAssertEqual(checkpoint.boundary.diagnosticFieldBytes,8192)
         XCTAssertEqual(checkpoint.initialChecks.count,100); XCTAssertEqual(checkpoint.mutation.requestCount,14)
         do { _ = try await before.runBeforeRestart(); XCTFail("Exercise replay accepted") } catch { }
-        XCTAssertEqual(wire.calls,116)
+        XCTAssertEqual(wire.calls,123)
         let restart = try FindingReadExerciseWire(persisted:true), afterAudit = FindingExerciseAuditor()
         let after = FindingExercise(client:restart,fixture:afterAudit)
         let report = try await after.runAfterRestart(checkpoint)
@@ -54,10 +58,11 @@ final class FindingExerciseTests: XCTestCase {
         let checkpoint = try await checkpoint()
         let encoded = try JSONEncoder().encode(checkpoint)
         let object = try XCTUnwrap(JSONSerialization.jsonObject(with:encoded) as? [String:Any])
-        for field in ["schemaVersion","beforeRequestCount","initialChecks","mutation","terminalChecks"] {
+        for field in ["schemaVersion","beforeRequestCount","initialChecks","mutation","boundary","terminalChecks"] {
             var changed = object
             switch field {
             case "initialChecks","terminalChecks": changed[field] = ["forged"]
+            case "boundary": changed[field] = ["sharedChecks":["forged"],"localChecks":[],"diagnosticFieldBytes":8192,"requestCount":7] as [String:Any]
             case "mutation": changed[field] = ["checks":["forged"],"partialHTTPStatus":500,"requestCount":14] as [String:Any]
             default: changed[field] = 999
             }
@@ -67,11 +72,20 @@ final class FindingExerciseTests: XCTestCase {
             XCTAssertTrue(wire.calls.isEmpty,field); XCTAssertEqual(audit.calls,0,field)
         }
     }
+    @MainActor func testLegacyCheckpointVersionIsRejectedBeforeAuditAndNetwork() async throws {
+        let value = try await checkpoint()
+        let data = try JSONEncoder().encode(value)
+        var raw = try XCTUnwrap(JSONSerialization.jsonObject(with:data) as? [String:Any]); raw["schemaVersion"] = 1
+        let legacy = try JSONDecoder().decode(FindingExerciseCheckpoint.self,from:JSONSerialization.data(withJSONObject:raw))
+        let wire = try FindingReadExerciseWire(persisted:true), audit = FindingExerciseAuditor()
+        do { _ = try await FindingExercise(client:wire,fixture:audit).runAfterRestart(legacy); XCTFail("Legacy checkpoint accepted") } catch { }
+        XCTAssertTrue(wire.calls.isEmpty); XCTAssertEqual(audit.calls,0)
+    }
     @MainActor func testFailedAuditStopsBeforeAnyLaterOperation() async throws {
-        for index in [1,2,3] {
+        for index in [1,2,3,4] {
             let wire = try FindingExerciseCombinedWire(), audit = FindingExerciseAuditor(); audit.failAt = index
             do { _ = try await FindingExercise(client:wire,fixture:audit).runBeforeRestart(); XCTFail("Audit failure accepted") } catch { }
-            XCTAssertEqual(wire.calls,index == 1 ? 0 : (index == 2 ? 100 : 116))
+            XCTAssertEqual(wire.calls,[0,100,107,123][index-1])
             XCTAssertEqual(audit.calls,index)
         }
     }

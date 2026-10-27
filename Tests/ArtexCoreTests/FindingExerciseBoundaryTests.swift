@@ -1,7 +1,7 @@
 import XCTest
 @testable import ArtexCore
 
-@MainActor private final class BoundaryWire: BackendJSONTransport {
+@MainActor final class BoundaryWire: BackendJSONTransport {
     var row: [String:Any]
     var calls = 0
     var fields: [Set<String>] = []
