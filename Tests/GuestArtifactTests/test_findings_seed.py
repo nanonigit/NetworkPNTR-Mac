@@ -98,5 +98,10 @@ class FindingsSeedTests(unittest.TestCase):
         self.assertNotEqual(result.returncode, 0); self.assertEqual(result.stdout, b'')
         self.assertNotIn(b'b' * 64, result.stderr); self.assertNotIn(b'postgres://', result.stderr)
 
+    def test_sequence_updates_are_transactional_when_later_postconditions_fail(self):
+        self.assertNotIn('setval(', fixture.SQL)
+        for table, next_id in [('tasks', 8112), ('explorations', 8112), ('companies', 8201), ('assets', 8204), ('findings', 9134), ('exploration_nodes', 15191)]:
+            self.assertIn(f'ALTER SEQUENCE {table}_id_seq RESTART WITH {next_id};', fixture.SQL)
+
 
 if __name__ == '__main__': unittest.main()
