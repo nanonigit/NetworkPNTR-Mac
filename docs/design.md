@@ -120,3 +120,6 @@ Use small typed fixture aggregate verifiers and checksum-bound initial/final JSO
 
 
 Reference math derives expectations from fixed SQL seed values independently of Swift and its aggregate JSON. A finite Findings-only client uses128calls/90sec pre/post checks, no mutation retry. Compare100initial reads, shared edit/status/partialHTTP500/readback/delete checks, and100persisted reads. Keep native-only cache/selection/uncertainty acknowledgments outside the shared projection. Bind completed VM logs/boots and reference lifecycle plus identical backend/seed/audit digests before accepting comparison.
+
+
+Use a separate seven-request boundary stage: GET9101, name-only, class-only, severity-only, empty-name,8192-byte class, restore three original fields. Verify every response against full independent expected row, so unrelated fields cannot change. Ordinary mutation stage stays14 requests; outer initial100+boundary7+mutation14+postaggregates2=123 within128/90sec. Add post-boundary audit, bump checkpoint to schema2 with typed boundary receipt; after-restart remains100. Independent reference compares six remote boundary checks; native local-validation receipts stay separate. Keep previous schema1 evidence historical.

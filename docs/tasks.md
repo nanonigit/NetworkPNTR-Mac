@@ -277,3 +277,6 @@ Reference order: missing pure client/verifier RED -> independent guards/filters/
 
 
 F4b actual checkpoint: native73ac82a completed3same-disk boots with116/100Findings requests; independent reference20b915b completed3backend starts with matching shared projection and source/binary/seed/audit binding. First reference network preflight failure is retained, corrected run exported state/logs and cleaned only owned resources. Full616Swift (615pass/1existingAXskip),120Python. Individual name/class/severity requests and extra boundary/normalization cases remain F4b work; actual UI after unlock, F5/all21/cloud/kernel/clean-Mac/release remain open. See findings-runtime-verification.md.
+
+
+Boundary order: missing stage RED -> seven-request typed stage and three no-dispatch validation checks GREEN -> schema2 outer/probe/reference/comparator integration -> independent review/full regressions -> actual fresh3boot VM +3start isolated reference -> source-bound compare/cleanup evidence/build/exact-head CI. Do not overwrite schema1 actual reports or promote the kernel.

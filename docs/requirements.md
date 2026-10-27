@@ -141,3 +141,6 @@ F4b expanded reads: verify independent whole-table statistics, both group sorts/
 
 
 F4b independent reference: use separate Python API assertions against the frozen backend in a fresh network-none nonroot container, with3backend starts/persisted auth and no task launches. Compare shared API results and source/binary/fixture hashes; do not call native uncertainty/cache checks browser UI parity.
+
+
+F4b boundary follow-up: real single-field name/class/severity PATCH, JS→Go whitespace normalization preserving interior FEFF/NFD/CJK, empty-name acceptance and8192UTF8-byte diagnostic field-cap acceptance. Reject empty patch, oversized64KiB body and invalid page locally with zero dispatch. Restore original9101 before the existing compound-edit/triage/deletion stage; no foreign IDs, agents or internet. Individual validation controls are native safeguards, not browser UI parity.

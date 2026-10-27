@@ -117,3 +117,6 @@ F4b読取拡張: 全体統計・両ソート/ページのグループ・8101展�
 
 
 F4b独立reference: 固定backendを空のnetwork-none/nonrootコンテナで3回起動し、Pythonで独立したAPI照合と認証保持を検証します。タスクは起動せず、共通APIとソース/バイナリ/データhashを比較。ネイティブ独自の結果不明/キャッシュ検査をブラウザUIの同等性にはしません。
+
+
+F4b境界追試: name/class/severityの実単独PATCH、内部FEFF/NFD/CJKを保持したJS→Go空白正規化、空名受入、診断用8192UTF8 byte上限の受入。空PATCH・64KiB超本文・不正ページは転送0で拒否。既存の複合編集/状態/削除前に9101を元へ戻し、外部ID/agent/Internetは使いません。nativeのローカル検査をbrowser UI同等性とはしません。
