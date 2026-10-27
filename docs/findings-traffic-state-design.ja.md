@@ -2,6 +2,8 @@
 
 windowごとの一覧・選択binding詳細・明示した本文1ページは、別finding/task/binding/side/offset/sessionの応答を採用しない。新鮮な一覧を捕捉して書込1件を行い、安全な日英エラー・生データ・バイトoffsetを保持、自動再送しない。サービス契約だけではこの段階を満たさない。
 
+書込開始時に一覧の現行取得とは競合させない。実行中の詳細/本文読取は世代を無効化して古い適用を拒否する。準備中のticketと取消確認後のtransport引渡しを分け、後者だけを不明状態の対象にする。
+
 FindingReadStateの世代と、selection owner/session/activityを持つFindingTrafficStoreを使う。finding変更で全取得値、binding変更で詳細/本文、side/offset変更で本文を消す。同じqueryの取得失敗では最終成功値を古い値として保持する。一覧成功時だけ存在しない選択bindingを除去し、失敗時には残す。本文は詳細取得後に読み、不変snapshotのside別長さとtotalを照合する。ページ操作は明示し、自動読取ループを作らない。
 
 送信前に同期検証し、不正入力は通信ゼロ・不明状態なし。active/現owner/新鮮一覧/読書込の非競合/未解決の不明結果なしを要求し、handoff前に読取を無効化する。成功応答を確定一覧として受け取り、その後の再取得失敗でlastConfirmationを失わない。binding所属を照合し詳細/本文を古い状態にする。handoff後の409/取消/不正成功を含む失敗は対象IDと不明回revisionを保持し、読取だけで解除しない。書込終了後に現owner・選択対象・同じrevisionで明示確認できる。browserの失敗後reloadだけより保守的だが、APIは変更しない。

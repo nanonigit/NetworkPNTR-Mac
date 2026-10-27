@@ -2,6 +2,8 @@
 
 証跡状態の順序: 未実装RED→応答順序/保留を制御した読書込試験→一覧/詳細/本文の所有権と不明/確認/停止/reset GREEN→レビュー/全体/coverage/署名build/修正HEAD CI。空でない実証跡とUIは別途未完了。
 
+状態チェックポイント: 未実装REDdedfcb2→handoff回帰RED21439be（11件/5アサーション失敗）→GREENee62d39。重点21、全Swift641件（640成功/既存AX1件保留）、Python123、状態161/163行・共通読取50/50・サービス93/93、署名build/厳密署名/翻訳/構成照合成功。findings-traffic-state-verification.ja.md参照。次の明示追跡は既存FindingStore等の準備/handoff境界をObservationで再現監査すること。実証跡・ネイティブ操作・F5/製品全体は未完了。
+
 F5b順序: 固定版の変更/transaction/読戻し調査→書込API未実装RED→4コマンドGREEN→所有binding/本文/version/キャンセル/status→独立レビュー/全体試験。その後に所有権付き状態と逆順応答/停止/reset/結果不明/明示確認/競合試験、実証跡とUI比較を行う。F5a CI40536321956は実際の終了状態を確認するまで未確定。
 
 F5aの2fdfc40に対するCI40536321956は成功。F5b書込能力は未実装RED10fdc5e→レビュー回帰REDb6cf82d→修正9549cae。重点10、全Swift630件（629成功/既存AX1件保留）、Python123件、サービス90/90行・モデル54/54行、署名build/厳密署名/翻訳/構成照合成功。UI前の状態所有権/結果不明/確認/停止/reset/詳細/本文、実証跡と残るF5/製品全体は未完了。findings-traffic-write-verification.ja.md参照。

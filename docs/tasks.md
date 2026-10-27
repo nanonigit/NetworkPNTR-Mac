@@ -297,3 +297,6 @@ F5a CI40536321956 exact2fdfc40 success. F5b write capability: missingRED10fdc5e 
 
 
 Traffic state order: missing store RED -> controlled reverse/held read and write fixtures -> owned summary/detail/body plus uncertainty/ack/stop/reset GREEN -> review/full regression/coverage/signed build/exact-head CI. F5 actual nonempty evidence and UI remain open.
+
+
+Traffic state checkpoint: missingREDdedfcb2 -> handoffRED21439be(11cases/5assertionfailures) -> GREENee62d39. Focused21, full641Swift(640pass/1existingAXskip),123Python, state161/163/sharedread50/50/service93/93 lines, signedbuild/strictsignature/localization/inventory pass. See findings-traffic-state-verification.md. Next explicit recurrence audit: reproduce prepare/handoff in existing FindingStore/other mutation stores with Observation before UI integration. Actual nonempty traffic, native controls, F5/full-product remain pending.
