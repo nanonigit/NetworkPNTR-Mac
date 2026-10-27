@@ -5,11 +5,22 @@ public enum FindingMutationOutcome: Sendable {
     case notStarted, invalidInput, unconfirmed, discarded
     case confirmed(FindingConfirmedMutation)
 }
-struct FindingMutationTicket {
+@MainActor final class FindingMutationTicket {
     let id = UUID()
     let session: UUID
     let activity: UUID
+    let owner: UUID
     let findingID: String
+    var handedOff = false
+    init(session: UUID,activity: UUID,owner: UUID,findingID: String) {
+        self.session = session; self.activity = activity; self.owner = owner; self.findingID = findingID
+    }
+    func begin(in store: FindingStore) throws {
+        try Task.checkCancellation()
+        guard session == store.sessionOwner, activity == store.activityOwner, owner == store.viewOwner,
+              store.mutationTicket?.id == id else { throw CancellationError() }
+        handedOff = true
+    }
 }
 
 extension FindingStore {
@@ -20,10 +31,14 @@ extension FindingStore {
             let normalized = try patch.normalized()
             guard try BackendJSONCoding.encode(normalized).count <= 64 * 1024 else { throw FindingInputError.bodyLimit }
         } catch { mutationFailure = AppErrorMessage(error); return .invalidInput }
-        return await perform(target,owner:owner) { [service] in .updated(try await service.update(target,patch:patch)) }
+        return await perform(target,owner:owner) { [service] ticket in
+            .updated(try await service.update(target,patch:patch,onDispatch:{try ticket.begin(in:self)}))
+        }
     }
     public func delete(_ target: FindingRecord,owner: UUID) async -> FindingMutationOutcome {
-        await perform(target,owner:owner) { [service] in .deleted(try await service.delete(target)) }
+        await perform(target,owner:owner) { [service] ticket in
+            .deleted(try await service.delete(target,onDispatch:{try ticket.begin(in:self)}))
+        }
     }
     @discardableResult public func acknowledgeUnknown(_ id: String,owner: UUID,revision: UUID) -> Bool {
         guard !isMutating, !Task.isCancelled, owner == sessionOwner, revision == unknownRevision, unknownIDs.contains(id) else { return false }
@@ -35,14 +50,14 @@ extension FindingStore {
         return available.contains{$0.canMutate && $0.findingId == id}
     }
     private func perform(_ target: FindingRecord,owner: UUID,
-                         action: @MainActor () async throws -> FindingConfirmedMutation) async -> FindingMutationOutcome {
+                         action: @MainActor (FindingMutationTicket) async throws -> FindingConfirmedMutation) async -> FindingMutationOutcome {
         guard canBegin(target,owner:owner), let id = target.findingId else { return .notStarted }
-        let ticket = FindingMutationTicket(session:sessionOwner,activity:activityOwner,findingID:id)
-        mutationTicket = ticket; isMutating = true; mutationFailure = nil; lastConfirmation = nil
+        let ticket = FindingMutationTicket(session:sessionOwner,activity:activityOwner,owner:owner,findingID:id)
+        mutationTicket = ticket; mutationFailure = nil; lastConfirmation = nil
         invalidateReads(includeStats:true,includeTree:true)
-        defer { if mutationTicket?.id == ticket.id { mutationTicket = nil; isMutating = false } }
+        defer { if mutationTicket?.id == ticket.id { mutationTicket = nil } }
         do {
-            let confirmation = try await action()
+            let confirmation = try await action(ticket)
             guard ticket.session == sessionOwner else { return .discarded }
             guard ticket.activity == activityOwner else { recordUnknown(ticket.findingID); return .discarded }
             // A service already checks post-dispatch cancellation; keep this handoff boundary explicit too.
@@ -50,6 +65,10 @@ extension FindingStore {
             apply(confirmation); lastConfirmation = confirmation; return .confirmed(confirmation)
         } catch {
             guard ticket.session == sessionOwner else { return .discarded }
+            guard ticket.handedOff else {
+                if error is CancellationError { return .notStarted }
+                mutationFailure = AppErrorMessage(error); return .invalidInput
+            }
             recordUnknown(ticket.findingID)
             guard ticket.activity == activityOwner else { return .discarded }
             mutationFailure = AppErrorMessage(error); return .unconfirmed

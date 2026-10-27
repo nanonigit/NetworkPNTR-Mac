@@ -1,5 +1,7 @@
 # 要件と完成ゴール
 
+既存FindingStoreの編集/削除も取消確認済みのtransport handoffを必要とする。部分PATCHの不明とresetでゲートを保持する仕様は変えない。findings-mutation-handoff-design.ja.md参照。
+
 F5b状態は一覧/詳細/本文ページと捕捉した書込の所有権を選択・停止/再開/resetをまたいで保持し、同じ不明回の明示確認まで再送を禁止する。後の読取は過去の保存を証明しない。findings-traffic-state-design.ja.md参照。通信への引渡し前の取消/停止は結果不明にしない。
 
 F5bは捕捉したowner/context/snapshotによる証跡追加/編集/削除/順序、versionと正確な本文、自動再送禁止を必要とする。保存後の読戻し失敗も結果不明として扱う。書込能力の後に状態の所有権/不明処理と実guest/画面検証が必要。

@@ -98,16 +98,22 @@ public struct FindingPatch: Encodable, Sendable {
         return row
     }
     public func update(_ target: FindingRecord,patch: FindingPatch) async throws -> FindingRecord {
+        try await update(target,patch:patch,onDispatch:{})
+    }
+    func update(_ target: FindingRecord,patch: FindingPatch,onDispatch: @MainActor () throws -> Void) async throws -> FindingRecord {
         let id = try mutationID(target), normalized = try patch.normalized()
         let body = try BackendJSONCoding.encode(normalized)
         guard body.count <= 64 * 1024 else { throw FindingInputError.bodyLimit }
-        let row = try await request(FindingRecord.self,method:"PATCH",path:base+"/"+id,body:body)
+        let row = try await request(FindingRecord.self,method:"PATCH",path:base+"/"+id,body:body,onDispatch:onDispatch)
         try verify(row,id:id)
         guard normalized.matches(row), !row.inherited else { throw BackendAPIError.invalidResponse }; return row
     }
     public func delete(_ target: FindingRecord) async throws -> FindingDeletion {
+        try await delete(target,onDispatch:{})
+    }
+    func delete(_ target: FindingRecord,onDispatch: @MainActor () throws -> Void) async throws -> FindingDeletion {
         let id = try mutationID(target)
-        let receipt = try await request(FindingDeletion.self,method:"DELETE",path:base+"/"+id)
+        let receipt = try await request(FindingDeletion.self,method:"DELETE",path:base+"/"+id,onDispatch:onDispatch)
         guard receipt.deleted, String(receipt.id) == id else { throw BackendAPIError.invalidResponse }; return receipt
     }
     private func mutationID(_ row: FindingRecord) throws -> String {
@@ -117,8 +123,10 @@ public struct FindingPatch: Encodable, Sendable {
     private func verify(_ row: FindingRecord,id: String) throws {
         guard row.id == id, row.findingId == id else { throw BackendAPIError.invalidResponse }
     }
-    private func request<T: Decodable>(_ type: T.Type,method: String = "GET",path: String,body: Data? = nil) async throws -> T {
+    private func request<T: Decodable>(_ type: T.Type,method: String = "GET",path: String,body: Data? = nil,
+                                       onDispatch: @MainActor () throws -> Void = {}) async throws -> T {
         try Task.checkCancellation()
+        try onDispatch()
         let response = try await client.send(method:method,path:path,body:body,bearer:nil)
         try Task.checkCancellation()
         guard (200..<300).contains(response.status) else { throw BackendAPIError.status(response.status) }

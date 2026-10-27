@@ -1,5 +1,7 @@
 # 設計
 
+既存Findingsのhandoff再発監査はfindings-mutation-handoff-design.ja.mdに従い、公開サービス署名とbackend契約を保つ。Task/LLMの監査は別途残す。
+
 証跡のネイティブ操作前にfindings-traffic-state-design.ja.mdの状態層を実装する。世代付き読取とwindowのselection/session/activity、同期検証した固定要求を使い、取消確認後のtransport引渡しだけを送信済みとして扱う。guest能力は変更しない。
 
 F5はfindings-advanced-design.ja.mdに従い、有限な証跡読取→変更/状態→lineage/retest/deepen/report→実bytes出力→UI/実guest/固定browser比較へ進む。F5aでは画面、host書込、通信許可、agent起動を変更しない。

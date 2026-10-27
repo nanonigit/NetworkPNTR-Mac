@@ -24,12 +24,12 @@ public struct FindingDetailSelection: Equatable, Sendable {
     public private(set) var viewOwner = UUID()
     public private(set) var sessionOwner = UUID()
     public private(set) var configurationFailure: AppErrorMessage?
-    public internal(set) var isMutating = false
+    public var isMutating: Bool { mutationTicket != nil }
     public internal(set) var unknownIDs = Set<String>()
     public internal(set) var unknownRevision = UUID()
     public internal(set) var lastConfirmation: FindingConfirmedMutation?
     public internal(set) var mutationFailure: AppErrorMessage?
-    @ObservationIgnored var mutationTicket: FindingMutationTicket?
+    var mutationTicket: FindingMutationTicket?
     public private(set) var isRefreshingView = false
     public internal(set) var isPolling = false
     public internal(set) var isStatsPolling = false

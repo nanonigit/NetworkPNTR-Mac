@@ -1,0 +1,7 @@
+# 再発監査: 通常Findings変更の準備段階
+
+MUSUBIでFindingStore→FindingMutationState→FindingServiceの取消確認を追跡し、busy時の同期Observationで証跡と同じ準備/handoffの隙間を確認した。編集/削除の取消/停止を再現、サービス/ticket境界を最小修正、既存挙動を検証し日英記録を残す。
+
+5 Whys: 送信ゼロでも不明→action失敗を全て送信後と仮定→サービスの送信前取消確認より先にbusy→明示handoffなし→既存試験は開始前取消と送信後だけでobservable準備時点が不足。停止もactivityを変えるだけでサービス呼出を防げなかった。特性要因は段階の命名・observable時点・所有権。RED3b0e6f3では変更12件中、両コマンドで10アサーション失敗。内部の取消確認済みcallbackとactor内ticketを追加し、session/activity/view owner/現IDをhandoff前に照合、busyをticketから算出する。
+
+公開update/delete署名、固定経路、本文上限、browser trim、実部分PATCHの不明、キャッシュ/由来、捕捉した確認は維持する。resetも要求終了まで古いゲートを保持する。以前の取消/停止はnotStarted、その他ローカル失敗はinvalidInput、handoff後は不明として自動再送しない。重点39件と独立レビューが成功。この再発修正で実guest/API書込は実行せず、以前の実測記録を新しい証明へ読み替えない。TaskStore/外部taskとLLMStoreの監査は別途必要である。

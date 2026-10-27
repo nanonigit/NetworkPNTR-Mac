@@ -1,5 +1,7 @@
 # フェーズとテストの合格条件
 
+再発監査順序: 通常FindingStore編集/削除のObservation RED→内部handoff/ticket由来busy GREEN→既存変更/読取/UI/probe回帰・レビュー→全体/CI。その後にTaskStore/LLM監査と証跡UIへ進み、製品全体の完了とはしない。
+
 証跡状態の順序: 未実装RED→応答順序/保留を制御した読書込試験→一覧/詳細/本文の所有権と不明/確認/停止/reset GREEN→レビュー/全体/coverage/署名build/修正HEAD CI。空でない実証跡とUIは別途未完了。
 
 状態チェックポイント: 未実装REDdedfcb2→handoff回帰RED21439be（11件/5アサーション失敗）→GREENee62d39。重点21、全Swift641件（640成功/既存AX1件保留）、Python123、状態161/163行・共通読取50/50・サービス93/93、署名build/厳密署名/翻訳/構成照合成功。findings-traffic-state-verification.ja.md参照。次の明示追跡は既存FindingStore等の準備/handoff境界をObservationで再現監査すること。実証跡・ネイティブ操作・F5/製品全体は未完了。
