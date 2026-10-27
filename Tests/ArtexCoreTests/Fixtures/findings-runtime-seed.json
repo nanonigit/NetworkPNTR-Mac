@@ -1,0 +1,526 @@
+{
+  "seed_source_sha256": "ff65b9603ddd06704a6ace53398554f14479c5825ec0da573bc775f52036b70f",
+  "rows": [
+    {
+      "id": 9101,
+      "task_id": 8101,
+      "node_id": 15101,
+      "name": "F4 finding 1 ﻿é 中文 한국어 'quoted'",
+      "vulnclass": "CWE-79",
+      "severity": "critical",
+      "status": "pending",
+      "summary": "F4 summary 1 ﻿é 中文 한국어 'quoted'",
+      "evidence": "F4 literal evidence 1 ﻿é 中文 한국어 'quoted'",
+      "report": "# F4 report 1\n\n﻿é 中文 한국어 'quoted'",
+      "asset_ids": [],
+      "ts": "2026-10-22T10:00:00Z"
+    },
+    {
+      "id": 9102,
+      "task_id": 8101,
+      "node_id": 15102,
+      "name": "F4 finding 2 ﻿é 中文 한국어 'quoted'",
+      "vulnclass": "CWE-89",
+      "severity": "high",
+      "status": "in_progress",
+      "summary": "F4 summary 2 ﻿é 中文 한국어 'quoted'",
+      "evidence": "F4 literal evidence 2 ﻿é 中文 한국어 'quoted'",
+      "report": "# F4 report 2\n\n﻿é 中文 한국어 'quoted'",
+      "asset_ids": [
+        8201,
+        8202
+      ],
+      "ts": "2026-10-22T10:00:01Z"
+    },
+    {
+      "id": 9103,
+      "task_id": 8101,
+      "node_id": 15103,
+      "name": "F4 finding 3 ﻿é 中文 한국어 'quoted'",
+      "vulnclass": "F4 é 中文 한국어",
+      "severity": "medium",
+      "status": "confirmed",
+      "summary": "F4 summary 3 ﻿é 中文 한국어 'quoted'",
+      "evidence": "F4 literal evidence 3 ﻿é 中文 한국어 'quoted'",
+      "report": "# F4 report 3\n\n﻿é 中文 한국어 'quoted'",
+      "asset_ids": [
+        8203
+      ],
+      "ts": "2026-10-22T10:00:02Z"
+    },
+    {
+      "id": 9104,
+      "task_id": 8101,
+      "node_id": 15104,
+      "name": "F4 finding 4 ﻿é 中文 한국어 'quoted'",
+      "vulnclass": "CWE-79",
+      "severity": "low",
+      "status": "resolved",
+      "summary": "F4 summary 4 ﻿é 中文 한국어 'quoted'",
+      "evidence": "F4 literal evidence 4 ﻿é 中文 한국어 'quoted'",
+      "report": "# F4 report 4\n\n﻿é 中文 한국어 'quoted'",
+      "asset_ids": [
+        8201
+      ],
+      "ts": "2026-10-22T10:00:03Z"
+    },
+    {
+      "id": 9105,
+      "task_id": 8101,
+      "node_id": 15105,
+      "name": "F4 finding 5 ﻿é 中文 한국어 'quoted'",
+      "vulnclass": "CWE-89",
+      "severity": "critical",
+      "status": "fixed",
+      "summary": "F4 summary 5 ﻿é 中文 한국어 'quoted'",
+      "evidence": "F4 literal evidence 5 ﻿é 中文 한국어 'quoted'",
+      "report": "# F4 report 5\n\n﻿é 中文 한국어 'quoted'",
+      "asset_ids": [
+        8202
+      ],
+      "ts": "2026-10-22T10:00:04Z"
+    },
+    {
+      "id": 9106,
+      "task_id": 8101,
+      "node_id": 15106,
+      "name": "F4 finding 6 ﻿é 中文 한국어 'quoted'",
+      "vulnclass": "F4 é 中文 한국어",
+      "severity": "high",
+      "status": "false_positive",
+      "summary": "F4 summary 6 ﻿é 中文 한국어 'quoted'",
+      "evidence": "F4 literal evidence 6 ﻿é 中文 한국어 'quoted'",
+      "report": "# F4 report 6\n\n﻿é 中文 한국어 'quoted'",
+      "asset_ids": [],
+      "ts": "2026-10-22T10:00:05Z"
+    },
+    {
+      "id": 9107,
+      "task_id": 8101,
+      "node_id": 15107,
+      "name": "F4 finding 7 ﻿é 中文 한국어 'quoted'",
+      "vulnclass": "CWE-79",
+      "severity": "medium",
+      "status": "ignored",
+      "summary": "F4 summary 7 ﻿é 中文 한국어 'quoted'",
+      "evidence": "F4 literal evidence 7 ﻿é 中文 한국어 'quoted'",
+      "report": "# F4 report 7\n\n﻿é 中文 한국어 'quoted'",
+      "asset_ids": [
+        8201,
+        8202
+      ],
+      "ts": "2026-10-22T10:00:06Z"
+    },
+    {
+      "id": 9108,
+      "task_id": 8101,
+      "node_id": 15108,
+      "name": "F4 finding 8 ﻿é 中文 한국어 'quoted'",
+      "vulnclass": "CWE-89",
+      "severity": "low",
+      "status": "duplicate",
+      "summary": "F4 summary 8 ﻿é 中文 한국어 'quoted'",
+      "evidence": "F4 literal evidence 8 ﻿é 中文 한국어 'quoted'",
+      "report": "# F4 report 8\n\n﻿é 中文 한국어 'quoted'",
+      "asset_ids": [
+        8202
+      ],
+      "ts": "2026-10-22T10:00:07Z"
+    },
+    {
+      "id": 9109,
+      "task_id": 8101,
+      "node_id": 15109,
+      "name": "F4 finding 9 ﻿é 中文 한국어 'quoted'",
+      "vulnclass": "F4 é 中文 한국어",
+      "severity": "critical",
+      "status": "risk_accepted",
+      "summary": "F4 summary 9 ﻿é 中文 한국어 'quoted'",
+      "evidence": "F4 literal evidence 9 ﻿é 中文 한국어 'quoted'",
+      "report": "# F4 report 9\n\n﻿é 中文 한국어 'quoted'",
+      "asset_ids": [
+        8203
+      ],
+      "ts": "2026-10-22T10:00:08Z"
+    },
+    {
+      "id": 9110,
+      "task_id": 8101,
+      "node_id": 15110,
+      "name": "F4 finding 10 ﻿é 中文 한국어 'quoted'",
+      "vulnclass": "CWE-79",
+      "severity": "high",
+      "status": "pending",
+      "summary": "F4 summary 10 ﻿é 中文 한국어 'quoted'",
+      "evidence": "F4 literal evidence 10 ﻿é 中文 한국어 'quoted'",
+      "report": "# F4 report 10\n\n﻿é 中文 한국어 'quoted'",
+      "asset_ids": [
+        8201
+      ],
+      "ts": "2026-10-22T10:00:09Z"
+    },
+    {
+      "id": 9111,
+      "task_id": 8101,
+      "node_id": 15111,
+      "name": "F4 finding 11 ﻿é 中文 한국어 'quoted'",
+      "vulnclass": "CWE-89",
+      "severity": "medium",
+      "status": "in_progress",
+      "summary": "F4 summary 11 ﻿é 中文 한국어 'quoted'",
+      "evidence": "F4 literal evidence 11 ﻿é 中文 한국어 'quoted'",
+      "report": "# F4 report 11\n\n﻿é 中文 한국어 'quoted'",
+      "asset_ids": [],
+      "ts": "2026-10-22T10:00:10Z"
+    },
+    {
+      "id": 9112,
+      "task_id": 8101,
+      "node_id": 15112,
+      "name": "F4 finding 12 ﻿é 中文 한국어 'quoted'",
+      "vulnclass": "F4 é 中文 한국어",
+      "severity": "low",
+      "status": "confirmed",
+      "summary": "F4 summary 12 ﻿é 中文 한국어 'quoted'",
+      "evidence": "F4 literal evidence 12 ﻿é 中文 한국어 'quoted'",
+      "report": "# F4 report 12\n\n﻿é 中文 한국어 'quoted'",
+      "asset_ids": [
+        8201,
+        8202
+      ],
+      "ts": "2026-10-22T10:00:11Z"
+    },
+    {
+      "id": 9113,
+      "task_id": 8101,
+      "node_id": 15113,
+      "name": "F4 finding 13 ﻿é 中文 한국어 'quoted'",
+      "vulnclass": "CWE-79",
+      "severity": "critical",
+      "status": "resolved",
+      "summary": "F4 summary 13 ﻿é 中文 한국어 'quoted'",
+      "evidence": "F4 literal evidence 13 ﻿é 中文 한국어 'quoted'",
+      "report": "# F4 report 13\n\n﻿é 中文 한국어 'quoted'",
+      "asset_ids": [
+        8201
+      ],
+      "ts": "2026-10-22T10:00:12Z"
+    },
+    {
+      "id": 9114,
+      "task_id": 8101,
+      "node_id": 15114,
+      "name": "F4 finding 14 ﻿é 中文 한국어 'quoted'",
+      "vulnclass": "CWE-89",
+      "severity": "high",
+      "status": "fixed",
+      "summary": "F4 summary 14 ﻿é 中文 한국어 'quoted'",
+      "evidence": "F4 literal evidence 14 ﻿é 中文 한국어 'quoted'",
+      "report": "# F4 report 14\n\n﻿é 中文 한국어 'quoted'",
+      "asset_ids": [
+        8202
+      ],
+      "ts": "2026-10-22T10:00:13Z"
+    },
+    {
+      "id": 9115,
+      "task_id": 8101,
+      "node_id": 15115,
+      "name": "F4 finding 15 ﻿é 中文 한국어 'quoted'",
+      "vulnclass": "F4 é 中文 한국어",
+      "severity": "medium",
+      "status": "false_positive",
+      "summary": "F4 summary 15 ﻿é 中文 한국어 'quoted'",
+      "evidence": "F4 literal evidence 15 ﻿é 中文 한국어 'quoted'",
+      "report": "# F4 report 15\n\n﻿é 中文 한국어 'quoted'",
+      "asset_ids": [
+        8203
+      ],
+      "ts": "2026-10-22T10:00:14Z"
+    },
+    {
+      "id": 9116,
+      "task_id": 8101,
+      "node_id": 15116,
+      "name": "F4 finding 16 ﻿é 中文 한국어 'quoted'",
+      "vulnclass": "CWE-79",
+      "severity": "low",
+      "status": "ignored",
+      "summary": "F4 summary 16 ﻿é 中文 한국어 'quoted'",
+      "evidence": "F4 literal evidence 16 ﻿é 中文 한국어 'quoted'",
+      "report": "# F4 report 16\n\n﻿é 中文 한국어 'quoted'",
+      "asset_ids": [],
+      "ts": "2026-10-22T10:00:15Z"
+    },
+    {
+      "id": 9117,
+      "task_id": 8101,
+      "node_id": 15117,
+      "name": "F4 finding 17 ﻿é 中文 한국어 'quoted'",
+      "vulnclass": "CWE-89",
+      "severity": "critical",
+      "status": "duplicate",
+      "summary": "F4 summary 17 ﻿é 中文 한국어 'quoted'",
+      "evidence": "F4 literal evidence 17 ﻿é 中文 한국어 'quoted'",
+      "report": "# F4 report 17\n\n﻿é 中文 한국어 'quoted'",
+      "asset_ids": [
+        8201,
+        8202
+      ],
+      "ts": "2026-10-22T10:00:16Z"
+    },
+    {
+      "id": 9118,
+      "task_id": 8101,
+      "node_id": 15118,
+      "name": "F4 finding 18 ﻿é 中文 한국어 'quoted'",
+      "vulnclass": "F4 é 中文 한국어",
+      "severity": "high",
+      "status": "risk_accepted",
+      "summary": "F4 summary 18 ﻿é 中文 한국어 'quoted'",
+      "evidence": "F4 literal evidence 18 ﻿é 中文 한국어 'quoted'",
+      "report": "# F4 report 18\n\n﻿é 中文 한국어 'quoted'",
+      "asset_ids": [
+        8203
+      ],
+      "ts": "2026-10-22T10:00:17Z"
+    },
+    {
+      "id": 9119,
+      "task_id": 8101,
+      "node_id": 15119,
+      "name": "F4 finding 19 ﻿é 中文 한국어 'quoted'",
+      "vulnclass": "CWE-79",
+      "severity": "medium",
+      "status": "pending",
+      "summary": "F4 summary 19 ﻿é 中文 한국어 'quoted'",
+      "evidence": "F4 literal evidence 19 ﻿é 中文 한국어 'quoted'",
+      "report": "# F4 report 19\n\n﻿é 中文 한국어 'quoted'",
+      "asset_ids": [
+        8201
+      ],
+      "ts": "2026-10-22T10:00:18Z"
+    },
+    {
+      "id": 9120,
+      "task_id": 8101,
+      "node_id": 15120,
+      "name": "F4 finding 20 ﻿é 中文 한국어 'quoted'",
+      "vulnclass": "CWE-89",
+      "severity": "low",
+      "status": "in_progress",
+      "summary": "F4 summary 20 ﻿é 中文 한국어 'quoted'",
+      "evidence": "F4 literal evidence 20 ﻿é 中文 한국어 'quoted'",
+      "report": "# F4 report 20\n\n﻿é 中文 한국어 'quoted'",
+      "asset_ids": [
+        8202
+      ],
+      "ts": "2026-10-22T10:00:19Z"
+    },
+    {
+      "id": 9121,
+      "task_id": 8101,
+      "node_id": 15121,
+      "name": "F4 finding 21 ﻿é 中文 한국어 'quoted'",
+      "vulnclass": "F4 é 中文 한국어",
+      "severity": "critical",
+      "status": "confirmed",
+      "summary": "F4 summary 21 ﻿é 中文 한국어 'quoted'",
+      "evidence": "F4 literal evidence 21 ﻿é 中文 한국어 'quoted'",
+      "report": "# F4 report 21\n\n﻿é 中文 한국어 'quoted'",
+      "asset_ids": [],
+      "ts": "2026-10-22T10:00:20Z"
+    },
+    {
+      "id": 9122,
+      "task_id": 8102,
+      "node_id": 15122,
+      "name": "F4 finding 22 ﻿é 中文 한국어 'quoted'",
+      "vulnclass": "CWE-79",
+      "severity": "high",
+      "status": "resolved",
+      "summary": "F4 summary 22 ﻿é 中文 한국어 'quoted'",
+      "evidence": "F4 literal evidence 22 ﻿é 中文 한국어 'quoted'",
+      "report": "# F4 report 22\n\n﻿é 中文 한국어 'quoted'",
+      "asset_ids": [
+        8201,
+        8202
+      ],
+      "ts": "2026-10-22T10:00:21Z"
+    },
+    {
+      "id": 9123,
+      "task_id": 8103,
+      "node_id": 15123,
+      "name": "F4 finding 23 ﻿é 中文 한국어 'quoted'",
+      "vulnclass": "CWE-89",
+      "severity": "medium",
+      "status": "fixed",
+      "summary": "F4 summary 23 ﻿é 中文 한국어 'quoted'",
+      "evidence": "F4 literal evidence 23 ﻿é 中文 한국어 'quoted'",
+      "report": "# F4 report 23\n\n﻿é 中文 한국어 'quoted'",
+      "asset_ids": [
+        8202
+      ],
+      "ts": "2026-10-22T10:00:22Z"
+    },
+    {
+      "id": 9124,
+      "task_id": 8104,
+      "node_id": 15124,
+      "name": "F4 finding 24 ﻿é 中文 한국어 'quoted'",
+      "vulnclass": "F4 é 中文 한국어",
+      "severity": "low",
+      "status": "false_positive",
+      "summary": "F4 summary 24 ﻿é 中文 한국어 'quoted'",
+      "evidence": "F4 literal evidence 24 ﻿é 中文 한국어 'quoted'",
+      "report": "# F4 report 24\n\n﻿é 中文 한국어 'quoted'",
+      "asset_ids": [
+        8203
+      ],
+      "ts": "2026-10-22T10:00:23Z"
+    },
+    {
+      "id": 9125,
+      "task_id": 8105,
+      "node_id": 15125,
+      "name": "F4 finding 25 ﻿é 中文 한국어 'quoted'",
+      "vulnclass": "CWE-79",
+      "severity": "critical",
+      "status": "ignored",
+      "summary": "F4 summary 25 ﻿é 中文 한국어 'quoted'",
+      "evidence": "F4 literal evidence 25 ﻿é 中文 한국어 'quoted'",
+      "report": "# F4 report 25\n\n﻿é 中文 한국어 'quoted'",
+      "asset_ids": [
+        8201
+      ],
+      "ts": "2026-10-22T10:00:24Z"
+    },
+    {
+      "id": 9126,
+      "task_id": 8106,
+      "node_id": 15126,
+      "name": "F4 finding 26 ﻿é 中文 한국어 'quoted'",
+      "vulnclass": "CWE-89",
+      "severity": "high",
+      "status": "duplicate",
+      "summary": "F4 summary 26 ﻿é 中文 한국어 'quoted'",
+      "evidence": "F4 literal evidence 26 ﻿é 中文 한국어 'quoted'",
+      "report": "# F4 report 26\n\n﻿é 中文 한국어 'quoted'",
+      "asset_ids": [],
+      "ts": "2026-10-22T10:00:25Z"
+    },
+    {
+      "id": 9127,
+      "task_id": 8107,
+      "node_id": 15127,
+      "name": "F4 finding 27 ﻿é 中文 한국어 'quoted'",
+      "vulnclass": "F4 é 中文 한국어",
+      "severity": "medium",
+      "status": "risk_accepted",
+      "summary": "F4 summary 27 ﻿é 中文 한국어 'quoted'",
+      "evidence": "F4 literal evidence 27 ﻿é 中文 한국어 'quoted'",
+      "report": "# F4 report 27\n\n﻿é 中文 한국어 'quoted'",
+      "asset_ids": [
+        8201,
+        8202
+      ],
+      "ts": "2026-10-22T10:00:26Z"
+    },
+    {
+      "id": 9128,
+      "task_id": 8108,
+      "node_id": 15128,
+      "name": "F4 finding 28 ﻿é 中文 한국어 'quoted'",
+      "vulnclass": "CWE-79",
+      "severity": "low",
+      "status": "pending",
+      "summary": "F4 summary 28 ﻿é 中文 한국어 'quoted'",
+      "evidence": "F4 literal evidence 28 ﻿é 中文 한국어 'quoted'",
+      "report": "# F4 report 28\n\n﻿é 中文 한국어 'quoted'",
+      "asset_ids": [
+        8201
+      ],
+      "ts": "2026-10-22T10:00:27Z"
+    },
+    {
+      "id": 9129,
+      "task_id": 8109,
+      "node_id": 15129,
+      "name": "F4 finding 29 ﻿é 中文 한국어 'quoted'",
+      "vulnclass": "CWE-89",
+      "severity": "critical",
+      "status": "in_progress",
+      "summary": "F4 summary 29 ﻿é 中文 한국어 'quoted'",
+      "evidence": "F4 literal evidence 29 ﻿é 中文 한국어 'quoted'",
+      "report": "# F4 report 29\n\n﻿é 中文 한국어 'quoted'",
+      "asset_ids": [
+        8202
+      ],
+      "ts": "2026-10-22T10:00:28Z"
+    },
+    {
+      "id": 9130,
+      "task_id": 8110,
+      "node_id": 15130,
+      "name": "F4 finding 30 ﻿é 中文 한국어 'quoted'",
+      "vulnclass": "F4 é 中文 한국어",
+      "severity": "high",
+      "status": "confirmed",
+      "summary": "F4 summary 30 ﻿é 中文 한국어 'quoted'",
+      "evidence": "F4 literal evidence 30 ﻿é 中文 한국어 'quoted'",
+      "report": "# F4 report 30\n\n﻿é 中文 한국어 'quoted'",
+      "asset_ids": [
+        8203
+      ],
+      "ts": "2026-10-22T10:00:29Z"
+    },
+    {
+      "id": 9131,
+      "task_id": 8111,
+      "node_id": 15131,
+      "name": "F4 finding 31 ﻿é 中文 한국어 'quoted'",
+      "vulnclass": "CWE-79",
+      "severity": "medium",
+      "status": "resolved",
+      "summary": "F4 summary 31 ﻿é 中文 한국어 'quoted'",
+      "evidence": "F4 literal evidence 31 ﻿é 中文 한국어 'quoted'",
+      "report": "# F4 report 31\n\n﻿é 中文 한국어 'quoted'",
+      "asset_ids": [],
+      "ts": "2026-10-22T10:00:30Z"
+    },
+    {
+      "id": 9132,
+      "task_id": null,
+      "node_id": null,
+      "name": "F4 finding 32 ﻿é 中文 한국어 'quoted'",
+      "vulnclass": "CWE-89",
+      "severity": "low",
+      "status": "fixed",
+      "summary": "F4 summary 32 ﻿é 中文 한국어 'quoted'",
+      "evidence": "F4 literal evidence 32 ﻿é 中文 한국어 'quoted'",
+      "report": "# F4 report 32\n\n﻿é 中文 한국어 'quoted'",
+      "asset_ids": [
+        8201,
+        8202
+      ],
+      "ts": "2026-10-22T10:00:31Z"
+    },
+    {
+      "id": 9133,
+      "task_id": null,
+      "node_id": null,
+      "name": "F4 finding 33 ﻿é 中文 한국어 'quoted'",
+      "vulnclass": "F4 é 中文 한국어",
+      "severity": "critical",
+      "status": "false_positive",
+      "summary": "F4 summary 33 ﻿é 中文 한국어 'quoted'",
+      "evidence": "F4 literal evidence 33 ﻿é 中文 한국어 'quoted'",
+      "report": "# F4 report 33\n\n﻿é 中文 한국어 'quoted'",
+      "asset_ids": [
+        8203
+      ],
+      "ts": "2026-10-22T10:00:32Z"
+    }
+  ]
+}
