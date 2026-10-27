@@ -105,7 +105,7 @@
   "shared_api_comparison_passed": true,
   "visible_ui_accepted": false,
   "kernel_promoted": false,
-  "review_scope": "Independent reviews through original probe/reference and preflight repairs; final unchanged-network-checker reuse locally inspected/tested after auxiliary reviewer usage limit",
+  "review_scope": "Independent final re-review confirmed unchanged three-zero network isolation, installed checker hashes, exact public/private actual receipts, source bindings and cleanup; no concrete blocker. Earlier reviewer unavailability is retained in historical bug records.",
   "private_state_exports": "Native same-disk state, signed probe and stopped logs retained; reference complete DB dump and logs retained; no credentials or raw state committed",
   "pending": [
     "F4b individual name/class/severity PATCH and extra boundary/normalization scenarios",
