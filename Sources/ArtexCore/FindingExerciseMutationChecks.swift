@@ -14,27 +14,33 @@ public struct FindingExerciseMutationProof: Codable, Equatable, Sendable {
     private let gate: FindingExerciseTransport
     private let service: FindingService
     private let store: FindingStore
+    private let progress: @MainActor (String) -> Void
     private var started = false
-    init(client: any BackendJSONTransport) throws {
+    init(client: any BackendJSONTransport,progress: @escaping @MainActor (String) -> Void = { _ in }) throws {
+        self.progress = progress
         let gate = try FindingExerciseTransport(client:client)
         self.gate = gate; service = FindingService(client:gate); store = FindingStore(service:service)
     }
     func run() async throws -> FindingExerciseMutationProof {
         guard !started else { throw failure() }; started = true
         try Task.checkCancellation()
+        progress("mutation_initial_cache")
         guard await store.refreshView(), let page = store.flat.read.value else { throw failure() }
         try FindingExerciseVerifier.page(page,vector:FindingExerciseFixture.vectors(rows:FindingExerciseFixture.initial)[0],rows:FindingExerciseFixture.initial)
         var checks = [Self.expectedChecks[0]], expected = FindingExerciseFixture.initial[0]
         await store.select(id:"9101",owner:store.viewOwner)
         try Task.checkCancellation(); try FindingExerciseVerifier.detail(detail(),expected:expected)
+        progress("mutation_edited_fields")
         let edited = try updated(await store.update(detail(),patch:.init(name:FindingExerciseFixture.editedName,
             vulnclass:FindingExerciseFixture.editedClass,severity:.low),owner:store.viewOwner))
         expected.name = FindingExerciseFixture.editedName; expected.vulnclass = FindingExerciseFixture.editedClass; expected.severity = .low
         try FindingExerciseVerifier.detail(edited,expected:expected); try verifyCachedEdit(expected)
         checks.append(Self.expectedChecks[1])
+        progress("mutation_separate_status")
         let confirmed = try updated(await store.update(detail(),patch:.init(status:.confirmed),owner:store.viewOwner))
         expected.status = .confirmed; try FindingExerciseVerifier.detail(confirmed,expected:expected)
         try verifyCachedEdit(expected); checks.append(Self.expectedChecks[2])
+        progress("mutation_partial_patch")
         let outcome = await store.update(try detail(),patch:.init(name:FindingExerciseFixture.failingName,status:.riskAccepted),owner:store.viewOwner)
         try Task.checkCancellation()
         guard case .unconfirmed = outcome, gate.lastMutationStatus == 500, store.unknownIDs == ["9101"],
@@ -43,6 +49,7 @@ public struct FindingExerciseMutationProof: Codable, Equatable, Sendable {
         try FindingExerciseVerifier.detail(detail(),expected:expected)
         let partialHTTP = gate.lastMutationStatus!, session = store.sessionOwner, revision = store.unknownRevision
         checks.append(Self.expectedChecks[3])
+        progress("mutation_partial_readback")
         let actual = try await service.detail(id:"9101")
         expected.status = .riskAccepted; try FindingExerciseVerifier.detail(actual,expected:expected)
         checks.append(Self.expectedChecks[4])
@@ -56,12 +63,14 @@ public struct FindingExerciseMutationProof: Codable, Equatable, Sendable {
         guard store.acknowledgeUnknown("9101",owner:session,revision:revision), store.unknownIDs.isEmpty,
               !store.acknowledgeUnknown("9101",owner:session,revision:revision) else { throw failure() }
         checks.append(Self.expectedChecks[7])
+        progress("mutation_final_status")
         let fixed = try updated(await store.update(detail(),patch:.init(status:.fixed),owner:store.viewOwner))
         expected.status = .fixed; try FindingExerciseVerifier.detail(fixed,expected:expected); try verifyCachedEdit(expected)
         checks.append(Self.expectedChecks[8])
         for id in ["9102","9133"] { store.setSelected(id,selected:true,owner:store.viewOwner) }
         guard store.selectedIDs == ["9102","9133"] else { throw failure() }
         for id in ["9102","9133"] {
+            progress("mutation_delete_"+id)
             await store.select(id:id,owner:store.viewOwner); try Task.checkCancellation()
             guard let original = FindingExerciseFixture.initial.first(where:{$0.id == id}) else { throw failure() }
             try FindingExerciseVerifier.detail(detail(),expected:original)

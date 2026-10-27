@@ -8,14 +8,15 @@ import Foundation
     let controlSHA256: String
     private let client: any BackendJSONTransport
     private let encodedSources: String
+    private let progress: @MainActor (String) -> Void
     private var seedStarted = false
     private enum Operation { case seed, audit(Bool) }
     private static let zeroKeys = ["foreign_tasks","unsafe_tasks","foreign_explorations","foreign_nodes","foreign_finding_nodes",
         "foreign_findings","foreign_relations","foreign_companies","foreign_assets","foreign_links","foreign_events",
         "profiles","task_profiles","activity","conversations","llm_usage","llm_records","archives","intercepts","retests",
         "traffic_bindings","traffic_snapshots","notification_channels","notification_deliveries"]
-    init(client: any BackendJSONTransport) throws {
-        self.client = client
+    init(client: any BackendJSONTransport,progress: @escaping @MainActor (String) -> Void = { _ in }) throws {
+        self.client = client; self.progress = progress
         let root = URL(fileURLWithPath:#filePath).deletingLastPathComponent().deletingLastPathComponent().deletingLastPathComponent()
         let seed = try Data(contentsOf:root.appendingPathComponent("script/findings_seed_guest.py"))
         let control = try Data(contentsOf:root.appendingPathComponent("script/findings_fixture_control.py"))
@@ -55,8 +56,8 @@ import Foundation
         try Task.checkCancellation()
         let action: String
         switch operation {
-        case .seed: action = "seed.main()"
-        case .audit(let fresh): action = "print(json.dumps(control.audit(fresh=\(fresh ? "True" : "False"))))"
+        case .seed: progress("fixture_seed"); action = "seed.main()"
+        case .audit(let fresh): progress(fresh ? "fixture_fresh_audit" : "fixture_seeded_audit"); action = "print(json.dumps(control.audit(fresh=\(fresh ? "True" : "False"))))"
         }
         let code = """
         import base64,json,os,sys,types

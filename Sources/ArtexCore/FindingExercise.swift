@@ -22,23 +22,25 @@ public struct FindingExerciseReport: Encodable, Equatable, Sendable {
     private let client: any BackendJSONTransport
     private let fixture: any FindingFixtureControlling
     private let now: @MainActor () -> ContinuousClock.Instant
+    private let progress: @MainActor (String) -> Void
     private var started = false
     private static let terminalChecks = ["post_mutation_stats","post_mutation_asset_tree"]
     public init(client: any BackendJSONTransport,fixture: any FindingFixtureControlling,
-                now: @escaping @MainActor () -> ContinuousClock.Instant = { ContinuousClock().now }) {
-        self.client = client; self.fixture = fixture; self.now = now
+                now: @escaping @MainActor () -> ContinuousClock.Instant = { ContinuousClock().now },
+                progress: @escaping @MainActor (String) -> Void = { _ in }) {
+        self.client = client; self.fixture = fixture; self.now = now; self.progress = progress
     }
     public func runBeforeRestart() async throws -> FindingExerciseCheckpoint {
-        let gate = try begin(); try await audit(gate)
-        let initial = try await FindingExerciseReadChecks(client:gate).runInitial()
+        let gate = try begin(); progress("initial_audit"); try await audit(gate)
+        let initial = try await FindingExerciseReadChecks(client:gate,progress:progress).runInitial()
         guard initial == FindingExerciseReadChecks.expectedChecks(persisted:false) else { throw failure() }
-        try await audit(gate)
-        let mutation = try await FindingExerciseMutationChecks(client:gate).run()
+        progress("pre_mutation_audit"); try await audit(gate)
+        let mutation = try await FindingExerciseMutationChecks(client:gate,progress:progress).run()
         guard valid(mutation) else { throw failure() }
         let service = FindingService(client:gate), rows = FindingExerciseFixture.persisted
         try FindingExerciseAggregateVerifier.stats(try await service.stats(),rows:rows)
         try FindingExerciseAggregateVerifier.tree(try await service.assetTree(),rows:rows)
-        try await audit(gate)
+        progress("terminal_audit"); try await audit(gate)
         guard gate.requestCount == 116 else { throw failure() }
         return .init(schemaVersion:1,initialChecks:initial,mutation:mutation,terminalChecks:Self.terminalChecks,beforeRequestCount:gate.requestCount)
     }
@@ -48,9 +50,9 @@ public struct FindingExerciseReport: Encodable, Equatable, Sendable {
               checkpoint.initialChecks == FindingExerciseReadChecks.expectedChecks(persisted:false), valid(checkpoint.mutation),
               checkpoint.terminalChecks == Self.terminalChecks else { throw failure() }
         try await audit(gate)
-        let checks = try await FindingExerciseReadChecks(client:gate).runPersisted()
+        let checks = try await FindingExerciseReadChecks(client:gate,progress:progress).runPersisted()
         guard checks == FindingExerciseReadChecks.expectedChecks(persisted:true) else { throw failure() }
-        try await audit(gate)
+        progress("terminal_audit"); try await audit(gate)
         guard gate.requestCount == 100 else { throw failure() }
         return .init(checkpoint:checkpoint,finalChecks:checks,afterRequestCount:gate.requestCount,passed:true)
     }
