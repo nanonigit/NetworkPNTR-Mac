@@ -20,3 +20,5 @@ Historical initial snapshot: no language switch/catalog/backend synchronization 
 
 
 F3.2 progress: the native app now has an en/ja switch and shared catalogs; Findings adds61 packaged owned keys. This does not close the full21/backend-output/actual-UI gate. F4a source audit found the trigger-owned Chinese literal `任务执行期间自动关联` for source=system. It is a known generated default, not user content. Keep the frozen reference and fixture unchanged; add localized native presentation when task/asset provenance is migrated and verify en/ja plus edited/custom text retention. No displayed UI acceptance is inferred from SQL/source evidence.
+
+F4b source audit found the generated asset-tree sentinel `__none__` / kind `none` with label `未关联资产` (fixed db/finding_assets.go:185). Native visible text and expansion accessibility text now use an owned en/ja catalog key for that identity only: “Unassigned assets” / “未関連の資産”. The raw node, custom labels and frozen browser remain unchanged. The focused offscreen regression passes; rendered visual/AX acceptance remains pending. Findings now contains62 owned keys.

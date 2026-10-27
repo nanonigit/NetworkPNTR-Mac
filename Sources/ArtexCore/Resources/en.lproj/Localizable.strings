@@ -634,6 +634,8 @@
 	<string>Total</string>
 	<key>finding.ui.treeTruncated</key>
 	<string>Some asset kinds are omitted from this snapshot.</string>
+	<key>finding.ui.unassignedAssets</key>
+	<string>Unassigned assets</string>
 	<key>finding.ui.unknown</key>
 	<string>Unconfirmed change for finding {id}</string>
 	<key>finding.ui.unknownHelp</key>

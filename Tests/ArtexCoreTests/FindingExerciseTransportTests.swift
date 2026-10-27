@@ -45,6 +45,10 @@ final class FindingExerciseTransportTests: XCTestCase {
     @MainActor func testBodyValidationHasNoDispatchAndDoesNotRewriteLiteralData() async throws {
         let api = FindingExerciseWire(), gate = try FindingExerciseTransport(client:api)
         for body in [Data(),Data("[]".utf8),Data("{}".utf8),Data(#"{"sql":"unsafe"}"#.utf8),Data(#"{"name":true}"#.utf8),Data(#"{"name":null}"#.utf8),Data(#"{"status":"foreign"}"#.utf8),Data(#"{"severity":"foreign"}"#.utf8),Data(repeating:32,count:65537)] { await rejects(gate,"PATCH",base+"/9101",body:body) }
+        let largeWire = try JSONEncoder().encode(["name":String(repeating:"\0",count:6000),"vulnclass":String(repeating:"\0",count:6000)])
+        XCTAssertGreaterThan(largeWire.count,65536); await rejects(gate,"PATCH",base+"/9101",body:largeWire)
+        let largeField = try JSONEncoder().encode(["name":String(repeating:"a",count:8193)])
+        XCTAssertLessThan(largeField.count,65536); await rejects(gate,"PATCH",base+"/9101",body:largeField)
         await rejects(gate,"GET",base,body:Data("{}".utf8)); await rejects(gate,"DELETE",base+"/9102",body:Data("{}".utf8))
         XCTAssertEqual(api.calls,0)
         _ = try await gate.send(method:"PATCH",path:base+"/9101",body:Data(#"{"name":"NUL\u0000fixture"}"#.utf8),bearer:nil)
@@ -71,7 +75,7 @@ final class FindingExerciseTransportTests: XCTestCase {
     }
     @MainActor func testCancellationBeforeAndAfterDispatchCannotYieldSuccess() async throws {
         let api = FindingExerciseWire(), gate = try FindingExerciseTransport(client:api)
-        let before = Task { try Task.checkCancellation(); return try await gate.send(method:"GET",path:base+"/stats",body:nil,bearer:nil) }
+        let before = Task { try await gate.send(method:"GET",path:base+"/stats",body:nil,bearer:nil) }
         before.cancel(); do { _ = try await before.value; XCTFail("Precancel accepted") } catch { }; XCTAssertEqual(api.calls,0)
         api.hold = true
         let work = Task { try await gate.send(method:"PATCH",path:base+"/9101",body:Data(#"{"status":"fixed"}"#.utf8),bearer:nil) }

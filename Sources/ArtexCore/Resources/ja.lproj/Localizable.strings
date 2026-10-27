@@ -634,6 +634,8 @@
 	<string>合計</string>
 	<key>finding.ui.treeTruncated</key>
 	<string>一部の資産種別はこのスナップショットに含まれていません。</string>
+	<key>finding.ui.unassignedAssets</key>
+	<string>未関連の資産</string>
 	<key>finding.ui.unknown</key>
 	<string>検出結果{id}の変更結果が不明です</string>
 	<key>finding.ui.unknownHelp</key>

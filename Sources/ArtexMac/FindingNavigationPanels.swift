@@ -22,10 +22,10 @@ import SwiftUI
                                     guard model.store.viewOwner == owner, model.controlsAvailable else { return }
                                     if !model.expandedAssets.insert(row.id).inserted { model.expandedAssets.remove(row.id) }
                                 } label: { Image(systemName:model.expandedAssets.contains(row.id) ? "chevron.down" : "chevron.right") }
-                                    .buttonStyle(.plain).accessibilityLabel(s(model.expandedAssets.contains(row.id) ? .findingUICollapse : .findingUIExpand)+" · "+row.node.label)
+                                    .buttonStyle(.plain).accessibilityLabel(s(model.expandedAssets.contains(row.id) ? .findingUICollapse : .findingUIExpand)+" · "+FindingPresentation.assetLabel(row.node,language:language))
                             }
                             Button { _ = model.asset(row.node.key,owner:owner) } label: {
-                                HStack { Text(row.node.label).lineLimit(2); Spacer(); Text(String(row.node.total)).monospacedDigit().foregroundStyle(.secondary) }
+                                HStack { Text(FindingPresentation.assetLabel(row.node,language:language)).lineLimit(2); Spacer(); Text(String(row.node.total)).monospacedDigit().foregroundStyle(.secondary) }
                             }.buttonStyle(.plain).foregroundStyle(model.store.assetScope.map{Data($0.utf8)} == row.id ? Color.accentColor : Color.primary)
                         }.padding(.leading,CGFloat(min(row.depth,12))*12).disabled(!model.controlsAvailable)
                     }

@@ -12985,6 +12985,23 @@
           }
         }
       }
+    },
+    "finding.ui.unassignedAssets": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Unassigned assets"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "未関連の資産"
+          }
+        }
+      }
     }
   },
   "version": "1.0"

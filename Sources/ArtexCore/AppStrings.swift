@@ -1,6 +1,7 @@
 import Foundation
 
 public enum AppStringKey: String, CaseIterable, Sendable {
+    case findingUIUnassignedAssets = "finding.ui.unassignedAssets"
     case findingUIExpand = "finding.ui.expand"
     case findingUICollapse = "finding.ui.collapse"
     case findingUITitle = "finding.ui.title"

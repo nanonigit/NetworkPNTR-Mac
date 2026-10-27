@@ -8,6 +8,10 @@ struct FindingAssetRow: Identifiable {
     var id: Data { node.identity }
 }
 enum FindingPresentation {
+    static func assetLabel(_ node: FindingAssetNode,language: AppLanguage) -> String {
+        if node.key == "__none__", node.kind == "none" { return AppStrings.text(.findingUIUnassignedAssets,language:language) }
+        return node.label
+    }
     static func time(_ value: String,language: AppLanguage) -> String {
         let parser = ISO8601DateFormatter(); parser.formatOptions = [.withInternetDateTime,.withFractionalSeconds]
         let fractional = parser.date(from:value); parser.formatOptions = [.withInternetDateTime]
