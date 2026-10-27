@@ -1,0 +1,119 @@
+{
+  "scope": "F4b basic native and independent fixed-backend API/state checkpoint; not full Findings or UI acceptance",
+  "native_implementation_commit": "73ac82aeb2fd29eddc1d3debd403b7a97280c356",
+  "reference_implementation_commit": "20b915b096bf024e8659f9294bfb0f2923c82aad",
+  "baseline_commit": "e75ae371ad777ffd1eecdd28d2781a6519b05591",
+  "swift_tests": {
+    "total": 616,
+    "passed": 615,
+    "explicit_existing_ax_skip": 1
+  },
+  "python_tests": {
+    "total": 120,
+    "passed": 120
+  },
+  "focused_core_tests": 33,
+  "focused_fixture_adapter_tests": 4,
+  "core_line_coverage": {
+    "FindingExercise.swift": {
+      "count": 45,
+      "covered": 45,
+      "percent": 100
+    },
+    "FindingExerciseAggregateVerifier.swift": {
+      "count": 98,
+      "covered": 96,
+      "percent": 97.95918367346938
+    },
+    "FindingExerciseFixture.swift": {
+      "count": 158,
+      "covered": 150,
+      "percent": 94.9367088607595
+    },
+    "FindingExerciseMutationChecks.swift": {
+      "count": 87,
+      "covered": 87,
+      "percent": 100
+    },
+    "FindingExerciseReadChecks.swift": {
+      "count": 93,
+      "covered": 91,
+      "percent": 97.84946236559139
+    },
+    "FindingExerciseTransport.swift": {
+      "count": 92,
+      "covered": 90,
+      "percent": 97.82608695652173
+    },
+    "FindingExerciseVerifier.swift": {
+      "count": 73,
+      "covered": 73,
+      "percent": 100
+    },
+    "FindingFixtureClient.swift": {
+      "count": 76,
+      "covered": 73,
+      "percent": 96.05263157894737
+    }
+  },
+  "python_unit_plus_actual_reference_line_coverage": {
+    "findings_fixture_control.py": {
+      "sha256": "0ed7fbb3561758de6e8651d4ec794ded957ae32fb145f598dc794ba51a600514",
+      "executable_lines": 68,
+      "covered_lines": 68,
+      "percent": 100.0,
+      "uncovered_lines": [],
+      "unit_plus_actual_reference": true
+    },
+    "findings_reference.py": {
+      "sha256": "61f72d40ed00c17d26f7f269c6d2a58ac3ab10590a567b195765aa8cf146d176",
+      "executable_lines": 357,
+      "covered_lines": 350,
+      "percent": 98.04,
+      "uncovered_lines": [
+        77,
+        88,
+        103,
+        105,
+        114,
+        115,
+        197
+      ],
+      "unit_plus_actual_reference": true
+    },
+    "compare_findings.py": {
+      "sha256": "b1df3f4628bc4d073a9c9ca134c1dea42375404941df2b83e1abca5902ab3acb",
+      "executable_lines": 82,
+      "covered_lines": 77,
+      "percent": 93.9,
+      "uncovered_lines": [
+        89,
+        90,
+        91,
+        95,
+        96
+      ],
+      "unit_plus_actual_reference": true
+    }
+  },
+  "signed_app_build_only": true,
+  "strict_signature_verified": true,
+  "localization_export_check": true,
+  "baseline_inventory_parity": true,
+  "actual_native_boots": 3,
+  "actual_reference_backend_starts": 3,
+  "shared_api_comparison_passed": true,
+  "visible_ui_accepted": false,
+  "kernel_promoted": false,
+  "review_scope": "Independent reviews through original probe/reference and preflight repairs; final unchanged-network-checker reuse locally inspected/tested after auxiliary reviewer usage limit",
+  "private_state_exports": "Native same-disk state, signed probe and stopped logs retained; reference complete DB dump and logs retained; no credentials or raw state committed",
+  "pending": [
+    "F4b individual name/class/severity PATCH and extra boundary/normalization scenarios",
+    "actual native/browser visual keyboard VoiceOver",
+    "F5 exports traffic lineage retest deepen richer reports",
+    "all21 full workflow acceptance",
+    "native cloud egress",
+    "intermittent kernel investigation and promotion",
+    "clean Mac installation and release"
+  ]
+}

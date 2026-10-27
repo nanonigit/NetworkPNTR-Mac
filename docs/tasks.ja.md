@@ -242,3 +242,6 @@ F4b CI修正順序: 失敗40466516578/head184adacをコンパイルREDとして�
 
 
 reference順序: client/検証器未実装RED→独立ガード/絞込/本文/集計/文脈GREEN→ソース/安全性レビュー→キャッシュ済み固定入力でoffline image→実3起動→停止済みnative3起動と比較→ログ/DBdump保存後に所有referenceのみ掃除。実画面・kernel信頼性は未完了です。
+
+
+F4b実測: native73ac82aで同一ディスク3起動・116/100要求、独立reference20b915bでbackend3起動・共通API/ソース/バイナリ/seed/audit一致。初回network検査失敗も保持し、修正版はstate/log保存と所有資源のみ掃除済み。Swift616件（615成功/既存AX1保留）、Python120成功。F4bの個別name/class/severity要求・境界/正規化、解除後実画面、F5/全21/cloud/kernel/別Mac/配布は未完了。findings-runtime-verification.ja.mdを参照。

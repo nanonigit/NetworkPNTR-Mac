@@ -4,14 +4,15 @@ Native SwiftUI macOS application with an app-managed isolated Linux VM. **Develo
 
 See [native Findings evidence](docs/findings-ui-verification.md) for basic controls, ownership regressions and remaining visual/runtime/advanced gates.
 
-The next Findings runtime comparison has a verified fixed-data seed: actual PostgreSQL rollback/readback/replay checks pass; this does not accept ARTEX/VM API parity. See [Findings seed evidence](docs/findings-seed-verification.md).
+Findings fixed-data seeding has real PostgreSQL rollback/readback/replay evidence. See [seed verification](docs/findings-seed-verification.md).
 
-The F4b finite read foundation verifies43 query vectors and33 detail records with byte-exact content and ordered assets. This is controlled transport evidence, not actual VM/reference parity. See [runtime foundation verification](docs/findings-runtime-foundation-verification.md).
+The native VM now passes one actual three-boot basic Findings experiment and matches an independent frozen-backend API reference. Initial/persisted100-read checks, partial-PATCH500, deletions, source bindings and cleanup pass. This does not accept visible UI, all Findings scenarios or kernel reliability. See [runtime verification](docs/findings-runtime-verification.md).
+
 ## Current evidence
 
 - Apple Virtualization.framework really boots ARM64 Linux and cooperatively stops it, twice in sequence, without Docker, host shares, NICs or persistent disks.
 - Modified kernel is rejected before VM creation. An actual guest that never emits readiness times out visibly and recovers through force stop.
-- Latest checkpoint: 596 Swift cases (595 passed, one explicitly skipped AX test) and 95 Python regression tests; this does not close full UI/runtime acceptance.
+- Latest checkpoint: 616 Swift cases (615 passed, one explicitly skipped AX test) and 120 Python regression tests; this does not close full UI/runtime acceptance.
 - Native application .app is built, locally ad-hoc signed with the virtualization entitlement and launched. Its developer harness runs the VM service from the real app and records readiness/shutdown. External CUA verified native LLM creation/editing, numeric validation, Return-key save and active-profile protection. The connection later failed; full click/visual acceptance is still pending. Content-view snapshots are diagnostic only and have layer-compositing limitations; they are not signed off as UI parity.
 
 The separate backend acceptance guest now boots pinned ARTEX and PostgreSQL 16 with authenticated vsock and a private persistent disk. Real normal/forced restarts preserve authentication and an LLM fixture. Five normalized API contract cases match a disposable pinned browser backend. See [Phase 2 evidence](docs/phase2-verification.md). The app now bundles this real backend by default and provides native setup/login/logout with a Keychain session. Two-vCPU experiments exposed intermittent kernel faults. A one-vCPU direct-root diagnostic profile passed repeated native auth runs; a separate database recovery readiness race was repaired and three forced recoveries passed. Release reliability is not accepted; see [the investigation](docs/bugs/guest-boot-investigation.md).

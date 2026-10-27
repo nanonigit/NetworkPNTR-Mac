@@ -29,3 +29,6 @@ Use three boots: authenticate+seed; restart for task hydration and reads/mutatio
 
 
 F4b native probe implementation checkpoint:100 initial reads,14 mutation requests and2 post-mutation aggregate reads share one128-request outer gate and90sec pre/post lifecycle budget. Restart validation uses100 reads. DEBUG VMProbe --findings refuses existing output, uses a fresh2GiB disk for3boots, audits fresh SQL before seed and seeded SQL before any Core mutation, checks source hashes each boot and retains failure state/logs. Shared boot-log proof types also used by archives introduce no archive operations. Controlled616Swift (615pass/1AXskip) and102Python pass; actual hardware/reference remains a separate gate.
+
+
+Actual basic API/state checkpoint: native3boots and corrected independent reference3starts match; see findings-runtime-verification.md. Keep the remaining individual-field/boundary/normalization, actual UI, advanced Findings and full-product gates open.

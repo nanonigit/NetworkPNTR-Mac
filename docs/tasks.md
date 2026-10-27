@@ -274,3 +274,6 @@ Expanded-read sequence: missing aggregate/context API RED -> typed verifier GREE
 
 
 Reference order: missing pure client/verifier RED -> independent guards/filters/row/aggregate/context GREEN -> source/security review -> fresh offline image from cached pinned inputs -> actual3starts -> canonical compare against stopped native3boot report -> export logs/dump then cleanup owned reference only. Full visible UI and kernel reliability gates remain open.
+
+
+F4b actual checkpoint: native73ac82a completed3same-disk boots with116/100Findings requests; independent reference20b915b completed3backend starts with matching shared projection and source/binary/seed/audit binding. First reference network preflight failure is retained, corrected run exported state/logs and cleaned only owned resources. Full616Swift (615pass/1existingAXskip),120Python. Individual name/class/severity requests and extra boundary/normalization cases remain F4b work; actual UI after unlock, F5/all21/cloud/kernel/clean-Mac/release remain open. See findings-runtime-verification.md.

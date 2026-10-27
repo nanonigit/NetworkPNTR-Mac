@@ -1,0 +1,30 @@
+{
+  "passed": true,
+  "scope": "shared fixed Findings backend API and same-data persistence",
+  "visible_ui_accepted": false,
+  "sourceCommit": "e75ae371ad777ffd1eecdd28d2781a6519b05591",
+  "backendSHA256": "0ebad83ddda276b03b415d64ce30af44e7a587860f3b660c12563462a0ac5e80",
+  "seedSHA256": "ff65b9603ddd06704a6ace53398554f14479c5825ec0da573bc775f52036b70f",
+  "controlSHA256": "0ed7fbb3561758de6e8651d4ec794ded957ae32fb145f598dc794ba51a600514",
+  "initial_read_checks": 100,
+  "persisted_read_checks": 100,
+  "shared_mutation_checks": [
+    "edited_fields",
+    "separate_status",
+    "partial_patch_http500",
+    "partial_patch_readback",
+    "final_status",
+    "delete_9102",
+    "delete_9133"
+  ],
+  "partial_http_status": 500,
+  "native_only_checks": [
+    "initial_cache",
+    "uncertainty_retained_after_read",
+    "uncertainty_blocks_write",
+    "explicit_acknowledgment",
+    "final_cache"
+  ],
+  "native_boots": 3,
+  "reference_backend_starts": 3
+}

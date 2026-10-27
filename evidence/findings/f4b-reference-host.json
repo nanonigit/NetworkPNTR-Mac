@@ -1,0 +1,37 @@
+{
+  "passed": true,
+  "exercise_passed": true,
+  "owner": "314c8abeff0b4f5098a945963378a37f",
+  "cleanup": {
+    "container_removed": true,
+    "image_tag_removed": true,
+    "input_tags_removed": true,
+    "input_images_preserved": true,
+    "original_containers_preserved": true
+  },
+  "exports": {
+    "database-dump": {
+      "bytes": 259449,
+      "sha256": "30823137c06b85b288e889b11d0a1a634920e5f0b3b84b9f2fbe458eb92a2519"
+    },
+    "retained-logs": {
+      "bytes": 5941,
+      "sha256": "48810da06aaf11579c016d26ad5396ed8b702aae68b6f34bec26db727e9e62db"
+    },
+    "executed-lines": {
+      "bytes": 2635,
+      "sha256": "455f7148ebd0cc11ffa8b08ec0e757ef5df43112048c349192b1a6cb42df409f"
+    }
+  },
+  "source_bindings_verified": true,
+  "container": "ae542f5054b1b094b9cc36e17dfc131b3ec07ceb59ceeec863f2a64c4fb9ba0e",
+  "image": "sha256:0c00b7b692baeb2f774f009e771add79f3d5536fb610f712757096def75ae505",
+  "implementation_commit": "20b915b096bf024e8659f9294bfb0f2923c82aad",
+  "source_hashes": {
+    "findings_reference.py": "61f72d40ed00c17d26f7f269c6d2a58ac3ab10590a567b195765aa8cf146d176",
+    "findings_seed_guest.py": "ff65b9603ddd06704a6ace53398554f14479c5825ec0da573bc775f52036b70f",
+    "findings_fixture_control.py": "0ed7fbb3561758de6e8651d4ec794ded957ae32fb145f598dc794ba51a600514",
+    "chat_upload_contract_fixture.py": "ffb8383c24b4d64675f5426880e4841b1e97b94fbc186fee336258adee1b64ba",
+    "check_network.py": "4bc167e71c655d31eda1872f11ad4b8a90b201994834a63c82194a3fa317ee2e"
+  }
+}
