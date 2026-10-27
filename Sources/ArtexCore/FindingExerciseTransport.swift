@@ -27,6 +27,10 @@ import Foundation
         if method != "GET" { lastMutationStatus = response.status }
         return response
     }
+    func checkLifecycle() throws {
+        try Task.checkCancellation()
+        guard requestCount <= maximumRequests, now() <= deadline else { throw Self.failure() }
+    }
     private func valid(method: String,path: String,body: Data?) -> Bool {
         guard let url = URLComponents(string:path), url.scheme == nil, url.host == nil, url.fragment == nil,
               url.percentEncodedPath == url.path else { return false }

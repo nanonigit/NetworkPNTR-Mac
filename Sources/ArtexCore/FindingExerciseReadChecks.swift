@@ -7,6 +7,17 @@ import Foundation
     init(client: any BackendJSONTransport) throws {
         service = FindingService(client:try FindingExerciseTransport(client:client))
     }
+    static func expectedChecks(persisted: Bool) -> [String] {
+        let rows = persisted ? FindingExerciseFixture.persisted : FindingExerciseFixture.initial
+        var names = FindingExerciseFixture.vectors(rows:rows).map(\.name) + rows.map{"detail_"+$0.id} + ["stats"]
+        for sort in [FindingSort.severity,.time] {
+            for page in 1...(sort == .severity ? 3 : 2) { names.append("groups_\(sort.rawValue)_\(page)") }
+        }
+        names += (1...3).map{"expanded_8101_\($0)"} + ["asset_tree"]
+        names += FindingExerciseFixture.tasks.map{"nodes_"+$0}
+        names += ["context_8101","context_8111","unrelated_context_rejected"]
+        if persisted { names += ["deleted_9102","deleted_9133"] }; return names
+    }
     func runInitial() async throws -> [String] {
         try await run(rows:FindingExerciseFixture.initial,deleted:[])
     }

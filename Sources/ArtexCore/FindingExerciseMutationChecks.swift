@@ -1,9 +1,9 @@
 import Foundation
 
-struct FindingExerciseMutationProof: Codable, Equatable, Sendable {
-    let checks: [String]
-    let partialHTTPStatus: Int
-    let requestCount: Int
+public struct FindingExerciseMutationProof: Codable, Equatable, Sendable {
+    public let checks: [String]
+    public let partialHTTPStatus: Int
+    public let requestCount: Int
 }
 
 /// Fixed diagnostic findings only. A failed PATCH is read back and explicitly acknowledged, never retried.
