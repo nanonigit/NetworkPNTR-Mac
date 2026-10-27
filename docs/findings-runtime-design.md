@@ -19,3 +19,10 @@ F4b adds a bounded native exercise/probe plus independent reference client. Comp
 F4a: missing seed RED -> fixed dataset/environment/child boundaries GREEN -> Python/static security review -> actual complete-schema PostgreSQL rollback/readback/replay tests -> full regressions/signed build/exact-head CI. F4b then implements service exercise/probe/reference and actual same-disk VM operations. Actual visible native/browser/keyboard/VoiceOver checks still wait for manual unlock. F5 advanced Findings and all21/cloud/reliability/clean-Mac/release gates remain mandatory.
 
 Lazyweb is out of scope for this backend fixture/runtime phase.
+
+
+## F4b finite experiment
+
+The operation set covers flat/group pagination, whole-table stats,4severity/9status/3class/12task filters, Unicode literal search, every returned asset scope, standalone/per-task/inherited/legacy identities, separate edit/triage, two deletions and persistence. Gate requests to Findings read/PATCH/DELETE routes, fixed IDs and finite query keys; apply a hard count and monotonic deadline with pre/post-await cancellation. No create/resume/chat/retest/deepen or arbitrary scripts belong in the Core runner. The DEBUG-only fixture adapter may invoke only fixed seed/audit source under the guest boundary. Audit terminal tasks, no profiles/agent activity/LLM records/usage/conversations/retests/traffic and no configured notification channels; internal status event records are not agent activity.
+
+Use three boots: authenticate+seed; restart for task hydration and reads/mutations/checkpoint; restart for persisted state and deleted-node validation. A compound status plus NUL-containing name is a candidate actual partial-commit witness: server.go status transaction precedes the name update; the actual PostgreSQL error/status/unchanged-name result must be measured in both environments. No assumptions or fake responses count as that proof. Explicitly acknowledge only the captured uncertainty episode before further deliberate fixture changes. Preserve every failed boot/stage and do not retry mutations or promote the kernel.

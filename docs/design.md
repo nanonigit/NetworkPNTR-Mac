@@ -105,3 +105,6 @@ F4 follows findings-runtime-design.md: F4a finite transactional seed with no arb
 
 
 F4a uses transactional ALTER SEQUENCE RESTART, with explicit postcondition rollback witness; setval is not suitable for this atomic seed. Full runtime DDL includes schema.sql plus llmUsageSchema and llmRecordsSchema/Migrate. Exact33 trigger-created system asset links are part of the expected fixture. See findings-seed-verification.md and bugs/findings-seed-atomicity.md.
+
+
+F4b uses a bounded typed FindingExercise with hard request/deadline/cancellation gates and an injected fixed no-agent auditor. Before-restart operations produce a typed checkpoint; a fresh runner verifies persisted final values and deleted nodes after restart. A DEBUG-only guest fixture client/probe seeds and audits existing authenticated guest script route; independent reference runner derives same normalized report. Three boots are needed: seed fresh DB, restart to hydrate task context and mutate, then restart to verify durability. Source server.go2396-2431 commits status before later name errors, so owned fixture status+NUL-name can witness partial commit without a general fault command; verify actual result before accepting it. Status notifications may create internal events, but no channels/deliveries/agents may be configured or run.

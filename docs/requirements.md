@@ -126,3 +126,6 @@ F4a prepares fixed developer-only33Finding/11terminal-task/12group/3asset/inheri
 
 
 F4a fixed seed boundaries and actual PostgreSQL component proof are complete; this does not accept Findings APIs/VM/UI. Post-handoff timeout or lost commit acknowledgement remains unconfirmed. F4b actual guest/reference service and same-disk tests remain mandatory. See findings-seed-verification.md.
+
+
+F4b finite native/reference experiment must cover all33seeded findings, twoflatpages, twogroupheaderpages and independent8101group pages, all4severity/9status/3class/12task filters, literal search and asset scopes, node-vs-finding identity, inherited/legacy readonly, trim-preserving edits, separate status update, actual partially committed compoundPATCH, explicit uncertainty acknowledgement, two deletions and same-disk persistence. No tasklaunch/agents/external destinations; audited fixed fixture only. Core/fake tests do not close actual VM/reference/UI gates.
