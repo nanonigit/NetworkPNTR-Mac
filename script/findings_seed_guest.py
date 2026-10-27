@@ -43,6 +43,7 @@ def _json(value):
 
 def _sql():
     sql = ["BEGIN;", "SET LOCAL lock_timeout = '2s';", "SET LOCAL statement_timeout = '5s';",
+           'SET LOCAL standard_conforming_strings = on;',
            'LOCK TABLE ' + ','.join(EMPTY_TABLES) + ' IN EXCLUSIVE MODE;',
            'DO $$ BEGIN IF ' + ' OR '.join(f'EXISTS (SELECT 1 FROM {table})' for table in EMPTY_TABLES)
            + " THEN RAISE EXCEPTION 'fresh findings fixture required'; END IF; END; $$;"]
@@ -73,7 +74,8 @@ def _sql():
                f"({LEGACY_NODE_ID},8111,'finding',{_json(legacy)},'confirmed','2026-10-22T10:00:59Z','2026-10-22T10:00:59Z');")
     sql.append('INSERT INTO task_relations(task_id,source_task_id) VALUES (8111,8101);')
     for table, maximum in (('tasks', 8111), ('explorations', 8111), ('companies', 8200), ('assets', 8203), ('findings', 9133), ('exploration_nodes', LEGACY_NODE_ID)):
-        sql.append(f"SELECT setval('{table}_id_seq',{maximum});")
+        # RESTART is transactional; setval would survive a later rollback.
+        sql.append(f'ALTER SEQUENCE {table}_id_seq RESTART WITH {maximum + 1};')
     sql.append("""DO $$ BEGIN
  IF (SELECT count(*) FROM findings) <> 33 OR (SELECT count(*) FROM tasks) <> 11
  OR (SELECT count(*) FROM explorations) <> 11 OR (SELECT count(*) FROM exploration_nodes) <> 32
