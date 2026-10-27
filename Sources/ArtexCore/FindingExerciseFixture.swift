@@ -46,6 +46,12 @@ enum FindingExerciseFixture {
                 assetIDs:index%5 == 0 ? [] : (index%5 == 1 ? ["8201","8202"] : [String(8201+index%3)]))
         }
     }
+    static var persisted: [Row] {
+        var rows = initial
+        rows[0].name = editedName; rows[0].vulnclass = editedClass
+        rows[0].severity = .low; rows[0].status = .fixed
+        return rows.filter{!["9102","9133"].contains($0.id)}
+    }
     static func sorted(_ rows: [Row],sort: FindingSort) -> [Row] {
         rows.sorted { a,b in
             if sort == .severity {
