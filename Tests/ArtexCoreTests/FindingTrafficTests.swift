@@ -68,6 +68,14 @@ final class FindingTrafficTests: XCTestCase {
             var value=row,snapshot=try XCTUnwrap(row["snapshot"] as? [String:Any]);snapshot[key] = -1;value["snapshot"]=snapshot
             XCTAssertThrowsError(try decode(FindingTrafficBinding.self,value))
         }
+        var summaryRow=row,snapshot=try XCTUnwrap(row["snapshot"] as? [String:Any])
+        snapshot.removeValue(forKey:"req_head");snapshot.removeValue(forKey:"resp_head");summaryRow["snapshot"]=snapshot
+        let summaryBinding=try decode(FindingTrafficBinding.self,summaryRow)
+        XCTAssertEqual(summaryBinding.snapshot.requestHead,"");XCTAssertEqual(summaryBinding.snapshot.responseHead,"")
+        for key in ["id","source_traffic_id"] {
+            var invalid=snapshot;invalid[key]="";summaryRow["snapshot"]=invalid
+            XCTAssertThrowsError(try decode(FindingTrafficBinding.self,summaryRow))
+        }
     }
     func testPreviewUsesBytesNotContentLengthAndRejectsInvalidProgress() throws {
         for binary in [false,true] {
@@ -82,6 +90,11 @@ final class FindingTrafficTests: XCTestCase {
         XCTAssertThrowsError(try decode(FindingEvidencePreview.self,preview(total:90000,next:8193)))
         var overflow=preview();overflow["next_offset"]=UInt64.max
         XCTAssertThrowsError(try decode(FindingEvidencePreview.self,overflow))
+        for key in ["content","offset","total","next_offset","truncated","binary"] {
+            var value=preview();value.removeValue(forKey:key)
+            XCTAssertThrowsError(try decode(FindingEvidencePreview.self,value))
+        }
+        XCTAssertThrowsError(try decode(FindingEvidencePreview.self,preview(offset:2,total:3,next:1)))
     }
     @MainActor func testThreeReadRoutesBindExactOwnerContextBindingAndByteOffset() async throws {
         let api=TrafficReadAPI(),service=FindingTrafficService(client:api),row=try binding()
@@ -100,6 +113,12 @@ final class FindingTrafficTests: XCTestCase {
     }
     @MainActor func testInvalidInputsAndMismatchedRepliesCannotCrossOwnersOrOffsets() async throws {
         let api=TrafficReadAPI(),service=FindingTrafficService(client:api)
+        let cancelled=Task { @MainActor in
+            withUnsafeCurrentTask { $0?.cancel() }
+            return try await service.list(findingID:"9101")
+        }
+        do {_ = try await cancelled.value;XCTFail()}catch is CancellationError {}catch {XCTFail("wrong preflight cancellation")}
+        XCTAssertTrue(api.paths.isEmpty)
         for id in ["0","../1","9223372036854775808",""] {
             do {_ = try await service.list(findingID:id);XCTFail()}catch {}
             do {_ = try await service.detail(findingID:"9101",bindingID:id);XCTFail()}catch {}
