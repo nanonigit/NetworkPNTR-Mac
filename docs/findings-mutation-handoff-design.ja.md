@@ -1,0 +1,7 @@
+# 既存Findings変更のhandoff監査
+
+通常の名前/分類/重大度/状態編集と削除でも準備と認証transportへの引渡しを分ける。送信前取消/同期停止は通信ゼロ・不明回なしとし、実際の部分PATCH不明、キャッシュ/選択/由来、捕捉した確認、停止の終了待ち、resetのsession破棄を保持する。固定backend/browser・本文・経路・guest能力を変えず、backendのみなのでLazywebは対象外。
+
+FindingStore/FindingMutationState/FindingServiceを先行し、編集と削除のbusy変化時にObservationで同期取消/停止する。公開サービス署名は維持し、内部の取消確認済みhandoff callbackを追加する。actor内ticketはsession/activity/view owner/handedOffを持ち、busyをticketから算出する。send直前に現IDを再照合し、その後だけhandoffを記録。以前の取消はnotStarted/ローカル拒否、以後の失敗は不明を保持する。既存試験通りresetでは古い操作終了までゲートを保持し、証跡状態のreset仕様へ勝手に置換しない。
+
+順序は既存挙動のRED→サービス/ticket最小修正GREEN→既存変更/キャッシュ/読取/UI/probe回帰とレビュー→全体/coverage/署名build/修正HEAD CI。TaskStore/外部task操作とLLMStoreは別途監査し、今回だけで監査全体や全21を受け入れない。証跡のネイティブ操作と非空の実guest/browser/画面比較も次の必須作業として保持する。

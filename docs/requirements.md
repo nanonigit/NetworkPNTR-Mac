@@ -153,3 +153,6 @@ F5b must provide fixed-route evidence bind/edit/remove/order with captured owner
 
 
 F5b state must own summary/detail/byte-page generations and captured writes across selection, stop/resume/reset; retain unknown outcomes until exact-revision acknowledgement, never treat a later read as proof of prior commit. See findings-traffic-state-design.md.
+
+
+Existing FindingStore edit/delete must satisfy cancellation-checked transport handoff without changing partial-PATCH uncertainty or reset-held gate semantics. See findings-mutation-handoff-design.md.

@@ -1,4 +1,5 @@
 import XCTest
+import Observation
 @testable import ArtexCore
 
 final class FindingMutationStateTests: XCTestCase {
@@ -100,6 +101,31 @@ extension FindingMutationStateTests {
 }
 
 extension FindingMutationStateTests {
+    @MainActor func testSynchronousCancellationAtBusyTransitionNeverHandsOffEditOrDelete() async throws {
+        for deleting in [false,true] {
+            let api=FindingStateAPI(),model=await ready(api),target=try FST.record(),count=api.calls.count
+            let work=Task {
+                withObservationTracking {_ = model.isMutating} onChange:{withUnsafeCurrentTask{$0?.cancel()}}
+                if deleting {return await model.delete(target,owner:model.viewOwner)}
+                return await model.update(target,patch:.init(name:"changed"),owner:model.viewOwner)
+            }
+            let result=await work.value
+            XCTAssertEqual(api.calls.count,count);XCTAssertTrue(model.unknownIDs.isEmpty);XCTAssertFalse(model.isMutating)
+            if case .notStarted=result {} else {XCTFail("prepared cancellation became uncertain")}
+        }
+    }
+    @MainActor func testSynchronousStopAtBusyTransitionNeverHandsOffEditOrDelete() async throws {
+        for deleting in [false,true] {
+            let api=FindingStateAPI(),model=await ready(api),target=try FST.record(),count=api.calls.count
+            api.replies=[deleting ? FST.reply(#"{"deleted":true,"id":7}"#) : FST.reply(FST.row(name:"changed"))]
+            withObservationTracking {_ = model.isMutating} onChange:{MainActor.assumeIsolated{model.stop()}}
+            let result: FindingMutationOutcome
+            if deleting {result=await model.delete(target,owner:model.viewOwner)}
+            else {result=await model.update(target,patch:.init(name:"changed"),owner:model.viewOwner)}
+            XCTAssertEqual(api.calls.count,count);XCTAssertTrue(model.unknownIDs.isEmpty);XCTAssertFalse(model.isMutating)
+            if case .notStarted=result {} else {XCTFail("stopped preparation dispatched")}
+        }
+    }
     @MainActor func testConfirmedGroupMutationChangesOnlyMatchingCachesAndSelection() async throws {
         let api = FindingStateAPI()
         let store = FindingStore(service:FindingService(client:api)); XCTAssertTrue(store.setView(.grouped))

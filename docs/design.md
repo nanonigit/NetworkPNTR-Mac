@@ -129,3 +129,6 @@ F5 follows findings-advanced-design.md: typed bounded traffic reads first, then 
 
 
 Implement F5b state per findings-traffic-state-design.md before native evidence controls. Use existing generation-owned reads, per-window selection/session/activity and locally prepared fixed requests. State controls do not change guest capabilities.
+
+
+Audit and repair the existing FindingStore handoff boundary per findings-mutation-handoff-design.md; keep public service API and backend contracts stable. Task/LLM audit remains distinct.
