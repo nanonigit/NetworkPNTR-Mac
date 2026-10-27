@@ -18,7 +18,7 @@ import SwiftUI
             }.width(34)
             TableColumn(s(.findingUISeverity)) { row in Text(DashboardLabels.text(row.severity,domain:.severity,language:language)) }.width(min:65,ideal:80)
             TableColumn(s(.findingUIName)) { row in
-                Button { if let id = row.findingId { Task { await model.store.select(id:id,owner:owner) } } } label: {
+                Button { if let id = row.findingId { Task { await model.selectDetail(id:id,owner:owner) } } } label: {
                     VStack(alignment:.leading) { Text(row.name.isEmpty ? "#"+row.id : row.name).lineLimit(2); Text(row.vulnclass).font(.caption).foregroundStyle(.secondary) }
                 }.buttonStyle(.plain).disabled(!model.controlsAvailable || row.findingId == nil)
             }.width(min:150,ideal:220)

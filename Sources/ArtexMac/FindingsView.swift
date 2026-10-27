@@ -6,7 +6,7 @@ import SwiftUI
     let onTask: (String) -> Void
     var body: some View {
         FindingsContent(model:model,onTask:onTask)
-            .task { model.reads.activate(); await model.store.runView() }
+            .task { model.reads.activate() }
             .task { await model.store.runStats() }
             .onDisappear { model.stop() }
     }
@@ -50,7 +50,7 @@ import SwiftUI
             Text(s(.findingUIAdvancedPending)).font(.caption).foregroundStyle(.secondary)
         }
         .padding(20).navigationTitle(s(.findingUITitle))
-        .inspector(isPresented:Binding(get:{model.store.selectedDetail != nil},set:{if !$0 { Task { await model.store.select(id:nil,owner:owner) } }})) {
+        .inspector(isPresented:FindingBindings.detail(model,owner:owner,revision:model.detailRevision)) {
             FindingDetailPanel(model:model,onTask:onTask).inspectorColumnWidth(min:280,ideal:360,max:520)
         }
         .sheet(item:FindingBindings.dialog(model,id:dialogID)) { context in FindingDialogView(model:model,contextID:context.id) }

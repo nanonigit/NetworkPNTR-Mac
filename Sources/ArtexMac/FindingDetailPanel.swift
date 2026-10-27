@@ -8,12 +8,12 @@ import SwiftUI
     private var language: AppLanguage { .preferred(in:[locale.identifier]) }
     private func s(_ key: AppStringKey) -> String { AppStrings.text(key,language:language) }
     var body: some View {
-        let owner = model.store.viewOwner
+        let owner = model.store.viewOwner, revision = model.detailRevision
         ScrollView {
             VStack(alignment:.leading,spacing:14) {
                 HStack {
                     Text(s(.findingUIDetails)).font(.title2.bold()); Spacer()
-                    Button(s(.findingUIClose),systemImage:"xmark") { Task { await model.store.select(id:nil,owner:owner) } }.disabled(!model.controlsAvailable)
+                    Button(s(.findingUIClose),systemImage:"xmark") { Task { await model.closeDetail(owner:owner,revision:revision) } }.disabled(!model.controlsAvailable)
                 }
                 FindingReadNotice(state:model.store.detail)
                 if let row = model.store.detail.value {

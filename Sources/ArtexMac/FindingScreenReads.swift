@@ -12,14 +12,27 @@ import Observation
     @ObservationIgnored private var task: Task<Void,Never>?
     @ObservationIgnored private var ticket = UUID()
     @ObservationIgnored private var watch: UUID?
+    @ObservationIgnored private var pollTask: Task<Void,Never>?
+    @ObservationIgnored private var pollTicket = UUID()
     init(store: FindingStore) { self.store = store }
-    func activate() { active = true }
+    func activate() { guard !active else { return }; active = true; viewChanged() }
+    func viewChanged() {
+        guard active else { return }
+        let previous = pollTask, owner = UUID(); pollTicket = owner; previous?.cancel()
+        pollTask = Task { [weak self] in
+            // Wait for the old loop's terminal cleanup before trying to acquire its poll ticket.
+            await previous?.value
+            guard let self, self.active, self.pollTicket == owner, !Task.isCancelled else { return }
+            await self.store.runView()
+        }
+    }
     func request(forceTree: Bool = false) {
         guard active else { return }
         pending = true; self.forceTree = self.forceTree || forceTree; isPending = true; drain()
     }
     func stop() {
         active = false; ticket = UUID(); watch = nil; pending = false; forceTree = false
+        pollTicket = UUID(); pollTask?.cancel()
         task?.cancel(); task = nil; isPending = false
     }
     private var available: Bool { !store.isMutating && !store.isRefreshingView && (store.view != .asset || !store.tree.isLoading) }

@@ -11,16 +11,23 @@ import SwiftUI
     let row = #"{"id":"7","finding_id":"7","name":"\ufeffe\u0301 中文 한국어","vulnclass":"CWE-79","severity":"high","status":"pending","summary":"literal","evidence":"e","report":"report","task_id":"11","ts":"raw"}"#
     func send(method: String,path: String,body: Data?,bearer: String?) async throws -> BackendHTTPResponse {
         paths.append(path)
+        if method != "GET" { return .init(status:503,body:Data()) }
         if path.contains("asset-tree") {
             if holdTree { return try await withCheckedThrowingContinuation { treeReply = $0 } }
             return tree
         }
         if path.contains("/stats") { return reply(#"{"total":1,"pending":1,"critical":0,"high":1,"medium":0,"low":0,"tasks":[],"vulnclasses":["CWE-79"]}"#) }
-        if path.contains("/groups") { return reply(#"{"items":[],"total":0,"finding_total":0,"page":1,"page_size":10}"#) }
-        if !path.contains("?") { return reply(row) }
+        if path.contains("/groups") { return reply(#"{"items":[{"task_id":11,"task_name":"literal e\u0301 中文 한국어","task_description":"desc","task_status":"done","count":1,"critical":0,"high":1,"medium":0,"low":0,"last_found_at":"raw"},{"task_id":null,"task_name":"","task_description":"","task_status":"","count":1,"critical":0,"high":1,"medium":0,"low":0,"last_found_at":"raw"}],"total":2,"finding_total":2,"page":1,"page_size":10}"#) }
+        if path.hasPrefix("/api/exploration/findings/7") || path.hasPrefix("/api/exploration/findings/8") {
+            return reply(path.contains("/8") ? row.replacingOccurrences(of:#""id":"7","finding_id":"7""#,with:#""id":"8","finding_id":"8""#) : row)
+        }
         let query = URLComponents(string:path)?.queryItems ?? []
         let page = query.first{$0.name == "page"}?.value ?? "1", size = query.first{$0.name == "limit"}?.value ?? "20"
-        return reply("{\"items\":[\(row)],\"total\":100,\"page\":\(page),\"page_size\":\(size)}")
+        var item = row
+        if query.contains(where:{$0.name == "task_id" && $0.value == "__unassigned__"}) {
+            item = row.replacingOccurrences(of:#""id":"7","finding_id":"7""#,with:#""id":"8","finding_id":"8""#).replacingOccurrences(of:#""task_id":"11""#,with:#""task_id":null"#)
+        }
+        return reply("{\"items\":[\(item)],\"total\":100,\"page\":\(page),\"page_size\":\(size)}")
     }
     var tree: BackendHTTPResponse { reply(#"{"nodes":[{"key":"r:é","kind":"root_domain","label":"é","self":1,"total":1,"critical":0,"high":1,"medium":0,"low":0,"last_found_at":"raw"},{"key":"r:e\u0301","parent":"r:é","kind":"domain","label":"e\u0301","self":1,"total":1,"critical":0,"high":1,"medium":0,"low":0,"last_found_at":"raw"}],"finding_total":1,"truncated":false}"#) }
     func reply(_ text: String) -> BackendHTTPResponse { .init(status:200,body:Data(text.utf8)) }
@@ -71,17 +78,25 @@ final class FindingsUITests: XCTestCase {
         XCTAssertTrue(api.paths.last?.contains("asset_scope=") == true); screen.stop()
     }
     @MainActor func testOffscreenEnglishJapaneseViewsDoNotStartReadsOrMutations() async throws {
-        let (api,screen) = await make(); await screen.store.refreshStats(); let before = api.paths.count
+        let (api,screen) = await make(); await screen.store.refreshStats()
         for view in FindingView.allCases {
             XCTAssertTrue(screen.setView(view))
+            await screen.store.refreshView()
+            if view == .grouped {
+                for key in ["11","__unassigned__"] { await screen.store.setGroupExpanded(key,expanded:true,owner:screen.store.viewOwner) }
+                XCTAssertEqual(screen.store.groupPages.count,2)
+            }
+            if view == .asset { screen.expandedAssets = [Data("r:é".utf8)]; XCTAssertEqual(screen.store.tree.value?.nodes.count,2) }
+            let before = api.paths.count
             for language in AppLanguage.allCases {
                 for scheme in [ColorScheme.light,.dark] {
                     let host = NSHostingView(rootView:FindingsContent(model:screen,onTask:{_ in}).environment(\.locale,language.locale).environment(\.colorScheme,scheme))
                     for width in [900.0,1440.0] { host.frame = NSRect(x:0,y:0,width:width,height:800); host.layoutSubtreeIfNeeded(); XCTAssertNil(host.window) }
                 }
             }
+            XCTAssertEqual(api.paths.count,before)
         }
-        XCTAssertEqual(api.paths.count,before); screen.stop()
+        screen.stop()
     }
     func testOwnedFindingLabelsAreEnglishJapaneseAndComplete() {
         let keys = AppStringKey.allCases.filter{$0.rawValue.hasPrefix("finding.ui.")}
@@ -101,11 +116,57 @@ final class FindingsUITests: XCTestCase {
         XCTAssertTrue(screen.setView(.asset)); screen.reads.activate(); screen.reads.request()
         try await reached { !screen.reads.isPending && screen.store.tree.value != nil }
         XCTAssertFalse(screen.store.isPolling)
-        XCTAssertTrue(screen.setView(.flat)); try await reached { !screen.reads.isPending }
+        XCTAssertTrue(screen.setView(.flat)); try await reached { !screen.reads.isPending && screen.store.isPolling }
         XCTAssertTrue(screen.store.isPolling,"Flat view must restart polling after the one-shot asset view")
         screen.stop()
         for wait in sleeps { wait.resume(throwing:CancellationError()) }
         let before = api.paths.count; screen.reads.request(forceTree:true)
         await Task.yield(); XCTAssertEqual(api.paths.count,before); XCTAssertFalse(screen.reads.isPending)
+    }
+    @MainActor func testAllDialogKindsHostInBothLanguagesWithoutDispatching() async throws {
+        let (api,screen) = await make(); let row = try XCTUnwrap(screen.store.flat.read.value?.items.first)
+        for kind in 0..<4 {
+            switch kind {
+            case 0: XCTAssertTrue(screen.beginEdit(row))
+            case 1: XCTAssertTrue(screen.beginStatus(row,status:.confirmed))
+            case 2: XCTAssertTrue(screen.beginDelete(row))
+            default:
+                _ = await screen.store.delete(row,owner:screen.store.viewOwner)
+                XCTAssertTrue(screen.beginAcknowledgement("7"))
+            }
+            let id = try XCTUnwrap(screen.dialog).id, before = api.paths.count
+            for language in AppLanguage.allCases {
+                let host = NSHostingView(rootView:FindingDialogView(model:screen,contextID:id).environment(\.locale,language.locale))
+                host.frame = NSRect(x:0,y:0,width:560,height:600); host.layoutSubtreeIfNeeded(); XCTAssertNil(host.window)
+            }
+            XCTAssertEqual(api.paths.count,before); screen.close(dialogID:id)
+        }
+        screen.stop()
+    }
+    @MainActor func testOldInspectorDismissalAndCloseCannotAffectNewSelectionOrABA() async throws {
+        let (_,screen) = await make(); let owner = screen.store.viewOwner
+        await screen.selectDetail(id:"7",owner:owner)
+        let revision = screen.detailRevision, dismiss = FindingBindings.detail(screen,owner:owner,revision:screen.detailRevision)
+        await screen.selectDetail(id:"8",owner:owner); dismiss.wrappedValue = false
+        for _ in 0..<20 { await Task.yield() }
+        XCTAssertEqual(screen.store.selectedDetail?.id,"8")
+        await screen.selectDetail(id:"7",owner:owner); await screen.closeDetail(owner:owner,revision:revision)
+        XCTAssertEqual(screen.store.selectedDetail?.id,"7")
+        await screen.closeDetail(owner:owner,revision:screen.detailRevision); XCTAssertNil(screen.store.selectedDetail)
+    }
+    @MainActor func testPendingSearchSurvivesModeAndPageButNotReplacementOrLogout() async {
+        let (_,screen) = await make()
+        screen.searchDraft = "literal e\u{301} 中文 한국어"; let ticket = screen.searchTicket
+        XCTAssertTrue(screen.page(page:2,size:20,owner:screen.store.viewOwner)); XCTAssertTrue(screen.setView(.asset))
+        XCTAssertTrue(screen.commitSearch(ticket)); XCTAssertEqual(Array(screen.store.filters.search.utf8),Array("literal e\u{301} 中文 한국어".utf8))
+        screen.searchDraft = "newer"; XCTAssertFalse(screen.commitSearch(ticket))
+        let next = screen.searchTicket; screen.reset(); XCTAssertFalse(screen.commitSearch(next)); XCTAssertEqual(screen.store.filters.search,"")
+    }
+    @MainActor func testOldDialogDraftGetterCannotReadNewDialogInputs() async throws {
+        let (_,screen) = await make(); let row = try XCTUnwrap(screen.store.flat.read.value?.items.first)
+        XCTAssertTrue(screen.beginEdit(row)); let id = try XCTUnwrap(screen.dialog).id
+        let draft = FindingBindings.draft(screen,id:id,key:\.nameDraft)
+        screen.close(dialogID:id); XCTAssertTrue(screen.beginEdit(row)); screen.nameDraft = "new private draft"
+        XCTAssertEqual(draft.wrappedValue,""); draft.wrappedValue = "stale"; XCTAssertEqual(screen.nameDraft,"new private draft")
     }
 }

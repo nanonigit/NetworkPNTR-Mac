@@ -7,10 +7,10 @@ import SwiftUI
     private var language: AppLanguage { .preferred(in:[locale.identifier]) }
     private func s(_ key: AppStringKey) -> String { AppStrings.text(key,language:language) }
     var body: some View {
-        let owner = model.store.viewOwner
+        let owner = model.store.viewOwner, ticket = model.searchTicket
         VStack(alignment:.leading,spacing:8) {
             TextField(s(.findingUISearch),text:Binding(get:{model.searchDraft},set:{if model.store.viewOwner == owner, model.controlsAvailable { model.searchDraft = $0 }}))
-                .textFieldStyle(.roundedBorder).accessibilityLabel(s(.findingUISearch)).onSubmit { search(owner:owner) }
+                .textFieldStyle(.roundedBorder).accessibilityLabel(s(.findingUISearch)).onSubmit { _ = model.commitSearch(model.searchTicket) }
             HStack {
                 Picker(s(.findingUISeverity),selection:FindingBindings.filter(model,owner:owner,get:{$0.severity?.rawValue ?? "all"},set:{$0.severity = FindingSeverity(rawValue:$1)})) {
                     Text(s(.findingUIAll)).tag("all")
@@ -40,7 +40,7 @@ import SwiftUI
             }
         }.disabled(!model.controlsAvailable)
         .task(id:Data(model.searchDraft.utf8)) {
-            do { try await Task.sleep(for:.milliseconds(300)); try Task.checkCancellation(); search(owner:owner) } catch { }
+            do { try await Task.sleep(for:.milliseconds(300)); try Task.checkCancellation(); _ = model.commitSearch(ticket) } catch { }
         }
     }
     private var classes: [Data] {
@@ -49,10 +49,5 @@ import SwiftUI
             let bytes = Data(value.utf8); if seen.insert(bytes).inserted { result.append(bytes) }
         }
         return result
-    }
-    private func search(owner: UUID) {
-        guard model.controlsAvailable, model.store.viewOwner == owner else { return }
-        var query = model.store.filters; query.search = model.searchDraft
-        if !query.search.utf8.elementsEqual(model.store.filters.search.utf8) { _ = model.configureFilters(query) }
     }
 }

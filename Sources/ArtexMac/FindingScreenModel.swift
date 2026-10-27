@@ -19,6 +19,12 @@ private struct FindingEditDraft {
     let severity: FindingSeverity?
 }
 
+struct FindingSearchTicket: Hashable {
+    let owner: UUID
+    let session: UUID
+    let draft: Data
+}
+
 /// One authenticated window owns drafts and immutable confirmation contexts.
 @MainActor @Observable final class FindingScreenModel {
     static let preferenceKey = "findings.screen.preferences.v1"
@@ -29,6 +35,19 @@ private struct FindingEditDraft {
     var nameDraft = ""
     var classDraft = ""
     var severityDraft: FindingSeverity?
+    private(set) var detailRevision = UUID()
+    var searchTicket: FindingSearchTicket { .init(owner:store.viewOwner,session:store.sessionOwner,draft:Data(searchDraft.utf8)) }
+    @discardableResult func commitSearch(_ ticket: FindingSearchTicket) -> Bool {
+        guard controlsAvailable, ticket.owner == store.viewOwner, ticket.session == store.sessionOwner, ticket.draft == Data(searchDraft.utf8) else { return false }
+        var query = store.filters; query.search = String(decoding:ticket.draft,as:UTF8.self)
+        if query.search.utf8.elementsEqual(store.filters.search.utf8) { return true }; return configureFilters(query)
+    }
+    func selectDetail(id: String?,owner: UUID) async {
+        guard controlsAvailable, store.viewOwner == owner else { return }; await store.select(id:id,owner:owner)
+    }
+    func closeDetail(owner: UUID,revision: UUID) async {
+        guard controlsAvailable, store.viewOwner == owner else { return }; await selectDetail(id:nil,owner:owner)
+    }
     private(set) var dialog: FindingDialog?
     private(set) var dialogUncertain = false
     private(set) var dialogFailure: AppErrorMessage?
@@ -46,11 +65,15 @@ private struct FindingEditDraft {
     var busy: Bool { isSubmitting || store.isMutating }
     var controlsAvailable: Bool { !busy && dialog == nil }
     @discardableResult func configureFilters(_ query: FindingQuery) -> Bool {
+        let previous = store.viewOwner
         guard !busy, dialog == nil, store.configureFilters(query) else { return false }
-        searchDraft = query.search; expandedAssets = []; persist(); reads.request(); return true
+        searchDraft = query.search; persist()
+        if previous != store.viewOwner { expandedAssets = []; reads.request() }; return true
     }
     @discardableResult func setView(_ value: FindingView) -> Bool {
-        guard !busy, dialog == nil, store.setView(value) else { return false }; persist(); reads.request(); return true
+        let previous = store.view
+        guard !busy, dialog == nil, store.setView(value) else { return false }; persist()
+        if previous != value { reads.viewChanged(); reads.request() }; return true
     }
     @discardableResult func page(page: Int64,size: Int,owner: UUID,group: String? = nil) -> Bool {
         guard controlsAvailable, store.viewOwner == owner else { return false }

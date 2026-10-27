@@ -45,6 +45,6 @@ import SwiftUI
     }
     private var writable: Bool { model.dialog?.id == contextID && !model.busy && !model.dialogUncertain }
     private func draft(_ key: ReferenceWritableKeyPath<FindingScreenModel,String>) -> Binding<String> {
-        Binding(get:{model[keyPath:key]},set:{if writable { model[keyPath:key] = $0 }})
+        FindingBindings.draft(model,id:contextID,key:key)
     }
 }
