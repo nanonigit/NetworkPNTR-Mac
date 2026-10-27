@@ -61,26 +61,31 @@ def compare(native, inputs, reference):
     for key, wanted in expected_hashes.items():
         require(type(wanted) is str and re.fullmatch('[0-9a-f]{64}',wanted) is not None and reference.get(key) == wanted, 'source/binary hash')
     exercise = native['exercise']; require(exercise.get('passed') is True, 'native exercise')
-    checkpoint = exercise['checkpoint']; number(checkpoint.get('schemaVersion'),1); number(checkpoint.get('beforeRequestCount'),116)
+    checkpoint = exercise['checkpoint']; number(checkpoint.get('schemaVersion'),2); number(checkpoint.get('beforeRequestCount'),123)
+    boundary = checkpoint['boundary']
+    require(boundary.get('sharedChecks') == ref.BOUNDARY_SHARED and boundary.get('localChecks') == ref.BOUNDARY_LOCAL, 'native boundary coverage')
+    number(boundary.get('requestCount'),7); number(boundary.get('diagnosticFieldBytes'),8192)
     require(checkpoint.get('terminalChecks') == ['post_mutation_stats','post_mutation_asset_tree'], 'native aggregate receipt')
     mutation = checkpoint['mutation']; number(mutation.get('requestCount'),14); number(mutation.get('partialHTTPStatus'),500)
     require(mutation.get('checks') == ref.NATIVE_MUTATIONS, 'native state coverage')
     require(checkpoint.get('initialChecks') == ref.read_check_names(False) and exercise.get('finalChecks') == ref.read_check_names(True), 'native read coverage')
     number(exercise.get('afterRequestCount'),100)
     expected = dict(initialChecks=checkpoint['initialChecks'], finalChecks=exercise['finalChecks'],
-                    beforeRequestCount=116, afterRequestCount=100, partialHTTPStatus=500, passed=True,
+                    beforeRequestCount=123, afterRequestCount=100, partialHTTPStatus=500, passed=True,
+                    boundaryChecks=boundary['sharedChecks'], boundaryRequestCount=7, diagnosticFieldBytes=8192,
                     mutationChecks=[name for name in mutation['checks'] if name in ref.SHARED_MUTATIONS])
     actual = reference['comparison']
-    for key, count in [('beforeRequestCount',116),('afterRequestCount',100),('partialHTTPStatus',500)]: number(actual.get(key),count)
+    for key, count in [('beforeRequestCount',123),('afterRequestCount',100),('partialHTTPStatus',500),('boundaryRequestCount',7),('diagnosticFieldBytes',8192)]: number(actual.get(key),count)
     require(actual.get('passed') is True and actual == expected, 'common API projection')
     proofs = reference['audit_proofs']; require(set(proofs) == {'seed','before','after'}, 'audit phases')
-    require([len(proofs[k]) for k in ['seed','before','after']] == [2,3,2], 'audit receipt count')
+    require([len(proofs[k]) for k in ['seed','before','after']] == [2,4,2], 'audit receipt count')
     audit(proofs['seed'][0],fresh=True); audit(proofs['seed'][1])
-    for i, proof in enumerate(proofs['before']): audit(proof,final=i == 2)
+    for i, proof in enumerate(proofs['before']): audit(proof,final=i == 3)
     for proof in proofs['after']: audit(proof,final=True)
     return dict(passed=True, scope='shared fixed Findings backend API and same-data persistence', visible_ui_accepted=False,
                 sourceCommit=ref.SOURCE_COMMIT, **expected_hashes, initial_read_checks=100, persisted_read_checks=100,
-                shared_mutation_checks=ref.SHARED_MUTATIONS, partial_http_status=500,
+                shared_mutation_checks=ref.SHARED_MUTATIONS, shared_boundary_checks=ref.BOUNDARY_SHARED,
+                native_local_validation_checks=ref.BOUNDARY_LOCAL, diagnostic_field_bytes=8192, partial_http_status=500,
                 native_only_checks=[name for name in ref.NATIVE_MUTATIONS if name not in ref.SHARED_MUTATIONS],
                 native_boots=3, reference_backend_starts=3)
 

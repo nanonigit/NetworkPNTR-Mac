@@ -160,7 +160,7 @@ struct FindingRunReport: Encodable {
         self.seedConfirmed = seedConfirmed; self.exercise = exercise; self.terminalSuccess = terminalSuccess; self.machineStopped = machineStopped
         passed = stage == .complete && bootAttempts == 3 && expectedCPUCount > 0 && boots.map(\.index) == [1,2,3]
             && boots.allSatisfy{$0.passed && $0.cpuCount == expectedCPUCount} && seedConfirmed && terminalSuccess && machineStopped
-            && exercise?.passed == true && exercise?.checkpoint.beforeRequestCount == 116 && exercise?.afterRequestCount == 100
+            && exercise?.passed == true && exercise?.checkpoint.beforeRequestCount == 123 && exercise?.afterRequestCount == 100
             && exercise?.checkpoint.mutation.partialHTTPStatus == 500
     }
 }

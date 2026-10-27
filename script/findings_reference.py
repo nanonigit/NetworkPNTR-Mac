@@ -32,6 +32,9 @@ EDITED_CLASS = 'F4 edited class e\u0301'
 NUL_NAME = 'F4 NUL\0fixture'
 JS_SPACE = ''.join(chr(n) for n in list(range(9, 14)) + [32, 0xA0, 0x1680, 0x2028, 0x2029, 0x202F, 0x205F, 0x3000, 0xFEFF] + list(range(0x2000, 0x200B)))
 SHARED_MUTATIONS = ['edited_fields', 'separate_status', 'partial_patch_http500', 'partial_patch_readback', 'final_status', 'delete_9102', 'delete_9133']
+BOUNDARY_SHARED = ['single_name_normalized', 'single_class_normalized', 'single_severity', 'empty_name',
+                   'diagnostic_class_8192_bytes', 'original_fields_restored']
+BOUNDARY_LOCAL = ['empty_patch_rejected', 'oversized_body_rejected', 'invalid_page_rejected']
 NATIVE_MUTATIONS = ['initial_cache', 'edited_fields', 'separate_status', 'partial_patch_http500', 'partial_patch_readback',
                     'uncertainty_retained_after_read', 'uncertainty_blocks_write', 'explicit_acknowledgment', 'final_status', 'delete_9102', 'delete_9133', 'final_cache']
 DATA_ROOT = Path('/state/app/data')
@@ -337,11 +340,34 @@ def mutations(client):
     return list(SHARED_MUTATIONS)
 
 
+def boundaries(client):
+    original = copy.deepcopy(dataset(False)[0]); expected = copy.deepcopy(original)
+    verify_row(client.api('GET', BASE + '/9101'), expected)
+    name = 'F4 boundary \ufeffe\u0301 中文 한국어'
+    classification = 'F4 boundary class e\u0301 \ufeff interior 中文 한국어'
+    long_class = '界' * 2730 + 'AB'
+    require(len(long_class.encode('utf-8')) == 8192, 'diagnostic field bytes')
+    # Match the frozen browser trim before dispatch; expected server results remain explicit.
+    attempts = [
+        (dict(name=('\ufeff \u0085 ' + name + ' \u0085 \ufeff').strip(JS_SPACE)), dict(name=name)),
+        (dict(vulnclass=('\u0085 ' + classification + ' \u0085').strip(JS_SPACE)), dict(vulnclass=classification)),
+        (dict(severity='medium'), dict(severity='medium')),
+        (dict(name='\ufeff \t'.strip(JS_SPACE)), dict(name='')),
+        (dict(vulnclass=long_class), dict(vulnclass=long_class)),
+        ({key: original[key] for key in ('name', 'vulnclass', 'severity')},
+         {key: original[key] for key in ('name', 'vulnclass', 'severity')})]
+    for patch, changes in attempts:
+        expected.update(changes)
+        verify_row(client.api('PATCH', BASE + '/9101', patch), expected)
+    return dict(boundaryChecks=list(BOUNDARY_SHARED), boundaryRequestCount=7, diagnosticFieldBytes=8192)
+
+
 def before_restart(client):
-    client.audit(); initial = read_snapshot(client, False); client.audit(); checks = mutations(client)
+    client.audit(); initial = read_snapshot(client, False); client.audit()
+    boundary = boundaries(client); client.audit(); checks = mutations(client)
     verify_stats(client.api('GET', BASE + '/stats'), dataset(True)); verify_tree(client.api('GET', BASE + '/asset-tree?sort=severity'), dataset(True))
-    client.audit(); require(client.calls == 116, 'before request count')
-    return dict(initialChecks=initial, mutationChecks=checks, partialHTTPStatus=500, beforeRequestCount=client.calls)
+    client.audit(); require(client.calls == 123, 'before request count')
+    return dict(initialChecks=initial, mutationChecks=checks, partialHTTPStatus=500, beforeRequestCount=client.calls, **boundary)
 
 
 def sha256_file(path, *, maximum=128 * 1024 * 1024):

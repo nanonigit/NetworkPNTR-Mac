@@ -32,3 +32,5 @@ F4b native probe implementation checkpoint:100 initial reads,14 mutation request
 
 
 Actual basic API/state checkpoint: native3boots and corrected independent reference3starts match; see findings-runtime-verification.md. Keep the remaining individual-field/boundary/normalization, actual UI, advanced Findings and full-product gates open.
+
+Boundary integration uses checkpoint schema2 with100initial+7boundary+14mutation+2aggregate=123 requests, retaining the128/90sec gate. Audit before initial reads, before boundaries, after restoration and after mutations; after restart remains100reads/twoaudits. Shared boundary proof contains six exact named assertions; native-only local validation proof contains three no-dispatch assertions. Reject schema1 as expanded proof and preserve its historical receipts.8192bytes is the finite diagnostic cap, not an upstream field maximum.

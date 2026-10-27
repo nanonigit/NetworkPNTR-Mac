@@ -7,6 +7,7 @@ import Foundation
 public struct FindingExerciseCheckpoint: Codable, Equatable, Sendable {
     public let schemaVersion: Int
     public let initialChecks: [String]
+    public let boundary: FindingExerciseBoundaryProof
     public let mutation: FindingExerciseMutationProof
     public let terminalChecks: [String]
     public let beforeRequestCount: Int
@@ -35,19 +36,22 @@ public struct FindingExerciseReport: Encodable, Equatable, Sendable {
         let initial = try await FindingExerciseReadChecks(client:gate,progress:progress).runInitial()
         guard initial == FindingExerciseReadChecks.expectedChecks(persisted:false) else { throw failure() }
         progress("pre_mutation_audit"); try await audit(gate)
+        let boundary = try await FindingExerciseBoundaryChecks(client:gate,progress:progress).run()
+        guard valid(boundary) else { throw failure() }
+        progress("post_boundary_audit"); try await audit(gate)
         let mutation = try await FindingExerciseMutationChecks(client:gate,progress:progress).run()
         guard valid(mutation) else { throw failure() }
         let service = FindingService(client:gate), rows = FindingExerciseFixture.persisted
         try FindingExerciseAggregateVerifier.stats(try await service.stats(),rows:rows)
         try FindingExerciseAggregateVerifier.tree(try await service.assetTree(),rows:rows)
         progress("terminal_audit"); try await audit(gate)
-        guard gate.requestCount == 116 else { throw failure() }
-        return .init(schemaVersion:1,initialChecks:initial,mutation:mutation,terminalChecks:Self.terminalChecks,beforeRequestCount:gate.requestCount)
+        guard gate.requestCount == 123 else { throw failure() }
+        return .init(schemaVersion:2,initialChecks:initial,boundary:boundary,mutation:mutation,terminalChecks:Self.terminalChecks,beforeRequestCount:gate.requestCount)
     }
     public func runAfterRestart(_ checkpoint: FindingExerciseCheckpoint) async throws -> FindingExerciseReport {
         let gate = try begin()
-        guard checkpoint.schemaVersion == 1, checkpoint.beforeRequestCount == 116,
-              checkpoint.initialChecks == FindingExerciseReadChecks.expectedChecks(persisted:false), valid(checkpoint.mutation),
+        guard checkpoint.schemaVersion == 2, checkpoint.beforeRequestCount == 123,
+              checkpoint.initialChecks == FindingExerciseReadChecks.expectedChecks(persisted:false), valid(checkpoint.boundary), valid(checkpoint.mutation),
               checkpoint.terminalChecks == Self.terminalChecks else { throw failure() }
         try await audit(gate)
         let checks = try await FindingExerciseReadChecks(client:gate,progress:progress).runPersisted()
@@ -62,6 +66,10 @@ public struct FindingExerciseReport: Encodable, Equatable, Sendable {
     }
     private func audit(_ gate: FindingExerciseTransport) async throws {
         try gate.checkLifecycle(); try await fixture.verifyNoAgentActivity(); try gate.checkLifecycle()
+    }
+    private func valid(_ proof: FindingExerciseBoundaryProof) -> Bool {
+        proof.sharedChecks == FindingExerciseBoundaryChecks.sharedChecks && proof.localChecks == FindingExerciseBoundaryChecks.localChecks
+            && proof.diagnosticFieldBytes == 8192 && proof.requestCount == 7
     }
     private func valid(_ proof: FindingExerciseMutationProof) -> Bool {
         proof.checks == FindingExerciseMutationChecks.expectedChecks && proof.requestCount == 14 && proof.partialHTTPStatus == 500
