@@ -132,3 +132,6 @@ F4b finite native/reference experiment must cover all33seeded findings, twoflatp
 
 
 F4 source inspection additionally found generated asset sentinel __none__/kindnone has a fixed Chinese label in db/finding_assets.go. Native presentation must localize only this generated sentinel in en/ja and preserve raw DTO/custom asset labels. This prose/presentation correction does not change layout or the frozen browser.
+
+
+F4b CI repair: the same fixed-data tests must compile on the supported hosted Swift toolchain without increasing compiler budgets or weakening assertions.

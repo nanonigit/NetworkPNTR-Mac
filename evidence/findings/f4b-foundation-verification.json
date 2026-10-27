@@ -61,5 +61,17 @@
     "cloud egress",
     "intermittent kernel reliability",
     "clean Mac/release"
-  ]
+  ],
+  "ci_counter_evidence": {
+    "failed_run": 40466516578,
+    "failed_head": "184adacf0d70ff41b991a105b6b90609dd20149d",
+    "reason": "Hosted Swift type-check timeout in two nested test-data conversion maps",
+    "repair": "Shared explicitly typed test-only helper, same assertions and canonical wire keys",
+    "local_after_repair": {
+      "swift_total": 596,
+      "passed": 595,
+      "explicit_ax_skip": 1
+    },
+    "hosted_repair_result": "must be checked on repaired HEAD"
+  }
 }

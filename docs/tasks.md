@@ -265,3 +265,6 @@ Generated unassigned-asset label: missing presentation API RED, implement sentin
 
 
 F4b foundation checkpoint: finite transport, checksum-bound independent dataset, full row verifier and single-use43list/33detail read stage implemented.17 focused Core cases and16 Findings UI cases pass. Full596Swift (595pass/1existingAXskip),95Python pass. This remains a partial F4b implementation: aggregate/context/mutation/probe/reference/actual three-boot stages are required. See findings-runtime-foundation-verification.md.
+
+
+F4b CI repair order: preserve failed run40466516578/head184adac as compile RED -> typed test helper -> focused/full tests -> review -> exact-head CI. No scope reduction or job suppression.

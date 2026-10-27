@@ -233,3 +233,6 @@ F2チェックポイント: Findingsの所有権付き読取/ページ/保持状
 
 
 F4b基盤: 有限通信ゲート・ハッシュ付き独立期待データ・全文検証器・一度だけ実行する43一覧/33詳細の段階を実装。Core対象17件・Findings UI16件、全Swift596件中595成功/既存AX1保留、Python95件成功。F4bの部分実装であり、集計/文脈/更新/probe/reference/実3起動は未完了です。findings-runtime-foundation-verification.ja.mdを参照。
+
+
+F4b CI修正順序: 失敗40466516578/head184adacをコンパイルREDとして保持→型付きhelper→対象/全体試験→レビュー→同一HEADのCI。試験範囲やジョブは削減しません。

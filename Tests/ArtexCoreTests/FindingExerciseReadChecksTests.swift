@@ -8,19 +8,7 @@ import XCTest
     var cancelAt: Int?
     var onCancel: (() -> Void)?
     init() throws {
-        let url = try XCTUnwrap(Bundle.module.url(forResource:"findings-runtime-seed",withExtension:"json",subdirectory:"Fixtures"))
-        let seed = try XCTUnwrap(JSONSerialization.jsonObject(with:Data(contentsOf:url)) as? [String:Any])
-        let rows = try XCTUnwrap(seed["rows"] as? [[String:Any]]).map { source in
-            var row = source
-            row["id"] = String(source["id"] as! Int); row["finding_id"] = row["id"]
-            row["task_id"] = (source["task_id"] as? Int).map(String.init)
-            row["task_description"] = (source["task_id"] as? Int).map{"F4 terminal task \($0) \(FindingExerciseFixture.literal)"} ?? ""
-            row["assets"] = (source["asset_ids"] as? [Int] ?? []).map { id in
-                ["id":String(id),"type":id == 8201 ? "root_domain" : (id == 8202 ? "subdomain" : "ip"),
-                 "label":id == 8201 ? "fixture.example.test" : (id == 8202 ? "api.fixture.example.test" : "198.51.100.9")]
-            }
-            row.removeValue(forKey:"node_id"); row.removeValue(forKey:"asset_ids"); return row
-        }
+        let rows = try FindingExerciseTestData.objects()
         for row in rows {
             responses["/api/exploration/findings/"+(row["id"] as! String)] = .init(status:200,body:try JSONSerialization.data(withJSONObject:row))
         }

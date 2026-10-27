@@ -111,3 +111,6 @@ F4b uses a bounded typed FindingExercise with hard request/deadline/cancellation
 
 
 Unassigned-asset presentation: identify key__none__ +kindnone, not Han/Hangul content. Use a dedicated en/ja catalog key for visible/accessibility labels; keep raw DTO bytes and every other label unchanged. Lazyweb desktop asset-tree/empty-state search5c779906-437c-40e4-bb84-be6d9ca0d576 returned Hygraph asset metadata(top0.562), no inspected image; pinned source remains primary evidence. No new layout.
+
+
+F4b CI repair: extract seed-to-wire conversion into an explicitly typed test-only helper; use short statements and typed asset mapping, preserving raw values and one canonical wire key. Product code and fixture SQL remain unchanged.

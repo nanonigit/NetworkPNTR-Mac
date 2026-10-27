@@ -25,3 +25,5 @@ MUSUBIの順序で、未実装APIのコンパイルRED、固定DTO/SQLとデー�
 集計・グループ・資産ツリー・タスク別・継承/旧形式の確認、更新/結果不明の明示確認、DEBUG専用guest監査/seed/probe、独立reference runnerが必要です。その後にVMの初回投入・読込済み変更・同じディスクでの永続化という3起動と固定版の対応実行を比較します。失敗状態、部分PATCHの実測、停止後ログ、協調停止を保持します。この区切りでVM/referenceの更新は実行していません。F5の発展機能、全21機能、クラウド通信、断続的kernel障害、別Mac・配布も未完了です。
 
 検証結果: Swift全596件（595成功・既存AX1件明示保留）、Python95件成功、署名付きbuild-only/厳密署名確認、各言語62キーの同梱、固定版の構成一致を確認しました。Python初回はNodeがPATHになく94成功/環境エラー1でした。既存Homebrewディレクトリを指定し、コードを変えず解消しました。LLVM行カバレッジはfixture94.70%、transport97.73%、verifier100%、read stage100%。evidence/findings/f4b-foundation-verification.jsonを参照。標準ライブラリによるfixture変更で、監査対象のPython/Node依存manifestはありません。
+
+CI反証: run40466516578/head184adacは試験データの2式の型推論でコンパイル失敗しました。型付き共有helperへ分割し、通信値・検査は保持しています。修正後のローカル全596件も595成功/AX1保留です。試験専用の互換性修正について、修正HEADのCI確認が必要です。bugs/findings-runtime-ci-typecheck.ja.mdを参照。

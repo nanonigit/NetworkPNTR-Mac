@@ -3,20 +3,7 @@ import XCTest
 
 final class FindingExerciseVerifierTests: XCTestCase {
     private func objects() throws -> [[String:Any]] {
-        let url = try XCTUnwrap(Bundle.module.url(forResource:"findings-runtime-seed",withExtension:"json",subdirectory:"Fixtures"))
-        let seed = try XCTUnwrap(JSONSerialization.jsonObject(with:Data(contentsOf:url)) as? [String:Any])
-        return try XCTUnwrap(seed["rows"] as? [[String:Any]]).map { source in
-            var row = source
-            row.removeValue(forKey:"node_id"); row.removeValue(forKey:"asset_ids")
-            row["id"] = String(source["id"] as! Int); row["findingId"] = row["id"]
-            if let task = source["task_id"] as? Int { row["task_id"] = String(task) }
-            row["taskDescription"] = (source["task_id"] as? Int).map{"F4 terminal task \($0) \(FindingExerciseFixture.literal)"} ?? ""
-            row["assets"] = (source["asset_ids"] as? [Int] ?? []).map { id in
-                ["id":String(id),"type":id == 8201 ? "root_domain" : (id == 8202 ? "subdomain" : "ip"),
-                 "label":id == 8201 ? "fixture.example.test" : (id == 8202 ? "api.fixture.example.test" : "198.51.100.9")]
-            }
-            return row
-        }
+        try FindingExerciseTestData.objects()
     }
     private func record(_ value: [String:Any]) throws -> FindingRecord {
         try BackendJSONCoding.decode(FindingRecord.self,from:JSONSerialization.data(withJSONObject:value))
@@ -31,27 +18,27 @@ final class FindingExerciseVerifierTests: XCTestCase {
     }
     func testEveryDetailFieldMismatchIsRejectedIncludingCanonicallyEquivalentUnicode() throws {
         let original = try XCTUnwrap(objects().first), expected = FindingExerciseFixture.initial[0]
-        for field in ["id","findingId","task_id","name","vulnclass","severity","status","summary","evidence","report","ts","sourceTaskId"] {
+        for field in ["id","finding_id","task_id","name","vulnclass","severity","status","summary","evidence","report","ts","source_task_id"] {
             var raw = original
-            raw[field] = ["id","findingId","task_id","sourceTaskId"].contains(field) ? "9999" : "changed"
+            raw[field] = ["id","finding_id","task_id","source_task_id"].contains(field) ? "9999" : "changed"
             XCTAssertThrowsError(try FindingExerciseVerifier.detail(record(raw),expected:expected),field)
         }
         for field in ["name","summary","evidence","report"] {
             var raw = original; raw[field] = (original[field] as! String).precomposedStringWithCanonicalMapping
             XCTAssertThrowsError(try FindingExerciseVerifier.detail(record(raw),expected:expected),field)
         }
-        var raw = original; raw["inherited"] = true; raw["sourceTaskId"] = "8101"
+        var raw = original; raw["inherited"] = true; raw["source_task_id"] = "8101"
         XCTAssertThrowsError(try FindingExerciseVerifier.detail(record(raw),expected:expected))
         raw = try objects()[1]; raw["assets"] = []
         XCTAssertThrowsError(try FindingExerciseVerifier.detail(record(raw),expected:FindingExerciseFixture.initial[1]))
     }
     func testAssetPresentationProvenanceAndVersionDriftAreRejected() throws {
         let original = try objects()[1], expected = FindingExerciseFixture.initial[1]
-        for field in ["taskDescription","intentId","paramId","trafficCount","evidenceVersion","reportEvidenceVersion","reportStale"] {
+        for field in ["task_description","intent_id","param_id","traffic_count","evidence_version","report_evidence_version","report_stale"] {
             var raw = original
-            if field.hasSuffix("Id") { raw[field] = "9999" }
-            else if field == "reportStale" { raw[field] = true }
-            else if field == "taskDescription" { raw[field] = "changed" }
+            if ["intent_id","param_id"].contains(field) { raw[field] = "9999" }
+            else if field == "report_stale" { raw[field] = true }
+            else if field == "task_description" { raw[field] = "changed" }
             else { raw[field] = 1 }
             XCTAssertThrowsError(try FindingExerciseVerifier.detail(record(raw),expected:expected),field)
         }
