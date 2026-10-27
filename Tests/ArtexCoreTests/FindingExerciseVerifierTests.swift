@@ -10,7 +10,11 @@ final class FindingExerciseVerifierTests: XCTestCase {
             row.removeValue(forKey:"node_id"); row.removeValue(forKey:"asset_ids")
             row["id"] = String(source["id"] as! Int); row["findingId"] = row["id"]
             if let task = source["task_id"] as? Int { row["task_id"] = String(task) }
-            row["assets"] = (source["asset_ids"] as? [Int] ?? []).map{["id":String($0),"type":"fixture","label":"fixture"]}
+            row["taskDescription"] = (source["task_id"] as? Int).map{"F4 terminal task \($0) \(FindingExerciseFixture.literal)"} ?? ""
+            row["assets"] = (source["asset_ids"] as? [Int] ?? []).map { id in
+                ["id":String(id),"type":id == 8201 ? "root_domain" : (id == 8202 ? "subdomain" : "ip"),
+                 "label":id == 8201 ? "fixture.example.test" : (id == 8202 ? "api.fixture.example.test" : "198.51.100.9")]
+            }
             return row
         }
     }
@@ -40,6 +44,24 @@ final class FindingExerciseVerifierTests: XCTestCase {
         XCTAssertThrowsError(try FindingExerciseVerifier.detail(record(raw),expected:expected))
         raw = try objects()[1]; raw["assets"] = []
         XCTAssertThrowsError(try FindingExerciseVerifier.detail(record(raw),expected:FindingExerciseFixture.initial[1]))
+    }
+    func testAssetPresentationProvenanceAndVersionDriftAreRejected() throws {
+        let original = try objects()[1], expected = FindingExerciseFixture.initial[1]
+        for field in ["taskDescription","intentId","paramId","trafficCount","evidenceVersion","reportEvidenceVersion","reportStale"] {
+            var raw = original
+            if field.hasSuffix("Id") { raw[field] = "9999" }
+            else if field == "reportStale" { raw[field] = true }
+            else if field == "taskDescription" { raw[field] = "changed" }
+            else { raw[field] = 1 }
+            XCTAssertThrowsError(try FindingExerciseVerifier.detail(record(raw),expected:expected),field)
+        }
+        let assets = try XCTUnwrap(original["assets"] as? [[String:String]])
+        var raw = original; raw["assets"] = Array(assets.reversed())
+        XCTAssertThrowsError(try FindingExerciseVerifier.detail(record(raw),expected:expected))
+        for field in ["type","label"] {
+            var changed = assets; changed[0][field] = "changed"; raw = original; raw["assets"] = changed
+            XCTAssertThrowsError(try FindingExerciseVerifier.detail(record(raw),expected:expected),field)
+        }
     }
     func testPaginationChecksOrderTotalAndRawFieldsWithEmptyListReport() throws {
         let all = try objects(), rows = FindingExerciseFixture.initial
