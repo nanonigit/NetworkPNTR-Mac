@@ -294,3 +294,6 @@ F5b order: pinned mutation/transaction/readback investigation -> write capabilit
 
 
 F5a CI40536321956 exact2fdfc40 success. F5b write capability: missingRED10fdc5e -> review regressionREDb6cf82d -> corrected9549cae. Focused10, full630Swift(629pass/1existingAXskip),123Python; service90/90/model54/54 lines; signed build/strict signature/localization/inventory pass. State ownership/unknown/ack/stop/reset/detail/body still required before UI, plus actual nonempty evidence and remaining F5/full-product gates. See findings-traffic-write-verification.md.
+
+
+Traffic state order: missing store RED -> controlled reverse/held read and write fixtures -> owned summary/detail/body plus uncertainty/ack/stop/reset GREEN -> review/full regression/coverage/signed build/exact-head CI. F5 actual nonempty evidence and UI remain open.

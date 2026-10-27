@@ -126,3 +126,6 @@ Use a separate seven-request boundary stage: GET9101, name-only, class-only, sev
 
 
 F5 follows findings-advanced-design.md: typed bounded traffic reads first, then mutations/state, lineage/retests/deepen/report, real-byte exports and native UI plus actual guest/browser acceptance. F5a has no UI, host-write, networking or agent activation changes.
+
+
+Implement F5b state per findings-traffic-state-design.md before native evidence controls. Use existing generation-owned reads, per-window selection/session/activity and locally prepared fixed requests. State controls do not change guest capabilities.

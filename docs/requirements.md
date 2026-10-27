@@ -150,3 +150,6 @@ F5 advanced Findings must deliver traffic evidence inspection/mutations/body dow
 
 
 F5b must provide fixed-route evidence bind/edit/remove/order with captured owner/context/snapshot, optimistic versions, exact payload fields and no automatic retries. A post-commit summary failure remains unconfirmed. State ownership/uncertainty and actual guest/UI gates remain required after the write capability.
+
+
+F5b state must own summary/detail/byte-page generations and captured writes across selection, stop/resume/reset; retain unknown outcomes until exact-revision acknowledgement, never treat a later read as proof of prior commit. See findings-traffic-state-design.md.

@@ -1,0 +1,11 @@
+# F5b 所有権付き証跡状態
+
+windowごとの一覧・選択binding詳細・明示した本文1ページは、別finding/task/binding/side/offset/sessionの応答を採用しない。新鮮な一覧を捕捉して書込1件を行い、安全な日英エラー・生データ・バイトoffsetを保持、自動再送しない。サービス契約だけではこの段階を満たさない。
+
+FindingReadStateの世代と、selection owner/session/activityを持つFindingTrafficStoreを使う。finding変更で全取得値、binding変更で詳細/本文、side/offset変更で本文を消す。同じqueryの取得失敗では最終成功値を古い値として保持する。一覧成功時だけ存在しない選択bindingを除去し、失敗時には残す。本文は詳細取得後に読み、不変snapshotのside別長さとtotalを照合する。ページ操作は明示し、自動読取ループを作らない。
+
+送信前に同期検証し、不正入力は通信ゼロ・不明状態なし。active/現owner/新鮮一覧/読書込の非競合/未解決の不明結果なしを要求し、handoff前に読取を無効化する。成功応答を確定一覧として受け取り、その後の再取得失敗でlastConfirmationを失わない。binding所属を照合し詳細/本文を古い状態にする。handoff後の409/取消/不正成功を含む失敗は対象IDと不明回revisionを保持し、読取だけで解除しない。書込終了後に現owner・選択対象・同じrevisionで明示確認できる。browserの失敗後reloadだけより保守的だが、APIは変更しない。
+
+停止はactivity/owner/読取を無効にし、不明状態と終了待ちbusyを保持して遅い成功を捨てる。再開後は再読取が必要で不明状態を維持する。reset/logoutはsessionを変えて全状態を消し、新しい処理を古い応答/cleanupから守る。書込中の選択変更は拒否する。送信前取消は不明にしない。agent/task起動やVM/通信能力の変更はない。
+
+TDD順序は未実装RED→同queryの古い値/失敗と逆順一覧/詳細/本文→binding/side/offset/total→不正入力/確定/409/取消→読取では確認しない/古い確認/書込ゲート→保留応答を使う停止/再開/reset→継承/旧形式/不正選択→独立レビュー/全体/coverage/署名build/修正HEAD CI。UIと空でない実guest/参照は別途必須。backendのみなのでLazyweb対象外。
