@@ -1,0 +1,7 @@
+# Findings referenceの事前修正
+
+再現: 比較器がGuestArtifacts内のnetworkDevices/hostSharesを必須にしていましたが、73ac82aの実測source-inputsには両項目がありません。回帰ce8b9c6でKeyError(networkDevices)を再現しました。同じ回帰で、referenceの成功フラグだけでは保存/掃除失敗を見逃すことも確認しました。この時点でreferenceコンテナは未実行です。
+
+MUSUBI工程: 実測native記録を確認→形式不一致と掃除未完了の受入を再現→構成DTOと観測証拠を切分け→比較器/harnessを修正→対象6試験と再レビュー。5 Whys: manifest全項目を想定→GuestArtifactsのシリアライズは部分DTO→模擬入力に実在しない項目を追加していた→実測形式の試験不足→安全な実測入力を保存し起動時の隔離観測を照合して再発防止。Fishbone: 形式（DTO）・build（ローカルimage IDのregistry解釈）・ライフサイクル（API成功と全体成功の混同）・証拠（模擬形式）。Timeline: native3起動成功→事前レビュー→ce8b9c6 RED→実測形式/掃除GREEN→実referenceは別途必要。
+
+harnessはキャッシュ済み入力を一意なローカルタグへ結び、FROMに使います。元のタグ/IDを保持し、所有する別名だけを掃除します。exercise_passedと最終passedを分け、DB/ログの保存後に削除し、保存失敗なら所有コンテナを保持。掃除と既存資源の保持まで成功を要求し、比較器もその記録を検証します。実行前修正であり、実referenceの失敗を修復した証拠とはしません。kernel信頼性・実画面・全21機能は未完了です。

@@ -32,7 +32,8 @@ def compare(native, inputs, reference):
     require(native.get('stage') == 'complete' and native.get('passed') is True, 'native complete')
     for key in ['seedConfirmed','terminalSuccess','machineStopped']: require(native.get(key) is True, 'native terminal')
     number(native.get('bootAttempts'),3)
-    artifacts = inputs['artifacts']; number(artifacts['networkDevices'],0); number(artifacts['hostShares'],0)
+    # GuestArtifacts intentionally omits policy fields; observed stopped-boot isolation receipts are authoritative.
+    artifacts = inputs['artifacts']
     cpu = artifacts.get('cpuCount',2); require(type(cpu) is int and cpu > 0, 'CPU configuration'); number(native['expectedCPUCount'],cpu)
     boots = native['boots']; require(len(boots) == 3, 'boot count')
     for index, boot in enumerate(boots,1):
@@ -44,6 +45,9 @@ def compare(native, inputs, reference):
     for key in ['fresh_setup','persisted_session','credentials_absent']: require(reference.get(key) is True, 'reference lifecycle')
     number(reference.get('backend_starts'),3); number(reference.get('cooperative_stops'),3); number(reference.get('network_devices'),0)
     require(reference.get('protected_statuses') == [401,401,401], 'reference protected API')
+    harness = reference['harness']
+    for key in ['complete','originalContainersPreserved','inputImagesPreserved','containerRemoved','imageTagRemoved','inputTagsRemoved','exportsComplete']:
+        require(harness.get(key) is True, 'reference export/cleanup')
     host = reference['hostIsolation']
     require(host.get('networkMode') == 'none' and host.get('user') == '1000:1000', 'reference isolation identity')
     for key in ['readOnlyRootfs','capDropAll','noNewPrivileges']: require(host.get(key) is True, 'reference isolation guard')
