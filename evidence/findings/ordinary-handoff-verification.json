@@ -1,0 +1,50 @@
+{
+  "source_commit": "e75ae371ad777ffd1eecdd28d2781a6519b05591",
+  "implementation_commit": "1108f91",
+  "implementation_sha256": {
+    "FindingMutationState.swift": "1871f4ed50b7b6f449a5c2f4e82236382effcc526c41daf46e89df9e68c2b74b",
+    "FindingService.swift": "dd179b0b52ff68fdeac9a4b2a5fe094918bec88c6e335417bb2e3913b4769b55",
+    "FindingStore.swift": "1a9c906e1b407f71e98cd2ba582f1a538065b47a037f4ab14d8b4923c074270f"
+  },
+  "focused_tests": 39,
+  "swift": {
+    "total": 643,
+    "passed": 642,
+    "existing_external_ax_skipped": 1
+  },
+  "python": {
+    "total": 123,
+    "passed": 123
+  },
+  "line_coverage": {
+    "FindingMutationState.swift": {
+      "count": 105,
+      "covered": 104,
+      "percent": 99.04761904761905
+    },
+    "FindingService.swift": {
+      "count": 140,
+      "covered": 140,
+      "percent": 100
+    },
+    "FindingStore.swift": {
+      "count": 203,
+      "covered": 200,
+      "percent": 98.52216748768473
+    }
+  },
+  "signed_build_only": true,
+  "strict_signature": true,
+  "localization_export_check": true,
+  "frozen_inventory_check": true,
+  "review": "Independent recurrence repair review no blocker",
+  "actual_api_write_accepted": false,
+  "visible_ui_accepted": false,
+  "full_goal_complete": false,
+  "pending": [
+    "TaskStore direct and external handoff audit",
+    "LLMStore handoff audit",
+    "native traffic controls and actual nonempty evidence comparison",
+    "remaining F5 all21 cloud kernel cleanMac release"
+  ]
+}

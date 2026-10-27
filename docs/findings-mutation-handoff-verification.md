@@ -1,0 +1,9 @@
+# Existing Findings handoff repair checkpoint
+
+The recurrence audit reproduced synchronous busy-transition cancellation and stop for both ordinary edit and delete: RED3b0e6f3 ran12mutation tests with10failed assertions. Implementation1108f91 adds internal handoff callbacks after cancellation checking, validates session/activity/view/ticket identity, records actual transport handoff and derives observable busy from the actor-owned ticket. Public service signatures and wire contracts are unchanged. See bugs/findings-existing-handoff.md.
+
+Pre-handoff cancellation/stop now returns notStarted with zero transport calls and no unknown episode. Post-handoff errors/cancellation still retain uncertainty, reads do not acknowledge it and no request is replayed. Existing partial-PATCH, inherited detail protection, grouped/flat cache and selection behavior pass. Reset continues holding the old gate until settlement. Independent review found no blocker; targeted39cases pass (12mutation,16service,11traffic state).
+
+Full643Swift cases:642pass, one existing explicit external-AX skip;123Python pass. LLVM lines: mutation104/105(99.05%), service140/140, store200/203(98.52%). Signed app build-only, strict signature, localization export and frozen inventory checks pass. No new dependency packages/manifests. No UI change, guest/network modification, agent execution or actual API write was performed. Lazyweb is out of scope. Prior actual VM/reference receipts remain historical rather than proof of this binary.
+
+The ordinary FindingStore recurrence item is repaired. TaskStore direct/external operations and LLMStore remain separate audit work; their busy writes were located but not accepted or repaired by this checkpoint. Native evidence controls, actual nonempty traffic/body/conflict/persistence and unlocked UI/keyboard/VoiceOver remain required, along with remaining F5/all21/cloud/kernel/clean-Mac/release gates. This is not the full app completion audit.
