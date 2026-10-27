@@ -34,7 +34,7 @@ class FindingCompareTests(unittest.TestCase):
                           assets=0 if fresh else 3, findings=0 if fresh else (31 if final else 33), finding_nodes=0 if fresh else (31 if final else 32), events=3 if final else 0)
             return dict(fixture_audit=True, uid=1000, fresh=fresh, counts=counts)
         ref = dict(comparison=shared, backend_starts=3, cooperative_stops=3, fresh_setup=True, persisted_session=True, credentials_absent=True,
-                   network_devices=0, protected_statuses=[401]*3, sourceCommit=reference.SOURCE_COMMIT, backendSHA256='a'*64, seedSHA256='b'*64, controlSHA256='c'*64,
+                   network_proof=dict(network_interfaces='lo',network_hardware_devices=0,network_nonloopback_up=0,network_external_routes=0),networkCheckerSHA256='d'*64, protected_statuses=[401]*3, sourceCommit=reference.SOURCE_COMMIT, backendSHA256='a'*64, seedSHA256='b'*64, controlSHA256='c'*64,
                    audit_proofs=dict(seed=[audit(True), audit()], before=[audit(), audit(), audit(final=True)], after=[audit(final=True), audit(final=True)]),
                    hostIsolation=dict(networkMode='none', user='1000:1000', readOnlyRootfs=True, privileged=False, hostMounts=0, capDropAll=True, noNewPrivileges=True, ports=0),
                    harness=dict(complete=True,originalContainersPreserved=True,inputImagesPreserved=True,containerRemoved=True,imageTagRemoved=True,inputTagsRemoved=True,exportsComplete=True))
@@ -77,6 +77,11 @@ class FindingCompareTests(unittest.TestCase):
         ref['backendSHA256'] = inputs['provenance']['backendSHA256']
         ref['seedSHA256'] = inputs['seedSHA256']; ref['controlSHA256'] = inputs['controlSHA256']
         self.assertTrue(compare.compare(native, inputs, ref)['passed'])
+
+    def test_reference_observed_network_must_have_zero_hardware_active_links_and_external_routes(self):
+        for key in ['network_hardware_devices','network_nonloopback_up','network_external_routes']:
+            native, inputs, ref = self.receipts(); ref['network_proof'][key] = 1
+            with self.assertRaises(RuntimeError): compare.compare(native, inputs, ref)
 
     def test_incomplete_export_or_cleanup_cannot_be_hidden_by_reference_success(self):
         for key in ['complete','originalContainersPreserved','inputImagesPreserved','containerRemoved','imageTagRemoved','inputTagsRemoved','exportsComplete']:

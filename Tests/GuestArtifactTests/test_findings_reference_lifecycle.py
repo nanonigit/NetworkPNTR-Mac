@@ -33,7 +33,6 @@ class Process:
 class ReferenceLifecycleTests(unittest.TestCase):
     def environment(self, root, processes, *, unreachable=False):
         stack = contextlib.ExitStack(); starts = []; auth = []
-        actual_listdir = os.listdir
         class Client:
             token = None
             def request(self, method, path, body=None):
@@ -49,7 +48,7 @@ class ReferenceLifecycleTests(unittest.TestCase):
         stack.enter_context(patch.object(reference.platform, 'machine', return_value='aarch64'))
         stack.enter_context(patch.object(reference.os, 'getuid', return_value=1000))
         stack.enter_context(patch.dict(reference.os.environ, {'ARTEX_DISPOSABLE_REFERENCE': '1'}, clear=True))
-        stack.enter_context(patch.object(reference.os, 'listdir', side_effect=lambda p: ['lo'] if str(p) == '/sys/class/net' else actual_listdir(p)))
+        stack.enter_context(patch.object(reference, 'inspect_network', return_value=dict(network_interfaces='lo',network_hardware_devices=0,network_nonloopback_up=0,network_external_routes=0)))
         stack.enter_context(patch.object(reference, 'DATA_ROOT', root))
         stack.enter_context(patch.object(reference.seed, 'validate_environment', return_value={'PGPASSWORD': 'fixture-pg-password'}))
         stack.enter_context(patch.object(reference.control, 'audit', return_value={'fixture_audit': True}))

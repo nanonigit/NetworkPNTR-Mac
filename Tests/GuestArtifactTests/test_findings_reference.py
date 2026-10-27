@@ -122,6 +122,16 @@ class FindingsReferenceTests(unittest.TestCase):
         for maximum in [0, 129, True, -1]:
             with self.assertRaises(RuntimeError): reference.Bounded(Wire(), maximum=maximum)
 
+    def test_inactive_virtual_tunnels_are_allowed_but_active_hardware_or_routes_are_rejected(self):
+        from unittest.mock import patch
+        proof = dict(network_interfaces='gre0,lo,tunl0', network_hardware_devices=0, network_nonloopback_up=0, network_external_routes=0)
+        with patch.object(reference.check_network, 'inspect', return_value=proof):
+            self.assertEqual(reference.inspect_network(), proof)
+        for key in ['network_hardware_devices','network_nonloopback_up','network_external_routes']:
+            changed = dict(proof); changed[key] = 1
+            with patch.object(reference.check_network, 'inspect', return_value=changed), self.assertRaises(RuntimeError):
+                reference.inspect_network()
+
     def test_host_main_refused_before_process_or_network(self):
         from unittest.mock import patch
         with patch.object(reference.platform, 'system', return_value='Darwin'), patch.object(reference.subprocess, 'Popen') as process:
