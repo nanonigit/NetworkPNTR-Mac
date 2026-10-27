@@ -120,3 +120,6 @@ F3.2 exposes native flat/grouped/asset Findings views, six stats, server filters
 
 
 F3.2 native basic Findings controls are now wired and in_progress. Full acceptance still requires actual unlocked browser/native keyboard/AX comparisons, F4 VM/reference changes and F5 advanced workflows. See findings-ui-verification.md; do not equate offscreen coverage with rendered acceptance.
+
+
+F4a prepares fixed developer-only33Finding/11terminal-task/12group/3asset/inherited/legacy data under guest-only exact-DSN/fresh-DB/transaction boundaries. No task/agent launch or normal startup hook. Real complete-schema PostgreSQL proof is required before fixture acceptance; see findings-runtime-design.md.

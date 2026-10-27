@@ -99,3 +99,6 @@ F3.2: native split list/detail, asset source-list with iterative raw-UTF8 keyed 
 
 
 F3.2 repairs separate callback lifetimes: managed polling waits retired cleanup, detail callbacks use selection revisions, search uses session/raw draft/control-gate identity, and dialog getters are captured. Coalesced reads retain same-query asset snapshots. See findings-ui-verification.md and bugs/findings-ui-lifecycle.md.
+
+
+F4 follows findings-runtime-design.md: F4a finite transactional seed with no arbitrary inputs, then F4b bounded native/reference reads, mutations and same-disk durability. Preserve browser8787/kernel counter-evidence; no source/default promotion or host command interface. Backend-only: Lazyweb out of scope.

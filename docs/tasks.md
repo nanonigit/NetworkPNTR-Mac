@@ -250,3 +250,6 @@ F3.2 order: document requirements/design -> missing bindings/presentation/read-c
 
 
 F3.2 checkpoint: native three-view Findings workspace, six stats, filters/pagers/selection, detail/provenance and captured triage/delete/unknown dialogs connected to RootView; mirrored feature statusin_progress. REDf140c0e APIs; RED9d8ad0f polling1assertion; RED73091e3 callbacks3cases/5assertions -> GREEN081ec24. Full578Swift(577pass/1existingAXskip),86Python pass;15UI+13screen cases;61en/ja packaged keys, strict signed build-only and frozen baseline pass. Reads/presentation100%, model93.84%, bindings97.67%; table62.60% explicitly retains real row interaction gate. Static re-review pass. Actual UI/keyboard/AX/manualunlock, F4 VM/reference, F5 advanced/full21/cloud/kernel/clean-Mac/release remain open.
+
+
+F4a order: requirements/design -> missing seed RED ->33fixed findings/11terminal tasks + strict runtime/DSN/emptyDB/SQL/child timeout controls GREEN -> Python/security review -> actual complete pinned PostgreSQL rollback/readback/replay proof -> full regressions/build/CI. Then F4b finite native probe/reference/actualVM and F5 advanced; actual UI after unlock remains required.
