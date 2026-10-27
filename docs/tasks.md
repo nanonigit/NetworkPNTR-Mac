@@ -291,3 +291,6 @@ F5a read contract checkpoint: RED7fa5bae -> GREEN718e5cc; six traffic tests, ful
 
 
 F5b order: pinned mutation/transaction/readback investigation -> write capability missing-API RED -> four command contracts GREEN -> adversarial membership/body/version/cancel/status tests -> independent review/full software checks. Then owned state with reverse replies/stop/reset/uncertainty/ack/conflict tests -> actual nonempty evidence and native UI. Preserve F5a pending CI40536321956 until authoritative terminal state.
+
+
+F5a CI40536321956 exact2fdfc40 success. F5b write capability: missingRED10fdc5e -> review regressionREDb6cf82d -> corrected9549cae. Focused10, full630Swift(629pass/1existingAXskip),123Python; service90/90/model54/54 lines; signed build/strict signature/localization/inventory pass. State ownership/unknown/ack/stop/reset/detail/body still required before UI, plus actual nonempty evidence and remaining F5/full-product gates. See findings-traffic-write-verification.md.

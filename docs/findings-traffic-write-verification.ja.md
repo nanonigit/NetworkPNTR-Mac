@@ -1,0 +1,9 @@
+# F5b 証跡書込能力のチェックポイント
+
+固定版とF5aデータhashを変えず、FindingTrafficServiceに捕捉した追加/編集/削除/順序の契約を実装した。未実装RED10fdc5e、レビューで見つかったversion逆行はb6cf82dの4件中1件失敗で再現し、9549caeで修正した。先頭FEFFの試験観測修正も含めbugs/findings-bind-version.ja.mdに記録する。
+
+変更可能なFindingRecordと対応する証跡一覧を要求し、継承/旧形式/別task/非所有bindingは送信ゼロ。POST追加はsource IDとnoteを生のまま、roleを既知4種で送り、重複はbackendの最初優先処理へ渡す。PATCHはversion/role/note、DELETEはversionのみ、PUTはversionと全件の重複なし順列（空一覧では空順列）を送る。本文1MiB以下。nodeではなくstandalone finding handleと正規binding/context IDを経路に使い、任意URLや呼出側認証情報を受け取らない。2^53超のversionも正確に保持する。応答は200/4MiB以下/有効なownerとversionを要求し、追加は同値可・逆行不可、その他は増加必須。同時変更による複数段増加も許容する。409などは生のserver文を表示せず型付きstatusとし、通信/status/サイズ/形式/取消/versionの失敗で自動再送しない。
+
+重点10件（読取6/書込4）、全Swift630件（629成功・既存外部AX1件明示保留）、Python123件が成功。LLVM行カバレッジはモデル54/54、読取/書込サービス90/90。署名build-only・厳密署名・翻訳export・固定構成照合も成功。独立レビューのversion下限問題をRED/GREENで修正し、再レビューで阻害問題なし。依存追加なし。F5aのHEADに対するCI40536321956は成功済みで、このチェックポイント自体も公開時のHEADのCIが必要。
+
+これはサービス能力であり、空でない実証跡への書込や状態/UI統合の証明ではない。guestデータ・VM方針・browser配備・通信許可・実通信・agent実行は変更せず、Lazywebは対象外。次はfinding/context/binding/読取世代、同時書込1件、新鮮な取得値、古いownerの拒否を状態層で保証する。送信前検証、後の再読取失敗でも確定結果を保持、読取/選択/停止で不明結果を消さず、捕捉した回の明示確認まで再送をブロックする。停止は活動を無効化し実行中要求の終了までbusyを保持、reset/logoutは新セッションとし古い応答を捨てる。409の再読取だけで再送を許可しない。詳細/本文とバイトページも同じ所有権を持たせてからUIへつなぐ。実guest/参照の非空証跡・競合/本文/保存、解除後の実画面/キーボード/VoiceOverと残るF5/製品全体は未完了。

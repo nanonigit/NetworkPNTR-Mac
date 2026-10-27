@@ -2,6 +2,8 @@
 
 F5b順序: 固定版の変更/transaction/読戻し調査→書込API未実装RED→4コマンドGREEN→所有binding/本文/version/キャンセル/status→独立レビュー/全体試験。その後に所有権付き状態と逆順応答/停止/reset/結果不明/明示確認/競合試験、実証跡とUI比較を行う。F5a CI40536321956は実際の終了状態を確認するまで未確定。
 
+F5aの2fdfc40に対するCI40536321956は成功。F5b書込能力は未実装RED10fdc5e→レビュー回帰REDb6cf82d→修正9549cae。重点10、全Swift630件（629成功/既存AX1件保留）、Python123件、サービス90/90行・モデル54/54行、署名build/厳密署名/翻訳/構成照合成功。UI前の状態所有権/結果不明/確認/停止/reset/詳細/本文、実証跡と残るF5/製品全体は未完了。findings-traffic-write-verification.ja.md参照。
+
 F5順序: 要件/設計→固定ソースhash付き証跡データと未実装読取APIのRED→型付き契約/サービスGREEN→owner/バイトページ/キャンセルの異常系→独立レビュー/全体/coverage/署名build/修正HEAD CI。その後に変更/状態、lineage/retest/deepen/report、実bytes出力、UIと実VM/固定browser比較を行う。F5a単独ではF5を受け入れない。
 
 F5a読取契約: RED7fa5bae→GREEN718e5cc。重点6件、全Swift626件（625成功/既存AX1件保留）、Python123件。モデル54/54行・サービス32/32行を網羅し、レビュー指摘でサイズ/statusの試験を強化。署名build/厳密署名/翻訳/構成照合成功。findings-traffic-read-verification.ja.md参照。空でない実証跡/API/状態/画面と残るF5/製品全体は未完了。
