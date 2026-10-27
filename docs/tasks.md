@@ -253,3 +253,6 @@ F3.2 checkpoint: native three-view Findings workspace, six stats, filters/pagers
 
 
 F4a order: requirements/design -> missing seed RED ->33fixed findings/11terminal tasks + strict runtime/DSN/emptyDB/SQL/child timeout controls GREEN -> Python/security review -> actual complete pinned PostgreSQL rollback/readback/replay proof -> full regressions/build/CI. Then F4b finite native probe/reference/actualVM and F5 advanced; actual UI after unlock remains required.
+
+
+F4a checkpoint: missingseedRED6dcad07; sequenceunitREDeac81de -> fixed6b19cc9. Nine seed cases/95Python pass;578Swift(577pass/1existingAXskip);101/102seedlines99.02%. Actual PG16.15 old/fixed forcedfinal-error proof isolates six nontransactional sequences, repaired rollback of rows+sequences,33exactfindings/31nodepayloads/legacy/11terminaltasks/inherit/33triggerlinks, main+SQLreplay refusal and zeroactivity. Two preparation failures retained, owncontainers/derivedtagremoved/original4unchanged; Python/security/report review and signedbuild/strictsignature/resource/baseline checks pass. No ARTEX/VM/UI acceptance or kernel promotion. Next F4b finite native/reference exercise/probe and actual same-disk operations; F3visibleafterunlock/F5/full21/cloud/kernel/clean-Mac/release remain open.

@@ -102,3 +102,6 @@ F3.2 repairs separate callback lifetimes: managed polling waits retired cleanup,
 
 
 F4 follows findings-runtime-design.md: F4a finite transactional seed with no arbitrary inputs, then F4b bounded native/reference reads, mutations and same-disk durability. Preserve browser8787/kernel counter-evidence; no source/default promotion or host command interface. Backend-only: Lazyweb out of scope.
+
+
+F4a uses transactional ALTER SEQUENCE RESTART, with explicit postcondition rollback witness; setval is not suitable for this atomic seed. Full runtime DDL includes schema.sql plus llmUsageSchema and llmRecordsSchema/Migrate. Exact33 trigger-created system asset links are part of the expected fixture. See findings-seed-verification.md and bugs/findings-seed-atomicity.md.

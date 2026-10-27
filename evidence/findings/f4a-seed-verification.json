@@ -1,0 +1,66 @@
+{
+  "phase": "F4a",
+  "scope": "fixed diagnostic findings seed and actual PostgreSQL rollback/readback/replay component",
+  "source_commit": "6b19cc96c05286f904da1371c9b17f308ef9c460",
+  "baseline": "e75ae371ad777ffd1eecdd28d2781a6519b05591",
+  "python": {
+    "total": 95,
+    "passed": 95,
+    "failures": 0,
+    "new_seed_cases": 9
+  },
+  "swift": {
+    "total": 578,
+    "passed": 577,
+    "existing_accessibility_skip": 1,
+    "failures": 0
+  },
+  "seed_line_coverage": {
+    "covered": 101,
+    "executable": 102,
+    "percent": 99.01960784313727,
+    "tool": "stdlib trace with missing-line analysis"
+  },
+  "executed_source_sha256": {
+    "script/findings_seed_guest.py": "ff65b9603ddd06704a6ace53398554f14479c5825ec0da573bc775f52036b70f",
+    "Tests/GuestArtifactTests/test_findings_seed.py": "0f4d0ffc3ceb52b0f8d1e061ff6c35c073c0e6e39ab0b0d38c8eb2758bbea137"
+  },
+  "component_harness_sha256": "1ce11c10459c6e982768548ad6919f43930f4084c042f1306e9ec51d8385a4a3",
+  "red_commits": {
+    "missing_seed": "6dcad07",
+    "nontransactional_sequence": "eac81de"
+  },
+  "component_proofs": [
+    "f4a-seed-sql-red.json",
+    "f4a-seed-sql-green.json"
+  ],
+  "preparation_counter_evidence": [
+    {
+      "stage": "initdb",
+      "reason": "UID1000 lacked a passwd entry in cached guest image",
+      "fixture_sql_executed": false,
+      "sequence_regression_proof": false
+    },
+    {
+      "stage": "forced SQL lock",
+      "reason": "separately initialized llm_records DDL missing in initial harness",
+      "fixture_inserts_executed": false,
+      "sequence_regression_proof": false
+    }
+  ],
+  "review": "Python/security and component harness reviewed; sequence repair and actual reports re-reviewed with no remaining component blocker",
+  "owned_components_removed": true,
+  "original_browser_four_unchanged": true,
+  "product_startup_hook": false,
+  "automatic_seed_retries": false,
+  "post_handoff_timeout_result": "unconfirmed; retain state and no success proof",
+  "actual_ARTEX_or_VM_or_UI_acceptance": false,
+  "kernel_candidate_promoted": false,
+  "remaining": [
+    "F4b finite native exercise/probe and independent pinned reference",
+    "actual isolated VM findings API changes and same-disk durability",
+    "manual-unlock native/browser keyboard visual VoiceOver comparison",
+    "F5 export traffic report lineage deepen retest",
+    "full21 cloud kernel reliability clean-Mac release"
+  ]
+}

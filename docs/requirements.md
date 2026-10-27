@@ -123,3 +123,6 @@ F3.2 native basic Findings controls are now wired and in_progress. Full acceptan
 
 
 F4a prepares fixed developer-only33Finding/11terminal-task/12group/3asset/inherited/legacy data under guest-only exact-DSN/fresh-DB/transaction boundaries. No task/agent launch or normal startup hook. Real complete-schema PostgreSQL proof is required before fixture acceptance; see findings-runtime-design.md.
+
+
+F4a fixed seed boundaries and actual PostgreSQL component proof are complete; this does not accept Findings APIs/VM/UI. Post-handoff timeout or lost commit acknowledgement remains unconfirmed. F4b actual guest/reference service and same-disk tests remain mandatory. See findings-seed-verification.md.

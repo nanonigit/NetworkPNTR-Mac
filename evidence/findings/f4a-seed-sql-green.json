@@ -1,0 +1,141 @@
+{
+  "mode": "green",
+  "forced_division_failure": true,
+  "rows_rolled_back": true,
+  "sequence_before": {
+    "tasks": [
+      1,
+      false
+    ],
+    "explorations": [
+      1,
+      false
+    ],
+    "companies": [
+      1,
+      false
+    ],
+    "assets": [
+      1,
+      false
+    ],
+    "findings": [
+      1,
+      false
+    ],
+    "exploration_nodes": [
+      1,
+      false
+    ]
+  },
+  "sequence_after_failure": {
+    "tasks": [
+      1,
+      false
+    ],
+    "explorations": [
+      1,
+      false
+    ],
+    "companies": [
+      1,
+      false
+    ],
+    "assets": [
+      1,
+      false
+    ],
+    "findings": [
+      1,
+      false
+    ],
+    "exploration_nodes": [
+      1,
+      false
+    ]
+  },
+  "sequence_rollback": true,
+  "uid": 1000,
+  "postgres": "postgres (PostgreSQL) 16.15",
+  "no_artex_process": true,
+  "seeded": true,
+  "counts": {
+    "tasks": 11,
+    "explorations": 11,
+    "exploration_nodes": 32,
+    "findings": 33,
+    "companies": 1,
+    "assets": 3,
+    "task_relations": 1,
+    "task_categories": 0,
+    "task_archives": 0,
+    "task_asset_links": 33,
+    "llm_profiles": 0,
+    "llm_records": 0,
+    "llm_usage": 0,
+    "activity": 0,
+    "conversations": 0,
+    "intercept_pending": 0,
+    "finding_retests": 0,
+    "finding_traffic_bindings": 0
+  },
+  "terminal_and_relation": {
+    "bad": 0,
+    "relations": [
+      [
+        8111,
+        8101
+      ]
+    ]
+  },
+  "exact_findings": 33,
+  "exact_node_payloads": 31,
+  "exact_trigger_asset_links": 33,
+  "legacy_readback": true,
+  "main_and_SQL_replay_rejected": true,
+  "replay_unchanged": true,
+  "sequences_after_success": {
+    "tasks": [
+      8112,
+      false
+    ],
+    "explorations": [
+      8112,
+      false
+    ],
+    "companies": [
+      8201,
+      false
+    ],
+    "assets": [
+      8204,
+      false
+    ],
+    "findings": [
+      9134,
+      false
+    ],
+    "exploration_nodes": [
+      15191,
+      false
+    ]
+  },
+  "phase": "F4a",
+  "scope": "PostgreSQL component only; no ARTEX server/VM/API/UI acceptance",
+  "baseline": "e75ae371ad777ffd1eecdd28d2781a6519b05591",
+  "schema_sha256": "17f0f9e28e1a587f48e8723dfc84b5daf25887642e54b12801f95f1fcaea4002",
+  "llm_usage_schema_sha256": "3b3aece1c4c80bceef74d15652e1c97c972275d7c738a41938945f00588c8d39",
+  "llm_records_schema_sha256": "23b379fd1015f5f2d96318c83ffa7fe29bed1e118d4f7e23a5506f8575da19fe",
+  "component_image": "sha256:737b999609b9a50b7a0320d10496a35c08567cae250bc13f958d5551206d9c8b",
+  "base_image": "sha256:735d063ffd4290be40a870c4c77f6a6f9ad16ae306262e2e21e3865cd9c2b91d",
+  "account_only_derivative": true,
+  "local_unix_docker_driver": true,
+  "network": "none",
+  "cap_drop_all": true,
+  "no_new_privileges": true,
+  "readonly_root_tmpfs_work": true,
+  "seed_sha256": "ff65b9603ddd06704a6ace53398554f14479c5825ec0da573bc775f52036b70f",
+  "source_commit": "6b19cc96c05286f904da1371c9b17f308ef9c460",
+  "owned_components_removed": true,
+  "original_browser_four_unchanged": true
+}

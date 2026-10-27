@@ -1,0 +1,80 @@
+{
+  "mode": "red",
+  "forced_division_failure": true,
+  "rows_rolled_back": true,
+  "sequence_before": {
+    "tasks": [
+      1,
+      false
+    ],
+    "explorations": [
+      1,
+      false
+    ],
+    "companies": [
+      1,
+      false
+    ],
+    "assets": [
+      1,
+      false
+    ],
+    "findings": [
+      1,
+      false
+    ],
+    "exploration_nodes": [
+      1,
+      false
+    ]
+  },
+  "sequence_after_failure": {
+    "tasks": [
+      8111,
+      true
+    ],
+    "explorations": [
+      8111,
+      true
+    ],
+    "companies": [
+      8200,
+      true
+    ],
+    "assets": [
+      8203,
+      true
+    ],
+    "findings": [
+      9133,
+      true
+    ],
+    "exploration_nodes": [
+      15190,
+      true
+    ]
+  },
+  "sequence_rollback": false,
+  "uid": 1000,
+  "postgres": "postgres (PostgreSQL) 16.15",
+  "no_artex_process": true,
+  "expected_red": true,
+  "phase": "F4a",
+  "scope": "PostgreSQL component only; no ARTEX server/VM/API/UI acceptance",
+  "baseline": "e75ae371ad777ffd1eecdd28d2781a6519b05591",
+  "schema_sha256": "17f0f9e28e1a587f48e8723dfc84b5daf25887642e54b12801f95f1fcaea4002",
+  "llm_usage_schema_sha256": "3b3aece1c4c80bceef74d15652e1c97c972275d7c738a41938945f00588c8d39",
+  "llm_records_schema_sha256": "23b379fd1015f5f2d96318c83ffa7fe29bed1e118d4f7e23a5506f8575da19fe",
+  "component_image": "sha256:737b999609b9a50b7a0320d10496a35c08567cae250bc13f958d5551206d9c8b",
+  "base_image": "sha256:735d063ffd4290be40a870c4c77f6a6f9ad16ae306262e2e21e3865cd9c2b91d",
+  "account_only_derivative": true,
+  "local_unix_docker_driver": true,
+  "network": "none",
+  "cap_drop_all": true,
+  "no_new_privileges": true,
+  "readonly_root_tmpfs_work": true,
+  "seed_sha256": "5cf11cdba6f33925b87898e24e1564074769b8f28279763f46c1c908ff2a2284",
+  "source_commit": "eac81de",
+  "owned_components_removed": true,
+  "original_browser_four_unchanged": true
+}
