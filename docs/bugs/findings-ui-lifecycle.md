@@ -21,3 +21,12 @@ Controlled tests cover stale inspector and Close, ABA, page/mode/debounce, repla
 ## 5. Prevent
 
 Test each retained callback against its actual intent lifetime; view ownership alone does not identify detail or search intent. Every one-shot/repeating mode transition needs an active polling witness. Never call offscreen layout proof of actual UI, accessibility or browser acceptance. Preserve previous kernel/runtime failures and keep advanced workflows open.
+
+
+## Hosted compiler compatibility follow-up
+
+1. Observe: exact-head CI40437628991 fails compiling FindingFilterBar.body with type-check timeout, while local tests pass.
+2. Investigate: one ViewBuilder combined six nested generic controls and task-label conditionals; different compiler resource limits exposed the oversized expression. 5 Whys leads from timeout -> large inference graph -> one builder boundary -> insufficient hosted-toolchain evidence -> local-only compile acceptance. Fishbone adds compiler/environment and expression structure; timeline is local GREEN -> CI RED -> split controls -> local rerun -> exact-head CI.
+3. Repair: split search/severity/status/sort/class/task builders, explicitly type the UTF8 class binding and simplify the task-title fallback. Keep layout, identity and mutation guards unchanged.
+4. Verify: static re-review found no behavioral change; full578 local Swift rerun passes with one existing skip. Signed rebuild and fresh-head hosted CI remain separately verified.
+5. Prevent: keep generic builders small and require hosted-compiler CI for the exact published head; never treat local compilation as cross-toolchain proof.

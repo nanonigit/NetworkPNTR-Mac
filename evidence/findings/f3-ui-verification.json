@@ -2,7 +2,7 @@
   "phase": "F3.2",
   "scope": "native basic Findings controls integrated with retained authenticated window state; actual UI and runtime comparison pending",
   "baseline": "e75ae371ad777ffd1eecdd28d2781a6519b05591",
-  "source_commit": "081ec24ee0ef7149995af85171f34ca919c8d1fa",
+  "source_commit": "2c54d153df7468dabf3e917092094d993ec92a9b",
   "swift": {
     "total": 578,
     "passed": 577,
@@ -36,9 +36,9 @@
       "percent": 84
     },
     "FindingFilterBar.swift": {
-      "count": 155,
-      "covered": 140,
-      "percent": 90.32258064516128
+      "count": 134,
+      "covered": 113,
+      "percent": 84.32835820895522
     },
     "FindingNavigationPanels.swift": {
       "count": 334,
@@ -80,7 +80,7 @@
     "Sources/ArtexMac/FindingBindings.swift": "8eb3287c4bed3e9b6a413a7438bcc7ce03738f8d2cb01a7541a341aa678256dc",
     "Sources/ArtexMac/FindingDetailPanel.swift": "05b263ebba20d8a963a38c665453e04257065015ec51643f287366eda3db97e5",
     "Sources/ArtexMac/FindingDialogView.swift": "4f43a495d9750215145205abfc4ce7dfd7c195d72f53a2b483ac29317f9cc168",
-    "Sources/ArtexMac/FindingFilterBar.swift": "cb106c561b2494e500f5e82a1756fb6b6f476c97e405bcbf2d4b7f30069f918a",
+    "Sources/ArtexMac/FindingFilterBar.swift": "a380bd8e85dba7a5a701a910e1c9eaf98300975b297960442b2e75b2b6108160",
     "Sources/ArtexMac/FindingNavigationPanels.swift": "63e7d1cd9488ac5538dfdabba3f7809409f5bdced4af995a77c351a0cdaa7b4f",
     "Sources/ArtexMac/FindingPresentation.swift": "74d172ece79d32b1c76d4758cf1af4542f6190b0d3117aaba42b7139d7ae36a4",
     "Sources/ArtexMac/FindingScreenModel.swift": "0172c4c5c20a2fff3b46eff640fe1247e0e778f4208250b46a0aed46291aff64",
@@ -152,5 +152,18 @@
     "F4 disposable VM/pinned reference findings changes and durability",
     "F5 export traffic report generation lineage deepen retest",
     "full21 cloud egress runtime reliability clean-Mac release"
-  ]
+  ],
+  "hosted_compiler_red": {
+    "run": 40437628991,
+    "head": "b07363e4d9057c90747b1ef70aa68a1b86ce8cd5",
+    "error": "FindingFilterBar.body type-check timeout",
+    "repair_commit": "2c54d153df7468dabf3e917092094d993ec92a9b",
+    "repair": "Split control builders and simplify task label expression; unchanged bindings and layout; static re-review passed",
+    "local_full_swift_rerun": {
+      "total": 578,
+      "passed": 577,
+      "existing_accessibility_skip": 1,
+      "failures": 0
+    }
+  }
 }
