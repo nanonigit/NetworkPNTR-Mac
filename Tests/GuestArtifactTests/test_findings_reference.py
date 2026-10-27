@@ -146,7 +146,9 @@ class FindingsReferenceTests(unittest.TestCase):
                     for key, value in body.items(): self.row[key] = value.strip(go_space) if key in ('name','vulnclass') else value
                 else: testcase.assertEqual(method, 'GET')
                 if self.calls == self.corrupt: self.row['summary'] = 'unexpected unrelated write'
-                return 200, copy.deepcopy(self.row)
+                reply = copy.deepcopy(self.row)
+                if reply['name'] == '': reply.pop('name')
+                return 200, reply
         backend = Backend(); client = reference.Bounded(backend)
         proof = reference.boundaries(client)
         self.assertEqual(client.calls, 7); self.assertEqual(proof, dict(boundaryChecks=reference.BOUNDARY_SHARED, boundaryRequestCount=7, diagnosticFieldBytes=8192))
@@ -156,6 +158,14 @@ class FindingsReferenceTests(unittest.TestCase):
             backend = Backend(corrupt=index); client = reference.Bounded(backend)
             with self.assertRaises(RuntimeError): reference.boundaries(client)
             self.assertEqual(client.calls,index)
+
+    def test_empty_name_omission_matches_pinned_dto_without_accepting_missing_nonempty_or_null(self):
+        import copy
+        expected = copy.deepcopy(reference.dataset(False)[0]); row = self.wire_row(expected); row.pop('name')
+        with self.assertRaises(RuntimeError): reference.verify_row(row,expected)
+        expected['name'] = ''; reference.verify_row(row,expected)
+        row['name'] = None
+        with self.assertRaises(RuntimeError): reference.verify_row(row,expected)
 
     def test_host_main_refused_before_process_or_network(self):
         from unittest.mock import patch
