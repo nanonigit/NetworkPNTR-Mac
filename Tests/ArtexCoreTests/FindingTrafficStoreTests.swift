@@ -1,12 +1,15 @@
 import XCTest
+import Observation
 @testable import ArtexCore
 
 @MainActor private final class TrafficStoreAPI: BackendJSONTransport {
     struct Call { let method, path: String; let body: Data? }
     var calls: [Call] = []
     var held: [Int:CheckedContinuation<BackendHTTPResponse,any Error>] = [:]
+    var immediate: BackendHTTPResponse?
     func send(method: String,path: String,body: Data?,bearer: String?) async throws -> BackendHTTPResponse {
         XCTAssertNil(bearer);let index=calls.count;calls.append(.init(method:method,path:path,body:body))
+        if let immediate { return immediate }
         return try await withCheckedThrowingContinuation {held[index]=$0}
     }
     func reply(_ index: Int,_ value: Any,status: Int = 200) throws {
@@ -152,5 +155,56 @@ import XCTest
         let count=api.calls.count,write=Task {await store.apply(.remove(bindingID:"1"),owner:store.owner)}
         try await wait(api,count+1);write.cancel();try api.reply(count,summary(version:3))
         guard case .unconfirmed=await write.value else {return XCTFail()};XCTAssertEqual(store.unknownIDs,["9101"])
+    }
+    func testSummaryReconcilesOnlyOnSuccessAndDetailMustMatchCapturedSnapshot() async throws {
+        let api=TrafficStoreAPI(),store=FindingTrafficStore(service:.init(client:api));try await load(store,api)
+        XCTAssertTrue(store.selectBinding("1",owner:store.owner))
+        let initial=Task {await store.refreshDetail()};try await wait(api,2);try api.reply(1,detail());await initial.value
+        let failed=Task {await store.refreshSummary()};try await wait(api,3);try api.reply(2,["error":"private"],status:500);await failed.value
+        XCTAssertEqual(store.selectedBindingID,"1");XCTAssertEqual(store.detail.value?.binding.id,"1")
+        let current=Task {await store.refreshSummary()};try await wait(api,4);try api.reply(3,summary(version:3,ids:["2"]));await current.value
+        XCTAssertNil(store.selectedBindingID);XCTAssertNil(store.detail.value);XCTAssertNil(store.body.value)
+        XCTAssertFalse(store.selectBinding("3",owner:store.owner));XCTAssertTrue(store.selectBinding("2",owner:store.owner))
+        var mismatched=try detail("2"),row=try binding("2")
+        var snapshot=try XCTUnwrap(row["snapshot"] as? [String:Any]);snapshot["id"]="different-snapshot"
+        row["snapshot_id"]="different-snapshot";row["snapshot"]=snapshot;mismatched["binding"]=row
+        let wrong=Task {await store.refreshDetail()};try await wait(api,5);try api.reply(4,mismatched);await wrong.value
+        XCTAssertNil(store.detail.value);XCTAssertNotNil(store.detail.failure)
+        XCTAssertFalse(store.configureBody(side:.response,offset:0,owner:store.owner))
+        store.stop();await store.refreshSummary();await store.refreshDetail();await store.refreshBody()
+        XCTAssertFalse(store.select(try target("9102")));XCTAssertEqual(api.calls.count,5)
+    }
+    func testUnknownSurvivesSelectionAndOldOwnersCannotAcknowledgeIt() async throws {
+        let api=TrafficStoreAPI(),store=FindingTrafficStore(service:.init(client:api));try await load(store,api)
+        let oldOwner=store.owner,write=Task {await store.apply(.remove(bindingID:"1"),owner:store.owner)}
+        try await wait(api,2);try api.reply(1,["error":"private"],status:500)
+        guard case .unconfirmed=await write.value else {return XCTFail()}
+        let revision=store.unknownRevision
+        try await load(store,api,"9102");XCTAssertEqual(store.unknownIDs,["9101"]);XCTAssertEqual(store.unknownRevision,revision)
+        guard case .notStarted=await store.apply(.remove(bindingID:"1"),owner:store.owner) else {return XCTFail()}
+        XCTAssertFalse(store.acknowledgeUnknown("9101",owner:store.owner,revision:revision))
+        XCTAssertFalse(store.acknowledgeUnknown("9101",owner:oldOwner,revision:revision))
+        try await load(store,api);XCTAssertEqual(store.unknownRevision,revision)
+        XCTAssertTrue(store.acknowledgeUnknown("9101",owner:store.owner,revision:revision));XCTAssertTrue(store.unknownIDs.isEmpty)
+    }
+    func testCancellationBetweenPreparationAndTransportIsNotAnUnknownWrite() async throws {
+        let api=TrafficStoreAPI(),store=FindingTrafficStore(service:.init(client:api));try await load(store,api)
+        let count=api.calls.count
+        let task=Task {
+            withObservationTracking { _ = store.isMutating } onChange: { withUnsafeCurrentTask {$0?.cancel()} }
+            return await store.apply(.remove(bindingID:"1"),owner:store.owner)
+        }
+        let outcome=await task.value
+        XCTAssertEqual(api.calls.count,count);XCTAssertTrue(store.unknownIDs.isEmpty);XCTAssertFalse(store.isMutating)
+        guard case .notStarted=outcome else {return XCTFail("pre-dispatch cancellation marked unknown")}
+    }
+    func testSynchronousStopAtBusyTransitionDoesNotDispatchOrMarkUnknown() async throws {
+        let api=TrafficStoreAPI(),store=FindingTrafficStore(service:.init(client:api));try await load(store,api)
+        let count=api.calls.count
+        api.immediate = .init(status:200,body:try JSONSerialization.data(withJSONObject:summary(version:3)))
+        withObservationTracking { _ = store.isMutating } onChange: { MainActor.assumeIsolated {store.stop()} }
+        let outcome=await store.apply(.remove(bindingID:"1"),owner:store.owner)
+        XCTAssertEqual(api.calls.count,count);XCTAssertTrue(store.unknownIDs.isEmpty);XCTAssertFalse(store.isActive)
+        guard case .notStarted=outcome else {return XCTFail("stopped command dispatched")}
     }
 }
