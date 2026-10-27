@@ -252,4 +252,14 @@ final class FindingsUITests: XCTestCase {
         let row = try XCTUnwrap(screen.store.flat.read.value?.items.first); XCTAssertTrue(screen.beginEdit(row))
         XCTAssertFalse(screen.page(page:3,size:20,owner:screen.store.viewOwner)); screen.stop()
     }
+    func testOnlyGeneratedUnassignedAssetLabelIsLocalizedAndRawDataIsPreserved() throws {
+        let tree = try BackendJSONCoding.decode(FindingAssetTree.self,from:Data(#"{"nodes":[{"key":"__none__","kind":"none","label":"未关联资产","self":0,"total":0,"critical":0,"high":0,"medium":0,"low":0,"last_found_at":"raw"},{"key":"c:8200","kind":"company","label":"literal e\u0301 中文 한국어","self":0,"total":0,"critical":0,"high":0,"medium":0,"low":0,"last_found_at":"raw"},{"key":"custom:none","kind":"none","label":"custom 中文 한국어","self":0,"total":0,"critical":0,"high":0,"medium":0,"low":0,"last_found_at":"raw"}],"finding_total":0,"truncated":false}"#.utf8))
+        let original = Array(tree.nodes[0].label.utf8)
+        XCTAssertEqual(FindingPresentation.assetLabel(tree.nodes[0],language:.english),"Unassigned assets")
+        XCTAssertEqual(FindingPresentation.assetLabel(tree.nodes[0],language:.japanese),"未関連の資産")
+        XCTAssertEqual(Array(tree.nodes[0].label.utf8),original)
+        for node in tree.nodes.dropFirst() { for language in AppLanguage.allCases {
+            XCTAssertEqual(Array(FindingPresentation.assetLabel(node,language:language).utf8),Array(node.label.utf8))
+        } }
+    }
 }

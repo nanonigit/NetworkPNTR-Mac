@@ -129,3 +129,6 @@ F4a fixed seed boundaries and actual PostgreSQL component proof are complete; th
 
 
 F4b finite native/reference experiment must cover all33seeded findings, twoflatpages, twogroupheaderpages and independent8101group pages, all4severity/9status/3class/12task filters, literal search and asset scopes, node-vs-finding identity, inherited/legacy readonly, trim-preserving edits, separate status update, actual partially committed compoundPATCH, explicit uncertainty acknowledgement, two deletions and same-disk persistence. No tasklaunch/agents/external destinations; audited fixed fixture only. Core/fake tests do not close actual VM/reference/UI gates.
+
+
+F4 source inspection additionally found generated asset sentinel __none__/kindnone has a fixed Chinese label in db/finding_assets.go. Native presentation must localize only this generated sentinel in en/ja and preserve raw DTO/custom asset labels. This prose/presentation correction does not change layout or the frozen browser.

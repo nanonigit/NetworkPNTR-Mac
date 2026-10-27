@@ -108,3 +108,6 @@ F4a uses transactional ALTER SEQUENCE RESTART, with explicit postcondition rollb
 
 
 F4b uses a bounded typed FindingExercise with hard request/deadline/cancellation gates and an injected fixed no-agent auditor. Before-restart operations produce a typed checkpoint; a fresh runner verifies persisted final values and deleted nodes after restart. A DEBUG-only guest fixture client/probe seeds and audits existing authenticated guest script route; independent reference runner derives same normalized report. Three boots are needed: seed fresh DB, restart to hydrate task context and mutate, then restart to verify durability. Source server.go2396-2431 commits status before later name errors, so owned fixture status+NUL-name can witness partial commit without a general fault command; verify actual result before accepting it. Status notifications may create internal events, but no channels/deliveries/agents may be configured or run.
+
+
+Unassigned-asset presentation: identify key__none__ +kindnone, not Han/Hangul content. Use a dedicated en/ja catalog key for visible/accessibility labels; keep raw DTO bytes and every other label unchanged. Lazyweb desktop asset-tree/empty-state search5c779906-437c-40e4-bb84-be6d9ca0d576 returned Hygraph asset metadata(top0.562), no inspected image; pinned source remains primary evidence. No new layout.

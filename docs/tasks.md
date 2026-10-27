@@ -259,3 +259,6 @@ F4a checkpoint: missingseedRED6dcad07; sequenceunitREDeac81de -> fixed6b19cc9. N
 
 
 F4b order: inspect pinned service/notification/node-sync contracts -> write Core fixture vectors/request bounds/checkpoint tests RED -> typed finite exercise GREEN -> DEBUG seed/audit/probe and independent reference with guardtests -> review/full regressions/build/CI -> actual three-boot dedicatedVM and separate pinned backend starts -> normalized compare/full stopped-log audit/cleanup -> evidence. Do not mark F4 accepted from Core unit/fake output; actual partialPATCH/durability/UI/full21 remain required.
+
+
+Generated unassigned-asset label: missing presentation API RED, implement sentinel-scoped translation GREEN, raw/custom Unicode preservation test; reuse all Findings UI tests/review and packaged en/ja resource check. Actual visible language/AX remains after unlock.
