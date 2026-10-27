@@ -36,7 +36,8 @@ class FindingCompareTests(unittest.TestCase):
         ref = dict(comparison=shared, backend_starts=3, cooperative_stops=3, fresh_setup=True, persisted_session=True, credentials_absent=True,
                    network_devices=0, protected_statuses=[401]*3, sourceCommit=reference.SOURCE_COMMIT, backendSHA256='a'*64, seedSHA256='b'*64, controlSHA256='c'*64,
                    audit_proofs=dict(seed=[audit(True), audit()], before=[audit(), audit(), audit(final=True)], after=[audit(final=True), audit(final=True)]),
-                   hostIsolation=dict(networkMode='none', user='1000:1000', readOnlyRootfs=True, privileged=False, hostMounts=0, capDropAll=True, noNewPrivileges=True, ports=0))
+                   hostIsolation=dict(networkMode='none', user='1000:1000', readOnlyRootfs=True, privileged=False, hostMounts=0, capDropAll=True, noNewPrivileges=True, ports=0),
+                   harness=dict(complete=True,originalContainersPreserved=True,inputImagesPreserved=True,containerRemoved=True,imageTagRemoved=True,inputTagsRemoved=True,exportsComplete=True))
         return native, inputs, ref
 
     def test_complete_common_projection_keeps_native_only_checks_explicit(self):
@@ -66,6 +67,20 @@ class FindingCompareTests(unittest.TestCase):
             with self.assertRaises(RuntimeError): compare.compare(native, inputs, ref)
         for key, value in [('networkMode','bridge'), ('readOnlyRootfs',False), ('privileged',True), ('hostMounts',1), ('ports',1), ('noNewPrivileges',False), ('capDropAll',False), ('user','0')]:
             native, inputs, ref = self.receipts(); ref['hostIsolation'][key] = value
+            with self.assertRaises(RuntimeError): compare.compare(native, inputs, ref)
+
+    def test_actual_native_input_schema_relies_on_observed_boot_isolation(self):
+        import json
+        native, _, ref = self.receipts()
+        inputs = json.loads((ROOT / 'evidence/findings/f4b-native-source-inputs.json').read_text())
+        self.assertNotIn('networkDevices', inputs['artifacts']); self.assertNotIn('hostShares', inputs['artifacts'])
+        ref['backendSHA256'] = inputs['provenance']['backendSHA256']
+        ref['seedSHA256'] = inputs['seedSHA256']; ref['controlSHA256'] = inputs['controlSHA256']
+        self.assertTrue(compare.compare(native, inputs, ref)['passed'])
+
+    def test_incomplete_export_or_cleanup_cannot_be_hidden_by_reference_success(self):
+        for key in ['complete','originalContainersPreserved','inputImagesPreserved','containerRemoved','imageTagRemoved','inputTagsRemoved','exportsComplete']:
+            native, inputs, ref = self.receipts(); ref['harness'][key] = False
             with self.assertRaises(RuntimeError): compare.compare(native, inputs, ref)
 
     def test_audit_shape_owned_counts_and_activity_are_not_replaced_by_passed_flags(self):

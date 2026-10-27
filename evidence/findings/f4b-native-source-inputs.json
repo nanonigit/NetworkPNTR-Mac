@@ -1,0 +1,20 @@
+{
+  "artifacts": {
+    "architecture": "arm64",
+    "bootMode": "rootDisk",
+    "cpuCount": 1,
+    "initramfs": "initramfs.cpio.gz",
+    "initramfsSHA256": "88de8582409a9ad861a69035f056e65953b36803fbc77b391e0a9deb77e335ba",
+    "kernel": "Image",
+    "kernelSHA256": "8e57308787c420cb42e4c4ea80e6def6438a52232692c010dc4609bb9bf21879",
+    "systemDisk": "system.ext4",
+    "systemDiskSHA256": "82e32042ec52dd316c74357d3ce5ef4dbbaf76c22a16a1dc73c925bc38fb9346"
+  },
+  "controlSHA256": "0ed7fbb3561758de6e8651d4ec794ded957ae32fb145f598dc794ba51a600514",
+  "provenance": {
+    "backendImage": "sha256:46b3ce5d5f91cd05b9e3fd6834e33196be9626eb40d38e84b7fb398f00a172d0",
+    "backendSHA256": "0ebad83ddda276b03b415d64ce30af44e7a587860f3b660c12563462a0ac5e80",
+    "sourceCommit": "e75ae371ad777ffd1eecdd28d2781a6519b05591"
+  },
+  "seedSHA256": "ff65b9603ddd06704a6ace53398554f14479c5825ec0da573bc775f52036b70f"
+}
