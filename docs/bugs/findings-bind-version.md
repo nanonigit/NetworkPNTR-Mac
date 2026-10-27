@@ -1,0 +1,7 @@
+# Evidence bind version floor
+
+MUSUBI: inspect pinned transaction/readback contracts; reproduce the review finding with a captured version2 and successful version1 bind response; repair the response invariant; verify focused/full tests; preserve regression and bilingual evidence. No actual guest command was replayed.
+
+5 Whys: stale response was accepted because bind omitted its prior version; the implementation distinguished no-op bind from advancing edits by removing the floor entirely; unchanged was confused with unconstrained; initial tests covered equality but not regression; the monotonic counter invariant lacked a negative case. Fishbone: API interpretation, response verification and test completeness. Timeline: missing writer RED10fdc5e -> implementation -> independent review -> executed four-test RED with one version-regression failure at b6cf82d -> require >=captured for bind, >captured for edits/removal/order -> GREEN. Concurrent post-commit reads may advance multiple steps and remain valid. This repair changes no backend/version/network policy.
+
+A separate first-run test assertion used JSONSerialization to inspect a leading-FEFF note; that conversion dropped the marker even though typed wire decoding preserved it. The assertion now uses BackendJSONCoding.decode on the actual encoded body. It is a test-observation correction, not a product normalization fix. Raw NFD/CJK/FEFF preservation remains required.

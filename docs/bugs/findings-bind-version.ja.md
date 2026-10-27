@@ -1,0 +1,7 @@
+# 証跡追加時のversion下限
+
+MUSUBIの流れで固定版のtransaction/読戻しを確認し、取得時version2・追加応答version1でレビュー指摘を再現、応答条件を修正、重点/全体試験と回帰・日英記録を残す。実guestのコマンド再送は行っていない。
+
+5 Whys: 古い応答を受理→追加では取得時versionを外した→変更なしの追加とversion増加操作を区別する際に下限まで削除→初期試験は同値だけ確認→単調増加の負例が不足。特性要因はAPI解釈・応答条件・試験。時系列は未実装RED10fdc5e→実装→独立レビュー→b6cf82dで4件中1件がversion逆行の実行RED→追加は取得時以上、編集/削除/順序は取得時超へ修正→GREEN。同時変更による保存後の複数version増加は許容する。backendやversion/通信方針は変更しない。
+
+別の初回試験では先頭FEFFのnoteをJSONSerializationで読む比較が文字を落とした。実送信本文をBackendJSONCoding.decodeで読む比較へ修正し保持を確認する。製品の正規化修正ではなく試験の観測方法の修正である。NFD/CJK/FEFFの保持条件は維持する。
