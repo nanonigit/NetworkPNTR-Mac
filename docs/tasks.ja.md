@@ -1,5 +1,7 @@
 # フェーズとテストの合格条件
 
+タスク監査順序: 直接5操作の同期取消/停止と外部取得3種RED→ticket/callback/lease GREEN→既存service/store/workspace回帰→独立レビュー/全体/CI。この合成試験ではguest agentを開始しない。
+
 再発監査順序: 通常FindingStore編集/削除のObservation RED→内部handoff/ticket由来busy GREEN→既存変更/読取/UI/probe回帰・レビュー→全体/CI。その後にTaskStore/LLM監査と証跡UIへ進み、製品全体の完了とはしない。
 
 通常FindingStore再発修正: RED3b0e6f3（12件/10アサーション失敗）→1108f91、重点39/全Swift643件（642成功/既存AX1件保留）、Python123。変更104/105・サービス140/140・状態200/203行、署名build/厳密署名/翻訳/構成照合成功。findings-mutation-handoff-verification.ja.md参照。次はTaskStoreの直接/外部とLLMStoreをhandoff監査し、証跡UIと非空実guest/browser/画面比較へ進む。全体ゴールは未完了。

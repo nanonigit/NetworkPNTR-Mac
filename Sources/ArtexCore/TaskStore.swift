@@ -30,11 +30,25 @@ public enum TaskMutationConfirmation: Sendable {
     public private(set) var lastConfirmation: TaskMutationConfirmation?
     public private(set) var mutationFailure: AppErrorMessage?
     public private(set) var mutationUncertain = false
-    public private(set) var isMutating = false
+    public var isMutating: Bool { mutationTicket != nil || externalTicket != nil }
     public private(set) var isPolling = false
     @ObservationIgnored private let service: TaskService
     @ObservationIgnored private let sleep: @MainActor (Duration) async throws -> Void
-    @ObservationIgnored private var externalTicket: (id: UUID, life: UUID, kind: ExternalKind)?
+    private var externalTicket: (id: UUID, life: UUID, kind: ExternalKind)?
+    private var mutationTicket: MutationTicket?
+    @ObservationIgnored private var acquiring = false
+    @MainActor private final class MutationTicket {
+        let id = UUID()
+        let life, activity: UUID
+        var handedOff = false
+        init(life: UUID,activity: UUID) { self.life = life; self.activity = activity }
+        func begin(in store: TaskStore) throws {
+            try Task.checkCancellation()
+            guard life == store.lifetime, activity == store.activity, store.mutationTicket?.id == id,
+                  store.externalTicket == nil else { throw CancellationError() }
+            handedOff = true
+        }
+    }
     private enum ExternalKind { case category, bulk, archive }
     @ObservationIgnored private var lifetime = UUID()
     @ObservationIgnored private var activity = UUID()
@@ -91,14 +105,19 @@ public enum TaskMutationConfirmation: Sendable {
         beginExternalMutation(kind:.category)
     }
     private func beginExternalMutation(kind: ExternalKind) -> UUID? {
-        guard !isMutating, !Task.isCancelled else { return nil }
-        let id = UUID(); externalTicket = (id,lifetime,kind); isMutating = true; invalidateReads()
+        guard !isMutating, !acquiring, !Task.isCancelled else { return nil }
+        let id = UUID(), life = lifetime, visible = activity
+        acquiring = true; defer { acquiring = false }
+        externalTicket = (id,life,kind); invalidateReads()
         mutationFailure = nil; mutationUncertain = false; lastConfirmation = nil
+        guard !Task.isCancelled, life == lifetime, visible == activity, externalTicket?.id == id, mutationTicket == nil else {
+            if externalTicket?.id == id { externalTicket = nil }; return nil
+        }
         return id
     }
     public func finishCategoryMutation(ticket: UUID, change: TaskCategoryChange?) {
         guard let owner = externalTicket, owner.id == ticket, owner.kind == .category else { return }
-        externalTicket = nil; isMutating = false; invalidateReads()
+        externalTicket = nil; invalidateReads()
         guard owner.life == lifetime else { return }
         if let change {
             if let tasks = list.value { list.value = change.applying(to:tasks) }
@@ -110,7 +129,7 @@ public enum TaskMutationConfirmation: Sendable {
     public func beginArchiveMutation() -> UUID? { beginExternalMutation(kind:.archive) }
     public func finishArchiveMutation(ticket: UUID) {
         guard let owner = externalTicket, owner.id == ticket, owner.kind == .archive else { return }
-        externalTicket = nil; isMutating = false; invalidateReads()
+        externalTicket = nil; invalidateReads()
         guard owner.life == lifetime else { return }
         list.isStale = true; detail.isStale = true
     }
@@ -142,37 +161,38 @@ public enum TaskMutationConfirmation: Sendable {
     }
     public func finishBulkMutation(ticket: UUID) {
         guard let owner = externalTicket, owner.id == ticket, owner.kind == .bulk else { return }
-        externalTicket = nil; isMutating = false; invalidateReads()
+        externalTicket = nil; invalidateReads()
         guard owner.life == lifetime else { return }
         list.isStale = true; detail.isStale = true
     }
 
     public func create(_ draft: TaskCreateDraft) async -> TaskMutationOutcome<TaskRecord> {
-        await perform(confirm: TaskMutationConfirmation.created) { try await self.service.create(draft) }
+        await perform(confirm: TaskMutationConfirmation.created) { ticket in try await self.service.create(draft,onDispatch:{try ticket.begin(in:self)}) }
     }
     public func update(id: String, patch: TaskMetadataPatch) async -> TaskMutationOutcome<TaskRecord> {
-        await perform(confirm: TaskMutationConfirmation.updated) { try await self.service.update(id: id, patch: patch) }
+        await perform(confirm: TaskMutationConfirmation.updated) { ticket in try await self.service.update(id:id,patch:patch,onDispatch:{try ticket.begin(in:self)}) }
     }
     public func control(id: String, action: TaskControlAction) async -> TaskMutationOutcome<TaskControlResult> {
-        await perform(confirm: TaskMutationConfirmation.controlled) { try await self.service.control(id: id, action: action) }
+        await perform(confirm: TaskMutationConfirmation.controlled) { ticket in try await self.service.control(id:id,action:action,onDispatch:{try ticket.begin(in:self)}) }
     }
     public func controlBatch(ids: [String], action: TaskControlAction) async -> TaskMutationOutcome<[TaskBatchControlItem]> {
-        await perform(confirm: TaskMutationConfirmation.batchControlled) { try await self.service.controlBatch(ids: ids, action: action) }
+        await perform(confirm: TaskMutationConfirmation.batchControlled) { ticket in try await self.service.controlBatch(ids:ids,action:action,onDispatch:{try ticket.begin(in:self)}) }
     }
     public func delete(id: String, options: TaskDeletionOptions = .init()) async -> TaskMutationOutcome<TaskDeletionResult> {
-        await perform(confirm: TaskMutationConfirmation.deleted) { try await self.service.delete(id: id, options: options) }
+        await perform(confirm: TaskMutationConfirmation.deleted) { ticket in try await self.service.delete(id:id,options:options,onDispatch:{try ticket.begin(in:self)}) }
     }
 
     private func perform<Value: Sendable>(confirm: (Value) -> TaskMutationConfirmation,
-                                         operation: () async throws -> Value) async -> TaskMutationOutcome<Value> {
-        guard !isMutating, !Task.isCancelled else { return .notStarted }
+                                         operation: @MainActor (MutationTicket) async throws -> Value) async -> TaskMutationOutcome<Value> {
+        guard !isMutating, !acquiring, !Task.isCancelled else { return .notStarted }
         let life = lifetime; let visible = activity
-        isMutating = true; invalidateReads()
+        let ticket = MutationTicket(life:life,activity:visible)
+        acquiring = true; mutationTicket = ticket; acquiring = false; invalidateReads()
         mutationFailure = nil; mutationUncertain = false; lastConfirmation = nil
         do {
-            let value = try await operation()
+            let value = try await operation(ticket)
             // Reset cannot release the gate while a previous-session operation is pending.
-            isMutating = false
+            if mutationTicket?.id == ticket.id { mutationTicket = nil }
             guard life == lifetime else { return .discarded }
             let receipt = confirm(value); lastConfirmation = receipt
             list.isStale = true; detail.isStale = true
@@ -188,10 +208,11 @@ public enum TaskMutationConfirmation: Sendable {
             }
             return life == lifetime ? .confirmed(value) : .discarded
         } catch {
-            isMutating = false
+            if mutationTicket?.id == ticket.id { mutationTicket = nil }
             guard life == lifetime else { return .discarded }
+            if !ticket.handedOff, error is CancellationError { return .notStarted }
             mutationFailure = AppErrorMessage(error)
-            if error is TaskInputError { return .rejected }
+            if !ticket.handedOff || error is TaskInputError { return .rejected }
             mutationUncertain = true; list.isStale = true; detail.isStale = true
             return .unconfirmed
         }

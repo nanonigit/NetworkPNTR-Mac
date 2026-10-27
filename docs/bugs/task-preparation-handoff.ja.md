@@ -1,0 +1,7 @@
+# タスク準備・外部処理枠の再発監査
+
+MUSUBIでTaskStore→TaskServiceとcategory/archive/bulkの共有取得を追跡した。注入transportで直接5操作と処理枠3種のbusy時同期取消/停止を再現し、RED89bda84は4件中37アサーション失敗。実guest agentや実要求は開始しない。
+
+5 Whys: 送信前取消が不明→operation失敗を全て送信後扱い→サービスの取消確認より先にbusy公開→明示handoffなし→取得中の同期callback試験が不足。外部取得もactivity/取消が変わった後にtokenを返していた。特性要因は段階境界・busyの二重管理・observable再入。修正では直接/外部ticket由来のbusy、取得再入防止、公開後の外部token再照合、取消確認済みhandoffでのlifetime/activity/現ticket検証を行う。
+
+以前の取消/古い準備はnotStarted、ローカル不正はrejected、handoff後失敗はunconfirmed。公開署名・通信/status照合・自動再送なし・選択・再取得失敗後の確定・resetの終了待ちは維持する。重点31件と独立レビューで阻害問題なし。共有取得は検証したが、その後の外部workspace送信とLLMStoreは別監査であり、実task/agentライフサイクルやbrowser/native画面受入とはしない。

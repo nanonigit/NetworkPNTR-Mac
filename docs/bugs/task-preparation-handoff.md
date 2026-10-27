@@ -1,0 +1,7 @@
+# Task preparation and external lease recurrence
+
+MUSUBI collection followed TaskStore -> TaskService and shared category/archive/bulk acquisition. Injected transports reproduced cancellation/stop synchronously at observable busy for five direct commands and three lease kinds. RED89bda84 ran four cases with37failed assertions; no guest agent or real request was launched.
+
+5 Whys: pre-send cancellation became uncertain because the state assumed all operation failures followed send; service cancellation checks occurred after busy publication; no explicit handoff existed; tests omitted synchronous callbacks during acquisition. External acquisition similarly returned a token after its activity/cancellation had changed. Fishbone: phase boundaries, duplicated busy state and observable reentry. The repair derives busy from direct/external tickets, guards acquisition reentry, revalidates external tokens after publication, and validates lifetime/activity/current direct ticket at the service's cancellation-checked handoff.
+
+Earlier cancellation/stale preparation is notStarted, local validation remains rejected and post-handoff failures remain unconfirmed. Public API signatures, wire/status validation, no-retry behavior, selection, confirmed receipts despite refresh failure and reset-held gate remain intact. Targeted31tests pass; independent review found no blocker. Shared lease acquisition is covered, but later external workspace dispatch and LLMStore remain separate audit work. This does not claim actual task/agent lifecycle or browser/native UI acceptance.
