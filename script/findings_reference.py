@@ -191,7 +191,9 @@ def verify_row(actual, expected, *, report=True, node=False, inherited=False, le
     for key in ('intent_id', 'param_id'): require(actual.get(key) is None, 'unexpected lineage')
     for key in ('traffic_count', 'evidence_version', 'report_evidence_version'): number(actual.get(key, 0), 0)
     require(actual.get('report_stale', False) is False, 'report stale')
-    for key in ('name', 'vulnclass', 'severity', 'status', 'summary', 'ts'): text(actual.get(key), expected[key])
+    # FindingDTO.name uses omitempty; a missing value is empty, while null stays invalid.
+    text(actual.get('name', ''), expected['name'])
+    for key in ('vulnclass', 'severity', 'status', 'summary', 'ts'): text(actual.get(key), expected[key])
     description = f"F4 terminal task {expected['task_id']} {seed.LITERAL}" if expected['task_id'] else ''
     text(actual.get('task_description', ''), description)
     evidence = actual.get('evidence')
