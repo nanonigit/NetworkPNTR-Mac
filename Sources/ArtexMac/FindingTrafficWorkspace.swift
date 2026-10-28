@@ -51,6 +51,8 @@ struct EvidenceTextPreview {
     @ObservationIgnored private var stopRequested = false
     @ObservationIgnored private var stopping = false
     @ObservationIgnored private var cancelling = false
+    @ObservationIgnored private let storeOwnership: UUID
+    @ObservationIgnored private var stoppedStoreOwnership: UUID?
 
     init(target: FindingRecord, contextTaskID: String? = nil, service: FindingTrafficService, exporter: FindingEvidenceExporter? = nil, retainedStore: FindingTrafficStore? = nil, onChanged: @escaping @MainActor (UUID) async -> Void = {_ in}) throws {
         guard target.findingId != nil else { throw FindingInputError.readOnly }
@@ -60,9 +62,10 @@ struct EvidenceTextPreview {
         if !store.isActive { store.resume() }
         actions = FindingTrafficActions(store:store,onChanged:onChanged)
         guard store.select(target,contextTaskID:contextTaskID) else { throw FindingInputError.readOnly }
+        storeOwnership = store.owner
         actions.workspace = self
     }
-    var confirmationControlsAvailable: Bool { isActive && !transitioning && !stopping && !isReading && !isExporting && !Task.isCancelled }
+    var confirmationControlsAvailable: Bool { isActive && store.isActive && store.owner == storeOwnership && !transitioning && !stopping && !isReading && !isExporting && !Task.isCancelled }
     var trafficControlsAvailable: Bool { usable }
     private var usable: Bool { confirmationControlsAvailable && !actions.isSubmitting && actions.dialog == nil }
     /// Observation callbacks can synchronously depart during willSet. Drain departure after the entire publication.
@@ -78,7 +81,7 @@ struct EvidenceTextPreview {
         update()
     }
     private var currentBinding: FindingTrafficBinding? {
-        guard !store.summary.isStale, !store.detail.isStale,
+        guard store.owner == storeOwnership, !store.summary.isStale, !store.detail.isStale,
               let detail = store.detail.value, detail.binding.id == store.selectedBindingID,
               store.summary.value?.bindings.contains(where: { $0.id == detail.binding.id && $0.snapshotId == detail.binding.snapshotId }) == true else { return nil }
         return detail.binding
@@ -193,12 +196,19 @@ struct EvidenceTextPreview {
         exportCancelled = true
         exportTask?.cancel(); chooser?.cancel()
     }
+    func scrubStoppedTraffic() {
+        guard !isActive, let stopped = stoppedStoreOwnership,
+              let next = store.stop(clearReadData:true,ifOwnedBy:stopped) else { return }
+        stoppedStoreOwnership = next
+    }
     func stop() {
         guard !stopping else { return }
         if transitioning { stopRequested = true; return }
         stopping = true
         defer { stopping = false }
         isActive = false; readRevision = UUID(); isReading = false
-        cancelExport(); actions.stop(); store.stop(clearReadData:true); requestPreview = nil; responsePreview = nil; failure = nil; saved = nil
+        cancelExport(); actions.stop()
+        if let stopped = store.stop(clearReadData:true,ifOwnedBy:storeOwnership) { stoppedStoreOwnership = stopped }
+        requestPreview = nil; responsePreview = nil; failure = nil; saved = nil
     }
 }

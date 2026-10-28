@@ -136,10 +136,13 @@ public enum FindingTrafficMutationOutcome: Sendable {
               unknownIDs.contains(id) else { return false }
         unknownIDs.remove(id); unknownRevision = UUID(); if unknownIDs.isEmpty { mutationFailure = nil }; return true
     }
-    public func stop(clearReadData: Bool = false) {
-        isActive = false; activity = UUID(); owner = UUID(); invalidateReads(clear:clearReadData); lastConfirmation = nil
+    @discardableResult public func stop(clearReadData: Bool = false,ifOwnedBy expected: UUID? = nil) -> UUID? {
+        guard expected == nil || owner == expected else { return nil }
+        let stoppedOwner = UUID()
+        isActive = false; activity = UUID(); owner = stoppedOwner; invalidateReads(clear:clearReadData); lastConfirmation = nil
         if clearReadData { selectedBindingID = nil }
         if let write, write.handedOff { recordUnknown(write.findingID) }
+        return stoppedOwner
     }
     public func resume() {
         guard !isActive else { return }

@@ -96,7 +96,7 @@ struct FindingTrafficActionDialog: Identifiable {
         }
         workspace.publishTrafficState { isSubmitting = true; failure = nil }
         defer {
-            if !workspace.isActive { store.stop(clearReadData:true) }
+            workspace.scrubStoppedTraffic()
             workspace.publishTrafficState { isSubmitting = false }
         }
         guard workspace.isActive, dialog?.id == context.id, store.owner == context.owner else { return false }
