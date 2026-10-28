@@ -1,0 +1,61 @@
+{
+  "schema": 1,
+  "baseline": "e75ae371ad777ffd1eecdd28d2781a6519b05591",
+  "code_checkpoint": "67e9be8",
+  "red_checkpoint": "e33e7b6",
+  "contract_tests_passed": 8,
+  "related_tests_passed": 29,
+  "swift": {
+    "total": 705,
+    "passed": 704,
+    "skipped_existing_external_ax": 1,
+    "failures": 0
+  },
+  "python": {
+    "passed": 123
+  },
+  "line_coverage": {
+    "CapturedTraffic.swift": {
+      "count": 55,
+      "covered": 55,
+      "percent": 100
+    },
+    "CapturedTrafficService.swift": {
+      "count": 20,
+      "covered": 20,
+      "percent": 100
+    }
+  },
+  "review": "no remaining reported blocker; valid status payload gap corrected",
+  "independent_query_byte_verifier": true,
+  "signed_build_only": true,
+  "strict_signature": true,
+  "localization_export_check": true,
+  "inventory": {
+    "navigation": 21,
+    "routes": 27,
+    "handlers": 243
+  },
+  "picker_ui_implemented": false,
+  "full_byte_export_implemented": false,
+  "actual_guest_acceptance": false,
+  "actual_provider_requests": false,
+  "browser_native_visual_acceptance": false,
+  "full_goal_complete": false,
+  "source_sha256": {
+    "Sources/ArtexCore/CapturedTraffic.swift": "a98cbfd6013ec61fe980fb1b0840e66c22170a4c60a1ca336b518e22ba243043",
+    "Sources/ArtexCore/CapturedTrafficService.swift": "7393a4e72a683dd2f39619e1384b20818b8c902264bfda18c7ddc7a18077071e",
+    "Tests/ArtexCoreTests/CapturedTrafficServiceTests.swift": "376bf7c17dc9b55f8e98664a64f03a85629d6d493673db9a617649426ccadaa8"
+  },
+  "pinned_source_sha256": {
+    "web/src/components/finding-traffic-panel.tsx": "ee02d69c51a6a25e7d9a8901ab72b103586e4ceefdb7ed4af3e64d15a2634514",
+    "web/src/components/traffic-picker-dialog.tsx": "085b313fae3407665462477a73481cb18ea93adb8f7840047b4a74bda474d242",
+    "web/src/components/traffic-evidence-viewer.tsx": "11621e23d94adae4699eec180b6a486005d51c02edde1109d1a96b7bd3206eaa",
+    "web/src/lib/api.ts": "18b4529a99b508964348bf83b7777597ca3cb80a64565380e1b1320005700fe1",
+    "web/src/lib/types.ts": "469cf531c8b257579bf2eb8ca6b632ef05973f6019ef6f5389d0ab9d48e79309",
+    "server/server.go": "2239ad23fad1ec680f6ec2927439892575d037fe1521b73445f0956504341b7f",
+    "server/dto.go": "3676ad9814c02120297b727a3582e47d347d57fe4c0b9ff7b64d77b5f8b0693a",
+    "server/finding_traffic.go": "816ecb4383d34be793695cc480fc787d0d6fe5aafc0e2610334a662a61bb997b",
+    "traffic/traffic.go": "44f4edec8b8106ccde90a0b898c93769c834e4f68d34581fb31fb8d262aa734d"
+  }
+}

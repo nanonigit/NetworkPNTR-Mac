@@ -23,3 +23,5 @@ Next: owned picker state and preview generations; integrate traffic store into w
 3. Authenticated full-byte transport/export RED -> binary/large/hash/abort/atomic destination tests -> explicit save UI. Do not label a digest or preview as a saved file.
 4. Native list/picker/editor/viewer/control inventory, offscreen locale/appearance checks; original source and recorded data preserved.
 5. Actual nonempty isolated guest/reference API and persistence comparison, then unlocked native/browser/keyboard/VoiceOver/screenshot acceptance. All actual gates, F5 and complete-app acceptance remain open until evidence covers them.
+
+Protocol refinement: validate the final percent-encoded request target at8192 bytes, matching BackendHTTPRequest, not only individual raw fields. The independent test decoder must compare percent-decoded bytes because Foundation's decoded query Strings can consume a leading UTF8 BOM. This keeps the actual wire and opaque IDs byte-exact; it does not normalize user data.
