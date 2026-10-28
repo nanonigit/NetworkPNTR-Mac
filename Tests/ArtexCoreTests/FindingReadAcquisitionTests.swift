@@ -31,3 +31,16 @@ import Observation
         XCTAssertEqual(probe.calls, 0)
     }
 }
+
+extension FindingReadAcquisitionTests {
+    func testNotificationCancellationCannotInvokeReadOperation() async {
+        let state = FindingReadState<Int>(), probe = ReadAcquisitionProbe()
+        let task = Task { @MainActor in
+            withObservationTracking { _ = state.isLoading } onChange: { MainActor.assumeIsolated { withUnsafeCurrentTask { $0?.cancel() } } }
+            let accepted = await state.refresh { probe.calls += 1; return 7 }
+            XCTAssertFalse(accepted)
+        }
+        await task.value
+        XCTAssertEqual(probe.calls, 0); XCTAssertFalse(state.isLoading); XCTAssertNil(state.failure)
+    }
+}

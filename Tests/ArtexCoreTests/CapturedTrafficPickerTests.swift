@@ -172,3 +172,60 @@ import Observation
         }
     }
 }
+
+extension CapturedTrafficPickerTests {
+    func testSelectionNotificationCannotRestoreClosedChoiceOntoAnotherFinding() async throws {
+        let (api, evidence, picker) = try await make(); try await loaded(picker, api)
+        XCTAssertTrue(picker.toggle(id: "é", selected: true, owner: picker.owner))
+        withObservationTracking { _ = picker.selectedIDs } onChange: { MainActor.assumeIsolated { picker.stop() } }
+        XCTAssertFalse(picker.toggle(id: "e\u{301}", selected: true, owner: picker.owner))
+        XCTAssertTrue(picker.selectedIDs.isEmpty)
+        let other = try BackendJSONCoding.decode(FindingRecord.self, from: Data(#"{"id":"9102","finding_id":"9102","task_id":"8102","vulnclass":"CWE-79","severity":"high","status":"pending","summary":"","evidence":"","ts":"raw"}"#.utf8))
+        XCTAssertTrue(evidence.select(other)); picker.resume()
+        XCTAssertTrue(picker.selectedIDs.isEmpty)
+    }
+    func testResumeNotificationCannotRecursivelyResume() async throws {
+        let (_, _, picker) = try await make(); picker.stop()
+        var notifications = 0
+        withObservationTracking { _ = picker.owner } onChange: {
+            MainActor.assumeIsolated { notifications += 1; if notifications < 4 { picker.resume() } }
+        }
+        picker.resume(); XCTAssertEqual(notifications, 1); XCTAssertTrue(picker.isCurrent)
+    }
+    func testStopNotificationCannotReactivatePicker() async throws {
+        let (_, _, picker) = try await make()
+        var notifications = 0
+        withObservationTracking { _ = picker.owner } onChange: {
+            MainActor.assumeIsolated { notifications += 1; if notifications < 4 { picker.resume() } }
+        }
+        picker.stop(); XCTAssertEqual(notifications, 1); XCTAssertFalse(picker.isCurrent)
+    }
+    func testDepartureRequestedDuringResumeWins() async throws {
+        let (_, _, picker) = try await make(); picker.stop()
+        withObservationTracking { _ = picker.owner } onChange: { MainActor.assumeIsolated { picker.stop() } }
+        picker.resume(); XCTAssertFalse(picker.isCurrent)
+    }
+}
+
+extension CapturedTrafficPickerTests {
+    func testPreviewSelectionPublicationCannotRestoreClosedID() async throws {
+        let (api, _, picker) = try await make(); try await loaded(picker, api)
+        withObservationTracking { _ = picker.selectedPreviewID } onChange: { MainActor.assumeIsolated { picker.stop() } }
+        XCTAssertFalse(picker.selectPreview(id: "é", owner: picker.owner))
+        XCTAssertNil(picker.selectedPreviewID); XCTAssertNil(picker.preview.value)
+    }
+    func testConfirmationCleanupDepartureCannotPublishCurrentChildSuccess() async throws {
+        let (api, evidence, picker) = try await make(); try await loaded(picker, api)
+        XCTAssertTrue(picker.toggle(id: "é", selected: true, owner: picker.owner)); let base = api.calls.count, owner = picker.owner
+        let task = Task { await picker.bind(owner: owner) }; try await reached { api.held[base] != nil }
+        // Arm after dispatch, so equal-value preflight notifications cannot choose the test phase.
+        withObservationTracking { _ = evidence.lastConfirmation } onChange: {
+            MainActor.assumeIsolated {
+                withObservationTracking { _ = picker.selectedIDs } onChange: { MainActor.assumeIsolated { picker.stop() } }
+            }
+        }
+        try api.reply(base, summary(version: 3))
+        guard case .discarded = await task.value else { return XCTFail("Departure during cleanup accepted old child receipt") }
+        XCTAssertEqual(evidence.lastConfirmation?.version, 3); XCTAssertFalse(picker.isCurrent)
+    }
+}
