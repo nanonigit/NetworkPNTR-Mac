@@ -315,3 +315,6 @@ Task preparation checkpoint: RED89bda84(4tests/37assertionfailures) ->51f3370, f
 
 
 External handoff order: synchronous workspace suspend/live-stop/cold-stop RED -> one-request marker/lease validation -> typed services/controllers GREEN -> existing and full tests/review/build/CI. LLM and actual evidence/UI gates remain open.
+
+
+External post-grant checkpoint: RED6711a05(44workspace/10assertionfailures) ->4853bf3, expanded83/full654Swift(653pass/1existingAXskip),123Python; independent review/signedbuild/strictsignature/localization/inventory pass. See task-external-handoff-verification.md. Category/bulk/archive source and controlled handoff audit covered; actual guest/UI acceptance and LLMStore audit remain, then evidence UI and remaining F5/all21/cloud/kernel/clean-Mac/release.

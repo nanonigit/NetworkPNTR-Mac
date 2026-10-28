@@ -2,6 +2,8 @@
 
 外部handoff順序: 同期workspace閉鎖/live停止/cold停止RED→単回marker/処理枠確認→型付きservice/controller GREEN→既存/全体試験・レビュー・build・CI。LLMと実証跡/UIは別途未完了。
 
+取得後の外部handoff: RED6711a05（workspace44件/10アサーション失敗）→4853bf3、重点83/全Swift654件（653成功/既存AX1件保留）、Python123、独立レビュー/署名build/厳密署名/翻訳/構成照合成功。task-external-handoff-verification.ja.md参照。category/bulk/archiveのソース/制御試験は確認、実guest/画面受入は別途必要。次はLLMStore監査と証跡UI、残るF5/全21/cloud/kernel/別Mac/配布。
+
 タスク監査順序: 直接5操作の同期取消/停止と外部取得3種RED→ticket/callback/lease GREEN→既存service/store/workspace回帰→独立レビュー/全体/CI。この合成試験ではguest agentを開始しない。
 
 タスク準備チェックポイント: RED89bda84（4件/37アサーション失敗）→51f3370、重点31/全Swift647件（646成功/既存AX1件保留）、Python123、TaskStore229/229・TaskService80/80行。独立レビュー/署名build/厳密署名/翻訳/構成照合成功。task-mutation-handoff-verification.ja.md参照。取得後の外部workspace送信とLLMStore監査、証跡UI/非空実guest/browser/製品全体の条件は未完了。

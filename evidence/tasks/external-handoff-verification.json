@@ -1,0 +1,86 @@
+{
+  "source_commit": "e75ae371ad777ffd1eecdd28d2781a6519b05591",
+  "implementation_commit": "4853bf3",
+  "implementation_sha256": {
+    "ArtexCore/TaskArchiveService.swift": "af12ac2cdd24eaae13f7a8036e3722560b5e1e8008c5a825267a463fff9b85cb",
+    "ArtexCore/TaskArchiveStore.swift": "66590abe278fe632c8801a6233470d2ebb6eb62e63f880c93b1315d03dd4598f",
+    "ArtexCore/TaskCategoryService.swift": "1a547477507f425475bb1312696ae7693090fdcea14eed593a901110da6c17c7",
+    "ArtexCore/TaskRequestHandoff.swift": "135df5dffc1ac11526a321d59e753beea8c52a9ca6be70ecfb1557223389e824",
+    "ArtexCore/TaskService.swift": "ef45ad941d271dd71235e54fd1097d6b534118a0f36a6ee4a0418fdd31ca7465",
+    "ArtexCore/TaskStore.swift": "3752838f59393731c02bed690abda938ff9d146116718410ec943134170963e1",
+    "ArtexMac/TaskArchiveWorkspace.swift": "826f962ef6be4e9c1337962108aac5fd34d8ac63ac3fc2554667b5b2b68f11b9",
+    "ArtexMac/TaskBulkWorkspace.swift": "7fdc0c55e9e7919ade588ab218ca3d204927ced32edb282744d5158c416a1d7b",
+    "ArtexMac/TaskCategoryWorkspace.swift": "c8e469b18b3396a885849eced7dc2dd561bdb49730b6fababccbbd7bd1b4991a"
+  },
+  "focused_tests": 83,
+  "swift": {
+    "total": 654,
+    "passed": 653,
+    "existing_external_ax_skipped": 1
+  },
+  "python": {
+    "total": 123,
+    "passed": 123
+  },
+  "line_coverage": {
+    "ArtexCore/TaskArchiveService.swift": {
+      "count": 98,
+      "covered": 98,
+      "percent": 100
+    },
+    "ArtexCore/TaskArchiveStore.swift": {
+      "count": 165,
+      "covered": 162,
+      "percent": 98.18181818181819
+    },
+    "ArtexCore/TaskCategoryService.swift": {
+      "count": 137,
+      "covered": 137,
+      "percent": 100
+    },
+    "ArtexCore/TaskRequestHandoff.swift": {
+      "count": 8,
+      "covered": 8,
+      "percent": 100
+    },
+    "ArtexCore/TaskService.swift": {
+      "count": 88,
+      "covered": 88,
+      "percent": 100
+    },
+    "ArtexCore/TaskStore.swift": {
+      "count": 234,
+      "covered": 234,
+      "percent": 100
+    },
+    "ArtexMac/TaskArchiveWorkspace.swift": {
+      "count": 167,
+      "covered": 163,
+      "percent": 97.60479041916167
+    },
+    "ArtexMac/TaskBulkWorkspace.swift": {
+      "count": 218,
+      "covered": 196,
+      "percent": 89.90825688073394
+    },
+    "ArtexMac/TaskCategoryWorkspace.swift": {
+      "count": 259,
+      "covered": 249,
+      "percent": 96.13899613899613
+    }
+  },
+  "signed_build_only": true,
+  "strict_signature": true,
+  "localization_export_check": true,
+  "frozen_inventory_check": true,
+  "review": "Independent marker/lease/controller implementation review no blocker",
+  "actual_guest_job_started": false,
+  "visible_ui_accepted": false,
+  "full_goal_complete": false,
+  "pending": [
+    "LLMStore handoff audit",
+    "native evidence controls and actual nonempty traffic comparison",
+    "unlocked visuals keyboard VoiceOver",
+    "remaining F5 all21 cloud kernel cleanMac release"
+  ]
+}
