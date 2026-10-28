@@ -470,10 +470,56 @@
 	<string>利用条件を確認して同意してください。</string>
 	<key>error.validation.testModel</key>
 	<string>テストするモデルを入力してください。</string>
+	<key>evidence.ui.baseline</key>
+	<string>比較基準</string>
+	<key>evidence.ui.binary</key>
+	<string>バイナリデータを含みます。全バイトを保持するには原本を保存してください。</string>
+	<key>evidence.ui.bindingID</key>
+	<string>証跡ID：{id}</string>
+	<key>evidence.ui.bytes</key>
+	<string>{total}バイト中{loaded}バイトをプレビュー</string>
+	<key>evidence.ui.choose</key>
+	<string>表示する証跡を選択</string>
 	<key>evidence.ui.cleanupFailed</key>
 	<string>未完了の証跡を削除できませんでした。再試行する前に保存先を確認してください。</string>
+	<key>evidence.ui.download</key>
+	<string>原本の本文を保存…</string>
+	<key>evidence.ui.empty</key>
+	<string>この検出結果に紐づく通信の証跡はありません。</string>
 	<key>evidence.ui.exportFailed</key>
 	<string>証跡の原本を保存できませんでした。新しいファイル名を選んで再試行してください。</string>
+	<key>evidence.ui.exporting</key>
+	<string>保存先を選択中、または原本を保存中…</string>
+	<key>evidence.ui.inspect</key>
+	<string>本文を表示</string>
+	<key>evidence.ui.loadMore</key>
+	<string>さらに読み込む</string>
+	<key>evidence.ui.loading</key>
+	<string>証跡を読み込み中</string>
+	<key>evidence.ui.mutationsPending</key>
+	<string>証跡の追加・編集・並べ替えは開発中です。</string>
+	<key>evidence.ui.proof</key>
+	<string>実証</string>
+	<key>evidence.ui.readOnly</key>
+	<string>継承した証跡は読み取り専用です。原本の閲覧・保存はできます。</string>
+	<key>evidence.ui.request</key>
+	<string>リクエスト</string>
+	<key>evidence.ui.response</key>
+	<string>レスポンス</string>
+	<key>evidence.ui.saveHelp</key>
+	<string>新しいファイル名を指定してください。既存ファイルは保持されます。</string>
+	<key>evidence.ui.saved</key>
+	<string>{name}を保存しました（{bytes}バイト）。</string>
+	<key>evidence.ui.savedWarning</key>
+	<string>ファイルは保存されましたが、一時ファイルの削除またはディレクトリの同期が未完了です。保存先を確認してください。</string>
+	<key>evidence.ui.side</key>
+	<string>メッセージ</string>
+	<key>evidence.ui.supporting</key>
+	<string>補足</string>
+	<key>evidence.ui.title</key>
+	<string>通信の証跡</string>
+	<key>evidence.ui.verification</key>
+	<string>検証</string>
 	<key>feature.agents</key>
 	<string>エージェント</string>
 	<key>feature.approvals</key>

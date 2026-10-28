@@ -34,6 +34,10 @@ import SwiftUI
                     }
                     section(.findingUISummary,row.summary); section(.findingUIAssets,row.assets.map(\.label).joined(separator:"\n"))
                     section(.findingUIEvidence,row.evidence)
+                    if row.findingId != nil {
+                        Button(s(.evidenceUITitle),systemImage:"network") { _ = model.beginTraffic(owner:owner,revision:revision) }
+                            .disabled(!model.controlsAvailable || model.store.detail.isStale || model.store.detail.isLoading)
+                    }
                     if row.reportStale { Text(s(.findingUIReportStale)).foregroundStyle(.orange) }
                     section(.findingUIReport,row.report)
                 } else if !model.store.detail.isLoading { Text(s(.findingUINoSelection)).foregroundStyle(.secondary) }

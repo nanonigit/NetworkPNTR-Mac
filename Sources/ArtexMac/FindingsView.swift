@@ -53,6 +53,11 @@ import SwiftUI
         .inspector(isPresented:FindingBindings.detail(model,owner:owner,revision:model.detailRevision)) {
             FindingDetailPanel(model:model,onTask:onTask).inspectorColumnWidth(min:280,ideal:360,max:520)
         }
+        .sheet(item:Binding(get:{model.trafficWorkspace},set:{ value in
+            if value == nil, let id = model.trafficWorkspace?.id { model.closeTraffic(id:id) }
+        })) { workspace in
+            FindingTrafficSheet(model:workspace) { model.closeTraffic(id:workspace.id) }
+        }
         .sheet(item:FindingBindings.dialog(model,id:dialogID)) { context in FindingDialogView(model:model,contextID:context.id) }
     }
     private var flat: some View {
