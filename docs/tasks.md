@@ -318,3 +318,5 @@ External handoff order: synchronous workspace suspend/live-stop/cold-stop RED ->
 
 
 External post-grant checkpoint: RED6711a05(44workspace/10assertionfailures) ->4853bf3, expanded83/full654Swift(653pass/1existingAXskip),123Python; independent review/signedbuild/strictsignature/localization/inventory pass. See task-external-handoff-verification.md. Category/bulk/archive source and controlled handoff audit covered; actual guest/UI acceptance and LLMStore audit remain, then evidence UI and remaining F5/all21/cloud/kernel/clean-Mac/release.
+
+LLM transport cancellation order: requirements/design in llm-transport-cancellation-design.md -> pre/post-cancel and finite-JSON RED -> shared service boundary GREEN -> independent review/full regression/coverage/signed build/CI. This checkpoint does not resolve LLMStore handoff/unknown-result recovery or editor lifecycle ownership. Actual native/browser comparison, evidence UI and all remaining product gates stay open.

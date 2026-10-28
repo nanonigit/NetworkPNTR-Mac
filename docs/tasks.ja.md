@@ -274,3 +274,5 @@ F4b実測: native73ac82aで同一ディスク3起動・116/100要求、独立ref
 境界追試順序: 段階未実装RED→7要求/ローカル拒否3検査GREEN→schema2の全体/probe/reference/比較器統合→独立レビュー/全体試験→空の実VM3起動と隔離reference3起動→hash付き照合/掃除記録/build/修正HEAD CI。schema1実測を上書きせずkernelも昇格しません。
 
 境界チェックポイント: native5983949の3起動と独立referencea4689b2の3起動でschema2/再起動前123/後100要求が成功し、個別項目・正規化・空文字・8192バイト・復元が一致。最初のreferenceでの空name省略エラーを保持し、重点RED/GREEN後に新規環境で成功。全Swift620件（619成功/既存AX1件保留）、Python123件、全体/境界の行カバレッジ100%、署名build/厳密署名/翻訳/構成照合成功。findings-boundary-verification.ja.mdを参照。手動解除後の実画面、F5/全21/cloud/kernel/別Mac/配布は未完了。
+
+LLM通信の取消監査：llm-transport-cancellation-design.ja.mdで要件・設計 -> 送信前後の取消と有限JSONのRED -> 共有サービス境界のGREEN -> 独立レビュー・全体回帰・カバレッジ・署名付きビルド・CI。今回はLLMStoreの送信所有権・結果不明時の復旧やエディタのライフサイクル管理を完了扱いにしない。実際のネイティブ／ブラウザ比較、証跡UI、製品全体の残りの条件は未完了。
