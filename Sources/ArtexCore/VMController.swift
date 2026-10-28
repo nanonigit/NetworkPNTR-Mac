@@ -19,6 +19,9 @@ import Virtualization
     @ObservationIgnored private var backendConnections: [UUID: VZVirtioSocketConnection] = [:]
     @ObservationIgnored private var backendUploads: [UUID: BackendUploadSocket] = [:]
     @ObservationIgnored private var evidenceEpoch = UUID()
+    #if DEBUG
+    @ObservationIgnored package var evidenceCancellationProbe: EvidenceCancellationProbe?
+    #endif
     @ObservationIgnored private var pendingConnections: [UUID: CheckedContinuation<UUID, Error>] = [:]
     public var mayStart: Bool { state.canStart && machine == nil }
     public var hasMachine: Bool { machine != nil }
@@ -241,6 +244,9 @@ import Virtualization
         backendUploads[identifier] = socket
         guard fcntl(descriptor, F_SETFD, FD_CLOEXEC) == 0 else { throw POSIXError(.EIO) }
         let preamble = Data(("ARTEX_VSOCK_1 " + provisioning.transportToken + "\n").utf8)
+        #if DEBUG
+        let cancellationProbe = evidenceCancellationProbe
+        #endif
         return try await withTaskCancellationHandler {
             try Task.checkCancellation()
             let response = try await Task.detached {
@@ -257,7 +263,14 @@ import Virtualization
                 try response.file?.discard()
                 throw error
             }
-        } onCancel: { socket.cancel() }
+        } onCancel: {
+            #if DEBUG
+            let interrupted = socket.cancel()
+            cancellationProbe?.record(operationID: identifier, manifest: manifest, interrupted: interrupted)
+            #else
+            socket.cancel()
+            #endif
+        }
     }
     @discardableResult private func cancelBackendUploads() -> Int {
         evidenceEpoch = UUID()

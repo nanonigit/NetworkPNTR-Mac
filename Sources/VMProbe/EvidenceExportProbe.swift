@@ -24,13 +24,14 @@ import Foundation
     private struct Provenance: Codable {
         let sourceCommit, backendSHA256, backendImage: String
     }
-    struct Boot: Codable {
+    struct Boot: Encodable {
         let index, cpuCount: Int
         let ready, credentialsAbsent, isolationWitnesses, formatObserved, cooperativeStop: Bool
+        let interruptedTransfers: Int
         let diagnostics: [String]
         let files: [EvidenceFileProof]
     }
-    struct Report: Codable {
+    struct Report: Encodable {
         var stage = "prepare"
         var bootAttempts = 0
         var expectedCPUCount = 0
@@ -45,7 +46,10 @@ import Foundation
         var nativeProbePassed = false
         let browserComparison = false
         let nativeUIAcceptance = false
-        let witnessedInFlightCancellation = false
+        var witnessedInFlightCancellation = false
+        var witnessedVMStop = false
+        var callerCancellationBytes: Int64 = 0
+        var vmStopBytes: Int64 = 0
         @MainActor mutating func publishFinal(write: (Self) throws -> Void) throws {
             nativeProbePassed = false
             let expectedFiles = EvidenceFixtureClient.expectedBodies.sorted(by: { $0.key < $1.key }).map {
@@ -53,9 +57,13 @@ import Foundation
             }
             guard boots.count == 2, logoutReceiptRejected, stopReceiptRejected, restartReceiptRejected,
                   noClobber, machineStopped, cleanupComplete, expectedCPUCount > 0,
+                  witnessedInFlightCancellation, witnessedVMStop,
+                  callerCancellationBytes > 0, callerCancellationBytes < 135266321,
+                  vmStopBytes > 0, vmStopBytes < 135266321,
                   boots.enumerated().allSatisfy({ index, boot in
                       boot.index == index + 1 && boot.cpuCount == expectedCPUCount && boot.ready && boot.credentialsAbsent
                       && boot.isolationWitnesses && boot.cooperativeStop && boot.diagnostics.isEmpty
+                      && boot.interruptedTransfers == (index == 0 ? 1 : 0)
                       && boot.formatObserved == (index == 0) && boot.files.sorted(by: { $0.body < $1.body }) == expectedFiles
                   }) else { throw EvidenceExportProbe.failure() }
             stage = "complete"; nativeProbePassed = true
@@ -85,6 +93,45 @@ import Foundation
     private static func stage(session: AuthenticationSession, binding: FindingTrafficBinding, side: FindingEvidenceSide, url: URL) async throws -> EvidenceExportReceipt {
         let manifest = try FindingEvidenceDownload(binding: binding, side: side)
         return try await session.authenticatedEvidenceExport(manifest, destination: EvidenceExportDestination(newFileURL: url))
+    }
+    private static func interrupt(session: AuthenticationSession, binding: FindingTrafficBinding, directory: URL,
+                                  controller: VMController, stopVM: Bool) async throws -> Int64 {
+        let url = directory.appendingPathComponent(stopVM ? "live-stop.bin" : "live-cancel.bin")
+        let expected = try FindingEvidenceDownload(binding: binding, side: .response)
+        guard expected.expectedSize == 135266321 else { throw failure() }
+        let cancellationProof = EvidenceCancellationProbe(expected: expected)
+        if !stopVM { controller.evidenceCancellationProbe = cancellationProof }
+        defer {
+            if controller.evidenceCancellationProbe === cancellationProof { controller.evidenceCancellationProbe = nil }
+        }
+        var settled = false
+        let pending = Task { @MainActor in
+            defer { settled = true }
+            return try await stage(session: session, binding: binding, side: .response, url: url)
+        }
+        do {
+            var observed: Int64?
+            for _ in 0..<30000 {
+                if let bytes = try EvidenceProbeFile.observedBytes(directory, expectedSize: expected.expectedSize) { observed = bytes; break }
+                if settled { break }
+                try await Task.sleep(for: .milliseconds(1))
+            }
+            guard let observed, !settled else { throw failure() }
+            progress("evidence_live=" + (stopVM ? "vm-stop" : "caller-cancel") + " observed_bytes=" + String(observed))
+            if stopVM { try await controller.stop() } else { pending.cancel() }
+            do { let receipt = try await pending.value; try receipt.discard(); throw failure() }
+            catch is CancellationError { }
+            guard stopVM || cancellationProof.interruptedOperationID != nil else { throw failure() }
+            guard !Task.isCancelled, !FileManager.default.fileExists(atPath: url.path), EvidenceProbeFile.stagingAbsent(directory) else { throw failure() }
+            return observed
+        } catch {
+            let original = error
+            pending.cancel()
+            do { let receipt = try await pending.value; try receipt.discard() }
+            catch is CancellationError { }
+            catch { throw error }
+            throw original
+        }
     }
     private static func exportAll(session: AuthenticationSession, traffic: FindingTraffic, directory: URL) async throws -> [EvidenceFileProof] {
         guard traffic.findingId == "9101", traffic.version == 1,
@@ -126,6 +173,7 @@ import Foundation
             report.boots.append(Boot(index: report.bootAttempts, cpuCount: controller.configuredCPUCount, ready: currentReady,
                 credentialsAbsent: audit.credentialsAbsent, isolationWitnesses: audit.isolationWitnessesPresent,
                 formatObserved: audit.formatStageObserved, cooperativeStop: currentCooperative,
+                interruptedTransfers: controller.lastStopInterruptedTransferCount,
                 diagnostics: audit.diagnostics.map(\.rawValue), files: currentFiles))
         }
         do {
@@ -191,6 +239,10 @@ import Foundation
                     }
                 }
                 if index == 1 {
+                    report.stage = "live-caller-cancel"
+                    report.callerCancellationBytes = try await interrupt(session: session, binding: binding("17002", from: traffic), directory: downloads, controller: controller, stopVM: false)
+                    guard controller.guestReady, controller.state == .running else { throw failure() }
+                    report.witnessedInFlightCancellation = true
                     report.stage = "ownership"
                     let existing = downloads.appendingPathComponent("17001-request.bin")
                     do { _ = try EvidenceExportDestination(newFileURL: existing); throw failure() }
@@ -204,7 +256,10 @@ import Foundation
                     let stopped = try await stage(session: session, binding: first, side: .request, url: output.appendingPathComponent("late-stop.bin"))
                     restartReceipt = try await stage(session: session, binding: first, side: .request, url: output.appendingPathComponent("late-restart.bin"))
                     restartSession = session
-                    report.stage = "shutdown"; try await controller.stop()
+                    report.stage = "live-vm-stop"
+                    report.vmStopBytes = try await interrupt(session: session, binding: binding("17002", from: traffic), directory: downloads, controller: controller, stopVM: true)
+                    guard controller.lastStopInterruptedTransferCount == 1 else { throw failure() }
+                    report.witnessedVMStop = true
                     guard session.phase == .authenticated, !Task.isCancelled else { throw failure() }
                     try reject(stopped); report.stopReceiptRejected = true
                 } else {
@@ -212,7 +267,7 @@ import Foundation
                     _ = try await fixture.audit()
                     report.stage = "shutdown"; try await controller.stop()
                 }
-                guard !controller.hasMachine, controller.lastStopInterruptedTransferCount == 0 else { throw failure() }
+                guard !controller.hasMachine, controller.lastStopInterruptedTransferCount == (index == 1 ? 1 : 0) else { throw failure() }
                 currentCooperative = true; appendBoot()
                 guard let boot = report.boots.last, boot.credentialsAbsent, boot.isolationWitnesses, boot.diagnostics.isEmpty,
                       boot.ready, boot.files.count == 4, boot.formatObserved == (index == 1) else { throw failure() }
