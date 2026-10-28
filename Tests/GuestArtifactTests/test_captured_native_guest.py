@@ -35,7 +35,7 @@ class CapturedNativeGuestTests(unittest.TestCase):
     def test_fixed_read_only_index_reads_metadata_without_modifying_database(self):
         m = load()
         with tempfile.TemporaryDirectory() as directory:
-            path=Path(directory)/'index.sqlite'
+            path=Path(directory).resolve()/'index.sqlite'
             with sqlite3.connect(path) as db:
                 db.execute('CREATE TABLE exchanges(id TEXT,ts INTEGER,host TEXT,method TEXT,url TEXT,status INTEGER,content_type TEXT,resp_len INTEGER)')
                 db.execute('INSERT INTO exchanges VALUES(?,?,?,?,?,?,?,?)',('1792663200-0001',1792663200,'127.0.0.1','GET',m.fixture.TARGET+'00',200,'text/plain; charset=utf-8',0))
@@ -48,6 +48,21 @@ class CapturedNativeGuestTests(unittest.TestCase):
             self.assertEqual(path.read_bytes(),before)
             with self.assertRaises(sqlite3.ProgrammingError): connections[0].execute('SELECT 1')
 
+    def test_live_wal_rows_are_visible_without_checkpoint_or_write(self):
+        m=load()
+        with tempfile.TemporaryDirectory() as directory:
+            path=Path(directory).resolve()/'index.sqlite'
+            writer=sqlite3.connect(path)
+            try:
+                writer.execute('PRAGMA journal_mode=WAL');writer.execute('PRAGMA wal_autocheckpoint=0')
+                writer.execute('CREATE TABLE exchanges(id TEXT,ts INTEGER,host TEXT,method TEXT,url TEXT,status INTEGER,content_type TEXT,resp_len INTEGER)');writer.commit()
+                writer.execute('INSERT INTO exchanges VALUES(?,?,?,?,?,?,?,?)',('1792663200-0001',1792663200,'127.0.0.1','GET',m.fixture.TARGET+'00',200,'text/plain; charset=utf-8',0));writer.commit()
+                wal=Path(str(path)+'-wal');before=wal.read_bytes()
+                with patch.object(m,'INDEX',path),patch.object(m.fixture,'environment'):
+                    value=m.NativeIndex().api('GET','/api/traffic?page=0&size=500')
+                self.assertEqual(value['total'],1);self.assertEqual(value['exchanges'][0]['id'],'1792663200-0001');self.assertEqual(wal.read_bytes(),before)
+            finally:writer.close()
+
     def test_routes_symlinks_and_excess_rows_fail_closed(self):
         m=load()
         with patch.object(m.fixture,'environment'),patch.object(m.sqlite3,'connect') as connect:
@@ -55,11 +70,11 @@ class CapturedNativeGuestTests(unittest.TestCase):
                 with self.assertRaises(RuntimeError):m.NativeIndex().api(method,path)
             connect.assert_not_called()
         with tempfile.TemporaryDirectory() as directory:
-            target=Path(directory)/'real';target.write_bytes(b'not SQLite');link=Path(directory)/'index.sqlite';link.symlink_to(target)
+            target=Path(directory).resolve()/'real';target.write_bytes(b'not SQLite');link=Path(directory).resolve()/'index.sqlite';link.symlink_to(target)
             with patch.object(m,'INDEX',link),patch.object(m.fixture,'environment'),patch.object(m.sqlite3,'connect') as connect:
                 with self.assertRaises(RuntimeError):m.NativeIndex().api('GET','/api/traffic?page=0&size=500')
                 connect.assert_not_called()
-            path=Path(directory)/'many.sqlite'
+            path=Path(directory).resolve()/'many.sqlite'
             with sqlite3.connect(path) as db:
                 db.execute('CREATE TABLE exchanges(id TEXT,ts INTEGER,host TEXT,method TEXT,url TEXT,status INTEGER,content_type TEXT,resp_len INTEGER)')
                 db.executemany('INSERT INTO exchanges VALUES(?,?,?,?,?,?,?,?)',[(str(i),0,'127.0.0.1','GET','fixed',200,'text/plain',0) for i in range(30)])
