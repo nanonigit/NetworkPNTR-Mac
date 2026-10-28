@@ -164,3 +164,11 @@ class EvidenceReferenceTests(unittest.TestCase):
                 client = REFERENCE.Client(connection_factory=lambda *a, **k: Connection(response))
                 with self.assertRaises(RuntimeError): client.download(1, '17001', 'request')
                 self.assertFalse((REFERENCE.DOWNLOAD_ROOT / 'boot-1/literal.bin').exists())
+
+    def test_last_permitted_request_can_finish_but_another_request_never_connects(self):
+        connection = Connection(Reply(b'{"initialized":true}')); factory = Mock(return_value=connection)
+        client = REFERENCE.Client(connection_factory=factory); client.calls = 255
+        self.assertEqual(client.api('GET', '/api/auth/status'), {'initialized': True})
+        self.assertEqual(client.calls, 256)
+        with self.assertRaises(RuntimeError): client.api('GET', '/api/auth/status')
+        self.assertEqual(factory.call_count, 1)
