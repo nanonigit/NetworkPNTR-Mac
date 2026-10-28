@@ -22,7 +22,14 @@ final class CapturedFixtureClientTests: XCTestCase {
         let zero = "foreign_tasks unsafe_tasks foreign_explorations foreign_nodes foreign_finding_nodes foreign_findings foreign_relations foreign_companies foreign_assets foreign_links foreign_events profiles task_profiles activity conversations llm_usage llm_records archives intercepts retests notification_channels notification_deliveries".split(separator:" ")
         var counts = Dictionary(uniqueKeysWithValues:zero.map{(String($0),0)})
         counts.merge(["traffic_bindings":preparing ? 0:1,"traffic_snapshots":preparing ? 0:2,"tasks":11,"explorations":11,"relations":1,"companies":1,"assets":3,"findings":33,"finding_nodes":32,"events":0]){_,new in new}
-        return ["captured_native_fixture":true,"uid":1000,"finding_id":9101,"records":29,"manifest_sha256":"cbbff8fe682f4261362db3b741abeff9b429aa622c59ba4042663e512fe375ba","counts":counts]
+        return ["captured_native_fixture":true,"uid":1000,"finding_id":9101,"records":29,"manifest_sha256":"cbbff8fe682f4261362db3b741abeff9b429aa622c59ba4042663e512fe375ba","counts":counts,"source_sha256":sourceHashes()]
+    }
+    private func sourceHashes() -> [String:String] {
+        let root=URL(fileURLWithPath:#filePath).deletingLastPathComponent().deletingLastPathComponent().deletingLastPathComponent()
+        return Dictionary(uniqueKeysWithValues:["findings_seed_guest.py","findings_fixture_control.py","check_network.py","captured_fixture_guest.py","captured_native_guest.py"].map { name in
+            let url=root.appendingPathComponent((name=="check_network.py" ? "guest/":"script/")+name)
+            return (name,ArtifactIntegrity.sha256(try! Data(contentsOf:url)))
+        })
     }
     @MainActor func testFixedGuestSourcesBoundedCodeAndOneShotPrepare() async throws {
         let api=CapturedFixtureAPI();try api.set(proof(preparing:true));let fixture=try CapturedFixtureClient(client:api)
@@ -39,7 +46,7 @@ final class CapturedFixtureClientTests: XCTestCase {
         XCTAssertEqual(Set(fixture.sourceSHA256.keys),["findings_seed_guest.py","findings_fixture_control.py","check_network.py","captured_fixture_guest.py","captured_native_guest.py"])
     }
     @MainActor func testWrongManifestCountIdentityPhaseOrActivityNeverBecomesProof() async throws {
-        for mode in 0..<9 {
+        for mode in 0..<10 {
             let api=CapturedFixtureAPI();var value=proof(preparing:false)
             switch mode {
             case 0:value["manifest_sha256"]="wrong"
@@ -50,6 +57,7 @@ final class CapturedFixtureClientTests: XCTestCase {
             case 5:var counts=try XCTUnwrap(value["counts"] as? [String:Int]);counts["activity"]=1;value["counts"]=counts
             case 6:value=proof(preparing:true)
             case 7:value["counts"]=[:]
+            case 9:value["source_sha256"]=["captured_native_guest.py":"wrong"]
             default:break
             }
             try api.set(value,isError:mode==8);let fixture=try CapturedFixtureClient(client:api)
