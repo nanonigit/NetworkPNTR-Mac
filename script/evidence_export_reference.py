@@ -1,4 +1,5 @@
 """Independent fixed-loopback evidence API reference; main runs only in an owned Linux guest."""
+import contextlib
 import hashlib
 import http.client
 import json
@@ -94,7 +95,7 @@ class Client:
         row = fixture.body_manifest()[name]
         path = BASE + '/' + binding + '/body?side=' + side + '&download=1'
         connection, response = self.connection('GET', path)
-        output, owned = None, None
+        output, owned, created = None, None, False
         try:
             require(response.status == 200, 'download status')
             headers = {}
@@ -108,16 +109,18 @@ class Client:
             folder = DOWNLOAD_ROOT / ('boot-' + str(boot)); fixture._directory(folder)
             output = folder / (name + '.bin')
             fd = os.open(output, os.O_WRONLY | os.O_CREAT | os.O_EXCL | os.O_NOFOLLOW | os.O_CLOEXEC, 0o600)
-            info = os.fstat(fd); owned = (info.st_dev, info.st_ino)
+            created = True
             source = fixture.ROOT / 'blobs' / row['sha256'][:2] / (row['sha256'] + '.bin')
             source_fd = None
             try:
+                info = os.fstat(fd); owned = (info.st_dev, info.st_ino)
                 source_fd = os.open(source, os.O_RDONLY | os.O_NOFOLLOW | os.O_NONBLOCK | os.O_CLOEXEC)
                 info = os.fstat(source_fd)
                 require(stat.S_ISREG(info.st_mode) and info.st_uid == os.getuid() and info.st_size == row['size'], 'source regular body')
                 digest, count = hashlib.sha256(), 0
-                with os.fdopen(fd, 'wb') as saved, os.fdopen(source_fd, 'rb') as original:
-                    fd = source_fd = None
+                with contextlib.ExitStack() as stack:
+                    saved = stack.enter_context(os.fdopen(fd, 'wb')); fd = None
+                    original = stack.enter_context(os.fdopen(source_fd, 'rb')); source_fd = None
                     while True:
                         self.check()
                         chunk = response.read(65536)
@@ -136,6 +139,8 @@ class Client:
                 if source_fd is not None:
                     os.close(source_fd)
         except (OSError, RuntimeError):
+            if created and owned is None:
+                raise RuntimeError('Evidence reference download failed; cleanup incomplete') from None
             if owned is not None:
                 try:
                     current = output.lstat()
@@ -199,7 +204,8 @@ def main():
             process.terminate(); require(process.wait(timeout=20) == 0, 'cooperative stop'); process = None; stopped += 1
         require(downloads[0] == downloads[1] and stopped == 2, 'persisted body equality')
         for path in logs:
-            data = path.read_bytes()
+            with path.open('rb') as stream:
+                data = stream.read(4 * 1024 * 1024 + 1)
             require(len(data) <= 4 * 1024 * 1024 and all(token.encode() not in data for token in tokens), 'credential log audit')
         require(check_network.is_isolated(check_network.inspect()), 'final network')
         folder = Path(__file__).resolve().parent
