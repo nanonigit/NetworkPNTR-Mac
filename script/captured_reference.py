@@ -117,25 +117,40 @@ def normalized(summary):
 
 
 def validate_bound_sources(summary,records):
-    require(len(summary['bindings'])==2,'bound source receipt count')
+    bindings=summary['bindings']
+    require(len(bindings)==2,'bound source receipt count')
+    require(len({row['id'] for row in bindings})==2,'unique binding identities')
+    for row,index in zip(bindings,(3,4)):
+        require(isinstance(row['id'],str) and re.fullmatch(r'[1-9][0-9]{0,18}',row['id']) is not None,'binding numeric identity')
+        require(row['snapshot']['source_traffic_id']==records[index]['id'] and row['snapshot']['url']==records[index]['url'],'exact requested source identity')
 
 
 def validate_filtered_page(page,expected):
-    require(page['total']==len(expected),'filtered receipt count')
+    require(page['total']==len(expected) and page['count']==29 and page['page']==0 and page['size']==500,'filtered receipt envelope')
+    rows=page['exchanges']
+    require(type(rows) is list and len(rows)==len(expected) and len({row['id'] for row in rows})==len(rows),'filtered unique row count')
+    require({row['id']:row for row in rows}=={row['id']:row for row in expected},'exact filtered identities and metadata')
 
 
 def exercise(client,records):
     pages=[client.api('GET','/api/traffic?page='+str(page)+'&size=25') for page in (0,1)]
     require([len(page['exchanges']) for page in pages]==[25,4] and len({row['id'] for page in pages for row in page['exchanges']})==29,'actual paging')
+    record_map={row['id']:row for row in records}
+    require({row['id'] for page in pages for row in page['exchanges']}==set(record_map),'complete paged identities')
+    for index,page in enumerate(pages):
+        require(page['page']==index and page['size']==25 and page['count']==page['total']==29 and all(row==record_map[row['id']] for row in page['exchanges']),'paged row metadata')
     filters=[]
-    for suffix,total in [('host=127.0.0.1',29),('host=192.0.2.1',0),('method=GET',15),('method=POST',14),('q=ordinal+05',1),('q='+urlencode({'q':'日本語'})[2:],14)]:
-        page=client.api('GET','/api/traffic?page=0&size=500&'+suffix);require(page['total']==total,'filter count');filters.append(dict(query=suffix,total=total))
+    cases=[('host=127.0.0.1',records),('host=192.0.2.1',[]),('method=GET',records[::2]),('method=POST',records[1::2]),('q=ordinal+05',[records[5]]),('q='+urlencode({'q':'日本語'})[2:],records[1::2])]
+    for suffix,expected in cases:
+        page=client.api('GET','/api/traffic?page=0&size=500&'+suffix)
+        validate_filtered_page(page,expected);filters.append(dict(query=suffix,total=len(expected)))
     raw=client.api('GET','/api/traffic/exchange?'+urlencode({'id':records[1]['id']}))
     require(fixture.LITERAL.decode() in raw['resp'],'literal captured preview')
     initial=client.api('GET',BASE);require(initial['bindings']==[],'fresh bindings')
     refs=[{'traffic_id':records[index]['id'],'role':'supporting','note':'F5 captured source '+str(index)} for index in (3,4)]
     bound=client.api('POST',BASE,{'traffic_refs':refs});require(len(bound['bindings'])==2 and bound['version']>initial['version'],'bind receipt')
     validate_bound_sources(bound,records)
+    require(all(row['role']=='supporting' and row['note']=='F5 captured source '+str(index) and row['position']==position for position,(row,index) in enumerate(zip(bound['bindings'],(3,4)))),'bound role/note/order')
     fixture.audit_activity(2,2)
     sources={row['url']:row for row in fixture.exchange_manifest()};body_proofs=[];previews=[]
     for binding in bound['bindings']:
