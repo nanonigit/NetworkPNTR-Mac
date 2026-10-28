@@ -15,6 +15,8 @@ public struct BackendDownloadResult: Sendable, Equatable {
 final class BackendDownloadDigest {
     static let maximumBytes: Int64 = 128 * 1024 * 1024
     private let expectedSize: Int64
+    private let byteCeiling: Int64
+    private let onBody: (@Sendable (Data) throws -> Void)?
     private var header = Data()
     private var status: Int?
     private var length: Int64?
@@ -24,9 +26,9 @@ final class BackendDownloadDigest {
     private var cancelled = false
     var bufferedBytes: Int { header.count }
     var isComplete: Bool { !terminal && status != nil && length == count }
-    init(expectedSize: Int64) throws {
-        guard (0...Self.maximumBytes).contains(expectedSize) else { throw BackendAPIError.invalidResponse }
-        self.expectedSize = expectedSize
+    init(expectedSize: Int64, maximumBytes: Int64 = BackendDownloadDigest.maximumBytes, onBody: (@Sendable (Data) throws -> Void)? = nil) throws {
+        guard expectedSize >= 0, maximumBytes >= expectedSize else { throw BackendAPIError.invalidResponse }
+        self.expectedSize = expectedSize; byteCeiling = maximumBytes; self.onBody = onBody
     }
     func cancel() { cancelled = true; terminate() }
     func consume(_ bytes: Data) throws {
@@ -48,9 +50,10 @@ final class BackendDownloadDigest {
             }
             if cursor < bytes.endIndex {
                 guard let status else { throw BackendAPIError.invalidResponse }
-                let limit = length ?? (status == 200 ? Self.maximumBytes : 4 * 1024 * 1024)
+                let limit = length ?? (status == 200 ? byteCeiling : 4 * 1024 * 1024)
                 let size = Int64(bytes.endIndex - cursor)
                 guard size <= limit - count else { throw BackendAPIError.invalidResponse }
+                if status == 200 { try onBody?(Data(bytes[cursor...])) }
                 hash.update(data: bytes[cursor...]); count += size
             }
         } catch { terminate(); throw error }
@@ -89,7 +92,7 @@ final class BackendDownloadDigest {
               fields["content-encoding"] == nil || fields["content-encoding"]?.lowercased() == "identity" else { throw BackendAPIError.invalidResponse }
         if let value = fields["content-length"] {
             guard !value.isEmpty, value.utf8.allSatisfy({ (48...57).contains($0) }), let size = Int64(value),
-                  size <= (code == 200 ? Self.maximumBytes : 4 * 1024 * 1024),
+                  size <= (code == 200 ? byteCeiling : 4 * 1024 * 1024),
                   code != 200 || size == expectedSize else { throw BackendAPIError.invalidResponse }
             length = size
         } else if code == 200 { throw BackendAPIError.invalidResponse }

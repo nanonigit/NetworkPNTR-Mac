@@ -2,9 +2,9 @@ import Darwin
 import Foundation
 
 enum BackendDownloadExchange {
-    static func exchange(socket: BackendUploadSocket, preamble: Data, request: Data, expectedSize: Int64, timeout: Duration = .seconds(300)) throws -> BackendDownloadResult {
+    static func exchange(socket: BackendUploadSocket, preamble: Data, request: Data, expectedSize: Int64, maximumBytes: Int64 = BackendDownloadDigest.maximumBytes, onBody: (@Sendable (Data) throws -> Void)? = nil, timeout: Duration = .seconds(300)) throws -> BackendDownloadResult {
         defer { socket.finish() }
-        let decoder = try BackendDownloadDigest(expectedSize: expectedSize)
+        let decoder = try BackendDownloadDigest(expectedSize: expectedSize, maximumBytes: maximumBytes, onBody: onBody)
         defer { decoder.cancel() }
         guard preamble.count <= 256, request.count <= 32768, !request.isEmpty, timeout > .zero else { throw BackendAPIError.invalidResponse }
         let descriptor = try socket.checkedDescriptor()
