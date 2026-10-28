@@ -391,3 +391,14 @@ See evidence-reference-design.md and evidence-reference-design.ja.md.
 See cloud-providers-design.md and cloud-providers-design.ja.md. Keep current original-body comparison/export work moving; do not enable cloud egress just by adding this goal.
 
 Independent reference checkpoint: attempt1 exited1 at tmpfs export with complete owned cleanup; attempt2 at8accf4f exited0 and compared eight full response files against actual native outputs.18 focused/155 full Python tests pass. Detailed preview, captured mutations, native UI and full product gates remain open. See evidence-reference-verification.md and Japanese counterpart. Four-provider CP1–CP4 remain planned.
+
+## F5e native evidence controls
+
+- [x] E1 owned read/view/save workspace and parent lifecycle, typed original-body export connection.
+- [x] E2 binding metadata, raw headers/body tabs, explicit cumulative pages, binary feedback and actual-window Save Panel implementation; bilingual labels.
+- [x] E3 software negative tests/review/regression/coverage and offscreen locale/theme construction. See findings-traffic-ui-verification.md and Japanese counterpart.
+- [ ] E4 actual managed-guest new UI/save-panel run and detailed preview/original-body browser comparison.
+- [ ] E5 captured picker plus role/note/remove/reorder controls, conflict/unknown outcomes and nonempty actual persistence comparison.
+- [ ] E6 unlocked visual/keyboard/VoiceOver/multiwindow and all full-product release gates.
+
+F5e software checkpoint:22 new workspace/51 related/789 full Swift (788 pass,one existing externalAX skip),155 Python. Real temporary-file tests cover publication and cancellation; actual new UI/VM/panel acceptance remains open. Gemini/Groq CP1–CP4 and investigation harness H0–H5 remain planned. Hosted CI is unverified; our publication HEAD uses [skip ci].

@@ -124,8 +124,8 @@ struct RootView: View {
                 guard !Task.isCancelled, session.phase == .authenticated else { return }
                 findingScreen?.reset()
                 let client = AuthenticatedBackendClient(session:session)
-                findingScreen = FindingScreenModel(store:FindingStore(service:FindingService(client:client)),preferences:.standard,trafficService:FindingTrafficService(client:client),evidenceExporter:{ [weak session] manifest,destination in
-                    guard let session else { throw CancellationError() }; return try await session.authenticatedEvidenceExport(manifest,destination:destination)
+                findingScreen = FindingScreenModel(store:FindingStore(service:FindingService(client:client)),preferences:.standard,trafficService:FindingTrafficService(client:client),evidenceExporter:{ [weak evidenceSession = session] manifest,destination in
+                    guard let evidenceSession else { throw CancellationError() }; return try await evidenceSession.authenticatedEvidenceExport(manifest,destination:destination)
                 })
                 findingOwner = ObjectIdentifier(session)
             }

@@ -1,0 +1,20 @@
+# F5e1 native evidence read/view/save checkpoint
+
+The finding detail inspector now opens a window-owned evidence sheet. It lists bindings with role/note/ID/method/status/URL/capture time, permits inherited read-only inspection, preserves opaque text and headers, switches request/response, cumulatively loads explicit byte pages, displays binary feedback and saves the complete original body through the authenticated VM transport. Recorded URLs remain plain text. The actual presenting sheet anchors NSSavePanel; no global key-window lookup, host share or host agent execution was added. Existing files are preserved; only a verified staged receipt matching the selected manifest is committed. Cancellation, late receipts, parent departure and old presentation callbacks are guarded.
+
+This checkpoint implements the read/view/save portion of the full F5 design. The UI explicitly marks adding/editing/reordering as in development; deletion and the captured picker are also still required. It does not complete F5, any full21-workflow parity claim, cloud providers, kernel promotion, clean installation, notarization or release.
+
+## Evidence
+
+- TDD contracts: a4b28fa missing workspace contracts ->666bb50 nine tests;7e45408 missing views/presenter ->6029c49 eleven tests. Runtime RED5989dd7 exposed stale identity, wrong receipt and reentrant departure, including failed process signal11 ->59063fc20 GREEN. Parent RED9628164 signal11 ->5ba58f6 fifty related GREEN. Cancel/getter REDf0f71a9 two failures in22 cases ->98aa36e51 related GREEN. See bilingual bugs/evidence-sheet-lifecycle records.
+- Full Swift regression with coverage:789 cases,788 pass,one pre-existing external accessibility skip,zero failures. The789 comprise19 probe,213 app and557 core cases.
+- Full GuestArtifactTests:155 pass. Localization export check, shell syntax checks and frozen baseline inventory21 navigation/27 routes/243 handlers pass; inventory remains explicit about native workflow parity pending.
+- LLVM line coverage for the full run: FindingTrafficWorkspace280/282(99.29%), FindingScreenModel179/188(95.21%), FindingBindings51/52(98.08%), FindingTrafficView189/253(74.70%), EvidenceSavePanel27/81(33.33%). These are whole-file scoped line counts, not proof of untested panel interactions or all changed lines. Real chooser/window actions are a pending manual gate; offscreen rendering is not keyboard/accessibility acceptance.
+- The22 new workspace tests use bounded fixed JSON, held continuations, synchronous Observation callbacks and real exclusive temporary files. They verify complete bytes/hash, existing-file protection, mismatch rejection and residue-free late-receipt disposal. They do not execute agents or reach model APIs.
+- Independent native/reference full-body equality from the prior checkpoint remains recorded in evidence/findings/evidence-reference-comparison.json (eight files across two starts, including135266321 bytes). That evidence is for the earlier transport/diagnostic binary, not a live acceptance run of this new UI.
+
+The app bundle was rebuilt with script/build_and_run.sh --build-only and strictly signature-verified. A final weak-capture alias cleanup was rechecked with all51 related tests; no semantic transport change was introduced. This is a local bundle build, not installation, notarization or real UI acceptance.
+
+## Acceptance still required
+
+Run the new sheet/save panel against an actual managed guest and compare detailed preview content, binary/truncation semantics and original bodies with the fixed browser. Manual unlock is still deferred by the user: no actual panel mouse/keyboard/VoiceOver, visual clipping, sheet/window routing, multiwindow or screenshot parity is claimed. Add the full captured picker and role/note/remove/reorder controls; prove nonempty actual mutations, conflicts/unknown outcomes and persistence in guest/reference. Preserve every broader app/VM/cloud/release requirement. Hosted CI is unverified under the exhausted Actions quota; publish with [skip ci] and do not dispatch/rerun or alter billing.
