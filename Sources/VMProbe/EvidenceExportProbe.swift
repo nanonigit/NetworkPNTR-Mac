@@ -24,15 +24,16 @@ import Foundation
     private struct Provenance: Codable {
         let sourceCommit, backendSHA256, backendImage: String
     }
-    private struct Boot: Codable {
+    struct Boot: Codable {
         let index, cpuCount: Int
         let ready, credentialsAbsent, isolationWitnesses, formatObserved, cooperativeStop: Bool
         let diagnostics: [String]
         let files: [EvidenceFileProof]
     }
-    private struct Report: Codable {
+    struct Report: Codable {
         var stage = "prepare"
         var bootAttempts = 0
+        var expectedCPUCount = 0
         var sourceSHA256: [String: String] = [:]
         var boots: [Boot] = []
         var logoutReceiptRejected = false
@@ -45,6 +46,26 @@ import Foundation
         let browserComparison = false
         let nativeUIAcceptance = false
         let witnessedInFlightCancellation = false
+        @MainActor mutating func publishFinal(write: (Self) throws -> Void) throws {
+            nativeProbePassed = false
+            let expectedFiles = EvidenceFixtureClient.expectedBodies.sorted(by: { $0.key < $1.key }).map {
+                EvidenceFileProof(body: $0.key, byteCount: $0.value.size, sha256: $0.value.sha256)
+            }
+            guard boots.count == 2, logoutReceiptRejected, stopReceiptRejected, restartReceiptRejected,
+                  noClobber, machineStopped, cleanupComplete, expectedCPUCount > 0,
+                  boots.enumerated().allSatisfy({ index, boot in
+                      boot.index == index + 1 && boot.cpuCount == expectedCPUCount && boot.ready && boot.credentialsAbsent
+                      && boot.isolationWitnesses && boot.cooperativeStop && boot.diagnostics.isEmpty
+                      && boot.formatObserved == (index == 0) && boot.files.sorted(by: { $0.body < $1.body }) == expectedFiles
+                  }) else { throw EvidenceExportProbe.failure() }
+            stage = "complete"; nativeProbePassed = true
+            do { try write(self) }
+            catch { nativeProbePassed = false; stage = "final-report-failed"; throw error }
+        }
+        mutating func recordFailure(machineStopped: Bool, cleanupComplete: Bool) {
+            nativeProbePassed = false
+            self.machineStopped = machineStopped; self.cleanupComplete = cleanupComplete
+        }
     }
     private static func progress(_ text: String) { FileHandle.standardOutput.write(Data((text + "\n").utf8)) }
     private static func failure() -> RuntimeError { .integrity("evidence VM probe") }
@@ -111,6 +132,7 @@ import Foundation
             guard mkdir(output.path, 0o700) == 0 else { throw failure() }
             created = true
             let specification = try GuestArtifacts.load(from: artifacts)
+            report.expectedCPUCount = specification.cpuCount ?? 2
             let provenance = try JSONDecoder().decode(Provenance.self, from: Data(contentsOf: artifacts.appendingPathComponent("manifest.json")))
             guard provenance.sourceCommit == "e75ae371ad777ffd1eecdd28d2781a6519b05591",
                   provenance.backendSHA256.count == 64, provenance.backendImage.hasPrefix("sha256:") else { throw failure() }
@@ -199,19 +221,19 @@ import Foundation
             for name in ["late-logout.bin", "late-stop.bin", "late-restart.bin"] {
                 guard !FileManager.default.fileExists(atPath: output.appendingPathComponent(name).path) else { throw failure() }
             }
-            guard !(try FileManager.default.contentsOfDirectory(atPath: output.path)).contains(where: { $0.hasPrefix(".artex-evidence-") }) else { throw failure() }
-            report.stage = "complete"; report.machineStopped = !controller.hasMachine; report.cleanupComplete = true
-            report.nativeProbePassed = report.boots.count == 2 && report.logoutReceiptRejected && report.stopReceiptRejected && report.restartReceiptRejected && report.noClobber && report.machineStopped
-            guard report.nativeProbePassed else { throw failure() }
-            try write(report, to: output.appendingPathComponent("evidence-native.json"))
+            guard EvidenceProbeFile.stagingAbsent(output) else { throw failure() }
+            report.machineStopped = !controller.hasMachine; report.cleanupComplete = true
+            try report.publishFinal { try write($0, to: output.appendingPathComponent("evidence-native.json")) }
             progress("PASS evidence_native_two_boots=true four_original_bodies=true ownership=true persistence=true browser_ui_pending=true")
         } catch {
             var cleaned = true
             do { try restartReceipt?.discard() } catch { cleaned = false }
             if controller.hasMachine { do { try await controller.forceStop() } catch { cleaned = false } }
-            appendBoot(); report.machineStopped = !controller.hasMachine; report.cleanupComplete = cleaned && report.machineStopped
+            appendBoot()
+            report.recordFailure(machineStopped: !controller.hasMachine,
+                                 cleanupComplete: cleaned && !controller.hasMachine && created && EvidenceProbeFile.stagingAbsent(output))
             if created { do { try write(report, to: output.appendingPathComponent("evidence-native.json")) } catch { cleaned = false } }
-            FileHandle.standardError.write(Data("FAIL evidence_stage=\(report.stage) boot=\(report.bootAttempts) machine_stopped=\(report.machineStopped) cleanup_complete=\(cleaned)\n".utf8))
+            FileHandle.standardError.write(Data("FAIL evidence_stage=\(report.stage) boot=\(report.bootAttempts) machine_stopped=\(report.machineStopped) cleanup_complete=\(report.cleanupComplete && cleaned)\n".utf8))
             exit(1)
         }
     }

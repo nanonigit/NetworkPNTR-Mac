@@ -11,6 +11,19 @@ struct EvidenceFileProof: Codable, Equatable {
 }
 
 enum EvidenceProbeFile {
+    static func stagingAbsent(_ output: URL) -> Bool {
+        for (index, directory) in [output, output.appendingPathComponent("downloads-1"), output.appendingPathComponent("downloads-2")].enumerated() {
+            var info = stat()
+            if lstat(directory.path, &info) != 0 {
+                if index > 0, errno == ENOENT { continue }
+                return false
+            }
+            guard info.st_mode & S_IFMT == S_IFDIR, info.st_uid == getuid(),
+                  let names = try? FileManager.default.contentsOfDirectory(atPath: directory.path),
+                  !names.contains(where: { $0.hasPrefix(".artex-evidence-") }) else { return false }
+        }
+        return true
+    }
     static func verify(_ url: URL, body: String, expected: EvidenceFixtureClient.Body) throws -> EvidenceFileProof {
         var named = stat()
         guard lstat(url.path, &named) == 0, named.st_mode & S_IFMT == S_IFREG else { throw failure() }
