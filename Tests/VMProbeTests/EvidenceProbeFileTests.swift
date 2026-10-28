@@ -5,7 +5,7 @@ import XCTest
 @testable import ArtexCore
 @testable import VMProbe
 
-final class EvidenceProbeFileTests: XCTestCase {
+@MainActor final class EvidenceProbeFileTests: XCTestCase {
     private func directory() throws -> URL {
         let root = FileManager.default.temporaryDirectory.appendingPathComponent("artex-evidence-probe-test-" + UUID().uuidString)
         try FileManager.default.createDirectory(at: root, withIntermediateDirectories: false)

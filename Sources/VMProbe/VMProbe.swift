@@ -6,6 +6,7 @@ import Foundation
         let args = CommandLine.arguments
         guard args.count >= 3 else { FileHandle.standardError.write(Data("Usage: VMProbe guest-artifacts log-directory\n".utf8)); exit(2) }
         if args[1] == "--findings" { await FindingProbe.run(Array(args.dropFirst(2))); return }
+        if args[1] == "--evidence-export" { await EvidenceExportProbe.run(Array(args.dropFirst(2))); return }
         if args[1] == "--task-archive" { await TaskArchiveProbe.run(Array(args.dropFirst(2))); return }
         if args[1] == "--task-catalog" { await TaskCatalogProbe.run(Array(args.dropFirst(2))); return }
         if args[1] == "--task-staging" { await TaskStagingProbe.run(Array(args.dropFirst(2))); return }
