@@ -356,3 +356,13 @@ Existing full-byte export and browser parity work retain their current priority.
 - [ ] Actual guest transfer/VM-stop comparisons and full native save controls remain required beyond this software checkpoint.
 
 F5d2 software checkpoint:36focused/755Swift(754pass/1existingAXskip)/123Python; actual129MiB+17 streamed disk proof, receipt/auth/manifest100%lines, stopped-only VM coverage52/472 explicitly leaves actual vsock/stop/restart gates open. See evidence-export-connection-verification.md and its Japanese counterpart. During exhausted Actions quota, all our push HEADs use [skip ci]; no remote CI or billing changes.
+
+## F5d runtime acceptance
+
+- [ ] R1 fixed diagnostic bodies, full streaming audit and environment/file/SQL negative tests.
+- [ ] R2 typed DEBUG fixture client and bounded proofs.
+- [ ] R3 fresh signed zero-NIC VM export, stop/restart and persistence proof.
+- [ ] R4 independent pinned reference exact-byte comparison.
+- [ ] R5 full native controls and unlocked UI acceptance.
+
+See evidence-export-runtime-design.md and evidence-export-runtime-design.ja.md.
