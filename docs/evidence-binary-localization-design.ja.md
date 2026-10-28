@@ -1,0 +1,9 @@
+# 型付きbinary preview表示
+
+要件：nativeが所有するUIは英日とする。packet／header／text原文byte、API DTO、download／hash、offset、選択、所有者は保持する。固定serverはstructured binary flagがtrueのpreviewへ中国語の表示placeholderを返し、現在のviewは既存の日英binary案内と重ねて表示する。描画本文から、その型付きserver案内だけを除く。通常のpacket本文にあるCJKや既知markerを正規表現で置換しない。
+
+Lazyweb healthは0.15.14で最新。HTTP response binary preview検索は隣接する弱いmetadata（HTTPie docs0.385266／Postman0.334657／Retool0.334457）で、正確なbinary previewや画像を確認した証拠とはしない。直接の基準は固定browser／server。Lazyweb経由でhttps://raw.githubusercontent.com/pbakaus/impeccable/main/.claude/skills/impeccable/reference/clarify.mdを取得し、状態と次の操作を一度だけ伝え、用語・意味を維持し、完結した翻訳文を使う方針を採用。狭い翻訳修正でlayout再設計／承認proposalは不要。Mac解除待ちの実画面／keyboard／AX受入は継続。
+
+設計：EvidenceTextPreview.contentはraw累積byteをそのまま保持し、表示専用textContentを非binary pageのみから組み立てる。初回binary pageは本文表示へ足さず、後続binaryなら先行textを保持して、そのpageの型付きplaceholderだけを除く。既存evidence.ui.binaryがviewer上の唯一の英日案内となり、原本保存・byte数・headerは維持。通常textに同じ中国語markerがあってもbyteを保持する。key／catalog／API／wire／backend変更やlocaleによるtaskは追加しない。
+
+先行試験：初回binary、markerを含む通常CJK／FEFF／NFD、text後のbinary、失敗appendの不変性。workspace／view統合で両side・英日light／dark offscreen構築、追加通信なし、raw snapshot保持を確認。対象／全試験・coverage・review・localization／baselineを確認し、local app bundleをbuild終了後に署名検証する。offscreen構築だけで新UI実受入や全目標完了とはしない。private data・固定source／候補kernel方針を維持し、外部target／cloud通信を増やさない。
