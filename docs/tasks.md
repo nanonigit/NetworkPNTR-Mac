@@ -350,7 +350,9 @@ Existing full-byte export and browser parity work retain their current priority.
 
 ## F5d2 evidence export connection
 
-- [ ] RED: authenticated staging/current commit, stale/401/cancel/VM/UI ownership and concrete stopped-client tests using actual files.
-- [ ] GREEN: receipt ownership, typed transport/client and registered VM transfer with evidence lifetime epoch.
-- [ ] Review, full regression/coverage, guest artifact tests, signed build, publication/remote receipt.
+- [x] RED: authenticated staging/current commit, stale/401/cancel/VM/UI ownership and concrete stopped-client tests using actual files.
+- [x] GREEN: receipt ownership, typed transport/client and registered VM transfer with evidence lifetime epoch.
+- [x] Local review/full regression/coverage, guest artifact tests and signed build. Hosted CI remains unverified due exhausted account quota; see evidence-export-connection-verification.md.
 - [ ] Actual guest transfer/VM-stop comparisons and full native save controls remain required beyond this software checkpoint.
+
+F5d2 software checkpoint:36focused/755Swift(754pass/1existingAXskip)/123Python; actual129MiB+17 streamed disk proof, receipt/auth/manifest100%lines, stopped-only VM coverage52/472 explicitly leaves actual vsock/stop/restart gates open. See evidence-export-connection-verification.md and its Japanese counterpart. During exhausted Actions quota, all our push HEADs use [skip ci]; no remote CI or billing changes.

@@ -1,0 +1,7 @@
+# Temporary Actions quota policy
+
+Evidence: the user-provided GitHub notification on2026-10-28 states 2,000/2,000 included account Actions minutes used and a reset on2026-11-01. Previous run40643534669 failed before steps; its annotation gave the generic account-payment/spending-limit reason. The notification clarifies that the included quota is exhausted; it does not establish whether paid overage is enabled. Billing and budgets were not changed.
+
+Continue all local tests, coverage, guest-format checks, signed builds and hardware acceptance. Before each push review the diff, complete applicable local checks and include `[skip ci]` in its HEAD commit. The present workflow only has push/pull_request triggers, which support commit-message skipping. Do not dispatch/rerun Actions while quota availability is unverified. Do not treat skipped or account-blocked checks as green. Release remote validation remains open and must be completed when available. No automatic resumption or scheduled job has been created. Other account repositories/contributors may still consume minutes.
+
+[GitHub workflow skipping documentation](https://docs.github.com/en/actions/how-tos/manage-workflow-runs/skip-workflow-runs) explains the supported skip markers and that skipped required checks can remain pending. The workflow itself is preserved; account-wide Actions are not disabled. Regaining quota alone does not prove a successful test run.

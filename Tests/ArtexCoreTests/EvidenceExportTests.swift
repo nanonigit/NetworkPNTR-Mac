@@ -31,6 +31,52 @@ final class EvidenceExportTests: XCTestCase {
         for token in ["", "bad token", "bad\r\n"] { XCTAssertThrowsError(try request.request(bearer: token)) }
         XCTAssertThrowsError(try FindingEvidenceDownload(findingID: "1", bindingID: "7", side: .response, expectedSize: -1, expectedSHA256: String(repeating: "a", count: 64)))
     }
+    func testBindingSnapshotSelectsExactBodyIdentityForEachSide() throws {
+        let requestHash = String(repeating: "a", count: 64), responseHash = String(repeating: "b", count: 64)
+        let snapshot: [String: Any] = ["id": "snapshot", "sourceTrafficId": "opaque", "capturedAt": 1,
+            "url": "https://fixture.invalid/", "method": "POST", "contentType": "application/octet-stream", "status": 200,
+            "reqHash": requestHash, "respHash": responseHash, "reqLen": 0, "respLen": 123]
+        let value: [String: Any] = ["id": "7", "findingId": "1", "snapshotId": "snapshot", "role": "request", "note": "", "createdAt": "fixture", "position": 0, "snapshot": snapshot]
+        let binding = try JSONDecoder().decode(FindingTrafficBinding.self, from: JSONSerialization.data(withJSONObject: value))
+        let request = try FindingEvidenceDownload(binding: binding, side: .request, contextTaskID: "42")
+        let response = try FindingEvidenceDownload(binding: binding, side: .response)
+        XCTAssertEqual(request.expectedSize, 0); XCTAssertEqual(request.expectedSHA256, requestHash)
+        XCTAssertEqual(response.expectedSize, 123); XCTAssertEqual(response.expectedSHA256, responseHash)
+        XCTAssertEqual(request.contextTaskID, "42"); XCTAssertEqual(request.suggestedFilename, "evidence-7-request.bin")
+        XCTAssertEqual(response.suggestedFilename, "evidence-7-response.bin")
+    }
+    func testActualStreamAndSavedFileAboveAttachmentLimitRemainBoundedAndByteExact() throws {
+        let root = try directory(); defer { try? FileManager.default.removeItem(at: root) }
+        let size: Int64 = 129 * 1024 * 1024 + 17
+        let chunk = Data((0..<65536).map { UInt8(truncatingIfNeeded: $0) })
+        var remaining = size, expected = SHA256()
+        while remaining > 0 {
+            let bytes = chunk.prefix(Int(min(remaining, Int64(chunk.count))))
+            expected.update(data: bytes); remaining -= Int64(bytes.count)
+        }
+        let hash = expected.finalize().map { String(format: "%02x", $0) }.joined()
+        let request = try FindingEvidenceDownload(findingID: "1", bindingID: "7", side: .response, expectedSize: size, expectedSHA256: hash)
+        XCTAssertThrowsError(try BackendDownloadDigest(expectedSize: size))
+        let writer = try EvidenceExportWriter(destination: EvidenceExportDestination(newFileURL: root.appendingPathComponent("large.bin")), request: request)
+        let decoder = try BackendDownloadDigest(expectedSize: size, maximumBytes: size, onBody: { try writer.append($0) })
+        try decoder.consume(Data("HTTP/1.1 200 OK\r\nContent-Length: \(size)\r\n\r\n".utf8))
+        remaining = size
+        while remaining > 0 {
+            let bytes = chunk.prefix(Int(min(remaining, Int64(chunk.count))))
+            try decoder.consume(Data(bytes)); remaining -= Int64(bytes.count)
+            XCTAssertLessThanOrEqual(decoder.bufferedBytes, 65536)
+        }
+        let saved = try writer.finish(response: decoder.finish()).commit()
+        let handle = try FileHandle(forReadingFrom: saved.url); defer { try? handle.close() }
+        var actual = SHA256(), count: Int64 = 0
+        while let bytes = try handle.read(upToCount: 65536), !bytes.isEmpty {
+            actual.update(data: bytes); count += Int64(bytes.count)
+        }
+        XCTAssertEqual(count, size); XCTAssertEqual(saved.byteCount, size)
+        XCTAssertEqual(actual.finalize().map { String(format: "%02x", $0) }.joined(), hash)
+        XCTAssertEqual(saved.sha256, hash); XCTAssertTrue(saved.stagingCleanupComplete)
+        XCTAssertEqual(try FileManager.default.contentsOfDirectory(atPath: root.path), ["large.bin"])
+    }
     func testActualFullBinaryFileBeyondJSONLimitMatchesOriginalBytesAndPrivateModes() throws {
         let root = try directory(); defer { try? FileManager.default.removeItem(at: root) }
         let url = root.appendingPathComponent("literal 日本語.bin"), data = Data((0..<(5 * 1024 * 1024 + 17)).map { UInt8(truncatingIfNeeded: $0) })

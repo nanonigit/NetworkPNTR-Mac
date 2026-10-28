@@ -1,0 +1,11 @@
+# F5d2 evidence export connection checkpoint
+
+Implemented: typed evidence download transport and fixed manifest route, registered VM transfer socket with cancellation/stop ownership, post-transfer VM epoch guard, current-auth revision checks before401 effects, and a single-use receipt that revalidates UI/runtime/auth ownership before exclusive publication. No automatic retry. Failed/stale/cancelled operations discard staging explicitly. Existing attachment digest behavior is preserved.
+
+TDD: missing APIs RED234418c -> initial nine-case GREENcad90bc -> synchronous discard/obsolete-VM401 RED232b57f (11cases/5assertions) -> ownership correction GREEN1e7e64f (27 related). Added side-specific snapshot manifest checks and actual129MiB+17 disk export with independently streamed hashing. Final focused36 pass. Full coverage suite755 (754pass,1existingAXskip), Python123 pass, localization export and fixed21/27/243 browser inventory pass. Signed app build and strict codesign verification pass. Read-only review confirms the two corrections and no remaining blocker in this checkpoint.
+
+Coverage lines: receipt46/46; authentication176/176; client43/50; staging29/29; filesystem164/176; manifest24/24. VMController52/472: local tests only cover the stopped guard, not real VZ transfer branches. This is explicitly not adequate proof of live VM success/stop behavior. The129MiB test exercises parser/file primitives, not authenticated vsock. No real provider call, agent command or new egress was used.
+
+The user supplied an exhausted Actions quota notification. Hosted CI is intentionally skipped for this push, not green; see actions-quota-policy.md. The last observed account-blocked run remains40643534669. No paid run, workflow rerun or billing change was requested. Original browser parity and release goals remain open.
+
+Next: actual owned guest fixture with original binary/large evidence, successful authenticated vsock and VM stop/restart receipt rejection, independent pinned-browser byte/hash comparison, then native request/response download controls, Save Panel, progress/errors/receipt and all F5 traffic UI. Use Lazyweb before that UI work. Hardware/visual/keyboard/VoiceOver acceptance must be observed separately; no narrower software test closes those gates. See bugs/evidence-export-ownership.md and evidence/findings/evidence-export-connection.json.

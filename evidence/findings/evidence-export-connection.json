@@ -1,0 +1,84 @@
+{
+  "schema": 1,
+  "baselineCommit": "e75ae371ad777ffd1eecdd28d2781a6519b05591",
+  "fullGoalComplete": false,
+  "checkpoint": "F5d2 software ownership connection",
+  "focusedTests": 36,
+  "swift": {
+    "total": 755,
+    "passed": 754,
+    "skippedExistingAX": 1,
+    "failed": 0
+  },
+  "python": {
+    "total": 123,
+    "failed": 0
+  },
+  "largePrimitiveFileBytes": 135266321,
+  "chunkMaximumBytes": 65536,
+  "sourceSHA256": {
+    "Sources/ArtexCore/EvidenceExportReceipt.swift": "41a417ade70d015171c0567663251d546a5ecf01ff661ef870ee8502bbc7135f",
+    "Sources/ArtexCore/AuthenticationSession.swift": "991cfb67d966e99cba906440a5d70d0e90c605f4803895e71335edea881178b7",
+    "Sources/ArtexCore/BackendJSONClient.swift": "f9c37b2acdead36935e7e1fdc57567636bab024591ea0b898b51fd27daf5348b",
+    "Sources/ArtexCore/VMController.swift": "3baa84f7e769ea2290ff145ecbcae57c957cfa7ae24d3f2e233f0c7e10664e96",
+    "Sources/ArtexCore/EvidenceDownloadStaging.swift": "acd095f5b4a3240559e3213c2e3a563929a9b7132eac432e0b96003a91a9dc93",
+    "Sources/ArtexCore/EvidenceExportFile.swift": "7f98b1f3a2443b3af0cb8a124f00bc5e164ab8a8af7cc1f9aff40272f2262492",
+    "Sources/ArtexCore/FindingEvidenceDownload.swift": "1cf6690bc7e0cd48be3c310a6f233873f26f24145da8b925f54c66532f933620",
+    "Sources/ArtexCore/BackendDownloadDigest.swift": "0b4cc3a1c911493a7dd2a4613622b8951046e7857a7f51590cbb704493987708",
+    "Sources/ArtexCore/BackendDownloadExchange.swift": "0f830d50b175fd4f119bf708e489e8bf475f5bf76b3cbb3b5f0f6a23f0c6c065",
+    "Tests/ArtexCoreTests/AuthenticatedEvidenceExportTests.swift": "e5308b6b851b7a59432128eede72805a06cc8792ec92fb518a11acaf6991a163",
+    "Tests/ArtexCoreTests/EvidenceExportTests.swift": "99c1e07a4d9eb8bd33e9c7f0f3a1334e7bb59c6faf52227a5d066054b0562397",
+    "Tests/ArtexCoreTests/EvidenceDownloadSocketTests.swift": "e6c159ea8bf9cdff94242d8b09e206f2c485c85ef59ff59428ab13664f8d57b0"
+  },
+  "coverageLines": {
+    "EvidenceExportReceipt": [
+      46,
+      46
+    ],
+    "AuthenticationSession": [
+      176,
+      176
+    ],
+    "BackendJSONClient": [
+      43,
+      50
+    ],
+    "EvidenceDownloadStaging": [
+      29,
+      29
+    ],
+    "EvidenceExportFile": [
+      164,
+      176
+    ],
+    "FindingEvidenceDownload": [
+      24,
+      24
+    ],
+    "VMController": [
+      52,
+      472
+    ]
+  },
+  "checks": {
+    "localization": true,
+    "baselineInventory": true,
+    "signedBuild": true,
+    "strictSignature": true,
+    "readOnlyReview": true,
+    "actualGuestExport": false,
+    "actualVMStopReceipt": false,
+    "browserFullByteComparison": false,
+    "nativeSaveUI": false,
+    "hostedCI": false
+  },
+  "hostedCIStatus": "not triggered: exhausted account Actions quota; pushed HEAD uses skip ci",
+  "remaining": [
+    "actual registered vsock success/stop/restart races",
+    "authenticated original-byte browser comparison",
+    "native Save Panel and current detail ownership",
+    "full F5 controls and unlocked UI/accessibility acceptance",
+    "remote CI when quota available",
+    "all original full product release gates"
+  ]
+}
