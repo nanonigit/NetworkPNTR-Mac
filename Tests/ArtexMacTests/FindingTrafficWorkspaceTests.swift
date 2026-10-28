@@ -188,6 +188,15 @@ final class FindingTrafficWorkspaceTests: XCTestCase {
         model.stop(); continuation?.resume(returning:try XCTUnwrap(heldReceipt)); try await wait { !model.isExporting }
         XCTAssertNil(model.saved); XCTAssertNil(model.failure); XCTAssertEqual(try FileManager.default.contentsOfDirectory(atPath:root.path),[])
     }
+    @MainActor func testSynchronousCancelDuringBusyPublicationCannotStartChooserOrTransfer() async throws {
+        let api = EvidenceWorkspaceAPI(); var transfers = 0
+        let model = try await loaded(api,exporter:{ _,_ in transfers += 1; throw CancellationError() })
+        let chooser = EvidenceDestinationFixture()
+        withObservationTracking { _ = model.isExporting } onChange: { MainActor.assumeIsolated { model.cancelExport() } }
+        _ = model.startExport(.response,owner:model.id,chooser:chooser)
+        try await wait { !model.isExporting }
+        XCTAssertEqual(chooser.names,[]); XCTAssertEqual(transfers,0); XCTAssertTrue(model.isActive); XCTAssertNil(model.saved)
+    }
     @MainActor func testSynchronousDepartureDuringBusyPublicationNeverOpensChooser() async throws {
         let api = EvidenceWorkspaceAPI(), model = try await loaded(api,exporter:{ _,_ in throw CancellationError() })
         let chooser = EvidenceDestinationFixture()
@@ -270,7 +279,7 @@ final class FindingTrafficWorkspaceTests: XCTestCase {
         let first = try XCTUnwrap(parent.trafficWorkspace), dismiss = FindingBindings.traffic(parent,id:parent.trafficWorkspace?.id)
         parent.closeTraffic(id:first.id)
         XCTAssertTrue(parent.beginTraffic(owner:parent.store.viewOwner,revision:parent.detailRevision))
-        let second = try XCTUnwrap(parent.trafficWorkspace); dismiss.wrappedValue = nil
+        let second = try XCTUnwrap(parent.trafficWorkspace); XCTAssertNil(dismiss.wrappedValue); dismiss.wrappedValue = nil
         XCTAssertEqual(parent.trafficWorkspace?.id,second.id); XCTAssertTrue(second.isActive)
         FindingBindings.traffic(parent,id:second.id).wrappedValue = nil; XCTAssertNil(parent.trafficWorkspace)
     }
