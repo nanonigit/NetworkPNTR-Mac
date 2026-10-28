@@ -6,6 +6,9 @@ import os
 from pathlib import Path
 import re
 import stat
+import selectors
+import subprocess
+import time
 
 
 def builder_is_local(text):
@@ -106,7 +109,84 @@ def compare_files(left, right, expected_size, expected_hash):
         raise RuntimeError('Reference comparison file read failed') from None
 
 
+def copy_response_file(command, destination, expected_size, *, timeout=120, diagnostic=None):
+    if type(expected_size) is not int or not 0 <= expected_size <= 135266321 or timeout <= 0:
+        raise RuntimeError('Reference stream export bounds failed')
+    process, selector, errors = None, selectors.DefaultSelector(), bytearray()
+    deadline, count = time.monotonic() + timeout, 0
+    try:
+        fd = os.open(destination, os.O_WRONLY | os.O_CREAT | os.O_EXCL | os.O_NOFOLLOW | os.O_CLOEXEC, 0o600)
+        try:
+            saved = os.fdopen(fd, 'wb')
+        except BaseException:
+            os.close(fd)
+            raise
+        with saved:
+            process = subprocess.Popen(command, stdin=subprocess.DEVNULL, stdout=subprocess.PIPE, stderr=subprocess.PIPE, bufsize=0)
+            for name, stream in [('stdout', process.stdout), ('stderr', process.stderr)]:
+                os.set_blocking(stream.fileno(), False)
+                selector.register(stream, selectors.EVENT_READ, name)
+            while selector.get_map():
+                remaining = deadline - time.monotonic()
+                if remaining <= 0:
+                    raise RuntimeError('Reference stream export timeout')
+                for key, _ in selector.select(min(remaining, 1)):
+                    try:
+                        chunk = os.read(key.fd, 65536)
+                    except (BlockingIOError, InterruptedError):
+                        continue
+                    if not chunk:
+                        selector.unregister(key.fileobj)
+                        continue
+                    if key.data == 'stderr':
+                        if len(chunk) > 65536 - len(errors):
+                            raise RuntimeError('Reference stream export diagnostic bound failed')
+                        errors.extend(chunk)
+                    else:
+                        if len(chunk) > expected_size - count or saved.write(chunk) != len(chunk):
+                            raise RuntimeError('Reference stream export byte bound failed')
+                        count += len(chunk)
+            remaining = deadline - time.monotonic()
+            if remaining <= 0 or process.wait(timeout=remaining) != 0 or count != expected_size:
+                raise RuntimeError('Reference stream export completion failed')
+            saved.flush(); os.fsync(saved.fileno())
+        return count
+    except (OSError, subprocess.SubprocessError) as error:
+        raise RuntimeError('Reference stream export failed') from None
+    finally:
+        selector.close()
+        if process is not None:
+            if process.poll() is None:
+                process.kill(); process.wait(timeout=5)
+            process.stdout.close(); process.stderr.close()
+        if diagnostic is not None:
+            diagnostic.write_bytes(errors)
+
+
 import textwrap
+
+EXPORT_ONE = textwrap.dedent(r"""
+    import os,pathlib,platform,stat,sys
+    assert platform.system()=='Linux' and platform.machine()=='aarch64' and os.getuid()==1000
+    sizes={'literal':52,'binary':5242897,'empty':0,'large':135266321}
+    assert len(sys.argv)==3 and sys.argv[1] in ('1','2') and sys.argv[2] in sizes
+    root=pathlib.Path('/state/evidence-downloads');folder=root/('boot-'+sys.argv[1])
+    for parent in [root,folder]:
+        value=parent.lstat();assert stat.S_ISDIR(value.st_mode) and value.st_uid==1000
+    path=folder/(sys.argv[2]+'.bin');size=sizes[sys.argv[2]]
+    fd=os.open(path,os.O_RDONLY|os.O_NOFOLLOW|os.O_NONBLOCK|os.O_CLOEXEC)
+    with os.fdopen(fd,'rb') as stream:
+        before=os.fstat(stream.fileno());assert stat.S_ISREG(before.st_mode) and before.st_uid==1000 and before.st_size==size
+        remaining=size
+        while remaining:
+            chunk=stream.read(min(remaining,65536));assert chunk
+            sys.stdout.buffer.write(chunk);remaining-=len(chunk)
+        assert stream.read(1)==b''
+        after=os.fstat(stream.fileno());named=path.lstat()
+        assert (before.st_dev,before.st_ino,before.st_size,before.st_mtime_ns,before.st_ctime_ns)==(after.st_dev,after.st_ino,after.st_size,after.st_mtime_ns,after.st_ctime_ns)
+        assert (named.st_dev,named.st_ino)==(before.st_dev,before.st_ino)
+    sys.stdout.buffer.flush()
+""")
 
 INSTALL = textwrap.dedent(r"""
     import base64,json,os,pathlib,sys
@@ -299,8 +379,15 @@ def main():
         require(reference['sourceSHA256']['evidence_export_reference.py']==hashlib.sha256(sources['evidence_export_reference.py'].read_bytes()).hexdigest(),'reference source binding')
         require(reference['networkCheckerSHA256']==hashlib.sha256(sources['check_network.py'].read_bytes()).hexdigest(),'network checker binding')
         require(reference['backendStarts']==reference['cooperativeStops']==2 and reference['credentialsAbsent'] and len(reference['downloads'])==2,'reference terminal proof')
-        run('copy-responses',['cp',container+':/state/evidence-downloads',str(ROOT/'reference-downloads')],timeout=120)
         copied=ROOT/'reference-downloads'
+        copied.mkdir(mode=0o700)
+        for index in [1,2]:
+            folder=copied/('boot-'+str(index));folder.mkdir(mode=0o700)
+            for value in native['report']['boots'][index-1]['files']:
+                name=value['body']
+                require(name in ('literal','binary','empty','large'),'fixed stream export identity')
+                copy_response_file(DOCKER+['exec',container,'python3','-c',EXPORT_ONE,str(index),name],folder/(name+'.bin'),value['byteCount'],
+                                   diagnostic=ROOT/('export-'+str(index)+'-'+name+'.stderr'))
         require(not copied.is_symlink() and copied.is_dir() and sorted(p.name for p in copied.iterdir())==['boot-1','boot-2'],'export roots')
         comparisons=[]
         mapping={'literal':'17001-request.bin','binary':'17001-response.bin','empty':'17002-request.bin','large':'17002-response.bin'}
