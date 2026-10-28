@@ -131,6 +131,7 @@ public enum AuthenticationPhase: String, Sendable { case checking, needsSetup, n
         let receipt = try await downloader.stageEvidence(manifest, destination: destination, bearer: token)
         do {
             try Task.checkCancellation()
+            try receipt.validateOwnership()
             try validateReply(BackendHTTPResponse(status: receipt.result.status, body: Data()), ticket: ticket)
             guard receipt.result.status == 200 else { throw BackendAPIError.status(receipt.result.status) }
             try receipt.requireSuccess(manifest)

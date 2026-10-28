@@ -9,6 +9,7 @@ import Foundation
     public let result: BackendDownloadResult
     private var file: VerifiedEvidenceFile?
     private var consumed = false
+    private var revoked = false
     private var validators: [@MainActor () throws -> Void]
 
     init(response: EvidenceDownloadResponse, validate: @escaping @MainActor () throws -> Void = {}) {
@@ -24,9 +25,11 @@ import Foundation
     func restrict(validate: @escaping @MainActor () throws -> Void) {
         validators.append(validate)
     }
-    private func validateOwnership() throws {
+    func validateOwnership() throws {
+        guard !revoked else { throw CancellationError() }
         try Task.checkCancellation()
         for validate in validators { try validate() }
+        guard !revoked else { throw CancellationError() }
         try Task.checkCancellation()
     }
     public func commit(validate: @MainActor () throws -> Void = {}) throws -> SavedEvidenceFile {
@@ -46,7 +49,7 @@ import Foundation
         }
     }
     public func discard() throws {
-        consumed = true
+        consumed = true; revoked = true
         let staged = file; file = nil
         validators.removeAll()
         try staged?.discard()
