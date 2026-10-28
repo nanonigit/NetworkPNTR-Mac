@@ -61,6 +61,7 @@ import Foundation
         return try page.exchanges.sorted{try CapturedProbeContract.ordinal($0.url)<CapturedProbeContract.ordinal($1.url)}
     }
     private static func exercise(_ api: WithheldResponse,_ session: AuthenticationSession,_ traffic: CapturedTrafficService,_ rows: [CapturedTrafficExchange],_ directory: URL) async throws -> ([String:Any],FindingTraffic,Bool) {
+        progress("exercise-pages")
         let byID=Dictionary(uniqueKeysWithValues:rows.map{($0.id,$0)})
         var paged=[CapturedTrafficExchange]()
         for index in 0...1 {
@@ -87,6 +88,7 @@ import Foundation
         }
         let raw=try await traffic.detail(id:rows[1].id)
         try require(Data(raw.response.utf8).range(of:CapturedProbeContract.literal) != nil)
+        progress("exercise-picker")
         let findings=FindingService(client:api),service=FindingTrafficService(client:api)
         let target=try await findings.detail(id:"9101")
         let store=FindingTrafficStore(service:service);try require(store.select(target));await store.refreshSummary()
@@ -109,10 +111,12 @@ import Foundation
         try require(picker.preview.value != nil && !picker.preview.isStale)
         let bound=try confirmed(await picker.bind(owner:picker.owner));picker.stop()
         try require(bound.bindings.count==2 && zip(bound.bindings,[3,4]).allSatisfy{row,index in row.snapshot.sourceTrafficId==rows[index].id && row.snapshot.url==rows[index].url && row.role=="supporting" && row.note.isEmpty})
+        progress("exercise-bodies")
         var bodies=[[String:Any]](),previews=[[String:Any]]()
         for binding in bound.bindings {
             let index=try CapturedProbeContract.ordinal(binding.snapshot.url)
-            let detail=try await service.detail(findingID:"9101",bindingID:binding.id)
+            try require(store.selectBinding(binding.id,owner:store.owner));await store.refreshDetail()
+            guard let detail=store.detail.value,!store.detail.isStale else {throw RuntimeError.integrity("captured store detail")}
             try require(detail.binding.snapshotId==binding.snapshotId)
             for side in [FindingEvidenceSide.request,.response] {
                 let expected=try CapturedProbeContract.bytes(index,side:side)
@@ -125,7 +129,8 @@ import Foundation
                 bodies.append(["ordinal":index,"side":side.rawValue,"bytes":expected.count,"sha256":ArtifactIntegrity.sha256(expected),"full_byte_equal":true])
                 var offset:Int64=0,joined=Data()
                 while true {
-                    let value=try await service.body(findingID:"9101",bindingID:binding.id,side:side,offset:offset)
+                    try require(store.configureBody(side:side,offset:offset,owner:store.owner));await store.refreshBody()
+                    guard let value=store.body.value,!store.body.isStale else {throw RuntimeError.integrity("captured store body")}
                     var proof=try CapturedProbeContract.validate(value,data:expected,offset:offset)
                     if offset==0 { _ = try CapturedProbeContract.validate(side == .request ? detail.request:detail.response,data:expected,offset:0) }
                     proof["ordinal"]=index;proof["side"]=side.rawValue;previews.append(proof);joined.append(Data(value.content.utf8))
@@ -135,6 +140,7 @@ import Foundation
             }
         }
         let first=bound.bindings[0].id,second=bound.bindings[1].id
+        progress("exercise-uncertainty")
         api.path="/api/exploration/findings/9101/traffic/"+first
         let uncertain=await store.apply(.edit(bindingID:first,role:.verification,note:CapturedProbeContract.note),owner:store.owner)
         guard case .unconfirmed=uncertain else {throw RuntimeError.integrity("captured uncertainty")}
@@ -143,12 +149,14 @@ import Foundation
         guard case .notStarted=blocked else {throw RuntimeError.integrity("captured unknown write gate")}
         await store.refreshSummary();try require(store.unknownIDs==["9101"] && api.edits==1 && !store.summary.isStale)
         guard let edited=store.summary.value else {throw RuntimeError.integrity("captured edited readback")}
-        try require(edited.bindings[0].role=="verification" && Data(edited.bindings[0].note.utf8)==Data(CapturedProbeContract.note.utf8))
+        let editedFirst=try CapturedProbeContract.editedBinding(edited,first:first,second:second)
+        try require(editedFirst.role=="verification" && Data(editedFirst.note.utf8)==Data(CapturedProbeContract.note.utf8))
         try require(!store.acknowledgeUnknown("9101",owner:store.owner,revision:UUID()))
         try require(store.acknowledgeUnknown("9101",owner:store.owner,revision:store.unknownRevision) && store.unknownIDs.isEmpty)
         do {_ = try await service.apply(.edit(bindingID:first,role:.baseline,note:"must not apply"),to:target,snapshot:bound);throw RuntimeError.integrity("captured missing conflict")}
         catch BackendAPIError.status(409) { }
         let readback=try await service.list(findingID:"9101");try require(try same(CapturedProbeContract.normalized(edited),CapturedProbeContract.normalized(readback)))
+        progress("exercise-order-remove")
         let ordered=try confirmed(await store.apply(.reorder([second,first]),owner:store.owner))
         try require(ordered.bindings.map(\.id)==[second,first] && ordered.bindings.map(\.position)==[0,1])
         let removed=try confirmed(await store.apply(.remove(bindingID:first),owner:store.owner))

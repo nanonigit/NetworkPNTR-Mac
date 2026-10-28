@@ -43,6 +43,11 @@ enum CapturedProbeContract {
         try require(Data(value.content.utf8)==Data(content.utf8) && value.offset==offset && value.total==data.count && value.nextOffset==next && value.binary==binary && value.truncated==truncated)
         return ["offset":offset,"next_offset":next,"binary":binary,"truncated":truncated,"content_sha256":ArtifactIntegrity.sha256(Data(value.content.utf8))]
     }
+    static func editedBinding(_ value: FindingTraffic,first: String,second: String) throws -> FindingTrafficBinding {
+        try require(value.bindings.map(\.id)==[first,second])
+        guard let binding=value.bindings.first else {throw RuntimeError.integrity("captured edited membership")}
+        return binding
+    }
     static func normalized(_ value: FindingTraffic) throws -> [String:Any] {
         let bindings=try value.bindings.map { row -> [String:Any] in
             let snapshot=row.snapshot
