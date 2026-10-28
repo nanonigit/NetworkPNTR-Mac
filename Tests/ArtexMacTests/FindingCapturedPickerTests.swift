@@ -144,6 +144,52 @@ final class FindingCapturedPickerTests: XCTestCase {
         _ = model.openPicker(owner:model.id,version:api.version)
         XCTAssertNil(model.picker); XCTAssertFalse(model.isActive); XCTAssertEqual(api.calls.count,1)
     }
+    @MainActor func testUnchangedFilterTaskRestartPreservesPageAndCancelledDebounceDoesNotRead() async throws {
+        let api = NativePickerAPI(), (_,picker) = try await ready(api)
+        await picker.page(forward:true,owner:picker.store.owner)
+        await picker.applyFilters(picker.filterTicket); XCTAssertEqual(picker.store.query.page,1)
+        let count = api.calls.count, ticket = picker.filterTicket
+        let task = Task { await picker.debounce(ticket) }; task.cancel(); await task.value
+        XCTAssertEqual(api.calls.count,count)
+    }
+    @MainActor func testBusyPublicationDeparturePreventsBindDispatch() async throws {
+        let api = NativePickerAPI(), (model,picker) = try await ready(api)
+        XCTAssertTrue(picker.selectPage(true,owner:picker.store.owner))
+        withObservationTracking { _ = picker.isSubmitting } onChange: { MainActor.assumeIsolated { model.stop() } }
+        let result = await picker.bind(owner:picker.store.owner)
+        XCTAssertFalse(result); XCTAssertTrue(api.writes.isEmpty); XCTAssertFalse(picker.isSubmitting)
+        XCTAssertNil(model.picker); XCTAssertTrue(model.store.unknownIDs.isEmpty)
+    }
+    @MainActor func testStaleRowDraftAndPreviewCloseBindingsCannotReachReplacement() async throws {
+        let api = NativePickerAPI(), (model,picker) = try await ready(api), owner = picker.store.owner
+        let toggle = FindingCapturedPickerBindings.selected(picker,source:"é",owner:owner)
+        let draft = FindingCapturedPickerBindings.draft(picker,key:\.hostDraft)
+        toggle.wrappedValue = true; XCTAssertEqual(picker.store.selectedCount,1)
+        await picker.selectPreview("é",owner:owner)
+        await picker.selectPreview("e\u{301}",owner:owner)
+        picker.closePreview("é",owner:owner); XCTAssertEqual(picker.store.selectedPreviewID.map {Data($0.utf8)},Data("e\u{301}".utf8))
+        draft.wrappedValue = "host"; await picker.applyFilters(picker.filterTicket)
+        XCTAssertFalse(toggle.wrappedValue); toggle.wrappedValue = false; XCTAssertEqual(picker.store.selectedCount,1)
+        model.closePicker(id:picker.id); draft.wrappedValue = "late"; XCTAssertEqual(draft.wrappedValue,"")
+        XCTAssertTrue(model.openPicker(owner:model.id,version:api.version)); XCTAssertEqual(model.picker?.hostDraft,"")
+    }
+    @MainActor func testPickerRendersBothLocalesThemesAndUnavailableErrorStatesWithoutDispatch() async throws {
+        let api = NativePickerAPI(), (_,picker) = try await ready(api)
+        for state in 0..<3 {
+            if state == 1 { api.status = 503; await picker.reload(owner:picker.store.owner) }
+            if state == 2 { api.status = 200; api.unavailable = true; await picker.reload(owner:picker.store.owner) }
+            let count = api.calls.count
+            for language in AppLanguage.allCases {
+                for scheme in [ColorScheme.light,.dark] {
+                    let host = NSHostingView(rootView:FindingCapturedPickerContent(picker:picker,close:{}).environment(\.locale,language.locale).environment(\.colorScheme,scheme))
+                    host.frame = NSRect(x:0,y:0,width:980,height:720); host.layoutSubtreeIfNeeded()
+                    let bitmap = try XCTUnwrap(host.bitmapImageRepForCachingDisplay(in:host.bounds)); host.cacheDisplay(in:host.bounds,to:bitmap)
+                    XCTAssertTrue(host.fittingSize.width.isFinite)
+                }
+            }
+            XCTAssertEqual(api.calls.count,count)
+        }
+    }
     @MainActor func testDisabledHistoryUnavailableAndErrorStatesDoNotBecomeEmptySuccess() async throws {
         let api = NativePickerAPI(), (_,picker) = try await ready(api)
         api.enabled = false; await picker.reload(owner:picker.store.owner)
