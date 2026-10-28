@@ -1,0 +1,26 @@
+{
+  "schema": 1,
+  "passed": false,
+  "observedExitCode": 1,
+  "apiExercisePassed": true,
+  "backendStarts": 2,
+  "cooperativeStops": 2,
+  "nativeByteComparisonComplete": false,
+  "failure": {
+    "stage": "response export",
+    "reason": "Docker cp could not read the tmpfs response directory"
+  },
+  "cleanup": {
+    "container_removed": true,
+    "image_tag_removed": true,
+    "input_tags_removed": true,
+    "input_images_preserved": true,
+    "original_containers_preserved": true
+  },
+  "source": {
+    "harness_sha256": "ae132d08f38e731cba9ee81c46dbc0368cf69b1fac74773c8a1e8e7a55b2b2b2",
+    "repository_head": "6a2c7bff8668502246402d08e1e90b4ce181accc"
+  },
+  "dockerDocument": "https://docs.docker.com/reference/cli/docker/container/cp/",
+  "rawArtifactsKeptPrivate": true
+}

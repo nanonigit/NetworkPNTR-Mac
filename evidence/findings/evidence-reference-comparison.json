@@ -1,0 +1,531 @@
+{
+  "schema": 1,
+  "passed": true,
+  "observedExitCode": 0,
+  "fullGoalComplete": false,
+  "nativeHead": "9b41048bbd538870c1cd19867c6dbf90e1640d01",
+  "referenceHead": "8accf4fe8238c497522dd0e494687e1d392dbdf8",
+  "baselineCommit": "e75ae371ad777ffd1eecdd28d2781a6519b05591",
+  "backendSHA256": "0ebad83ddda276b03b415d64ce30af44e7a587860f3b660c12563462a0ac5e80",
+  "harnessSHA256": "95b96fe395ca806a164878a79d94474c29ab1453458dc0ad60a660612479521d",
+  "reference": {
+    "passed": true,
+    "sourceCommit": "e75ae371ad777ffd1eecdd28d2781a6519b05591",
+    "backendSHA256": "0ebad83ddda276b03b415d64ce30af44e7a587860f3b660c12563462a0ac5e80",
+    "sourceSHA256": {
+      "evidence_export_reference.py": "df7a21fca3a4905ebf384c1f7a7d914cd46336c8f71a2015cc6c934f986c9f48",
+      "evidence_fixture_guest.py": "3d0d33c55ee39ab41725195a7177dd550a8d31da2f556b6c12134c745d5f08a7",
+      "findings_seed_guest.py": "ff65b9603ddd06704a6ace53398554f14479c5825ec0da573bc775f52036b70f",
+      "findings_fixture_control.py": "0ed7fbb3561758de6e8651d4ec794ded957ae32fb145f598dc794ba51a600514"
+    },
+    "networkCheckerSHA256": "4bc167e71c655d31eda1872f11ad4b8a90b201994834a63c82194a3fa317ee2e",
+    "networkProof": {
+      "network_interfaces": "erspan0,gre0,gretap0,ip6_vti0,ip6gre0,ip6tnl0,ip_vti0,lo,sit0,tunl0",
+      "network_hardware_devices": 0,
+      "network_nonloopback_up": 0,
+      "network_external_routes": 0
+    },
+    "backendStarts": 2,
+    "cooperativeStops": 2,
+    "credentialsAbsent": true,
+    "downloads": [
+      [
+        {
+          "body": "literal",
+          "binding_id": "17001",
+          "side": "request",
+          "bytes": 52,
+          "sha256": "e34ddc517f3d74c938352c489e37a79bd855818916bfbce320c03115d6a35224",
+          "full_byte_equal": true
+        },
+        {
+          "body": "binary",
+          "binding_id": "17001",
+          "side": "response",
+          "bytes": 5242897,
+          "sha256": "732df94bc2b263d03992bc8f8858ab72863d04ced999b95f3552fd2f48270a1d",
+          "full_byte_equal": true
+        },
+        {
+          "body": "empty",
+          "binding_id": "17002",
+          "side": "request",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "full_byte_equal": true
+        },
+        {
+          "body": "large",
+          "binding_id": "17002",
+          "side": "response",
+          "bytes": 135266321,
+          "sha256": "97ac5b8e9511e77429ebaf443a3359234751dc8d3fa47b98a5c7abc51ab9d569",
+          "full_byte_equal": true
+        }
+      ],
+      [
+        {
+          "body": "literal",
+          "binding_id": "17001",
+          "side": "request",
+          "bytes": 52,
+          "sha256": "e34ddc517f3d74c938352c489e37a79bd855818916bfbce320c03115d6a35224",
+          "full_byte_equal": true
+        },
+        {
+          "body": "binary",
+          "binding_id": "17001",
+          "side": "response",
+          "bytes": 5242897,
+          "sha256": "732df94bc2b263d03992bc8f8858ab72863d04ced999b95f3552fd2f48270a1d",
+          "full_byte_equal": true
+        },
+        {
+          "body": "empty",
+          "binding_id": "17002",
+          "side": "request",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "full_byte_equal": true
+        },
+        {
+          "body": "large",
+          "binding_id": "17002",
+          "side": "response",
+          "bytes": 135266321,
+          "sha256": "97ac5b8e9511e77429ebaf443a3359234751dc8d3fa47b98a5c7abc51ab9d569",
+          "full_byte_equal": true
+        }
+      ]
+    ],
+    "previews": [
+      {
+        "boot": 1,
+        "body": "literal",
+        "total": 52,
+        "next_offset": 52,
+        "binary": false,
+        "truncated": false
+      },
+      {
+        "boot": 1,
+        "body": "binary",
+        "total": 5242897,
+        "next_offset": 8192,
+        "binary": true,
+        "truncated": true
+      },
+      {
+        "boot": 1,
+        "body": "empty",
+        "total": 0,
+        "next_offset": 0,
+        "binary": false,
+        "truncated": false
+      },
+      {
+        "boot": 1,
+        "body": "large",
+        "total": 135266321,
+        "next_offset": 8192,
+        "binary": true,
+        "truncated": true
+      },
+      {
+        "boot": 2,
+        "body": "literal",
+        "total": 52,
+        "next_offset": 52,
+        "binary": false,
+        "truncated": false
+      },
+      {
+        "boot": 2,
+        "body": "binary",
+        "total": 5242897,
+        "next_offset": 8192,
+        "binary": true,
+        "truncated": true
+      },
+      {
+        "boot": 2,
+        "body": "empty",
+        "total": 0,
+        "next_offset": 0,
+        "binary": false,
+        "truncated": false
+      },
+      {
+        "boot": 2,
+        "body": "large",
+        "total": 135266321,
+        "next_offset": 8192,
+        "binary": true,
+        "truncated": true
+      }
+    ],
+    "auditProofs": [
+      {
+        "evidence_fixture": true,
+        "uid": 1000,
+        "finding_id": 9101,
+        "binding_ids": [
+          17001,
+          17002
+        ],
+        "bodies": {
+          "literal": {
+            "size": 52,
+            "sha256": "e34ddc517f3d74c938352c489e37a79bd855818916bfbce320c03115d6a35224"
+          },
+          "binary": {
+            "size": 5242897,
+            "sha256": "732df94bc2b263d03992bc8f8858ab72863d04ced999b95f3552fd2f48270a1d"
+          },
+          "empty": {
+            "size": 0,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          },
+          "large": {
+            "size": 135266321,
+            "sha256": "97ac5b8e9511e77429ebaf443a3359234751dc8d3fa47b98a5c7abc51ab9d569"
+          }
+        },
+        "counts": {
+          "foreign_tasks": 0,
+          "unsafe_tasks": 0,
+          "foreign_explorations": 0,
+          "foreign_nodes": 0,
+          "foreign_finding_nodes": 0,
+          "foreign_findings": 0,
+          "foreign_relations": 0,
+          "foreign_companies": 0,
+          "foreign_assets": 0,
+          "foreign_links": 0,
+          "foreign_events": 0,
+          "profiles": 0,
+          "task_profiles": 0,
+          "activity": 0,
+          "conversations": 0,
+          "llm_usage": 0,
+          "llm_records": 0,
+          "archives": 0,
+          "intercepts": 0,
+          "retests": 0,
+          "traffic_bindings": 2,
+          "traffic_snapshots": 2,
+          "notification_channels": 0,
+          "notification_deliveries": 0,
+          "tasks": 11,
+          "explorations": 11,
+          "relations": 1,
+          "companies": 1,
+          "assets": 3,
+          "findings": 33,
+          "finding_nodes": 32,
+          "events": 0
+        }
+      },
+      {
+        "evidence_fixture": true,
+        "uid": 1000,
+        "finding_id": 9101,
+        "binding_ids": [
+          17001,
+          17002
+        ],
+        "bodies": {
+          "literal": {
+            "size": 52,
+            "sha256": "e34ddc517f3d74c938352c489e37a79bd855818916bfbce320c03115d6a35224"
+          },
+          "binary": {
+            "size": 5242897,
+            "sha256": "732df94bc2b263d03992bc8f8858ab72863d04ced999b95f3552fd2f48270a1d"
+          },
+          "empty": {
+            "size": 0,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          },
+          "large": {
+            "size": 135266321,
+            "sha256": "97ac5b8e9511e77429ebaf443a3359234751dc8d3fa47b98a5c7abc51ab9d569"
+          }
+        },
+        "counts": {
+          "foreign_tasks": 0,
+          "unsafe_tasks": 0,
+          "foreign_explorations": 0,
+          "foreign_nodes": 0,
+          "foreign_finding_nodes": 0,
+          "foreign_findings": 0,
+          "foreign_relations": 0,
+          "foreign_companies": 0,
+          "foreign_assets": 0,
+          "foreign_links": 0,
+          "foreign_events": 0,
+          "profiles": 0,
+          "task_profiles": 0,
+          "activity": 0,
+          "conversations": 0,
+          "llm_usage": 0,
+          "llm_records": 0,
+          "archives": 0,
+          "intercepts": 0,
+          "retests": 0,
+          "traffic_bindings": 2,
+          "traffic_snapshots": 2,
+          "notification_channels": 0,
+          "notification_deliveries": 0,
+          "tasks": 11,
+          "explorations": 11,
+          "relations": 1,
+          "companies": 1,
+          "assets": 3,
+          "findings": 33,
+          "finding_nodes": 32,
+          "events": 0
+        }
+      },
+      {
+        "evidence_fixture": true,
+        "uid": 1000,
+        "finding_id": 9101,
+        "binding_ids": [
+          17001,
+          17002
+        ],
+        "bodies": {
+          "literal": {
+            "size": 52,
+            "sha256": "e34ddc517f3d74c938352c489e37a79bd855818916bfbce320c03115d6a35224"
+          },
+          "binary": {
+            "size": 5242897,
+            "sha256": "732df94bc2b263d03992bc8f8858ab72863d04ced999b95f3552fd2f48270a1d"
+          },
+          "empty": {
+            "size": 0,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          },
+          "large": {
+            "size": 135266321,
+            "sha256": "97ac5b8e9511e77429ebaf443a3359234751dc8d3fa47b98a5c7abc51ab9d569"
+          }
+        },
+        "counts": {
+          "foreign_tasks": 0,
+          "unsafe_tasks": 0,
+          "foreign_explorations": 0,
+          "foreign_nodes": 0,
+          "foreign_finding_nodes": 0,
+          "foreign_findings": 0,
+          "foreign_relations": 0,
+          "foreign_companies": 0,
+          "foreign_assets": 0,
+          "foreign_links": 0,
+          "foreign_events": 0,
+          "profiles": 0,
+          "task_profiles": 0,
+          "activity": 0,
+          "conversations": 0,
+          "llm_usage": 0,
+          "llm_records": 0,
+          "archives": 0,
+          "intercepts": 0,
+          "retests": 0,
+          "traffic_bindings": 2,
+          "traffic_snapshots": 2,
+          "notification_channels": 0,
+          "notification_deliveries": 0,
+          "tasks": 11,
+          "explorations": 11,
+          "relations": 1,
+          "companies": 1,
+          "assets": 3,
+          "findings": 33,
+          "finding_nodes": 32,
+          "events": 0
+        }
+      },
+      {
+        "evidence_fixture": true,
+        "uid": 1000,
+        "finding_id": 9101,
+        "binding_ids": [
+          17001,
+          17002
+        ],
+        "bodies": {
+          "literal": {
+            "size": 52,
+            "sha256": "e34ddc517f3d74c938352c489e37a79bd855818916bfbce320c03115d6a35224"
+          },
+          "binary": {
+            "size": 5242897,
+            "sha256": "732df94bc2b263d03992bc8f8858ab72863d04ced999b95f3552fd2f48270a1d"
+          },
+          "empty": {
+            "size": 0,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          },
+          "large": {
+            "size": 135266321,
+            "sha256": "97ac5b8e9511e77429ebaf443a3359234751dc8d3fa47b98a5c7abc51ab9d569"
+          }
+        },
+        "counts": {
+          "foreign_tasks": 0,
+          "unsafe_tasks": 0,
+          "foreign_explorations": 0,
+          "foreign_nodes": 0,
+          "foreign_finding_nodes": 0,
+          "foreign_findings": 0,
+          "foreign_relations": 0,
+          "foreign_companies": 0,
+          "foreign_assets": 0,
+          "foreign_links": 0,
+          "foreign_events": 0,
+          "profiles": 0,
+          "task_profiles": 0,
+          "activity": 0,
+          "conversations": 0,
+          "llm_usage": 0,
+          "llm_records": 0,
+          "archives": 0,
+          "intercepts": 0,
+          "retests": 0,
+          "traffic_bindings": 2,
+          "traffic_snapshots": 2,
+          "notification_channels": 0,
+          "notification_deliveries": 0,
+          "tasks": 11,
+          "explorations": 11,
+          "relations": 1,
+          "companies": 1,
+          "assets": 3,
+          "findings": 33,
+          "finding_nodes": 32,
+          "events": 0
+        }
+      }
+    ],
+    "browserUIAcceptance": false,
+    "declaredHTTPBodyScope": true,
+    "trailingWireBytesAudited": false,
+    "hostIsolation": {
+      "networkMode": "none",
+      "user": "1000:1000",
+      "readOnlyRootfs": true,
+      "privileged": false,
+      "hostMounts": 0,
+      "capDropAll": true,
+      "noNewPrivileges": true,
+      "ports": 0
+    },
+    "nativeByteComparisons": [
+      {
+        "bytes": 52,
+        "sha256": "e34ddc517f3d74c938352c489e37a79bd855818916bfbce320c03115d6a35224",
+        "byte_equal": true,
+        "body": "literal",
+        "boot": 1
+      },
+      {
+        "bytes": 5242897,
+        "sha256": "732df94bc2b263d03992bc8f8858ab72863d04ced999b95f3552fd2f48270a1d",
+        "byte_equal": true,
+        "body": "binary",
+        "boot": 1
+      },
+      {
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "byte_equal": true,
+        "body": "empty",
+        "boot": 1
+      },
+      {
+        "bytes": 135266321,
+        "sha256": "97ac5b8e9511e77429ebaf443a3359234751dc8d3fa47b98a5c7abc51ab9d569",
+        "byte_equal": true,
+        "body": "large",
+        "boot": 1
+      },
+      {
+        "bytes": 52,
+        "sha256": "e34ddc517f3d74c938352c489e37a79bd855818916bfbce320c03115d6a35224",
+        "byte_equal": true,
+        "body": "literal",
+        "boot": 2
+      },
+      {
+        "bytes": 5242897,
+        "sha256": "732df94bc2b263d03992bc8f8858ab72863d04ced999b95f3552fd2f48270a1d",
+        "byte_equal": true,
+        "body": "binary",
+        "boot": 2
+      },
+      {
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "byte_equal": true,
+        "body": "empty",
+        "boot": 2
+      },
+      {
+        "bytes": 135266321,
+        "sha256": "97ac5b8e9511e77429ebaf443a3359234751dc8d3fa47b98a5c7abc51ab9d569",
+        "byte_equal": true,
+        "body": "large",
+        "boot": 2
+      }
+    ],
+    "nativeHead": "9b41048bbd538870c1cd19867c6dbf90e1640d01",
+    "harness": {
+      "complete": true,
+      "exportsComplete": true,
+      "originalContainersPreserved": true,
+      "inputImagesPreserved": true,
+      "containerRemoved": true,
+      "imageTagRemoved": true,
+      "inputTagsRemoved": true
+    }
+  },
+  "cleanup": {
+    "container_removed": true,
+    "image_tag_removed": true,
+    "input_tags_removed": true,
+    "input_images_preserved": true,
+    "original_containers_preserved": true
+  },
+  "exports": {
+    "database-dump": {
+      "bytes": 260052,
+      "sha256": "a903068c47dcb3dbd28861250c213122f8861449dc44f2df568f8de7360567b6"
+    },
+    "retained-logs": {
+      "bytes": 4197,
+      "sha256": "ae001a97058dabda0aff5593375d8c73b74dff82e054a17b21f5c76cb35e10cb"
+    },
+    "executed-lines": {
+      "bytes": 2367,
+      "sha256": "ba6e783409bcd61644e0e48a9d1f428c91cd9798c4cfaa4db1d22c19331d9c0f"
+    }
+  },
+  "sourceSHA256": {
+    "evidence_export_reference.py": "df7a21fca3a4905ebf384c1f7a7d914cd46336c8f71a2015cc6c934f986c9f48",
+    "findings_seed_guest.py": "ff65b9603ddd06704a6ace53398554f14479c5825ec0da573bc775f52036b70f",
+    "findings_fixture_control.py": "0ed7fbb3561758de6e8651d4ec794ded957ae32fb145f598dc794ba51a600514",
+    "evidence_fixture_guest.py": "3d0d33c55ee39ab41725195a7177dd550a8d31da2f556b6c12134c745d5f08a7",
+    "check_network.py": "4bc167e71c655d31eda1872f11ad4b8a90b201994834a63c82194a3fa317ee2e"
+  },
+  "priorAttempt": "evidence-reference-initial-failure.json",
+  "remaining": [
+    "detailed preview/binary/truncation equivalence",
+    "nonempty captured picker and bind/edit/remove/order/conflict/persistence",
+    "native F5 controls and unlocked visual/keyboard/VoiceOver acceptance",
+    "all original product/cloud/kernel/release requirements",
+    "hosted CI availability"
+  ]
+}

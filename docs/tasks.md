@@ -363,7 +363,7 @@ F5d2 software checkpoint:36focused/755Swift(754pass/1existingAXskip)/123Python; 
 - [x] R2 typed DEBUG fixture client and bounded proofs (3 cases and both native experiments).
 - [x] R3 fresh signed zero-NIC VM original-body export, witnessed caller cancellation/live VM stop, receipt stop/restart and persistence proof.
 - [ ] R3/R4 detailed preview content/binary/truncation comparison; metadata reads alone are insufficient.
-- [ ] R4 independent pinned reference exact-byte comparison.
+- [x] R4 independent pinned reference exact-byte comparison for original body downloads only.
 - [ ] R5 full native controls and unlocked UI acceptance.
 
 See evidence-export-runtime-design.md and evidence-export-runtime-design.ja.md.
@@ -374,9 +374,9 @@ F5 remaining integration gates also include nonempty captured-traffic bind/edit/
 
 ## F5d independent reference
 
-- [ ] BR1 independent bounded HTTP/body verifier and error-path tests.
-- [ ] BR2 two-start fixed reference fixture, persisted full downloads and activity/isolation audits.
-- [ ] BR3 private export of eight response files, byte-for-byte native comparison and owned cleanup.
+- [x] BR1 independent bounded HTTP/body verifier and error-path tests.
+- [x] BR2 two-start fixed reference fixture, persisted full downloads and activity/isolation audits.
+- [x] BR3 private export of eight response files, byte-for-byte native comparison and owned cleanup.
 - [ ] BR4 detailed preview/captured mutation/UI/full product acceptance remains open.
 
 See evidence-reference-design.md and evidence-reference-design.ja.md.
@@ -389,3 +389,5 @@ See evidence-reference-design.md and evidence-reference-design.ja.md.
 - [ ] CP4 en/ja native controls, keyboard/VoiceOver and shared browser comparisons.
 
 See cloud-providers-design.md and cloud-providers-design.ja.md. Keep current original-body comparison/export work moving; do not enable cloud egress just by adding this goal.
+
+Independent reference checkpoint: attempt1 exited1 at tmpfs export with complete owned cleanup; attempt2 at8accf4f exited0 and compared eight full response files against actual native outputs.18 focused/155 full Python tests pass. Detailed preview, captured mutations, native UI and full product gates remain open. See evidence-reference-verification.md and Japanese counterpart. Four-provider CP1–CP4 remain planned.

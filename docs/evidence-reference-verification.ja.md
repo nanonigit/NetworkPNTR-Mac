@@ -1,0 +1,11 @@
+# 独立した原本本文の比較検証
+
+8accf4fでの2回目の隔離比較実行は終了コード0。backendを2回起動・協調停止し、各起動で52、5242897、0、135266321バイトの4本文を取得した。計8ファイルを実際のnative保存ファイルと全バイト・SHA-256で照合し、一致した。native署名済みバイナリー、非公開実行記録、現在のnativeソースハッシュも独立確認した。evidence/findings/evidence-reference-comparison.jsonを参照。fullGoalCompleteはfalseのまま。
+
+比較側は固定backend e75ae371ad777ffd1eecdd28d2781a6519b05591、キャッシュ済みimage ID、明示したローカルbuilderを使用。UID1000、読み取り専用root、ネットワーク・ホストmount・公開portなし、全capability削除、no-new-privilegesを確認した。所有するcontainer/tagを削除し、入力imageと元のcontainerを保持。本文・キー・DB dump・ログは非公開のまま。
+
+最初の実行はAPI試験成功後、Docker cpがtmpfs内の取得ディレクトリーを読めず終了コード1。evidence-reference-initial-failure.jsonに残した。修正後は固定8ファイルをゲストから標準出力へ送り、ホストでstdout/stderr上限、正確な長さ、時間制限、終了コード、排他的ファイル作成を検証した後、独立にファイル比較する。アーカイブ展開・ホスト共有は不要。
+
+検証は関連18件、GuestArtifactTests全155件が成功。Swift/runtimeソースは変更していない。以前の767件（766成功・既存外部アクセシビリティ1件skip）、release診断除外、署名済みアプリ確認は前チェックポイントの結果で、今回の再実行ではない。ホストCIは未検証のままで、公開HEADには[skip ci]を付ける。
+
+対象はHTTPで宣言された本文。実HTTP parserはContent-Lengthで区切るため、後続の生wireバイトは未監査。nativeプレビューの本文・binary・切詰め比較、非空captured trafficの更新／永続化、全native操作、ロック解除後の画面／キーボード／VoiceOver、クラウド4社、全リリース条件は未完。メタデータの取得だけではプレビュー同等性としない。
