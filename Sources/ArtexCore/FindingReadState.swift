@@ -8,12 +8,18 @@ import Observation
     public private(set) var isStale = true
     public private(set) var failure: AppErrorMessage?
     @ObservationIgnored private var generation = UUID()
+    @ObservationIgnored private var acquiring = false
     init() {}
     @discardableResult func refresh(_ load: @MainActor () async throws -> Value) async -> Bool {
-        guard !isLoading, !Task.isCancelled else { return false }
+        guard !acquiring, !isLoading, !Task.isCancelled else { return false }
+        acquiring = true
         let ticket = UUID(); generation = ticket; isLoading = true
+        acquiring = false
+        // No read has suspended yet: notification invalidation must defeat the pending busy assignment.
+        guard generation == ticket else { isLoading = false; return false }
         defer { if generation == ticket { isLoading = false } }
         do {
+            try Task.checkCancellation()
             let result = try await load(); try Task.checkCancellation()
             guard generation == ticket else { return false }
             value = result; isStale = false; failure = nil; return true
