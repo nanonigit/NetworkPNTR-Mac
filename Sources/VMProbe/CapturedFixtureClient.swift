@@ -9,6 +9,7 @@ import Foundation
         let uid, findingId, records: Int
         let manifestSha256: String
         let counts: [String: Int64]
+        let sourceSha256: [String: String]
     }
     static let manifestSHA256 = "cbbff8fe682f4261362db3b741abeff9b429aa622c59ba4042663e512fe375ba"
     private static let zeroKeys = ["foreign_tasks","unsafe_tasks","foreign_explorations","foreign_nodes","foreign_finding_nodes",
@@ -43,7 +44,7 @@ import Foundation
     private func invoke(prepare: Bool) async throws -> Proof {
         try Task.checkCancellation()
         let code = """
-        import base64,json,os,sys,types
+        import base64,hashlib,json,os,sys,types
         os.environ['ARTEX_FINDINGS_FIXTURE']='1'
         os.environ['ARTEX_CAPTURE_FIXTURE']='1'
         bundle=json.loads(base64.b64decode('\(encodedSources)'))
@@ -52,7 +53,9 @@ import Foundation
             sys.modules[name]=module
             exec(compile(bundle[name+'.py'],name+'.py','exec'),module.__dict__)
         fixture=sys.modules['captured_native_guest']
-        print(json.dumps(fixture.\(prepare ? "prepare" : "audit")()))
+        result=fixture.\(prepare ? "prepare" : "audit")()
+        result['source_sha256']={name:hashlib.sha256(text.encode()).hexdigest() for name,text in bundle.items()}
+        print(json.dumps(result))
         """
         struct Exec: Encodable { let code: String; let timeoutMs = 75_000 }
         struct Request: Encodable { let kind = "script"; let exec: Exec; let params: [String: String] = [:] }
@@ -68,7 +71,7 @@ import Foundation
         let proof = try BackendJSONCoding.decode(Proof.self, from: Data(reply.output.utf8))
         let counts = proof.counts
         guard proof.capturedNativeFixture, proof.uid == 1000, proof.findingId == 9101, proof.records == 29,
-              proof.manifestSha256 == Self.manifestSHA256,
+              proof.manifestSha256 == Self.manifestSHA256, proof.sourceSha256 == sourceSHA256,
               Set(counts.keys) == Set(Self.zeroKeys + Array(Self.owned.keys) + ["events","traffic_bindings","traffic_snapshots"]),
               Self.zeroKeys.allSatisfy({ counts[$0] == 0 }), Self.owned.allSatisfy({ counts[$0.key] == $0.value }),
               counts["events"] == 0, counts["traffic_bindings"] == (prepare ? 0 : 1), counts["traffic_snapshots"] == (prepare ? 0 : 2) else { throw Self.failure() }
