@@ -15,7 +15,7 @@ import XCTest
     var binding: [String: Any] {
         ["id":"21", "finding_id":"7", "snapshot_id":"snap", "role":"future-role", "note":literal,
          "position":0, "created_at":"raw", "snapshot":["id":"snap", "source_traffic_id":"opaque",
-         "captured_at":1792663200000, "url":"https://fixture.invalid/", "method":"POST", "status":200,
+         "captured_at":1792663200, "url":"https://fixture.invalid/", "method":"POST", "status":200,
          "content_type":"application/octet-stream", "req_head":literal, "resp_head":"HTTP/1.1 200 OK",
          "req_hash":Self.hash(Data()), "resp_hash":Self.hash(Data([0,255,97])), "req_len":0, "resp_len":3]]
     }
@@ -75,6 +75,12 @@ import XCTest
 }
 
 final class FindingTrafficWorkspaceTests: XCTestCase {
+    func testCaptureTimestampUsesUnixSecondsLikePinnedBrowser() {
+        for seconds: Int64 in [0,1,-1,1792663200] {
+            XCTAssertEqual(FindingTrafficPresentation.captureDate(seconds:seconds).timeIntervalSince1970,Double(seconds))
+        }
+    }
+
     @MainActor private func make(_ api: EvidenceWorkspaceAPI, inherited: Bool = false, exporter: FindingEvidenceExporter? = nil) throws -> FindingTrafficWorkspace {
         try FindingTrafficWorkspace(target:api.target(inherited:inherited),service:.init(client:api),exporter:exporter)
     }

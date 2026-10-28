@@ -56,7 +56,7 @@ import SwiftUI
                             Text(verbatim:binding.snapshot.url).lineLimit(3).textSelection(.enabled)
                             Text(verbatim:binding.note).textSelection(.enabled)
                             Text(AppStrings.formatted(.evidenceUIBindingID,language:language,values:["id":binding.id])).font(.caption).foregroundStyle(.secondary)
-                            Text(Date(timeIntervalSince1970:Double(binding.snapshot.capturedAt)/1000),format:.dateTime).font(.caption).foregroundStyle(.secondary)
+                            Text(FindingTrafficPresentation.captureDate(seconds:binding.snapshot.capturedAt),format:.dateTime).font(.caption).foregroundStyle(.secondary)
                             Button(s(.evidenceUIInspect),systemImage:"doc.text.magnifyingglass") { Task { await model.selectBinding(binding.id,owner:model.id) } }
                                 .disabled(!controlsAvailable || model.store.summary.isStale)
                         }

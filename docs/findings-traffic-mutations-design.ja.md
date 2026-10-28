@@ -1,0 +1,11 @@
+# F5e2 証跡の更新・結果不明からの回復
+
+固定finding-traffic-panel.tsx／traffic-picker-dialog.tsxと全F5範囲を維持。version付きrole／note編集・削除・隣接並替えを先に接続し、続いて既存captured pickerを接続する。finding／context／store owner／summary version／順序付きmembershipを確認時に固定し、新しいversionへ黙って置換しない。未知roleは原文表示し、編集時は既知roleの明示選択を必要とする。noteは原文。継承は読み取り専用。確認済み更新後にfinding／reportを再取得し、error／409／dispatch後のcancelや終了で自動再送しない。
+
+認証済みwindowが、sheetを閉じても未決着writeとunknown IDを含むevidence storeを保持する。通常finding更新と証跡更新でbusy／unknown gateを共有。閉じる操作は表示原文とownerを失効するが、dispatch済みwriteはresetしない。session resetはlogout時。結果不明のtarget／contextを固定保持し、filterや移動後も回復buttonから正しいtargetを開く。新しいread後、捕捉したunknown revision／ownerで明示確認して解除し、refreshだけでは解除しない。強制消失のcancelはrollbackとみなさない。
+
+dialogはworkspace UUIDと開始時version／membershipを所有し、binding読出し／dismissもdialog UUIDで守る。dialog／送信中は他操作を止め、未決着write中は親更新も止め、終了でdraftを消す。同期通知の再入には既存workspace公開境界を使用。遅い成功／失敗、dispatch前後の終了、古いdialog、継承／未知role、note byte、並替え境界、確認済みmetadata更新、閉じた後の回復を試験する。
+
+既存captureDateはUnix秒を1000で割っていた。固定traffic.goはnow.Unix()、ブラウザはJavaScript Dateのためcaptured_atを1000倍している。native Dateは秒を直接使い、負数／0を含むepoch試験を残す。誤ったミリ秒fixtureをブラウザ基準にはしない。
+
+LazywebはWriter243543のlog table／date filter、Firecrawl243510のactivity／searchという隣接metadataで、coverageは弱い。画像未確認で見た目同等とはしない。ARTEXの一覧→明示preview／actionとnative label付きdialogを維持。実guest／比較側の更新・永続化と、解除後の画面／keyboard／VoiceOver／複数windowは別の未完gate。21workflow、4社、VM／release条件も維持する。
