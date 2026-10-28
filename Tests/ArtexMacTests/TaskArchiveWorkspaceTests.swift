@@ -1,4 +1,5 @@
 import XCTest
+import Observation
 import ArtexCore
 @testable import ArtexMac
 
@@ -20,6 +21,16 @@ import ArtexCore
     }
 }
 final class TaskArchiveWorkspaceTests: XCTestCase {
+    @MainActor func testLiveOrColdStopAtWorkspaceBusyPreventsArchiveQueueHandoff() async throws {
+        for coldStop in [false,true] {
+            let (api,model,live,cold)=try await make();XCTAssertTrue(model.beginArchive([try XCTUnwrap(live.list.value?.first)],batch:false))
+            let owner=try XCTUnwrap(model.context).id;api.replies=[reply(row(state:"archive_queued"))]
+            withObservationTracking {_ = model.isSubmitting} onChange:{MainActor.assumeIsolated{if coldStop {cold.stop()} else {live.stop()}}}
+            _ = await model.submit(contextID:owner)
+            XCTAssertTrue(api.writes.isEmpty);XCTAssertEqual(model.items.map(\.state),[.notStarted])
+            XCTAssertTrue(model.uncertainTaskIDs.isEmpty);XCTAssertFalse(live.isMutating);XCTAssertFalse(cold.isMutating)
+        }
+    }
     private func row(_ id: Int64 = 17,task: Int64 = 7,state: String = "ready") -> String {
         """
         {"id":\(id),"task_id":\(task),"state":"\(state)","phase":"queued","progress":0,"format_version":3,"original_size":0,"compressed_size":0,"task_name":"literal 中文 한국어 e\\u0301","task_description":"","task_goal":"","original_status":"paused","remaining_timeout_seconds":0,"requested_at":"r","created_at":"c","updated_at":"u"}

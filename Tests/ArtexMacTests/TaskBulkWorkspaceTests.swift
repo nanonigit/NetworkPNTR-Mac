@@ -1,4 +1,5 @@
 import XCTest
+import Observation
 import AppKit
 import SwiftUI
 @testable import ArtexCore
@@ -33,6 +34,14 @@ import SwiftUI
 }
 
 final class TaskBulkWorkspaceTests: XCTestCase {
+    @MainActor func testLiveStopAtWorkspaceBusyPreventsDeleteHandoff() async throws {
+        let (api,model,store)=try await make();select(["7","8"],model);XCTAssertTrue(model.begin(.delete))
+        let owner=try XCTUnwrap(model.context).id
+        withObservationTracking {_ = model.isMutating} onChange:{MainActor.assumeIsolated{store.stop()}}
+        _ = await model.submit(contextID:owner)
+        XCTAssertFalse(api.calls.contains{$0.0 == "DELETE"});XCTAssertEqual(model.items.map(\.state),[.notStarted,.notStarted])
+        XCTAssertTrue(model.uncertainIDs.isEmpty);XCTAssertFalse(store.isMutating)
+    }
     @MainActor private func make(_ count: Int = 3) async throws -> (BulkAPI,TaskBulkWorkspace,TaskStore) {
         let api = BulkAPI()
         let url = URL(fileURLWithPath:#filePath).deletingLastPathComponent().deletingLastPathComponent().appendingPathComponent("ArtexCoreTests/Fixtures/task-contract.json")

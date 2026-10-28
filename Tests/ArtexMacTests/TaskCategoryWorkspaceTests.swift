@@ -1,4 +1,5 @@
 import XCTest
+import Observation
 import AppKit
 import SwiftUI
 @testable import ArtexCore
@@ -32,6 +33,16 @@ import SwiftUI
 }
 
 final class TaskCategoryWorkspaceTests: XCTestCase {
+    @MainActor func testSuspendOrLiveStopAtBusyNeverDispatchesCategorySave() async throws {
+        for liveStop in [false,true] {
+            let (api,model,store)=make();let owner=try XCTUnwrap(model.open(tasks:[]));await model.load(contextID:owner)
+            let editor=model.editorID;model.setName("synthetic change",contextID:owner,editorID:editor)
+            withObservationTracking {_ = model.isMutating} onChange:{MainActor.assumeIsolated{if liveStop {store.stop()} else {model.suspend()}}}
+            let saved=await model.save(contextID:owner,editorID:editor)
+            XCTAssertFalse(saved);XCTAssertTrue(api.calls.allSatisfy{$0.0 == "GET"});XCTAssertFalse(model.uncertain)
+            XCTAssertFalse(model.isMutating);XCTAssertFalse(store.isMutating)
+        }
+    }
     @MainActor private func make() -> (CategoryWorkspaceAPI,TaskCategoryWorkspace,TaskStore) {
         let api = CategoryWorkspaceAPI(), store = TaskStore(service:TaskService(client:CategoryWorkspaceAPI()))
         return (api,TaskCategoryWorkspace(service:TaskCategoryService(client:api),store:store),store)

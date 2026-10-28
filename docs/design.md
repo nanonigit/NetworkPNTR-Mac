@@ -135,3 +135,6 @@ Audit and repair the existing FindingStore handoff boundary per findings-mutatio
 
 
 Task handoff recurrence repair follows task-mutation-handoff-design.md; actor-owned direct tickets and guarded shared lease acquisition retain public contracts. External later-dispatch and LLM remain separate gates.
+
+
+External category/bulk/archive boundary repair uses a typed developer-only request handoff marker and lease validation per task-external-handoff-design.md; no serialized execution or UI layout change.

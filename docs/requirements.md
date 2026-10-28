@@ -159,3 +159,6 @@ Existing FindingStore edit/delete must satisfy cancellation-checked transport ha
 
 
 Task direct writes and shared category/archive/bulk lease acquisition require cancellation/activity/lifetime checks before transport or token grant. Preserve post-send uncertainty and pending-reset gate. See task-mutation-handoff-design.md.
+
+
+External task workspaces must validate captured context/live/cold leases at actual handoff and distinguish no-send cancellation from unknown writes. Preserve existing layouts and post-send receipts. See task-external-handoff-design.md.

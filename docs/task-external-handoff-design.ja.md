@@ -1,0 +1,9 @@
+# 外部タスクworkspaceのhandoff
+
+category/bulk/archiveはtransport引渡し直前に捕捉したworkspaceとlive/coldゲートを検証する。以前の閉じる/停止/resetは書込ゼロ・不明なし、以後の失敗は既存の不明/拒否と確定結果を保持する。レイアウト・確認フロー・選択/flags/順序・停止後の既知結果・queue受入と完了の区別・固定backend本文は変えない。controller/transportのみなので今回の修正でLazywebは対象外だが、後の証跡UI設計は対象である。
+
+開発コード専用MainActor TaskRequestHandoffにvalidatorと読取専用wasDispatchedを持たせる。サービスは取消確認後send直前に内部beginを呼び、1回だけ検証しtransport引渡しを記録する。socket到達/保存の証明ではない。元の署名を保ち、型付きoverloadでmarkerを受ける。guest URL/command/bearerを持たず直列化しない。TaskStoreは外部ticket/lifetime/activity、TaskArchiveStoreはcold ticket/session/viewを照合し再入取得を拒否する。controllerは毎回lifetime/context/editorとゲートを確認する。連続削除は要求ごと、それ以外のbatch/category/archiveは1要求1marker。
+
+categoryはbusy公開前にowner/editor/lifetime/親/入力を捕捉する。送信前の古いcontextは拒否し、送信後の確定はsuspend後も既存通り保持する。送信前CancellationErrorは不明にしない。bulk/archiveはqueued取消結果を維持し、実handoff後だけ不明扱い、無効ゲートで次の連続項目を開始しない。resetは旧結果を捨て要求終了まで旧ゲートを保持し、自分のtokenだけで解放する。
+
+順序は同期suspend/live停止/cold停止RED→marker/ゲート確認→サービスとcontroller統合GREEN→既存category/bulk/archive/Core回帰→独立レビュー/全体/coverage/署名build/修正HEAD CI。実guest書込/agentは開始しない。LLM監査・証跡UI・非空の実guest/browser・解除後画面は未完了。

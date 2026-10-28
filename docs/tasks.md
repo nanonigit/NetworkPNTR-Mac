@@ -312,3 +312,6 @@ Task handoff order: five direct/two synchronous boundary modes and three externa
 
 
 Task preparation checkpoint: RED89bda84(4tests/37assertionfailures) ->51f3370, focused31/full647Swift(646pass/1existingAXskip),123Python, TaskStore229/229 and TaskService80/80 lines. Independent review/signedbuild/strictsignature/localization/inventory pass. See task-mutation-handoff-verification.md. External post-grant workspace dispatch and LLMStore audit remain, followed by evidence UI/actual nonempty guest/browser/full-product gates.
+
+
+External handoff order: synchronous workspace suspend/live-stop/cold-stop RED -> one-request marker/lease validation -> typed services/controllers GREEN -> existing and full tests/review/build/CI. LLM and actual evidence/UI gates remain open.
