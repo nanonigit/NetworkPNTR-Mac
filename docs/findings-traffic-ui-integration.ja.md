@@ -1,0 +1,9 @@
+# F5e1 証跡の一覧・本文・保存への接続
+
+既存の原本本文転送処理を、ウィンドウが所有する証跡sheetへ接続する。全F5の順序付き実装段階で、範囲を縮小しない。新鮮な選択findingと固定contextから生成し、親画面の移動・編集・古いdismissを拒否する。停止／ログアウトで所有権を失効。継承findingは閲覧／保存可、数値finding identityのないlegacyはdispatch不可。
+
+一覧はrole・note・ID・method・status・URL・capture時刻を文字列として表示。記録URLを開いたり取得しない。viewerはheaderと原文、request／responseタブ、明示した追加バイトページの累積表示、binary案内を持つ。失敗時は前回本文とstale／安全なエラーを示す。
+
+保存は実sheetのwindowへ付けたSave Panelを使用。排他的な新規保存先、target／binding／認証／VMの現所有権、実ファイル検証・commitを条件とする。保存先の選択だけで成功にせず、転送／キャンセルとcommit後のbyte／hash結果を示す。強制消失でpanel／taskをcancelし、遅れて返るreceiptを破棄する。保留read、古いowner、side／offset、実ファイル公開／cleanupを試験する。画面外描画とAPI試験だけで実画面／keyboard／VoiceOver受入済みとしない。
+
+Lazywebでdesktop HTTP request/response inspectorを調査。HTTPie248764は文書、Postman250787はparameter画面、Retool243659はrequest設定という隣接metadataだった。画像未確認で同等性の証拠にはしない。固定ARTEXを基準とする。picker追加、role／note編集、削除／並替え、結果不明／競合、非空データの実更新／永続化は引き続き必要。
