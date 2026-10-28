@@ -274,6 +274,14 @@ final class FindingTrafficWorkspaceTests: XCTestCase {
         XCTAssertEqual(parent.trafficWorkspace?.id,second.id); XCTAssertTrue(second.isActive)
         FindingBindings.traffic(parent,id:second.id).wrappedValue = nil; XCTAssertNil(parent.trafficWorkspace)
     }
+    @MainActor func testParentDepartureDuringSheetPublicationCannotRestoreActiveWorkspace() async throws {
+        let api = EvidenceWorkspaceAPI(), parent = FindingScreenModel(store:FindingStore(service:.init(client:api)),trafficService:.init(client:api))
+        await parent.store.refreshView(); await parent.selectDetail(id:"7",owner:parent.store.viewOwner)
+        let owner = parent.store.viewOwner, revision = parent.detailRevision
+        withObservationTracking { _ = parent.trafficWorkspace } onChange: { MainActor.assumeIsolated { parent.stop() } }
+        XCTAssertFalse(parent.beginTraffic(owner:owner,revision:revision))
+        XCTAssertNil(parent.trafficWorkspace)
+    }
     @MainActor func testParentOwnsSheetAndRejectsOldDismissAndOtherActions() async throws {
         let api = EvidenceWorkspaceAPI(), parent = FindingScreenModel(store:FindingStore(service:.init(client:api)),trafficService:.init(client:api))
         await parent.store.refreshView(); await parent.selectDetail(id:"7",owner:parent.store.viewOwner)
