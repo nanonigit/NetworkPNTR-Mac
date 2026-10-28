@@ -138,3 +138,7 @@ Task handoff recurrence repair follows task-mutation-handoff-design.md; actor-ow
 
 
 External category/bulk/archive boundary repair uses a typed developer-only request handoff marker and lease validation per task-external-handoff-design.md; no serialized execution or UI layout change.
+
+## Investigation harness extension
+
+User-requested goal: integrate Dirsearch, Fscan, Masscan and SoftEther VPN through native task controls while retaining guest-only execution, explicit target/network policy, evidence provenance and English/Japanese UI. Implementation is pending. See [design and acceptance phases](investigation-harness-design.md). This extends rather than replaces browser parity and release requirements.

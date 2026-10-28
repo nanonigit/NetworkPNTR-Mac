@@ -132,3 +132,7 @@ F4b独立reference: 固定backendを空のnetwork-none/nonrootコンテナで3�
 
 
 F4b境界追試: name/class/severityの実単独PATCH、内部FEFF/NFD/CJKを保持したJS→Go空白正規化、空名受入、診断用8192UTF8 byte上限の受入。空PATCH・64KiB超本文・不正ページは転送0で拒否。既存の複合編集/状態/削除前に9101を元へ戻し、外部ID/agent/Internetは使いません。nativeのローカル検査をbrowser UI同等性とはしません。
+
+## 調査ハーネスの追加目標
+
+Dirsearch、Fscan、Masscan、SoftEther VPNをネイティブ操作から利用可能にする。ゲスト内実行、対象／ネットワーク制限、証跡の出自、英日表示を維持する。実装は未着手。[設計と段階別受入条件](investigation-harness-design.ja.md)を参照。ブラウザ互換と既存リリース要件を維持する。

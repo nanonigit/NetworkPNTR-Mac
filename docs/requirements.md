@@ -162,3 +162,7 @@ Task direct writes and shared category/archive/bulk lease acquisition require ca
 
 
 External task workspaces must validate captured context/live/cold leases at actual handoff and distinguish no-send cancellation from unknown writes. Preserve existing layouts and post-send receipts. See task-external-handoff-design.md.
+
+## Investigation harness extension
+
+User-requested goal: integrate Dirsearch, Fscan, Masscan and SoftEther VPN through native task controls while retaining guest-only execution, explicit target/network policy, evidence provenance and English/Japanese UI. Implementation is pending. See [design and acceptance phases](investigation-harness-design.md). This extends rather than replaces browser parity and release requirements.

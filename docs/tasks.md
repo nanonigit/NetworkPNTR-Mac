@@ -334,3 +334,16 @@ F5c1 remote gate: CI40637957743/92ae187 stopped before tests due GitHub account 
 F5c2 state: missingRED e1ba09a -> read-acquisition REDb1f4d5f(14cases/7assertions) -> GREENfe8d687 -> publication/lifecycle REDca191b7(21cases/8assertions) -> GREENed3f6b7.21 owner cases/50related/full726Swift(725pass/1existingAXskip),123Python; picker206/208/sharedread56/56/parent168/170 lines. See captured-picker-verification.md. Next: window/detail/picker/viewer controls and authenticated full-byte export, then actual nonempty guest/browser and unlocked UI/AX. CI account gate and all full-product requirements remain open.
 
 Changed-code CI40640261823/e34c325 remains account-blocked before testing, confirmed by job/check annotations. Local checks pass; remote CI is still unverified. Continue full-byte export/native integration without treating this infrastructure condition as full-goal completion or an impasse while useful implementation remains.
+
+## Investigation harness roadmap (not implemented)
+
+See investigation-harness-design.md and investigation-harness-design.ja.md.
+
+- [ ] H0: adapter contracts, scope enforcement, pinned build/license inventory and isolated fixtures.
+- [ ] H1: Dirsearch actual lab runs, results/evidence, cancellation and persistence.
+- [ ] H2: Fscan discovery and explicitly selected checks with expected lab inventory.
+- [ ] H3: Masscan raw-network/capability experiment, accuracy/rate/negative egress proof.
+- [ ] H4: SoftEther Stable/Developer comparison and isolated VPN lifecycle/leak tests.
+- [ ] H5: en/ja native UI, browser parity for shared workflows, accessibility and packaging.
+
+Existing full-byte export and browser parity work retain their current priority. No tools have been installed or scans run for this proposal.
