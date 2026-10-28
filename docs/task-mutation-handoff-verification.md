@@ -1,0 +1,9 @@
+# Task preparation repair checkpoint
+
+RED89bda84 reproduced37failed assertions across four tests: synchronous cancellation/stop for five direct commands and three shared lease kinds. Repair51f3370 adds cancellation-checked TaskService handoff callbacks, actor-owned lifetime/activity/ticket validation and observable busy derived from direct/external tickets. Guarded acquisition reentry and post-publication checks reject stale/cancelled external tokens. See bugs/task-preparation-handoff.md.
+
+Public service APIs, payload/status/identity validation, no automatic retries, local input rejection, post-handoff uncertainty, confirmed receipts despite refresh failures, selection and pending-reset gates remain unchanged. Targeted31tests pass (four handoff,13service,14store). Independent review found no blocker. No real task creation/resume, guest agent, browser mutation or network policy change was executed; transports were injected synthetic fixtures. Lazyweb is out of scope for this backend-only repair.
+
+Full647Swift cases:646pass and one existing explicit external-AX skip;123Python pass. LLVM TaskStore229/229 and TaskService80/80 lines. Signed app build-only, strict signature, localization export and frozen inventory checks pass. No dependency packages were added. The full suite includes existing category/archive/bulk UI workspace tests, but this is not proof of their transport handoff boundaries or actual rendered acceptance.
+
+Next audit the external workspaces after lease grant and LLMStore, then wire native evidence controls and run nonempty evidence/body/conflict/persistence comparisons and unlocked visuals/keyboard/VoiceOver. Remaining F5/all21/cloud/kernel/clean-Mac/release acceptance stays open. Actual guest/browser lifecycle and isolation evidence must be collected separately; historical runtime receipts are preserved.

@@ -309,3 +309,6 @@ Ordinary FindingStore recurrence checkpoint: RED3b0e6f3(12cases/10assertionfailu
 
 
 Task handoff order: five direct/two synchronous boundary modes and three external acquisition kinds RED -> ticket/callback/lease GREEN -> existing service/store/workspace regression -> independent review/full checks/CI. Do not launch guest agents during these synthetic tests.
+
+
+Task preparation checkpoint: RED89bda84(4tests/37assertionfailures) ->51f3370, focused31/full647Swift(646pass/1existingAXskip),123Python, TaskStore229/229 and TaskService80/80 lines. Independent review/signedbuild/strictsignature/localization/inventory pass. See task-mutation-handoff-verification.md. External post-grant workspace dispatch and LLMStore audit remain, followed by evidence UI/actual nonempty guest/browser/full-product gates.
