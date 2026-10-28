@@ -22,13 +22,16 @@ import SwiftUI
     private var controlsAvailable: Bool { model.trafficControlsAvailable }
     private func s(_ key: AppStringKey) -> String { AppStrings.text(key,language:language) }
     var body: some View {
-        let dialogID = model.actions.dialog?.id
+        let dialogID = model.actions.dialog?.id, pickerID = model.picker?.id, version = model.store.summary.value?.version
         VStack(alignment:.leading,spacing:12) {
             HStack {
                 VStack(alignment:.leading) { Text(s(.evidenceUITitle)).font(.title2.bold()); Text(verbatim:model.target.name).textSelection(.enabled) }
                 Spacer()
                 if model.isReading { ProgressView().controlSize(.small).accessibilityLabel(s(.evidenceUILoading)) }
                 Button(s(.findingUIRefresh),systemImage:"arrow.clockwise") { Task { await model.refresh() } }.disabled(!controlsAvailable)
+                if model.target.canMutate {
+                    Button(s(.capturedUIAdd),systemImage:"plus") { if let version { _ = model.openPicker(owner:model.id,version:version) } }.disabled(!model.canOpenPicker)
+                }
                 Button(s(.findingUIClose),systemImage:"xmark",action:close).keyboardShortcut(.cancelAction)
             }
             if model.target.inherited { Text(s(.evidenceUIReadOnly)).foregroundStyle(.secondary) }
@@ -44,13 +47,16 @@ import SwiftUI
                     Button(s(.evidenceUIReviewUnknown)) { _ = model.actions.openAcknowledgement(owner:model.id) }.disabled(!model.actions.canAcknowledge)
                 }
             }
-            Text(s(.evidenceUIPickerPending)).font(.caption).foregroundStyle(.secondary)
+            Text(s(.capturedUIHelp)).font(.caption).foregroundStyle(.secondary)
         }
         .padding(20).frame(minWidth:760,idealWidth:960,minHeight:560,idealHeight:680)
         .background(EvidenceWindowAnchor(presenter:presenter).frame(width:0,height:0))
         .onAppear { presenter.language = language }
         .onChange(of:language) { _,value in presenter.language = value }
         .interactiveDismissDisabled(model.isExporting || model.actions.isSubmitting)
+        .sheet(item:FindingCapturedPickerBindings.presentation(model,id:pickerID)) { picker in
+            FindingCapturedPickerSheet(picker:picker) { model.closePicker(id:picker.id) }
+        }
         .sheet(item:FindingTrafficActionBindings.dialog(model.actions,id:dialogID)) { context in
             FindingTrafficActionView(actions:model.actions,id:context.id)
         }

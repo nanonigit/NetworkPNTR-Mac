@@ -48,6 +48,50 @@
 	<string>Unable to confirm authentication status</string>
 	<key>auth.username</key>
 	<string>Username</string>
+	<key>captured.ui.add</key>
+	<string>Add traffic</string>
+	<key>captured.ui.addCount</key>
+	<string>Add {count} selected</string>
+	<key>captured.ui.binding</key>
+	<string>Adding selected traffic…</string>
+	<key>captured.ui.bound</key>
+	<string>Already added</string>
+	<key>captured.ui.captureOff</key>
+	<string>Recording is off; existing history is shown.</string>
+	<key>captured.ui.empty</key>
+	<string>No matching traffic.</string>
+	<key>captured.ui.help</key>
+	<string>Choose recorded exchanges to attach as evidence. Preview text may contain body-storage markers; use original-body saving after binding for complete bytes.</string>
+	<key>captured.ui.host</key>
+	<string>Host</string>
+	<key>captured.ui.keyword</key>
+	<string>Keyword</string>
+	<key>captured.ui.method</key>
+	<string>Method</string>
+	<key>captured.ui.next</key>
+	<string>Next</string>
+	<key>captured.ui.page</key>
+	<string>Page {page}</string>
+	<key>captured.ui.preview</key>
+	<string>Preview</string>
+	<key>captured.ui.previewHelp</key>
+	<string>Select an exchange to preview</string>
+	<key>captured.ui.previous</key>
+	<string>Previous</string>
+	<key>captured.ui.selectOne</key>
+	<string>Select traffic {id}</string>
+	<key>captured.ui.selectPage</key>
+	<string>Select this page</string>
+	<key>captured.ui.selected</key>
+	<string>Selected {count} · {total} matching exchanges</string>
+	<key>captured.ui.status</key>
+	<string>Status</string>
+	<key>captured.ui.time</key>
+	<string>Captured</string>
+	<key>captured.ui.title</key>
+	<string>Add captured traffic</string>
+	<key>captured.ui.unavailable</key>
+	<string>No captured-traffic index is available in this environment.</string>
 	<key>chat.ActionsPrefix</key>
 	<string>Conversation actions: </string>
 	<key>chat.Agent</key>

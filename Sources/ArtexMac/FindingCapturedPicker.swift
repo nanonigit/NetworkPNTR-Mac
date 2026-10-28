@@ -33,6 +33,7 @@ struct CapturedPickerFilterTicket: Hashable {
     }
     var canEditFilters: Bool { current && !isSubmitting }
     var canSelect: Bool { canEditFilters && filtersCurrent && !store.catalog.isLoading && !store.catalog.isStale && store.catalog.value?.isUnavailable == false }
+    var hasUnknownOutcome: Bool { workspace?.store.unknownIDs.isEmpty == false }
     var canBind: Bool { canSelect && store.canBind }
     func isBound(_ source: String) -> Bool {
         workspace?.store.summary.value?.bindings.contains { Data($0.snapshot.sourceTrafficId.utf8) == Data(source.utf8) } == true

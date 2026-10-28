@@ -48,6 +48,50 @@
 	<string>認証状態を確認できません</string>
 	<key>auth.username</key>
 	<string>ユーザー名</string>
+	<key>captured.ui.add</key>
+	<string>通信を追加</string>
+	<key>captured.ui.addCount</key>
+	<string>選択した{count}件を追加</string>
+	<key>captured.ui.binding</key>
+	<string>選択した通信を追加中…</string>
+	<key>captured.ui.bound</key>
+	<string>追加済み</string>
+	<key>captured.ui.captureOff</key>
+	<string>通信の記録は停止中です。既存の履歴を表示しています。</string>
+	<key>captured.ui.empty</key>
+	<string>該当する通信はありません。</string>
+	<key>captured.ui.help</key>
+	<string>記録された通信を選んで証跡に追加します。プレビューに本文の保存位置が表示される場合があります。全バイトを取得するには追加後に原本を保存してください。</string>
+	<key>captured.ui.host</key>
+	<string>ホスト</string>
+	<key>captured.ui.keyword</key>
+	<string>キーワード</string>
+	<key>captured.ui.method</key>
+	<string>メソッド</string>
+	<key>captured.ui.next</key>
+	<string>次へ</string>
+	<key>captured.ui.page</key>
+	<string>{page}ページ</string>
+	<key>captured.ui.preview</key>
+	<string>プレビュー</string>
+	<key>captured.ui.previewHelp</key>
+	<string>プレビューする通信を選択</string>
+	<key>captured.ui.previous</key>
+	<string>前へ</string>
+	<key>captured.ui.selectOne</key>
+	<string>通信{id}を選択</string>
+	<key>captured.ui.selectPage</key>
+	<string>このページを選択</string>
+	<key>captured.ui.selected</key>
+	<string>{count}件選択・該当{total}件</string>
+	<key>captured.ui.status</key>
+	<string>ステータス</string>
+	<key>captured.ui.time</key>
+	<string>取得日時</string>
+	<key>captured.ui.title</key>
+	<string>取得済み通信を追加</string>
+	<key>captured.ui.unavailable</key>
+	<string>この環境には取得済み通信のインデックスがありません。</string>
 	<key>chat.ActionsPrefix</key>
 	<string>会話の操作：</string>
 	<key>chat.Agent</key>

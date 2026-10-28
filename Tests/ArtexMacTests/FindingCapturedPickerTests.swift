@@ -190,6 +190,20 @@ final class FindingCapturedPickerTests: XCTestCase {
             XCTAssertEqual(api.calls.count,count)
         }
     }
+    @MainActor func testDirectPickerStopDuringDraftPublicationCannotRestoreClearedText() async throws {
+        let api = NativePickerAPI(), (_,picker) = try await ready(api)
+        let draft = FindingCapturedPickerBindings.draft(picker,key:\.hostDraft)
+        withObservationTracking { _ = picker.hostDraft } onChange: { MainActor.assumeIsolated { picker.stop() } }
+        draft.wrappedValue = "departing private draft"
+        XCTAssertFalse(picker.isActive); XCTAssertEqual(picker.hostDraft,""); XCTAssertEqual(draft.wrappedValue,"")
+    }
+    @MainActor func testReentrantPickerCloseDuringDraftPublicationIsDeferredWithoutCrash() async throws {
+        let api = NativePickerAPI(), (model,picker) = try await ready(api)
+        let draft = FindingCapturedPickerBindings.draft(picker,key:\.hostDraft)
+        withObservationTracking { _ = picker.hostDraft } onChange: { MainActor.assumeIsolated { model.closePicker(id:picker.id) } }
+        draft.wrappedValue = "close during publication"
+        XCTAssertNil(model.picker); XCTAssertFalse(picker.isActive); XCTAssertEqual(picker.hostDraft,"")
+    }
     @MainActor func testDisabledHistoryUnavailableAndErrorStatesDoNotBecomeEmptySuccess() async throws {
         let api = NativePickerAPI(), (_,picker) = try await ready(api)
         api.enabled = false; await picker.reload(owner:picker.store.owner)
