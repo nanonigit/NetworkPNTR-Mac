@@ -1,3 +1,4 @@
+import AppKit
 import Observation
 import SwiftUI
 import XCTest
@@ -133,6 +134,53 @@ final class FindingTrafficActionTests: XCTestCase {
         XCTAssertTrue(model.actions.openRemove("21",owner:model.id)); let saved = try await submit(model); XCTAssertTrue(saved)
         XCTAssertGreaterThan(api.calls.filter { $0.path == "/api/exploration/findings/7" }.count,before)
         XCTAssertEqual(model.store.summary.value?.bindings.map(\.id),["22"])
+    }
+    @MainActor func testStaleRenderedVersionCannotOpenNewConfirmation() async throws {
+        let api = EvidenceActionAPI(), model = try await loaded(api)
+        api.version = 3; await model.refresh()
+        XCTAssertFalse(model.actions.openEdit("21",owner:model.id,version:2))
+        XCTAssertFalse(model.actions.openRemove("21",owner:model.id,version:2))
+        XCTAssertFalse(model.actions.openMove("21",delta:1,owner:model.id,version:2))
+        XCTAssertNil(model.actions.dialog); XCTAssertTrue(api.writes.isEmpty)
+    }
+    @MainActor func testStopDuringSubmittingPublicationPreventsDispatch() async throws {
+        let api = EvidenceActionAPI(), model = try await loaded(api)
+        XCTAssertTrue(model.actions.openRemove("21",owner:model.id))
+        withObservationTracking { _ = model.actions.isSubmitting } onChange: { MainActor.assumeIsolated { model.stop() } }
+        let result = try await submit(model); XCTAssertFalse(result); XCTAssertTrue(api.writes.isEmpty)
+        XCTAssertTrue(model.store.unknownIDs.isEmpty); XCTAssertNil(model.actions.dialog); XCTAssertFalse(model.actions.isSubmitting)
+    }
+    @MainActor func testCancelledDispatchedEditCannotReplayAndCapturedDraftBindingsAreRevoked() async throws {
+        let api = EvidenceActionAPI(), model = try await loaded(api)
+        XCTAssertTrue(model.actions.openEdit("21",owner:model.id)); let id = try XCTUnwrap(model.actions.dialog).id
+        let note = FindingTrafficActionBindings.note(model.actions,id:id), role = FindingTrafficActionBindings.role(model.actions,id:id)
+        role.wrappedValue = "proof"; note.wrappedValue = "literal edit"
+        api.holdWrite = true; let job = Task { await model.actions.submit(id:id) }; try await wait { api.held != nil }
+        note.wrappedValue = "must not replace"; role.wrappedValue = "baseline"
+        XCTAssertEqual(model.actions.noteDraft,"literal edit"); XCTAssertEqual(model.actions.roleDraft,.proof)
+        job.cancel(); api.version += 1; api.held?.resume(returning:try api.reply(api.summary)); api.held = nil
+        let result = await job.value; XCTAssertFalse(result); XCTAssertEqual(model.store.unknownIDs,["7"])
+        model.actions.close(id:id); XCTAssertEqual(note.wrappedValue,""); XCTAssertEqual(role.wrappedValue,"")
+        XCTAssertEqual(api.writes.count,1)
+    }
+    @MainActor func testActionDialogsRenderBothLocalesWithoutSendingCommands() async throws {
+        let api = EvidenceActionAPI(), model = try await loaded(api)
+        for kind in 0..<3 {
+            let opened = switch kind {
+            case 0: model.actions.openEdit("21",owner:model.id)
+            case 1: model.actions.openRemove("21",owner:model.id)
+            default: model.actions.openMove("22",delta:-1,owner:model.id)
+            }
+            XCTAssertTrue(opened); let id = try XCTUnwrap(model.actions.dialog).id
+            for language in AppLanguage.allCases {
+                let host = NSHostingView(rootView:FindingTrafficActionView(actions:model.actions,id:id).environment(\.locale,language.locale))
+                host.frame = NSRect(x:0,y:0,width:540,height:420); host.layoutSubtreeIfNeeded()
+                let bitmap = try XCTUnwrap(host.bitmapImageRepForCachingDisplay(in:host.bounds)); host.cacheDisplay(in:host.bounds,to:bitmap)
+                XCTAssertTrue(host.fittingSize.width.isFinite)
+            }
+            model.actions.close(id:id)
+        }
+        XCTAssertTrue(api.writes.isEmpty)
     }
     @MainActor func testStopDuringDialogPublicationClearsDraftWithoutDispatch() async throws {
         let api = EvidenceActionAPI(), model = try await loaded(api)
