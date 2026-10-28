@@ -5,6 +5,7 @@ import SwiftUI
 @MainActor struct LLMRecoveryView: View {
     @Environment(\.locale) private var locale
     let store: LLMStore
+    @State private var overviewExpanded = true
     private func s(_ key: AppStringKey) -> String {
         AppStrings.text(key, language: AppLanguage.preferred(in: [locale.identifier]))
     }
@@ -15,7 +16,7 @@ import SwiftUI
                     Label(s(.llmUIRecoveryTitle), systemImage: "exclamationmark.triangle").font(.headline)
                     Text(s(.llmUIRecoveryHelp)).font(.callout).fixedSize(horizontal: false, vertical: true)
                     if store.canAcknowledgeUnknown {
-                        DisclosureGroup(s(.llmUIRecoveryOverview)) {
+                        DisclosureGroup(s(.llmUIRecoveryOverview), isExpanded: $overviewExpanded) {
                             ScrollView {
                                 VStack(alignment: .leading, spacing: 8) {
                                     if store.profiles.isEmpty { Text(s(.llmUINoProfiles)) }
