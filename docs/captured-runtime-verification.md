@@ -1,5 +1,7 @@
 # Captured runtime reference verification
 
+Historical reference/candidate checkpoints below; the subsequent typed native capture comparison passed and is recorded in captured-native-verification.md. Actual new UI and full-product gates remain open.
+
 Status: independent reference checkpoint complete; native VM and UI acceptance remain open. The frozen browser source is e75ae371ad777ffd1eecdd28d2781a6519b05591. The hardened exercise ran implementation de795ec34f34b5e58aa8bc4bcdec533444b8a198. Public, body-free receipts are in evidence/findings/captured-reference.json; private database, logs and traces remain outside Git.
 
 The offline, UID1000, read-only-root Linux arm64 reference container had no NIC, published ports, host mounts or agent activity. Twenty-nine actual HTTP exchanges passed through the loopback recorder into its real index; no SQLite rows were synthesized. Independent HTTP checks validated exact filter rows, 25+4 pagination, source identity, two captured bindings, note/role edits, stale-version409 unchanged readback, ordering, removal, four full body downloads and five bounded previews. Empty, FEFF/NFD/CJK, binary spill and split UTF8 data retain byte identity. Two cooperative backend process stops and starts retained the capture index, remaining binding/version and authentication. This is process persistence, not a VM reboot.

@@ -1,5 +1,7 @@
 # 実通信記録の参照環境検証
 
+以下は参照環境／候補image段階の履歴。後続のtyped native capture比較は合格し、captured-native-verification.ja.mdへ記録した。新UI／製品全体の条件は未完。
+
 状態：独立した参照環境の段階試験は完了。ネイティブVM・UIの受入は未完。固定ブラウザソースはe75ae371ad777ffd1eecdd28d2781a6519b05591、補強後の実装はde795ec34f34b5e58aa8bc4bcdec533444b8a198。本文を含まない公開記録はevidence/findings/captured-reference.json。DB・ログ・traceはGit外のprivate領域に保持する。
 
 NIC・公開port・ホストmount・agent活動なし、UID1000・root読取専用のLinux arm64参照containerで、loopback記録proxyを通る実HTTP通信29件からindexを生成した。SQLiteへの偽行投入はしていない。独立HTTP検証でfilterの全行、25+4行paging、対応元の厳密一致、2件紐付け、note／role編集、古いversion409と不変readback、順序、削除、原本4件download、上限付きpreview5回を確認。空・FEFF／NFD／CJK・spill binary・UTF8境界のbyteを保持。backendを協調停止して2回起動し、index・残存binding／version・認証の保持を確認した。VM再起動の証明ではない。

@@ -1,0 +1,15 @@
+# ネイティブ実通信記録の比較
+
+固定ソースはe75ae371ad777ffd1eecdd28d2781a6519b05591のまま。fd1c70bで独立した参照環境を新規実行し、実loopback29通信の初回紐付けをブラウザpickerと同じsupporting／note空に揃えた。従来の参照試験は初回noteを独自指定していたため、その履歴記録は上書きせず保持する。固定browser／backendは変更していない。captured-picker-reference.json参照。
+
+816b413の署名済みDEBUG VMProbe --capturedが別のcapture設定済みCPU1 source-kernel候補でexit0。新しいprivate2GiB diskを作成し、実VZ Linuxを2回起動・両方協調停止した。導入済みapp／標準profileは変更していない。診断bridgeはLinux／aarch64／UID1000・明示flag・正確なlocal DB・外部接続なしを確認し、既存SQLiteをmode=roで読む（live WALも試験）。index非空ならPostgreSQL seed／listen前に拒否する。記録は実HTTP proxy通信で作り、SQL行挿入では代用しない。実行した5診断source文字列のhashは両bootでnative snapshotと一致。scriptへ認証token／passwordを埋め込まず、agent／provider profile／cloud／外部targetは使わない。
+
+typed CapturedTrafficServiceで全29identity／metadata、25+4行、6filterの全行、raw preview literal byteを確認。CapturedTrafficPickerStoreは実際の記録順とowner更新に従ってpage間選択を試験し、source3／4をbrowser初期値で追加。FindingTrafficStoreで選択・detail／body読込、role／note編集、並べ替え、削除を実行。原本4件は独立native oracleと全byte比較、preview5件は空／text／binary／8191byte UTF8分割を照合。生成IDは不変URL ordinalで対応付け、別実行の時刻／IDを同じとは扱わない。
+
+診断transportが実backend編集完了後の成功応答1件を意図的に返さず、storeの結果不明記録・追加write拒否・fresh readback後も不明保持・異なるack revision拒否・現在revisionの明示ack後のみ解除を確認。writeは再実行しない。別の古いversion編集は実409となり状態不変。実backendに対する制御したdispatch後応答失敗であり、物理socket切断や全故障timingを検証済みとはしない。boot2はseed／通信生成せず、同じ29記録・最終binding／order／version・auditしたbinding1／snapshot2を読む。native metadata／filter／原本／preview／4変更状態／実活動countが独立参照JSONと厳密一致。captured-native-comparison.jsonに記録する。
+
+全回帰はSwift832件（831合格・既存external AX1skip）、Python179件合格。新fixture／client／oracle試験とレビューでは実行source hash改変・有効JSONの上限超過envelope・失敗後seed再実行拒否・cancel・live WAL・空の再取得summaryも確認。依存追加なし。bugs/captured-native.ja.mdに失敗証拠と修正履歴を記録。
+
+今回閉じるのは非空typed service／store／参照runtime比較のみ。新native UIのmouse／keyboard／VoiceOver／複数window／保存panel／固定browser画面比較、およびbinary表示placeholderの型付き翻訳監査は未完。全21workflow、標準kernel信頼性／昇格、clean install／release／署名／公証、4社、調査harnessも継続。hosted CIは未検証、公開HEADは[skip ci]。
+
+別のfresh diskによる計測repeatも実VM2bootでexit0。正規化結果・guest source hashは初回と参照に一致。全unit profileと実native repeatを合わせたLLVM行coverageはCapturedFixtureClient59/62（95.16%）、CapturedProbeContract74/74（100%）、CapturedProbe277/284（97.54%）。新Swift3ファイルの値で、製品全体／branchの値ではない。native-guest7unitをstdlib traceしたunique AST文行は45/45（100%）で、別metricのため言語間合算はしない。release build合格、--capturedはexit2、DEBUG fixture／contract／応答制御実装symbolは不在。baseline21／27／243 inventory・localization export・diffも合格したが、inventoryはnative workflow parity未完を示す。初回実験ではbinary hashを記録しておらず、2回目の実行後instrumented binary／profile／report hashを保持する。

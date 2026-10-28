@@ -1,0 +1,392 @@
+{
+  "schema": 1,
+  "passed": true,
+  "fullGoalComplete": false,
+  "nativeImplementationHead": "816b41390c9696c54da821da58243a31f6c223d6",
+  "referenceHead": "fd1c70b713a4d1a8e19c6d57273fa15b4d8b459a",
+  "referenceReceiptSHA256": "c4601040b7a0abba258a81f65183ef81bb6116d7bf5f47c743ffe1ebcac6b8e6",
+  "native": {
+    "artifactManifest": {
+      "architecture": "arm64",
+      "backendImage": "sha256:46b3ce5d5f91cd05b9e3fd6834e33196be9626eb40d38e84b7fb398f00a172d0",
+      "backendSHA256": "0ebad83ddda276b03b415d64ce30af44e7a587860f3b660c12563462a0ac5e80",
+      "bootMode": "rootDisk",
+      "captureListener": "127.0.0.1:8788",
+      "cpuCount": 1,
+      "guestRuntimeImage": "sha256:01c36cd562f77ece227cc0d8f11cd9c708ece58a35ef7da8d45674ee7be2dee2",
+      "guestRuntimeParentImage": "sha256:735d063ffd4290be40a870c4c77f6a6f9ad16ae306262e2e21e3865cd9c2b91d",
+      "guestRuntimeRecipeSHA256": "7b935017c28603e271f09ab2ce6acebaca42e97ce8a38277dc77de3d0364f48c",
+      "guestRuntimeSourceCommit": "dcbd057974ae254aa2f81943407af5f7f13141c0",
+      "guestRuntimeSourceSHA256": {
+        "backend-init": "890142e11d08d7f58763a33da0e675dd70a36a6ab2e207eab0179d7c558301ac",
+        "backend-packages.lock": "619e4e6c33cc2a1e2fce48e28ac138cd2020fbfc74d5c71b6500a6eec8c9a5aa",
+        "backend.Dockerfile": "bc2553a80922c4893a8b0fd5a8206197aee10b4d8ebe6ca9d7afd05d5109a104",
+        "check_blank_disk.py": "cc1776fae8120feca24d11dbf0ad94143715572f1d5e398898ca6607aa993b1d",
+        "check_network.py": "4bc167e71c655d31eda1872f11ad4b8a90b201994834a63c82194a3fa317ee2e",
+        "summarize_failure.py": "a68c74cd4a84447a9b6b5531e3ef3e31b5d372d9c6175cc6f72379af3047124d",
+        "vsock_relay.py": "4995c4551fac64e15d0be14f211689937edbab3d91e72abc373b81558fd1f1d2"
+      },
+      "hostShares": 0,
+      "initramfs": "initramfs.cpio.gz",
+      "initramfsSHA256": "88de8582409a9ad861a69035f056e65953b36803fbc77b391e0a9deb77e335ba",
+      "kernel": "Image",
+      "kernelPackage": {
+        "configuration": {
+          "maximum_bytes": 1048576,
+          "sha256": "53280e08ae286156a31049c90ab8b2077db93c0366a8a9e6bb4b3fa7c02f65fe",
+          "url": "https://raw.githubusercontent.com/linuxkit/linuxkit/f935f6b18cad69f08c1830b432d7dab90bf67614/kernel/6.12.x/config-aarch64"
+        },
+        "recipeSHA256": "43bb1338577b1a68723ac9ca750abed1df5e93e1598b588f72cf6e6d5f69dcca",
+        "source": {
+          "maximum_bytes": 268435456,
+          "sha256": "7a8589912bd7a8adb07fed074283652cf482a35facef8954554654f0154b4af3",
+          "url": "https://cdn.kernel.org/pub/linux/kernel/v6.x/linux-6.12.114.tar.xz"
+        }
+      },
+      "kernelSHA256": "8e57308787c420cb42e4c4ea80e6def6438a52232692c010dc4609bb9bf21879",
+      "networkDevices": 0,
+      "packageLockSHA256": "619e4e6c33cc2a1e2fce48e28ac138cd2020fbfc74d5c71b6500a6eec8c9a5aa",
+      "sourceCommit": "e75ae371ad777ffd1eecdd28d2781a6519b05591",
+      "systemDisk": "system.ext4",
+      "systemDiskSHA256": "28b2f52289d5a5c4b76e62bc751c512f7aaec6a34d1ab41a09304ac0f4703aa6"
+    },
+    "boots": 2,
+    "cleanAudits": 2,
+    "cooperativeStops": 2,
+    "exercise": {
+      "bodies": [
+        {
+          "bytes": 53,
+          "full_byte_equal": true,
+          "ordinal": 3,
+          "sha256": "09b2eb751e01c0e2de30f0d97d4f842a6a8ca7ddfbd78aa4a2d1039033d851ab",
+          "side": "request"
+        },
+        {
+          "bytes": 9003,
+          "full_byte_equal": true,
+          "ordinal": 3,
+          "sha256": "593a58985dc77f76dde2174849d20102274a525004e42d42143b75cd41a097ca",
+          "side": "response"
+        },
+        {
+          "bytes": 0,
+          "full_byte_equal": true,
+          "ordinal": 4,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "side": "request"
+        },
+        {
+          "bytes": 262401,
+          "full_byte_equal": true,
+          "ordinal": 4,
+          "sha256": "5549252a7f275dd6b221f062c298ac588a2dea19e5145b6ca06308cc8c9dd43e",
+          "side": "response"
+        }
+      ],
+      "counts": {
+        "activity": 0,
+        "archives": 0,
+        "assets": 3,
+        "companies": 1,
+        "conversations": 0,
+        "events": 0,
+        "explorations": 11,
+        "finding_nodes": 32,
+        "findings": 33,
+        "foreign_assets": 0,
+        "foreign_companies": 0,
+        "foreign_events": 0,
+        "foreign_explorations": 0,
+        "foreign_finding_nodes": 0,
+        "foreign_findings": 0,
+        "foreign_links": 0,
+        "foreign_nodes": 0,
+        "foreign_relations": 0,
+        "foreign_tasks": 0,
+        "intercepts": 0,
+        "llm_records": 0,
+        "llm_usage": 0,
+        "notification_channels": 0,
+        "notification_deliveries": 0,
+        "profiles": 0,
+        "relations": 1,
+        "retests": 0,
+        "task_profiles": 0,
+        "tasks": 11,
+        "traffic_bindings": 1,
+        "traffic_snapshots": 2,
+        "unsafe_tasks": 0
+      },
+      "filters": [
+        {
+          "query": "host=127.0.0.1",
+          "total": 29
+        },
+        {
+          "query": "host=192.0.2.1",
+          "total": 0
+        },
+        {
+          "query": "method=GET",
+          "total": 15
+        },
+        {
+          "query": "method=POST",
+          "total": 14
+        },
+        {
+          "query": "q=ordinal+05",
+          "total": 1
+        },
+        {
+          "query": "q=%E6%97%A5%E6%9C%AC%E8%AA%9E",
+          "total": 14
+        }
+      ],
+      "metadata": {
+        "evidence_version": 4,
+        "report_evidence_version": 0,
+        "report_stale": true,
+        "traffic_count": 1
+      },
+      "previews": [
+        {
+          "binary": false,
+          "content_sha256": "09b2eb751e01c0e2de30f0d97d4f842a6a8ca7ddfbd78aa4a2d1039033d851ab",
+          "next_offset": 53,
+          "offset": 0,
+          "ordinal": 3,
+          "side": "request",
+          "truncated": false
+        },
+        {
+          "binary": false,
+          "content_sha256": "51c066c104a4b4da7c6e6258f9ba82ee9ed8995e4d9fc15ad8fc302b6622032c",
+          "next_offset": 8191,
+          "offset": 0,
+          "ordinal": 3,
+          "side": "response",
+          "truncated": true
+        },
+        {
+          "binary": false,
+          "content_sha256": "a98c079c85cf9b494c9c821fdec9497bf86cd2c7cc46605cdb1f77b53d84755e",
+          "next_offset": 9003,
+          "offset": 8191,
+          "ordinal": 3,
+          "side": "response",
+          "truncated": false
+        },
+        {
+          "binary": false,
+          "content_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "next_offset": 0,
+          "offset": 0,
+          "ordinal": 4,
+          "side": "request",
+          "truncated": false
+        },
+        {
+          "binary": true,
+          "content_sha256": "9728b243cd065010b7b9246df6a6a078554e3cf5232069cb83a776a60b0e655b",
+          "next_offset": 8192,
+          "offset": 0,
+          "ordinal": 4,
+          "side": "response",
+          "truncated": true
+        }
+      ],
+      "states": {
+        "bound": {
+          "bindings": [
+            {
+              "note_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+              "ordinal": 3,
+              "position": 0,
+              "req_hash": "09b2eb751e01c0e2de30f0d97d4f842a6a8ca7ddfbd78aa4a2d1039033d851ab",
+              "req_len": 53,
+              "resp_hash": "593a58985dc77f76dde2174849d20102274a525004e42d42143b75cd41a097ca",
+              "resp_len": 9003,
+              "role": "supporting"
+            },
+            {
+              "note_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+              "ordinal": 4,
+              "position": 1,
+              "req_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+              "req_len": 0,
+              "resp_hash": "5549252a7f275dd6b221f062c298ac588a2dea19e5145b6ca06308cc8c9dd43e",
+              "resp_len": 262401,
+              "role": "supporting"
+            }
+          ],
+          "report_version": 0,
+          "version": 1
+        },
+        "edited": {
+          "bindings": [
+            {
+              "note_sha256": "72cac091df67ede6199403eb6230a7b34eb8eb28aff7bff072de0f5350ee601d",
+              "ordinal": 3,
+              "position": 0,
+              "req_hash": "09b2eb751e01c0e2de30f0d97d4f842a6a8ca7ddfbd78aa4a2d1039033d851ab",
+              "req_len": 53,
+              "resp_hash": "593a58985dc77f76dde2174849d20102274a525004e42d42143b75cd41a097ca",
+              "resp_len": 9003,
+              "role": "verification"
+            },
+            {
+              "note_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+              "ordinal": 4,
+              "position": 1,
+              "req_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+              "req_len": 0,
+              "resp_hash": "5549252a7f275dd6b221f062c298ac588a2dea19e5145b6ca06308cc8c9dd43e",
+              "resp_len": 262401,
+              "role": "supporting"
+            }
+          ],
+          "report_version": 0,
+          "version": 2
+        },
+        "ordered": {
+          "bindings": [
+            {
+              "note_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+              "ordinal": 4,
+              "position": 0,
+              "req_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+              "req_len": 0,
+              "resp_hash": "5549252a7f275dd6b221f062c298ac588a2dea19e5145b6ca06308cc8c9dd43e",
+              "resp_len": 262401,
+              "role": "supporting"
+            },
+            {
+              "note_sha256": "72cac091df67ede6199403eb6230a7b34eb8eb28aff7bff072de0f5350ee601d",
+              "ordinal": 3,
+              "position": 1,
+              "req_hash": "09b2eb751e01c0e2de30f0d97d4f842a6a8ca7ddfbd78aa4a2d1039033d851ab",
+              "req_len": 53,
+              "resp_hash": "593a58985dc77f76dde2174849d20102274a525004e42d42143b75cd41a097ca",
+              "resp_len": 9003,
+              "role": "verification"
+            }
+          ],
+          "report_version": 0,
+          "version": 3
+        },
+        "removed": {
+          "bindings": [
+            {
+              "note_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+              "ordinal": 4,
+              "position": 0,
+              "req_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+              "req_len": 0,
+              "resp_hash": "5549252a7f275dd6b221f062c298ac588a2dea19e5145b6ca06308cc8c9dd43e",
+              "resp_len": 262401,
+              "role": "supporting"
+            }
+          ],
+          "report_version": 0,
+          "version": 4
+        }
+      }
+    },
+    "fullGoalComplete": false,
+    "machineStopped": true,
+    "nativeUIAcceptance": false,
+    "passed": true,
+    "persistence": true,
+    "referenceEqual": true,
+    "referenceSHA256": "c4601040b7a0abba258a81f65183ef81bb6116d7bf5f47c743ffe1ebcac6b8e6",
+    "sourceSHA256": {
+      "captured_fixture_guest.py": "a09b77cc5baa7a8462a7ed644bb3a09d00618a8d72d91d7fd570989e4ec7827f",
+      "captured_native_guest.py": "c5a679e8352b4c0b90fd72a4cb8a141f66f733426647e1680fc002ec9a7594a0",
+      "check_network.py": "4bc167e71c655d31eda1872f11ad4b8a90b201994834a63c82194a3fa317ee2e",
+      "findings_fixture_control.py": "0ed7fbb3561758de6e8651d4ec794ded957ae32fb145f598dc794ba51a600514",
+      "findings_seed_guest.py": "ff65b9603ddd06704a6ace53398554f14479c5825ec0da573bc775f52036b70f"
+    },
+    "stage": "complete",
+    "uncertaintyRecovered": true
+  },
+  "repeat": {
+    "observedExitCodes": [
+      0,
+      0
+    ],
+    "freshPrivateDisks": 2,
+    "actualVZBoots": 4,
+    "normalizedExerciseEqual": true,
+    "executedSourcesEqual": true,
+    "initialBinaryHashRecorded": false
+  },
+  "sourceSHA256": {
+    "Sources/VMProbe/CapturedFixtureClient.swift": "e85be5ec2ab4ccf916ea179f51202766e2ab57768fb8bd2633bc39a57bddd6af",
+    "Sources/VMProbe/CapturedProbeContract.swift": "5d5d3638cd9141ae86bddc971c8efbfdf2a14d059a3ba35570de6db1aff65dbd",
+    "Sources/VMProbe/CapturedProbe.swift": "732c9df5dc98006c6d04c99ca6b43e38cd56968e98c1b2234064ed904c6bf2a3",
+    "Sources/VMProbe/VMProbe.swift": "eebd1067de7ccf55f89a4d106a19ef7f48f57ded31b692f4dba57d18ddf6c4bf"
+  },
+  "coverage": {
+    "swift": {
+      "method": "LLVM line coverage: full unit profile merged with second real two-boot instrumented native experiment; new Swift sources only",
+      "files": {
+        "CapturedFixtureClient.swift": {
+          "count": 62,
+          "covered": 59,
+          "percent": 95.16129032258065
+        },
+        "CapturedProbe.swift": {
+          "count": 284,
+          "covered": 277,
+          "percent": 97.53521126760563
+        },
+        "CapturedProbeContract.swift": {
+          "count": 74,
+          "covered": 74,
+          "percent": 100
+        }
+      }
+    },
+    "python": {
+      "covered": 45,
+      "total": 45,
+      "percent": 100.0,
+      "method": "stdlib trace of seven native guest unit tests; unique AST statement lines",
+      "missing": []
+    }
+  },
+  "checks": {
+    "swiftTotal": 832,
+    "swiftPassed": 831,
+    "existingExternalAXSkipped": 1,
+    "pythonPassed": 179,
+    "focusedSwiftPassed": 8,
+    "nativeGuestPassed": 7,
+    "baselineFeatures": 21,
+    "baselinePages": 27,
+    "baselineHandlers": 243,
+    "releaseBuildPassed": true,
+    "releaseCapturedExitCode": 2,
+    "releaseDiagnosticSymbolsAbsent": true,
+    "localizationExportPassed": true,
+    "hostedCI": "unverified; skip ci policy"
+  },
+  "instrumentedProbePostRunSHA256": "6a18d78f5875c7cda6baff5d74bd67f827fe0334e87cb485105add31479897dd",
+  "privateEvidenceHashes": {
+    "initialNativeReport": "3294dc88401c85b593261e2fbdca33efcea541476fb8c10078b1d54906b710af",
+    "instrumentedNativeReport": "3294dc88401c85b593261e2fbdca33efcea541476fb8c10078b1d54906b710af",
+    "llvmCoverageJSON": "59901d52e1c3abe3df217328b622c6e73d1165d36c7d22d23337a5cab8836264"
+  },
+  "scope": "Real typed native service/store/reference API comparison. Controlled withholding after successful real edit response; not physical socket-loss coverage or UI acceptance.",
+  "defaultProfilePromoted": false,
+  "installedAppReplaced": false,
+  "remaining": [
+    "new UI/browser visual/keyboard/VoiceOver/multiwindow/save-panel acceptance",
+    "typed binary placeholder localization without modifying raw bytes",
+    "remaining full-workflow parity",
+    "default kernel reliability and release",
+    "four providers and investigation harness"
+  ]
+}

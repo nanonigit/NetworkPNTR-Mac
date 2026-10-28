@@ -1,5 +1,7 @@
 # F5 runtime: real captured index and mutation comparison
 
+Implementation update: the native diagnostic contract below has passed two independent two-boot typed-runtime comparisons; see captured-native-verification.md. UI/localization/full-product gates remain separate and pending.
+
 Before this change, native/backend startup passed an empty -proxy argument, so traffic.Open was never called and captured traffic APIs returned unavailable. Match the frozen browser's loopback recording listener (127.0.0.1:8788) inside the guest. Keep zero external NICs/routes, no host shares/ports/socket, UID1000, read-only system and private writable guest state. Do not install the guest CA on macOS or enable global/cloud egress. Capture activation and actual native artifact rebuild/boot are separate gates; editing backend-init alone does not update an installed bundle.
 
 Generate actual records through that proxy into a fixed loopback HTTP fixture, rather than inserting synthetic SQLite rows. The fixture has29 fixed exchanges for25-row paging, GET/POST, literal FEFF/NFD/EN/JA/CJK, empty, multi-page text and inline/spilled binary bodies. Its listener, methods, paths, byte lengths and reply headers are fixed. Guard Linux/aarch64/UID1000, explicit diagnostic flags, exact loopback DB and zero-NIC network proof before writes or listeners. Refuse nonempty existing captured index; seed only terminal tasks/findings with no profiles/agents/schedules; never target real websites.

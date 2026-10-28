@@ -408,11 +408,11 @@ F5e software checkpoint:22 new workspace/51 related/789 full Swift (788 pass,one
 - [x] M1 captured role/note/remove/adjacent-order dialogs and immutable version/membership/draft bindings.
 - [x] M2 retained window store, pending/unknown parent gate, target/context recovery, explicit acknowledgment and confirmed finding/report refresh.
 - [x] M3 scoped old-sheet/old-session teardown and byte-preserving note/Unix-second parity regressions; review and local full checks.
-- [x] M4 native captured picker/add UI and its selection/filter/page/raw-preview controls (software checkpoint only; M5/M6 stay open).
-- [ ] M5 real nonempty guest/reference mutation effects, conflict/unknown outcomes and restart persistence.
+- [x] M4 native captured picker/add UI and its selection/filter/page/raw-preview controls (software checkpoint; subsequent M5 runtime passed, M6 remains open).
+- [x] M5 real nonempty guest/reference mutation effects, conflict/unknown outcomes and restart persistence. (Typed runtime comparison; actual UI remains separate.)
 - [ ] M6 detailed preview/binary/truncation, actual panel, unlocked visual/keyboard/VoiceOver/multiwindow and all original release gates.
 
-F5e2 software checkpoint:14 action +23 workspace/77 related/804 full Swift (803 pass,one existing externalAX skip),155 Python. See findings-traffic-mutations-design and findings-traffic-mutations-verification in en/ja, plus bugs/evidence-mutations. Previous F5e E5 remains open because its picker and real-runtime acceptance are not complete. Four-provider CP1–CP4 and harness H0–H5 remain planned. Full goal stays active; hosted CI remains unverified and our push HEAD uses [skip ci].
+Historical checkpoint (typed runtime superseded by F5e5 below):14 action +23 workspace/77 related/804 full Swift (803 pass,one existing externalAX skip),155 Python. See findings-traffic-mutations-design and findings-traffic-mutations-verification in en/ja, plus bugs/evidence-mutations. Previous F5e E5 remains open because its picker and real-runtime acceptance are not complete. Four-provider CP1–CP4 and harness H0–H5 remain planned. Full goal stays active; hosted CI remains unverified and our push HEAD uses [skip ci].
 
 
 ## F5e3 captured picker connection
@@ -420,19 +420,29 @@ F5e2 software checkpoint:14 action +23 workspace/77 related/804 full Swift (803 
 - [x] P1 byte-based draft tickets,250ms cancellation, query/page/selection/preview identity and parent modal gates.
 - [x] P2 EN/JA candidate filters/table/selection/page/raw tabs/add controls, disabled-history/unavailable/empty/error/loading feedback.
 - [x] P3 confirmed metadata callback, uncertain-write retention, scoped close/busy/reentry fixes, review/full regression/coverage.
-- [ ] P4 actual managed-guest/frozen-reference nonempty captured-index operations, conflicts/unknown outcomes and restart persistence.
+- [x] P4 actual managed-guest/frozen-reference nonempty captured-index operations, conflicts/unknown outcomes and restart persistence. (Typed runtime comparison; actual UI remains separate.)
 - [ ] P5 detailed preview/binary/truncation/download and unlocked mouse/keyboard/VoiceOver/save-panel/multiwindow/screenshots.
 
-F5e3 software checkpoint:20 new picker cases,824 full Swift (823 pass,one existing externalAX skip),155 Python. See captured-picker-ui-design/verification and bugs/captured-picker-ui in en/ja. F5's actual runtime/visual/full-workflow gates remain open. CP1–CP4 and H0–H5 remain planned; no full goal completion or hosted CI success is claimed. Our pushed HEAD uses [skip ci].
+Historical F5e3 software checkpoint (typed runtime superseded by F5e5 below):20 new picker cases,824 full Swift (823 pass,one existing externalAX skip),155 Python. See captured-picker-ui-design/verification and bugs/captured-picker-ui in en/ja. F5's actual runtime/visual/full-workflow gates remain open. CP1–CP4 and H0–H5 remain planned; no full goal completion or hosted CI success is claimed. Our pushed HEAD uses [skip ci].
 
 ## F5e4 actual captured-index reference runtime
 
 - [x] R1 guarded loopback fixture generates29 real recorded exchanges; fixed body/source oracle and bounded shutdown.
 - [x] R2 independent reference exact pages/filters/source identities, bindings/edit/order/remove/409 and original-body previews; two backend starts persist.
 - [x] R3 frozen executed-source hashes, parent-tag checks before cleanup, repeat equality and local171 Python tests; sanitized receipt and bilingual RCA.
-- [ ] R4 rebuild capture-enabled native image with proven candidate kernel; typed native comparison, two VM boots, uncertainty recovery.
+- [x] R4 rebuild capture-enabled native image with proven candidate kernel; typed native comparison, two VM boots, uncertainty recovery. (Typed runtime comparison; actual UI remains separate.)
 - [ ] R5 actual new UI/browser/keyboard/AX/multiwindow/save-panel and binary display localization acceptance.
 
 See captured-runtime-verification.md and Japanese counterpart. Reference-only success does not close P4/M5/E4/E5 or any full-product gate. CP1–CP4 and H0–H5 stay planned. Hosted CI is unverified; pushed HEAD uses [skip ci].
 
-R4 partial checkpoint: fresh capture-configured candidate image built offline; signed DEBUG --evidence-export exited0 across two actual CPU1 VZ boots, retaining the prior four-body export/persistence/interruption checks. No default promotion or app replacement. Actual recorder API/nonempty typed native capture mutations and unknown outcomes remain unverified, so R4/P4/M5/E4/E5 stay open. See captured-native-candidate.json and captured-runtime-verification in en/ja.
+Historical R4 partial checkpoint (superseded by F5e5 below): fresh capture-configured candidate image built offline; signed DEBUG --evidence-export exited0 across two actual CPU1 VZ boots, retaining the prior four-body export/persistence/interruption checks. No default promotion or app replacement. Actual recorder API/nonempty typed native capture mutations and unknown outcomes remain unverified, so R4/P4/M5/E4/E5 stay open. See captured-native-candidate.json and captured-runtime-verification in en/ja.
+
+## F5e5 native recorded-index comparison
+
+- [x] N1 fixed readonly native index guard, actual loopback generation, live WAL and executed-source proof.
+- [x] N2 actual typed capture service/picker/store pages/filters/selection/raw preview, originals/bounded previews, bind/edit/order/remove and409.
+- [x] N3 controlled withheld-response unknown gate/readback/explicit acknowledgment without retry; two fresh experiments, two VZ boots each, exact normalized reference equality and persisted29-record/final binding state.
+- [x] N4 full832 Swift (831 pass,one existing external AX skip),179 Python, scoped unit+real-native coverage/review, release diagnostic rejection and baseline/localization checks.
+- [ ] N5 actual new UI/browser/mouse/keyboard/VoiceOver/multiwindow/save-panel and typed binary display localization acceptance.
+
+See captured-native-verification.md/.ja.md, bugs/captured-native.md/.ja.md, captured-picker-reference.json and captured-native-comparison.json. Native runtime closes M5/P4/R4 only; E4/E5 UI acceptance, M6/P5/R5, all21 workflow/release/kernel goals, CP1–CP4 and H0–H5 remain open. Default profile and installed app were not replaced. Hosted CI stays unverified; publication uses [skip ci].

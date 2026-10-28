@@ -1,5 +1,7 @@
 # F5 runtime：実通信indexと更新比較
 
+実装更新：下記native診断契約は、独立した実VM2boot比較を2回通過した。captured-native-verification.ja.md参照。UI／翻訳／製品全体の条件は別途未完。
+
 変更前のnative/backend起動は-proxy空文字のためtraffic.Openが呼ばれず、通信APIは利用不可となる。固定ブラウザと同じ127.0.0.1:8788の記録listenerをゲスト内で使う。外部NIC／route・ホスト共有／公開port／socketなし、UID1000、system読取専用、guest内private stateを維持。CAをMacへ登録せず、外部／クラウドegressも有効化しない。backend-init編集と実native artifact再build／bootは別gateで、編集だけで既存bundleは更新されない。
 
 SQLiteへの偽record投入でなく、記録proxyを通して固定loopback HTTP fixtureへ実通信し29件を生成する。25行paging、GET／POST、FEFF／NFD／英日／CJK、空、複数page text、inline／spill binaryを持つ。listener・method・path・byte長・headerは固定。Linux／aarch64／UID1000、明示診断flag、正確なloopback DB、NICなし証明後だけ書込／listen。既存indexが非空なら拒否し、profile／agent／scheduleのない終了済みtask／findingだけseed。実websiteは対象にしない。
