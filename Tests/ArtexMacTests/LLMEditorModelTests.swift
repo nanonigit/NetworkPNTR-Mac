@@ -107,3 +107,80 @@ final class LLMEditorModelTests: XCTestCase {
         XCTAssertNotNil(store.unknownRevision); XCTAssertFalse(model.didSave); XCTAssertNil(model.failure)
     }
 }
+
+extension LLMEditorModelTests {
+    @MainActor func testSynchronousBusyNotificationDeparturePreventsQueuedDispatch() async throws {
+        let (api, _, model) = make()
+        withObservationTracking { _ = model.isBusy } onChange: { MainActor.assumeIsolated { model.close() } }
+        XCTAssertFalse(model.fetchModels())
+        try await reached { !model.isBusy }
+        XCTAssertTrue(api.calls.isEmpty); XCTAssertFalse(model.isActive); XCTAssertEqual(model.draft.apiKey, "")
+    }
+    @MainActor func testDepartedParentStoreBeforeQueuedProbeStartsPreventsDispatch() async throws {
+        let (api, store, model) = make()
+        XCTAssertTrue(model.testConnection()); store.stop()
+        try await reached { !model.isBusy }
+        XCTAssertTrue(api.calls.isEmpty); XCTAssertNil(model.testResult); XCTAssertNil(model.failure)
+    }
+    @MainActor func testNumericValidationAndProviderFormatNormalizationPreserveWireBehavior() async throws {
+        let (api, _, model) = make()
+        model.mark("rps", false)
+        XCTAssertFalse(model.testConnection()); XCTAssertFalse(model.save())
+        api.queue("{\"ok\":true,\"models\":[\"fixture\"]}")
+        XCTAssertTrue(model.fetchModels()); try await reached { !model.isBusy }
+        model.mark("rps", true)
+        model.draft.format = .openai; model.draft.maxTokensField = "max_completion_tokens"
+        model.draft.format = .anthropic
+        XCTAssertEqual(model.draft.maxTokensField, ""); XCTAssertTrue(model.models.isEmpty)
+    }
+    @MainActor func testTestResultNotificationCannotRetainOutputAfterClosing() async throws {
+        let (api, _, model) = make(); api.hold = true
+        XCTAssertTrue(model.testConnection()); try await reached { api.pending != nil }
+        withObservationTracking { _ = model.testResult } onChange: { MainActor.assumeIsolated { model.close() } }
+        api.finish("{\"ok\":true,\"reply\":\"sensitive fixture response\"}")
+        try await reached { !model.isBusy }
+        XCTAssertNil(model.testResult); XCTAssertNil(model.failure); XCTAssertFalse(model.isActive)
+    }
+    @MainActor func testPreCancelledCallerCannotQueueAnyEditorOperation() async throws {
+        let (api, _, model) = make()
+        let task = Task { @MainActor in
+            withUnsafeCurrentTask { $0?.cancel() }
+            XCTAssertFalse(model.fetchModels()); XCTAssertFalse(model.testConnection()); XCTAssertFalse(model.save())
+        }
+        await task.value
+        XCTAssertTrue(api.calls.isEmpty); XCTAssertFalse(model.isBusy)
+    }
+}
+
+extension LLMEditorModelTests {
+    @MainActor func testParentStopResumeBeforeQueuedProbeStillRevokesOldDispatch() async throws {
+        let (api, store, model) = make()
+        XCTAssertTrue(model.fetchModels()); store.stop(); store.resume()
+        try await reached { !model.isBusy }
+        XCTAssertTrue(api.calls.isEmpty); XCTAssertNil(model.failure)
+    }
+    @MainActor func testParentStopResumeAfterProbeHandoffDiscardsLateResult() async throws {
+        let (api, store, model) = make(); api.hold = true
+        XCTAssertTrue(model.testConnection()); try await reached { api.pending != nil }
+        store.stop(); store.resume()
+        api.finish("{\"ok\":true,\"reply\":\"obsolete parent response\"}")
+        try await reached { !model.isBusy }
+        XCTAssertNil(model.testResult); XCTAssertNil(model.failure)
+    }
+    @MainActor func testDraftSetterCannotRestoreCredentialsAfterSynchronousClose() {
+        let (_, _, model) = make()
+        withObservationTracking { _ = model.draft } onChange: { MainActor.assumeIsolated { model.close() } }
+        model.draft.apiKey = "different-synthetic-key"
+        XCTAssertFalse(model.isActive)
+        XCTAssertEqual(model.draft.apiKey, ""); XCTAssertEqual(model.draft.proxy, "")
+    }
+    @MainActor func testConfirmedKeyScrubCannotRestoreProxyWhenNotificationClosesSheet() async throws {
+        let (api, _, model) = make(); api.hold = true; try api.fullLoad()
+        XCTAssertTrue(model.save()); try await reached { api.pending != nil }
+        withObservationTracking { _ = model.draft } onChange: { MainActor.assumeIsolated { model.close() } }
+        api.finish("{\"id\":7}")
+        try await reached { !model.isBusy }
+        XCTAssertFalse(model.isActive); XCTAssertFalse(model.didSave)
+        XCTAssertEqual(model.draft.apiKey, ""); XCTAssertEqual(model.draft.proxy, "")
+    }
+}
