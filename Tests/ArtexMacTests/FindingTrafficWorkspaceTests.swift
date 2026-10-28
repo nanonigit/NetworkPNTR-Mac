@@ -1,3 +1,5 @@
+import AppKit
+import SwiftUI
 import CryptoKit
 import XCTest
 @testable import ArtexCore
@@ -76,6 +78,26 @@ final class FindingTrafficWorkspaceTests: XCTestCase {
         let writer = try EvidenceExportWriter(destination:destination,request:manifest); try writer.append(bytes)
         let result = BackendDownloadResult(status:200,byteCount:Int64(bytes.count),sha256:EvidenceWorkspaceAPI.hash(bytes))
         return try EvidenceExportReceipt(response:.init(result:result,file:writer.finish(response:result)))
+    }
+    @MainActor func testEvidenceContentRendersBothLocalesAndAppearancesWithoutDispatching() async throws {
+        let api = EvidenceWorkspaceAPI(), model = try await loaded(api), count = api.calls.count
+        let presenter = EvidenceSavePanelPresenter()
+        for language in AppLanguage.allCases {
+            for scheme in [ColorScheme.light, .dark] {
+                let view = NSHostingView(rootView:FindingTrafficContent(model:model,presenter:presenter,close:{})
+                    .environment(\.locale,language.locale).environment(\.colorScheme,scheme))
+                view.frame = NSRect(x:0,y:0,width:900,height:640); view.layoutSubtreeIfNeeded()
+                XCTAssertTrue(view.fittingSize.width.isFinite); XCTAssertTrue(view.fittingSize.height.isFinite)
+                let bitmap = try XCTUnwrap(view.bitmapImageRepForCachingDisplay(in:view.bounds))
+                view.cacheDisplay(in:view.bounds,to:bitmap); XCTAssertGreaterThan(bitmap.pixelsWide,0)
+            }
+        }
+        XCTAssertEqual(api.calls.count,count)
+    }
+    @MainActor func testSavePanelWithoutOwnedWindowDoesNotPresentOrChooseDestination() async {
+        let presenter = EvidenceSavePanelPresenter()
+        let value = await presenter.choose(suggestedFilename:"evidence-21-response.bin")
+        XCTAssertNil(value); presenter.cancel()
     }
     @MainActor func testReadPreservesRawDataAndExplicitPagesWithoutRecordedURLFetch() async throws {
         let api = EvidenceWorkspaceAPI(), model = try await loaded(api)
