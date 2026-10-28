@@ -37,6 +37,24 @@ import XCTest
         let expected = try XCTUnwrap(EvidenceFixtureClient.expectedBodies["binary"])
         XCTAssertEqual(try EvidenceProbeFile.verify(url, body: "binary", expected: expected).sha256, expected.sha256)
     }
+    func testLiveWitnessRequiresExactlyOneOwnedRegularIntermediatePartialBody() throws {
+        let root = try directory(); defer { try? FileManager.default.removeItem(at: root) }
+        XCTAssertNil(try EvidenceProbeFile.observedBytes(root, expectedSize: 10))
+        let stage = root.appendingPathComponent(".artex-evidence-witness.partial")
+        try FileManager.default.createDirectory(at: stage, withIntermediateDirectories: false)
+        XCTAssertNil(try EvidenceProbeFile.observedBytes(root, expectedSize: 10))
+        let body = stage.appendingPathComponent("body.partial")
+        try Data().write(to: body); XCTAssertNil(try EvidenceProbeFile.observedBytes(root, expectedSize: 10))
+        try Data([0,1,2]).write(to: body); XCTAssertEqual(try EvidenceProbeFile.observedBytes(root, expectedSize: 10), 3)
+        try Data(repeating: 0, count: 10).write(to: body); XCTAssertNil(try EvidenceProbeFile.observedBytes(root, expectedSize: 10))
+        try Data(repeating: 0, count: 11).write(to: body); XCTAssertThrowsError(try EvidenceProbeFile.observedBytes(root, expectedSize: 10))
+        try FileManager.default.removeItem(at: body)
+        try FileManager.default.createSymbolicLink(at: body, withDestinationURL: root)
+        XCTAssertThrowsError(try EvidenceProbeFile.observedBytes(root, expectedSize: 10))
+        let other = root.appendingPathComponent(".artex-evidence-other.partial")
+        try FileManager.default.createDirectory(at: other, withIntermediateDirectories: false)
+        XCTAssertThrowsError(try EvidenceProbeFile.observedBytes(root, expectedSize: 10))
+    }
     func testSymlinkDirectoryMissingAndFIFOAreRejectedBeforeBlocking() throws {
         let root = try directory(); defer { try? FileManager.default.removeItem(at: root) }
         let target = root.appendingPathComponent("target"), link = root.appendingPathComponent("link"), fifo = root.appendingPathComponent("fifo")
