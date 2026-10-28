@@ -101,3 +101,42 @@ class EvidenceReferenceTests(unittest.TestCase):
         with patch.object(REFERENCE.platform, 'system', return_value='Darwin'), patch.object(REFERENCE.subprocess, 'Popen') as process, patch.object(REFERENCE.fixture, 'prepare') as prepare:
             with self.assertRaises(RuntimeError): REFERENCE.main()
             process.assert_not_called(); prepare.assert_not_called()
+
+    def test_output_fstat_failure_reports_unknown_cleanup_and_closes_descriptor(self):
+        with tempfile.TemporaryDirectory() as directory:
+            self.setup_paths(Path(directory)); connection = Connection(Reply(FIXTURE.LITERAL))
+            client = REFERENCE.Client(connection_factory=lambda *a, **k: connection)
+            original_open = os.open; descriptors = []
+            def tracked_open(*args, **kwargs):
+                fd = original_open(*args, **kwargs); descriptors.append(fd); return fd
+            try:
+                with patch.object(REFERENCE.os, 'open', side_effect=tracked_open), patch.object(REFERENCE.os, 'fstat', side_effect=OSError('injected fstat')):
+                    with self.assertRaisesRegex(RuntimeError, 'cleanup incomplete'): client.download(1, '17001', 'request')
+                for fd in descriptors:
+                    with self.assertRaises(OSError): os.fstat(fd)
+            finally:
+                for fd in descriptors:
+                    try: os.close(fd)
+                    except OSError: pass
+
+    def test_context_creation_failure_closes_both_descriptors_without_double_close(self):
+        with tempfile.TemporaryDirectory() as directory:
+            self.setup_paths(Path(directory)); connection = Connection(Reply(FIXTURE.LITERAL))
+            client = REFERENCE.Client(connection_factory=lambda *a, **k: connection)
+            original_open, original_fdopen = os.open, os.fdopen; descriptors = []; calls = [0]
+            def tracked_open(*args, **kwargs):
+                fd = original_open(*args, **kwargs); descriptors.append(fd); return fd
+            def fail_second(*args, **kwargs):
+                calls[0] += 1
+                if calls[0] == 2: raise OSError('injected context failure')
+                return original_fdopen(*args, **kwargs)
+            try:
+                with patch.object(REFERENCE.os, 'open', side_effect=tracked_open), patch.object(REFERENCE.os, 'fdopen', side_effect=fail_second):
+                    with self.assertRaises(RuntimeError): client.download(1, '17001', 'request')
+                for fd in descriptors:
+                    with self.assertRaises(OSError): os.fstat(fd)
+                self.assertFalse((REFERENCE.DOWNLOAD_ROOT / 'boot-1/literal.bin').exists())
+            finally:
+                for fd in descriptors:
+                    try: os.close(fd)
+                    except OSError: pass
