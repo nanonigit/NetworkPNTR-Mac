@@ -1,0 +1,42 @@
+{
+  "schema": 1,
+  "baseline": "e75ae371ad777ffd1eecdd28d2781a6519b05591",
+  "red_commit": "08456c8",
+  "green_commit": "21e540a",
+  "red_tests": 6,
+  "red_assertion_failures": 39,
+  "focused_tests_passed": 22,
+  "green_commit_subject_count_correction": "37 in subject is incorrect; actual count is 22",
+  "swift": {
+    "total": 660,
+    "passed": 659,
+    "skipped_existing_external_ax": 1,
+    "failures": 0
+  },
+  "python": {
+    "passed": 123
+  },
+  "coverage": {
+    "LLMService.swift": {
+      "covered": 104,
+      "lines": 105
+    }
+  },
+  "review": "no blockers",
+  "signed_build_only": true,
+  "strict_signature": true,
+  "localization_check": true,
+  "inventory": {
+    "navigation_features": 21,
+    "routes": 27,
+    "handlers": 243
+  },
+  "actual_guest_acceptance": false,
+  "browser_native_visual_acceptance": false,
+  "store_uncertain_write_recovery_complete": false,
+  "full_goal_complete": false,
+  "source_sha256": {
+    "Sources/ArtexCore/LLMService.swift": "92c3986566fb8e7c2bb0e8349a4ee88fa7481ae9113222827d2eca4e0800e990",
+    "Tests/ArtexCoreTests/LLMTransportCancellationTests.swift": "2e2bbc9c28e6b1588e25fc5fa081e62d72c3ea7fe1612627d1e9871cf24f9643"
+  }
+}
