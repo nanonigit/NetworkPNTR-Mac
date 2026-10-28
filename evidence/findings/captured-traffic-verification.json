@@ -57,5 +57,14 @@
     "server/dto.go": "3676ad9814c02120297b727a3582e47d347d57fe4c0b9ff7b64d77b5f8b0693a",
     "server/finding_traffic.go": "816ecb4383d34be793695cc480fc787d0d6fe5aafc0e2610334a662a61bb997b",
     "traffic/traffic.go": "44f4edec8b8106ccde90a0b898c93769c834e4f68d34581fb31fb8d262aa734d"
+  },
+  "ci": {
+    "run": "https://github.com/nanonigit/artex-mac/actions/runs/40637957743",
+    "head": "92ae187fdb66f5ca3d106d2fe90df128038e295b",
+    "conclusion": "failure",
+    "test_steps_started": false,
+    "annotation": "The job was not started because recent account payments have failed or your spending limit needs to be increased. Please check the Billing & plans section in your settings",
+    "account_settings_action_required": true,
+    "code_ci_verified": false
   }
 }
