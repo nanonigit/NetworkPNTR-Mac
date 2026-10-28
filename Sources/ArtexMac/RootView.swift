@@ -11,6 +11,7 @@ struct RootView: View {
     @State private var taskDetailID: String?
     @State private var taskScreen: TaskScreenModel?
     @State private var taskOwner: ObjectIdentifier?
+    @State private var llmWorkspace = LLMWorkspace()
     @State private var findingScreen: FindingScreenModel?
     @State private var findingOwner: ObjectIdentifier?
     var body: some View {
@@ -68,7 +69,7 @@ struct RootView: View {
                 ContentUnavailableView(s(.loginRequired), systemImage: "person.crop.circle", description: Text(s(.chatLogin)))
             }
             else if selection == "llm", let session = environment.authentication, session.phase == .authenticated {
-                LLMSettingsView(session: session).id(ObjectIdentifier(session))
+                llmContent(session)
             }
             else if selection == "llm" {
                 ContentUnavailableView(s(.loginRequired), systemImage: "person.crop.circle", description: Text(s(.llmLogin)))
@@ -99,8 +100,20 @@ struct RootView: View {
             if RuntimeFactory.diagnosticsDirectory == nil { await environment.start() }
         }
         .onChange(of: environment.authentication?.phase) { _, phase in
-            if phase != .authenticated { taskScreen?.reset(); findingScreen?.reset(); taskDetailID = nil }
+            if phase != .authenticated { llmWorkspace.reset(); taskScreen?.reset(); findingScreen?.reset(); taskDetailID = nil }
             if phase == .needsSetup || phase == .needsLogin || phase == .unavailable { selection = "auth" }
+        }
+    }
+    @ViewBuilder private func llmContent(_ session: AuthenticationSession) -> some View {
+        if llmWorkspace.belongs(to: session), let store = llmWorkspace.store {
+            LLMSettingsView(store: store).id(ObjectIdentifier(session))
+        } else {
+            ProgressView().task {
+                guard !Task.isCancelled, session.phase == .authenticated else { return }
+                llmWorkspace.attach(owner: session) {
+                    LLMStore(service: LLMService(client: AuthenticatedBackendClient(session: session)))
+                }
+            }
         }
     }
     @ViewBuilder private func findingContent(_ session: AuthenticationSession) -> some View {

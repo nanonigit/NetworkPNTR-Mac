@@ -6,15 +6,12 @@ import SwiftUI
     private var language: AppLanguage { AppLanguage.preferred(in: [locale.identifier]) }
     private func s(_ key: AppStringKey) -> String { AppStrings.text(key, language: language) }
     private func f(_ key: AppStringKey, _ values: [String: String]) -> String { AppStrings.formatted(key, language: language, values: values) }
-    @State private var store: LLMStore
+    let store: LLMStore
     @State private var editor: LLMEditorContext?
     @State private var rotationOpen = false
     @State private var selectedTab = 0
     @State private var deleteCandidate: LLMProfile?
     @State private var localError: AppErrorMessage?
-    init(session: AuthenticationSession) {
-        _store = State(initialValue: LLMStore(service: LLMService(client: AuthenticatedBackendClient(session: session))))
-    }
     private var busy: Bool { store.isLoading || store.isMutating }
     var body: some View {
         VStack(alignment: .leading, spacing: 16) {
