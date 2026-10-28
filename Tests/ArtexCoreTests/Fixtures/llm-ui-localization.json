@@ -647,6 +647,30 @@
       "case": "llmUIModelPriority",
       "en": "{model} · Priority {priority}",
       "ja": "{model} · 優先順位 {priority}"
+    },
+    {
+      "key": "llm.ui.recoveryTitle",
+      "case": "llmUIRecoveryTitle",
+      "en": "Changes paused: result not confirmed",
+      "ja": "結果を確認できないため操作を停止中"
+    },
+    {
+      "key": "llm.ui.recoveryHelp",
+      "case": "llmUIRecoveryHelp",
+      "en": "The server may have completed the last change. Reload and review the current settings before resuming. Resuming does not repeat the change.",
+      "ja": "直前の変更はサーバーで完了している可能性があります。再読み込みして現在の設定を確認してから操作を再開してください。再開しても変更は再送しません。"
+    },
+    {
+      "key": "llm.ui.recoveryResume",
+      "case": "llmUIRecoveryResume",
+      "en": "I reviewed the current settings — resume changes",
+      "ja": "現在の設定を確認したので操作を再開"
+    },
+    {
+      "key": "llm.ui.recoveryOverview",
+      "case": "llmUIRecoveryOverview",
+      "en": "Latest configuration overview",
+      "ja": "取得した設定の概要"
     }
   ]
 }
