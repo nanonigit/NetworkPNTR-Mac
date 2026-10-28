@@ -29,6 +29,7 @@ struct EvidenceTextPreview {
     let id = UUID()
     let target: FindingRecord
     let store: FindingTrafficStore
+    let actions: FindingTrafficActions
     private(set) var isActive = true
     private(set) var isReading = false
     private(set) var isExporting = false
@@ -51,14 +52,21 @@ struct EvidenceTextPreview {
     @ObservationIgnored private var stopping = false
     @ObservationIgnored private var cancelling = false
 
-    init(target: FindingRecord, contextTaskID: String? = nil, service: FindingTrafficService, exporter: FindingEvidenceExporter? = nil) throws {
+    init(target: FindingRecord, contextTaskID: String? = nil, service: FindingTrafficService, exporter: FindingEvidenceExporter? = nil, retainedStore: FindingTrafficStore? = nil, onChanged: @escaping @MainActor (UUID) async -> Void = {_ in}) throws {
         guard target.findingId != nil else { throw FindingInputError.readOnly }
         self.target = target; self.contextTaskID = contextTaskID; self.exporter = exporter
-        store = FindingTrafficStore(service:service)
+        store = retainedStore ?? FindingTrafficStore(service:service)
+        if !store.isActive { store.resume() }
+        actions = FindingTrafficActions(store:store,onChanged:onChanged)
         guard store.select(target,contextTaskID:contextTaskID) else { throw FindingInputError.readOnly }
+        actions.workspace = self
     }
-    private var usable: Bool { isActive && !transitioning && !stopping && !isReading && !isExporting && !Task.isCancelled }
+    var confirmationControlsAvailable: Bool { isActive && !transitioning && !stopping && !isReading && !isExporting && !Task.isCancelled }
+    var trafficControlsAvailable: Bool { usable }
+    private var usable: Bool { confirmationControlsAvailable && !actions.isSubmitting && actions.dialog == nil }
     /// Observation callbacks can synchronously depart during willSet. Drain departure after the entire publication.
+    func publishTrafficState(_ update: () -> Void) { transition(update) }
+    func clearTrafficPreview() { transition { requestPreview = nil; responsePreview = nil; saved = nil; failure = nil } }
     private func transition(_ update: () -> Void) {
         precondition(!transitioning)
         transitioning = true
@@ -190,6 +198,6 @@ struct EvidenceTextPreview {
         stopping = true
         defer { stopping = false }
         isActive = false; readRevision = UUID(); isReading = false
-        cancelExport(); store.reset(); requestPreview = nil; responsePreview = nil; failure = nil; saved = nil
+        cancelExport(); actions.stop(); store.stop(clearReadData:true); requestPreview = nil; responsePreview = nil; failure = nil; saved = nil
     }
 }

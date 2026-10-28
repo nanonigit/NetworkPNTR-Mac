@@ -31,6 +31,10 @@ struct FindingSearchTicket: Hashable {
     let store: FindingStore
     let reads: FindingScreenReads
     private(set) var trafficWorkspace: FindingTrafficWorkspace?
+    @ObservationIgnored private let trafficState: FindingTrafficStore?
+    @ObservationIgnored private var trafficTargets: [String:(FindingRecord,String?)] = [:]
+    var trafficUnknownIDs: [String] { trafficState?.unknownIDs.sorted() ?? [] }
+    var hasUnknownWrites: Bool { !store.unknownIDs.isEmpty || !trafficUnknownIDs.isEmpty }
     @ObservationIgnored private let trafficService: FindingTrafficService?
     @ObservationIgnored private let evidenceExporter: FindingEvidenceExporter?
     var expandedAssets = Set<Data>()
@@ -63,13 +67,13 @@ struct FindingSearchTicket: Hashable {
     @ObservationIgnored private var leaving = false
 
     init(store: FindingStore,preferences: UserDefaults? = nil,trafficService: FindingTrafficService? = nil,evidenceExporter: FindingEvidenceExporter? = nil) {
-        self.trafficService = trafficService; self.evidenceExporter = evidenceExporter
+        self.trafficState = trafficService.map { FindingTrafficStore(service:$0) }; self.trafficService = trafficService; self.evidenceExporter = evidenceExporter
         self.store = store; self.reads = FindingScreenReads(store:store); self.preferences = preferences
         if let data = preferences?.data(forKey:Self.preferenceKey), data.count <= 32768,
            let saved = try? JSONDecoder().decode(FindingScreenPreferences.self,from:data),
            let (view,query) = saved.validated(), store.configureFilters(query) { _ = store.setView(view) }
     }
-    var busy: Bool { leaving || acquiringTraffic || closingTraffic || isSubmitting || store.isMutating || trafficWorkspace != nil }
+    var busy: Bool { leaving || acquiringTraffic || closingTraffic || isSubmitting || store.isMutating || trafficState?.isMutating == true || trafficWorkspace != nil }
     var controlsAvailable: Bool { !busy && dialog == nil }
     @discardableResult func configureFilters(_ query: FindingQuery) -> Bool {
         let previous = store.viewOwner
@@ -151,17 +155,31 @@ struct FindingSearchTicket: Hashable {
         guard controlsAvailable, !Task.isCancelled, store.viewOwner == owner, detailRevision == revision,
               !store.detail.isStale, !store.detail.isLoading, let row = store.detail.value,
               let selected = store.selectedDetail, row.findingId == selected.id, let trafficService else { return false }
+        return presentTraffic(row,context:selected.contextTaskID,service:trafficService,owner:owner,revision:revision)
+    }
+    @discardableResult func beginTrafficRecovery(id: String) -> Bool {
+        guard controlsAvailable, trafficUnknownIDs.contains(id), let (target,context) = trafficTargets[id], let trafficService else { return false }
+        return presentTraffic(target,context:context,service:trafficService,owner:store.viewOwner,revision:detailRevision)
+    }
+    private func presentTraffic(_ row: FindingRecord,context: String?,service: FindingTrafficService,owner: UUID,revision: UUID) -> Bool {
+        guard controlsAvailable, !Task.isCancelled else { return false }
         let life = lifecycle
         acquiringTraffic = true
         defer { acquiringTraffic = false }
         do {
-            let workspace = try FindingTrafficWorkspace(target:row,contextTaskID:selected.contextTaskID,service:trafficService,exporter:evidenceExporter)
+            let workspace = try FindingTrafficWorkspace(target:row,contextTaskID:context,service:service,exporter:evidenceExporter,retainedStore:trafficState,onChanged:{ [weak self] id in
+                guard let self, self.lifecycle == life, self.trafficWorkspace?.id == id else { return }
+                await self.store.refreshSelected()
+                guard self.lifecycle == life, self.trafficWorkspace?.id == id else { return }
+                self.reads.request(forceTree:true,stats:true)
+            })
             trafficWorkspace = workspace
             guard lifecycle == life, store.viewOwner == owner, detailRevision == revision else {
                 workspace.stop()
                 if trafficWorkspace?.id == workspace.id { trafficWorkspace = nil }
                 return false
             }
+            if let id = row.findingId, !trafficUnknownIDs.contains(id) { trafficTargets[id] = (row,context) }
             return true
         } catch { return false }
     }
@@ -180,18 +198,18 @@ struct FindingSearchTicket: Hashable {
            case .edit(let row) = context.kind, let id = row.findingId {
             retainedEdit = FindingEditDraft(session:context.sessionOwner,findingID:id,name:nameDraft,vulnclass:classDraft,severity:severityDraft)
         }
-        trafficWorkspace?.stop(); trafficWorkspace = nil
+        trafficWorkspace?.stop(); trafficWorkspace = nil; trafficState?.stop(clearReadData:true)
         lifecycle = UUID(); detailRevision = UUID(); reads.stop(); clearDialog(); store.stop()
     }
     func reset() {
         guard !leaving else { return }
         leaving = true
         defer { leaving = false }
-        trafficWorkspace?.stop(); trafficWorkspace = nil; lifecycle = UUID(); detailRevision = UUID(); reads.stop(); retainedEdit = nil; clearDialog(); searchDraft = ""; expandedAssets = []; store.reset()
+        trafficWorkspace?.stop(); trafficWorkspace = nil; trafficState?.reset(); trafficTargets = [:]; lifecycle = UUID(); detailRevision = UUID(); reads.stop(); retainedEdit = nil; clearDialog(); searchDraft = ""; expandedAssets = []; store.reset()
     }
 
     private func canOpen(_ target: FindingRecord) -> Bool {
-        guard !busy, dialog == nil, !Task.isCancelled, store.unknownIDs.isEmpty, target.canMutate else { return false }
+        guard !busy, dialog == nil, !Task.isCancelled, !hasUnknownWrites, target.canMutate else { return false }
         let rows: [FindingRecord]
         if store.view == .grouped {
             let visible = Set(store.groups.read.value?.items.map{$0.taskId ?? "__unassigned__"} ?? [])

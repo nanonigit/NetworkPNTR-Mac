@@ -17,6 +17,7 @@ import XCTest
     var row: [String:Any] { ["id":"7","finding_id":"7","task_id":"11","name":"raw","vulnclass":"CWE-79","severity":"high","status":"pending","summary":"","evidence":"","report":"","ts":"raw"] }
     func target(inherited: Bool = false) throws -> FindingRecord {
         var value = row; value["inherited"] = inherited
+        if inherited { value["source_task_id"] = "11" }
         return try BackendJSONCoding.decode(FindingRecord.self,from:JSONSerialization.data(withJSONObject:value))
     }
     func binding(_ id: String,position: Int) -> [String:Any] {
@@ -67,7 +68,9 @@ final class FindingTrafficActionTests: XCTestCase {
         model.actions.roleDraft = .proof
         let saved = try await submit(model); XCTAssertTrue(saved); XCTAssertNil(model.actions.dialog); XCTAssertEqual(changes,1)
         let sent = try body(XCTUnwrap(api.writes.last)); XCTAssertEqual(sent["version"] as? Int,2)
-        XCTAssertEqual(sent["role"] as? String,"proof"); XCTAssertEqual(Data((sent["note"] as? String ?? "").utf8),Data(api.note.utf8))
+        XCTAssertEqual(sent["role"] as? String,"proof"); struct Edit: Decodable { let note: String }
+        let payload = try BackendJSONCoding.decode(Edit.self,from:XCTUnwrap(api.writes.last?.body))
+        XCTAssertEqual(Data(payload.note.utf8),Data(api.note.utf8))
         XCTAssertEqual(api.writes.first?.path,"/api/exploration/findings/7/traffic/21")
     }
     @MainActor func testAdjacentOrderUsesExactMembershipAndRejectsBoundaries() async throws {

@@ -136,8 +136,9 @@ public enum FindingTrafficMutationOutcome: Sendable {
               unknownIDs.contains(id) else { return false }
         unknownIDs.remove(id); unknownRevision = UUID(); if unknownIDs.isEmpty { mutationFailure = nil }; return true
     }
-    public func stop() {
-        isActive = false; activity = UUID(); owner = UUID(); invalidateReads(); lastConfirmation = nil
+    public func stop(clearReadData: Bool = false) {
+        isActive = false; activity = UUID(); owner = UUID(); invalidateReads(clear:clearReadData); lastConfirmation = nil
+        if clearReadData { selectedBindingID = nil }
         if let write, write.handedOff { recordUnknown(write.findingID) }
     }
     public func resume() {
@@ -150,7 +151,7 @@ public enum FindingTrafficMutationOutcome: Sendable {
         mutationFailure = nil; selectionFailure = nil; lastConfirmation = nil
     }
     private func readable(_ owner: UUID) -> Bool { isActive && self.owner == owner && !Task.isCancelled }
-    private func invalidateReads() { summary.invalidate(); detail.invalidate(); body.invalidate() }
+    private func invalidateReads(clear: Bool = false) { summary.invalidate(clear:clear); detail.invalidate(clear:clear); body.invalidate(clear:clear) }
     private func resetPreview() { detail.invalidate(clear:true); body.invalidate(clear:true); bodySide = .response; bodyOffset = 0 }
     private func clearBinding() { selectedBindingID = nil; resetPreview() }
     private func recordUnknown(_ id: String) { if unknownIDs.insert(id).inserted { unknownRevision = UUID() } }
