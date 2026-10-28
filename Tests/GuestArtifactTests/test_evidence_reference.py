@@ -1,5 +1,7 @@
 """Independent reference streaming must reject framing/data failures before accepting files."""
 import importlib.util
+import http.client
+import io
 import json
 import os
 from pathlib import Path
@@ -56,7 +58,7 @@ class EvidenceReferenceTests(unittest.TestCase):
             with self.assertRaises(RuntimeError): client.download(1, '17001', 'request')
             self.assertEqual(saved.read_bytes(), FIXTURE.LITERAL)
 
-    def test_status_length_encoding_truncation_corruption_and_extra_body_fail_closed(self):
+    def test_status_length_encoding_truncation_corruption_and_excess_reader_data_fail_closed(self):
         for mode in range(7):
             with self.subTest(mode=mode), tempfile.TemporaryDirectory() as directory:
                 row = self.setup_paths(Path(directory)); body = FIXTURE.LITERAL
@@ -140,3 +142,25 @@ class EvidenceReferenceTests(unittest.TestCase):
                 for fd in descriptors:
                     try: os.close(fd)
                     except OSError: pass
+
+    def test_real_http_parser_compares_declared_body_and_does_not_claim_trailing_wire_audit(self):
+        with tempfile.TemporaryDirectory() as directory:
+            row = self.setup_paths(Path(directory))
+            wire = b'HTTP/1.1 200 OK\r\nContent-Length: ' + str(row['size']).encode() + b'\r\nConnection: close\r\n\r\n' + FIXTURE.LITERAL + b'outside declared HTTP body'
+            sock = type('Socket', (), {'makefile': lambda self, *a, **k: io.BytesIO(wire)})()
+            response = http.client.HTTPResponse(sock); response.begin()
+            connection = Connection(response); client = REFERENCE.Client(connection_factory=lambda *a, **k: connection)
+            proof = client.download(1, '17001', 'request')
+            self.assertEqual(proof['bytes'], row['size']); self.assertTrue(proof['full_byte_equal'])
+            self.assertEqual((REFERENCE.DOWNLOAD_ROOT / 'boot-1/literal.bin').read_bytes(), FIXTURE.LITERAL)
+
+    def test_real_http_parser_rejects_truncated_or_wrong_declared_body(self):
+        for length, body in [(52, FIXTURE.LITERAL[:-1]), (53, FIXTURE.LITERAL + b'x')]:
+            with self.subTest(length=length), tempfile.TemporaryDirectory() as directory:
+                self.setup_paths(Path(directory))
+                wire = b'HTTP/1.1 200 OK\r\nContent-Length: ' + str(length).encode() + b'\r\nConnection: close\r\n\r\n' + body
+                sock = type('Socket', (), {'makefile': lambda self, *a, **k: io.BytesIO(wire)})()
+                response = http.client.HTTPResponse(sock); response.begin()
+                client = REFERENCE.Client(connection_factory=lambda *a, **k: Connection(response))
+                with self.assertRaises(RuntimeError): client.download(1, '17001', 'request')
+                self.assertFalse((REFERENCE.DOWNLOAD_ROOT / 'boot-1/literal.bin').exists())
