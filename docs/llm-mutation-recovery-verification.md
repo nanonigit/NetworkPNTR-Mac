@@ -20,3 +20,7 @@ The service/store and window wiring now retain uncertain writes across same-sess
 All requests used synthetic finite replies; no real keys, cloud probes, guest writes or agent commands. The recovery panel was constructed offscreen in English/Japanese, light/dark and440/630/900 widths, with empty/populated/current/unreviewed/inactive states. Rendering never reads, writes or acknowledges. This does not prove real sheet fit, native keyboard/VoiceOver, screenshots or browser parity. External comparison resumes after the user's manual unlock. Editor/probe task ownership, uncertainty across app termination, native cloud egress, actual guest/browser comparison, F5 and all21 feature gates, kernel reliability and release/install gates remain open.
 
 Signed build-only and strict signature verification pass. This build was not launched for external acceptance.
+
+## CI fixture correction
+
+[Run40610980734](https://github.com/nanonigit/artex-mac/actions/runs/40610980734) failed three assertions in the confirmed-save/follow-up-refresh test. The fixture used an equal-value `noticeKey = nil` Observation notification to select a hold point; the CI compiler delivered that notification, holding POST instead of GET. Production was unchanged. The corrected fixture explicitly holds the first GET and asserts the observed sequence is POST,GET before departure. Other dedicated Observation regressions remain. This strengthens phase evidence rather than relaxing outcome assertions. Independent review confirms the correction; subsequent exact-head CI must be checked separately.

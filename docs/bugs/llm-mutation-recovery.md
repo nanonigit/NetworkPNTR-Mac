@@ -19,3 +19,5 @@ Internal service handoff callbacks, owned read/write tickets, acquisition and li
 ## 5. Verification and recurrence prevention
 
 Keep all regression cases and112-entry en/ja matrix. Do not remove the bounded resume and read-stop recursion tests. Independent core/UI/reentry review found and verified the resume correction. Probe/editor task ownership, durable uncertainty across app termination, actual browser/native interaction, sheet fit and accessibility remain unproven; software checks do not close those gates.
+
+CI recurrence:40610980734 exposed a test-fixture phase dependency on equal-value Observation delivery. Local Xcode27 omitted the nil-to-nil callback while CI delivered it. Replace notification-driven holding with a method-specific transport hold and assert POST then GET before stopping. Retain the failed CI receipt and dedicated lifecycle tests; never treat waiting for any request as proof of the intended request phase.

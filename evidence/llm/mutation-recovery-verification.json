@@ -83,10 +83,20 @@
     "Sources/ArtexMac/LLMRecoveryView.swift": "93b774e836990abb130223cf89f57b42b84ff870d67ed27f148477cda6015229",
     "Sources/ArtexMac/LLMWorkspace.swift": "4064fc77d30ea228b2b2c996bce3d81fe723d3361ca0c6eb155ac815bd363cd6",
     "Sources/ArtexMac/RootView.swift": "a702ca40c99db526dab5a88d859cf993430cbcf34e09975645f31f6e53aa777f",
-    "Tests/ArtexCoreTests/LLMMutationRecoveryTests.swift": "f672b5aeb0653c87618b6121a7101a7317798717ecffbc99f4b69fcf85bd4726",
+    "Tests/ArtexCoreTests/LLMMutationRecoveryTests.swift": "73111b5f541cf3f3816e35529c7fdf9089d0da56be5cec59a16b74aade40185f",
     "Tests/ArtexCoreTests/LLMUILocalizationTests.swift": "36b25e3db76470509a2f82f5ef05c64c7c2a4c8d89a8de173ea40d3c5242b8eb",
     "Tests/ArtexCoreTests/Fixtures/llm-ui-localization.json": "a158a867349c5e1244697d2649dee3ac0114674e75e2ea3fc46d79e7da5f93f1",
     "Tests/ArtexMacTests/LLMWorkspaceTests.swift": "cd2c05d6dbd6dfcb01061411446a489a6b3f3a665badd7f14525192a57bf45a0",
     "Tests/ArtexMacTests/LLMRecoveryRenderingTests.swift": "bbd6d130461b35faa3cedfd4f6323375422eff359346cd5cf1b69f2e0530cc38"
+  },
+  "ci_fixture_correction": {
+    "failed_run": "https://github.com/nanonigit/artex-mac/actions/runs/40610980734",
+    "checkpoint": "e36c37891fd474c90b2eb2b6d32a0ad9ca5836f4",
+    "production_changed": false,
+    "phase_assertion": [
+      "POST",
+      "GET"
+    ],
+    "full_swift_rerun_passed": true
   }
 }
