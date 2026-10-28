@@ -193,3 +193,24 @@ extension LLMMutationRecoveryTests {
         XCTAssertEqual(api.methods.filter { $0 != "GET" }.count, 2)
     }
 }
+
+extension LLMMutationRecoveryTests {
+    @MainActor func testResumeNotificationCannotRecursivelyResume() {
+        let api = LLMHeldTransport(); let store = LLMStore(service: LLMService(client: api)); store.stop()
+        var notifications = 0
+        withObservationTracking { _ = store.isActive } onChange: {
+            MainActor.assumeIsolated {
+                notifications += 1
+                if notifications < 4 { store.resume() }
+            }
+        }
+        store.resume()
+        XCTAssertEqual(notifications, 1); XCTAssertTrue(store.isActive); XCTAssertTrue(api.paths.isEmpty)
+    }
+    @MainActor func testResumeNotificationDepartureWinsBeforeAnyRequest() async {
+        let api = LLMHeldTransport(); let store = LLMStore(service: LLMService(client: api)); store.stop()
+        withObservationTracking { _ = store.isActive } onChange: { MainActor.assumeIsolated { store.stop() } }
+        store.resume(); await store.load(); _ = await store.save(fixture())
+        XCTAssertFalse(store.isActive); XCTAssertTrue(api.paths.isEmpty)
+    }
+}
