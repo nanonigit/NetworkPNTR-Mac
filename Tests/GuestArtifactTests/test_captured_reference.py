@@ -49,6 +49,11 @@ class CapturedReferenceTests(unittest.TestCase):
         bad=dict(good,exchanges=[{'id':'other','url':'http://127.0.0.1:8799/f5-captured/02'}])
         with self.assertRaises(RuntimeError):m.validate_filtered_page(bad,expected)
 
+    def test_picker_bind_defaults_use_empty_notes_and_the_exact_two_sources(self):
+        m=load();records=[{'id':'1792663200-%04d'%i} for i in range(29)]
+        refs=m.picker_refs(records)
+        self.assertEqual(refs,[{'traffic_id':records[3]['id'],'role':'supporting','note':''},{'traffic_id':records[4]['id'],'role':'supporting','note':''}])
+
     def test_main_rejects_host_before_starting_backend(self):
         m=load()
         with patch.object(m.fixture,'environment',side_effect=RuntimeError('guard')),patch.object(m.subprocess,'Popen') as process:
