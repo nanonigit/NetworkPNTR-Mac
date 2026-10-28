@@ -120,3 +120,46 @@ final class EvidenceExportTests: XCTestCase {
         XCTAssertFalse(FileManager.default.fileExists(atPath: url.path)); XCTAssertTrue(try FileManager.default.contentsOfDirectory(atPath: root.path).isEmpty)
     }
 }
+
+extension EvidenceExportTests {
+    func testMovedStagingDirectoryCannotBeReportedAsCompleteCleanup() throws {
+        let root = try directory(); defer { try? FileManager.default.removeItem(at: root) }
+        let writer = try EvidenceExportWriter(destination: EvidenceExportDestination(newFileURL: root.appendingPathComponent("output.bin")), request: spec(Data([1])))
+        try writer.append(Data([1]))
+        let stage = try XCTUnwrap(FileManager.default.contentsOfDirectory(at: root, includingPropertiesForKeys: nil).first)
+        let moved = root.appendingPathComponent("moved-stage")
+        try FileManager.default.moveItem(at: stage, to: moved)
+        XCTAssertThrowsError(try writer.discard())
+        XCTAssertTrue(FileManager.default.fileExists(atPath: moved.path))
+        XCTAssertTrue(try FileManager.default.contentsOfDirectory(atPath: moved.path).isEmpty)
+    }
+    func testReplacementStagingDirectoryIsNeverDeletedAndPublishedReceiptReportsCleanupIncomplete() throws {
+        let root = try directory(); defer { try? FileManager.default.removeItem(at: root) }
+        let file = try verified(Data([0, 255]), destination: EvidenceExportDestination(newFileURL: root.appendingPathComponent("output.bin")))
+        let stage = try XCTUnwrap(FileManager.default.contentsOfDirectory(at: root, includingPropertiesForKeys: nil).first)
+        let moved = root.appendingPathComponent("moved-stage")
+        try FileManager.default.moveItem(at: stage, to: moved)
+        try FileManager.default.createDirectory(at: stage, withIntermediateDirectories: false)
+        let saved = try file.commit()
+        XCTAssertEqual(try Data(contentsOf: saved.url), Data([0, 255]))
+        XCTAssertFalse(saved.stagingCleanupComplete)
+        XCTAssertTrue(FileManager.default.fileExists(atPath: stage.path))
+        XCTAssertTrue(FileManager.default.fileExists(atPath: moved.path))
+    }
+}
+
+extension EvidenceExportTests {
+    func testReplacementPartialFileIsNotDeletedByCleanup() throws {
+        let root = try directory(); defer { try? FileManager.default.removeItem(at: root) }
+        let writer = try EvidenceExportWriter(destination: EvidenceExportDestination(newFileURL: root.appendingPathComponent("output.bin")), request: spec(Data([1])))
+        try writer.append(Data([1]))
+        let stage = try XCTUnwrap(FileManager.default.contentsOfDirectory(at: root, includingPropertiesForKeys: nil).first)
+        let body = stage.appendingPathComponent("body.partial"), moved = stage.appendingPathComponent("owned-moved")
+        try FileManager.default.moveItem(at: body, to: moved)
+        let unrelated = Data("unrelated".utf8); try unrelated.write(to: body)
+        XCTAssertThrowsError(try writer.discard())
+        XCTAssertTrue(FileManager.default.fileExists(atPath: body.path))
+        if FileManager.default.fileExists(atPath: body.path) { XCTAssertEqual(try Data(contentsOf: body), unrelated) }
+        XCTAssertTrue(FileManager.default.fileExists(atPath: moved.path))
+    }
+}
