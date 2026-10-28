@@ -1,0 +1,20 @@
+# F5d full-byte evidence export
+
+## Requirements
+
+Implement the pinned GET findings/{finding}/traffic/{binding}/body?side=...&download=1 route, including optional context_task, with the snapshot's exact original byte length and SHA256. Headers and preview text are not the body. Do not substitute digest-only verification, rendered text, blob pointer text or a truncated preview for the downloaded file. Existing attachment digest behavior stays compatible. No provider call, agent shell command, host share or arbitrary guest-selected path/URL.
+
+A host destination is created only from a user-approved local Save Panel URL. Preserve existing files (browser-style nonclobber); do not silently replace an existing file or symlink. Pin the chosen parent directory, stage privately on the same filesystem, stream bounded chunks, verify the actual disk contents, then atomically publish a new file. Cancellation or any pre-publication failure removes owned partial state and leaves the final name absent. A committed file is never removed by later cancellation/discard. Report cleanup/directory-sync state separately after publication rather than falsely saying no file was saved.
+
+## Design and phases
+
+1. F5d1 primitives: typed FindingEvidenceDownload fixed numeric IDs/side/context and64-lower-hex hash; fixed authenticated request; EvidenceExportDestination directory capability; private0700 staging directory/0600 body; streaming writer and VerifiedEvidenceFile receipt. Extend the existing finite HTTP digest parser/exchange with an optional200-only body sink and per-request byte ceiling. Preserve the attachment128MiB default; evidence uses its exact expected size and bounded64KiB buffers rather than imposing that attachment limit. Verify network length/hash and independently re-read/hash the staged file; fsync, inode/size/time checks and exclusive rename precede success. Error bodies never reach the file sink. Existing names/symlinks are refused, not overwritten. A pinned directory may move; the receipt resolves its actual path from the directory descriptor.
+2. F5d2 connection: socket worker -> VM stop/cancellation lease -> backend client -> authentication revision; discard staging on stale auth/401/cancel and revalidate auth at publish. No automatic retry. UI selection/activity must also remain current before publication. Authenticated vsock is the only guest channel.
+3. F5d3 controls: explicit native Save Panel, localized progress/errors/receipt, request/response actions and all F5c controls. No file write from merely displaying a recorded URL. Full UI stays incomplete until this is connected.
+4. Real nonempty guest/browser byte/hash comparison, binary and large bodies, cancellation and no-overwrite receipts; then unlocked native save/keyboard/VoiceOver/visual comparison. Current tests use owned temporary directories and synthetic sockets only.
+
+The pinned server/finding_traffic.go sets Content-Length and streams evidence.Store.OpenBody, which verifies blob hash/length. Reject transfer/content encodings outside this route's identity framing; consume error responses within the existing4MiB bound. Private staging cleanup failures are explicit; destructor cleanup is only a fallback. No unbounded in-memory body or filename from Content-Disposition is trusted. The user's selected destination stays independent of guest content.
+
+## Tests and finish line
+
+RED missing request/destination/verified-file/sink APIs -> fixed route/invalid manifest/bearer tests -> actual full binary bytes beyond JSON and attachment limits -> length/hash/truncation/extra/framing/sink failure/cancellation -> existing-file/symlink/directory-move/no-clobber tests -> real socket staging -> review/full regression/coverage/signed build. No UI work in F5d1, so Lazyweb is out of scope for this step; the full native evidence UI reference remains in findings-traffic-ui-design.md. Authentication/VM integration, real guest/provider/UI tests and all broader product gates remain open until separately evidenced. GitHub CI's latest account-blocked annotation remains an unverified remote gate.
