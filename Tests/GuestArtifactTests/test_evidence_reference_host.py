@@ -1,4 +1,5 @@
 """The host bridge compares fixed exported bytes and must remain inert on import."""
+import ast
 import hashlib
 import importlib.util
 import os
@@ -32,3 +33,13 @@ class EvidenceReferenceHostTests(unittest.TestCase):
             for path in (link, fifo, root):
                 with self.assertRaises(RuntimeError): HOST.compare_files(path, right, 8, digest)
             self.assertEqual(left.read_bytes(), b'original')
+
+    def test_bootstrap_sql_has_actual_newlines_and_all_embedded_programs_parse(self):
+        for name in ('INSTALL', 'SETUP', 'EXECUTE', 'DUMP', 'EXPORT'):
+            ast.parse(getattr(HOST, name))
+        tree = ast.parse(HOST.SETUP)
+        node = next(n for n in tree.body if isinstance(n, ast.Assign) and any(isinstance(t, ast.Name) and t.id == 'sql' for t in n.targets))
+        self.assertTrue(all(isinstance(n, (ast.BinOp, ast.Add, ast.Constant, ast.Name, ast.Load)) for n in ast.walk(node.value)))
+        sql = eval(compile(ast.Expression(node.value), '<fixed bootstrap SQL>', 'eval'), {'__builtins__': {}, 'password': 'a' * 64})
+        self.assertIn('\nCREATE DATABASE artex OWNER artex;\n', sql)
+        self.assertNotIn('\\n', sql)

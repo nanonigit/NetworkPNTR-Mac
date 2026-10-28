@@ -44,10 +44,11 @@ class Client:
         self.deadline, self.calls, self.token = clock() + 180, 0, None
 
     def check(self):
-        require(self.clock() <= self.deadline and self.calls < 256, 'request bound/deadline')
+        require(self.clock() <= self.deadline and self.calls <= 256, 'request bound/deadline')
 
     def connection(self, method, path, body=None):
         self.check()
+        require(self.calls < 256, 'request count exhausted')
         require(self.token is None or (isinstance(self.token, str) and re.fullmatch(r'[A-Za-z0-9_.~-]{1,8192}', self.token)), 'bearer shape')
         headers = {'Connection': 'close', 'Accept-Encoding': 'identity'}
         if self.token is not None:
@@ -214,7 +215,8 @@ def main():
                           'sourceSHA256': {name: digest_file(folder / name) for name in names},
                           'networkCheckerSHA256': digest_file(Path(check_network.__file__)), 'networkProof': network,
                           'backendStarts': 2, 'cooperativeStops': stopped, 'credentialsAbsent': True,
-                          'downloads': downloads, 'previews': previews, 'auditProofs': audits, 'browserUIAcceptance': False}))
+                          'downloads': downloads, 'previews': previews, 'auditProofs': audits, 'browserUIAcceptance': False,
+                          'declaredHTTPBodyScope': True, 'trailingWireBytesAudited': False}))
     finally:
         if process is not None and process.poll() is None:
             process.terminate()
