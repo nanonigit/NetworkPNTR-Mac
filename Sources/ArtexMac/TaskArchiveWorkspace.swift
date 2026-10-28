@@ -113,13 +113,18 @@ struct TaskArchiveAcknowledgement: Identifiable {
         guard !Task.isCancelled else {
             items = captured.resultIDs.map{.init(id:$0,state:.notStarted)}; return false
         }
+        let handoff = TaskRequestHandoff {
+            guard life == self.lifetime, self.context?.id == captured.id else { throw CancellationError() }
+            try self.store.checkExternalMutation(ticket:liveToken)
+            try self.archives.checkMutation(ticket:coldToken)
+        }
         do {
             if captured.batch {
                 let result: [TaskArchiveBatchItem]
                 switch captured.kind {
-                case .archive: result = try await service.queueBatch(taskIDs:captured.taskIDs)
-                case .restore: result = try await service.restoreBatch(ids:captured.archiveIDs)
-                case .delete: result = try await service.deleteBatch(ids:captured.archiveIDs)
+                case .archive: result = try await service.queueBatch(taskIDs:captured.taskIDs,handoff:handoff)
+                case .restore: result = try await service.restoreBatch(ids:captured.archiveIDs,handoff:handoff)
+                case .delete: result = try await service.deleteBatch(ids:captured.archiveIDs,handoff:handoff)
                 case .retry: throw TaskArchiveInputError.action
                 }
                 guard life == lifetime else { return false }
@@ -133,10 +138,10 @@ struct TaskArchiveAcknowledgement: Identifiable {
             } else {
                 let row: TaskArchiveRecord
                 switch captured.kind {
-                case .archive: row = try await service.queue(taskID:captured.taskIDs[0])
-                case .restore: row = try await service.restore(id:captured.archiveIDs[0])
-                case .delete: row = try await service.delete(id:captured.archiveIDs[0])
-                case .retry: row = try await service.retry(captured.archives[0])
+                case .archive: row = try await service.queue(taskID:captured.taskIDs[0],handoff:handoff)
+                case .restore: row = try await service.restore(id:captured.archiveIDs[0],handoff:handoff)
+                case .delete: row = try await service.delete(id:captured.archiveIDs[0],handoff:handoff)
+                case .retry: row = try await service.retry(captured.archives[0],handoff:handoff)
                 }
                 guard life == lifetime else { return false }
                 guard String(row.taskId) == captured.taskIDs[0] else { throw BackendAPIError.invalidResponse }
@@ -146,6 +151,11 @@ struct TaskArchiveAcknowledgement: Identifiable {
             validReceipt = true; lastReceiptKind = captured.kind; receiptRevision = UUID(); onReceipt?(captured)
         } catch {
             guard life == lifetime else { return false }
+            if !handoff.wasDispatched {
+                let state: TaskArchiveActionItem.State = error is CancellationError ? .notStarted : .rejected
+                failure = error is CancellationError ? nil : AppErrorMessage(error)
+                items = captured.resultIDs.map{.init(id:$0,state:state,failure:failure)}; return false
+            }
             let state = classification(error); failure = AppErrorMessage(error)
             items = captured.resultIDs.map{.init(id:$0,state:state,failure:AppErrorMessage(error))}
             if state == .unconfirmed { uncertainTaskIDs.formUnion(captured.taskIDs); uncertainArchiveIDs.formUnion(captured.archiveIDs) }

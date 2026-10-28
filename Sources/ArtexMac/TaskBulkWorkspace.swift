@@ -129,39 +129,43 @@ struct TaskBulkTotals {
         case .delete:
             for id in captured.ids {
                 guard life == lifetime, !Task.isCancelled else { break }
+                let handoff = requestHandoff(captured,token:token,life:life)
                 do {
-                    let result = try await service.delete(id:id,options:options)
+                    let result = try await service.delete(id:id,options:options,handoff:handoff)
                     guard life == lifetime else { return false }
                     store.applyBulkChange(ticket:token,change:.deleted(result)); totals.add(result); selectedIDs.remove(id)
                     if result.hasCleanupWarning { warningIDs.append(id) }
                     items.append(.init(id:id,state:.succeeded))
                 } catch {
                     guard life == lifetime else { return false }
-                    let state = classify(error); items.append(.init(id:id,state:state,failure:AppErrorMessage(error)))
+                    let state = classify(error,handoff:handoff); items.append(.init(id:id,state:state,failure:state == .notStarted ? nil : AppErrorMessage(error)))
                     if state == .unconfirmed { uncertainIDs.insert(id) }
-                    if Task.isCancelled || isAuthenticationFailure(error) { break }
+                    if state == .notStarted || Task.isCancelled || isAuthenticationFailure(error) { break }
                 }
             }
             guard life == lifetime else { return false }
             let attempted = Set(items.map(\.id)); items += captured.ids.filter { !attempted.contains($0) }.map { .init(id:$0,state:.notStarted) }
         case .control(let action):
+            let handoff = requestHandoff(captured,token:token,life:life)
             do {
-                let result = try await service.controlBatch(ids:captured.ids,action:action)
+                let result = try await service.controlBatch(ids:captured.ids,action:action,handoff:handoff)
                 guard life == lifetime else { return false }
                 store.applyBulkChange(ticket:token,change:.controlled(result))
                 items = result.map { .init(id:$0.id,state:$0.ok ? .succeeded : .rejected,queued:$0.ok && $0.queued) }
-            } catch { guard life == lifetime else { return false }; failedBatch(captured.ids,error:error) }
+            } catch { guard life == lifetime else { return false }; failedBatch(captured.ids,error:error,handoff:handoff) }
         case .move:
+            let handoff = requestHandoff(captured,token:token,life:life)
             do {
                 guard let categoryService else { throw TaskInputError.invalidBatch }
-                let result = try await categoryService.assignBatch(taskIDs:captured.ids,categoryID:target)
+                let result = try await categoryService.assignBatch(taskIDs:captured.ids,categoryID:target,handoff:handoff)
                 guard life == lifetime else { return false }
                 store.applyBulkChange(ticket:token,change:.moved(result))
                 items = result.items.map { .init(id:$0.id,state:$0.ok ? .succeeded : .rejected) }
                 if result.items.contains(where:{$0.ok}) { selectedIDs = [] }
-            } catch { guard life == lifetime else { return false }; failedBatch(captured.ids,error:error) }
+            } catch { guard life == lifetime else { return false }; failedBatch(captured.ids,error:error,handoff:handoff) }
         }
         guard life == lifetime else { return false }
+        guard items.contains(where:{$0.state != .notStarted}) else { return false }
         catalog?.markStale(); store.finishBulkMutation(ticket:token)
         if context?.id == captured.id, !Task.isCancelled {
             await store.refreshList()
@@ -169,12 +173,19 @@ struct TaskBulkTotals {
         }
         return life == lifetime
     }
-    private func failedBatch(_ ids: [String], error: any Error) {
-        let state = classify(error); failure = AppErrorMessage(error)
-        items = ids.map { .init(id:$0,state:state,failure:AppErrorMessage(error)) }
+    private func requestHandoff(_ captured: TaskBulkContext,token: UUID,life: UUID) -> TaskRequestHandoff {
+        TaskRequestHandoff {
+            guard life == self.lifetime, self.context?.id == captured.id else { throw CancellationError() }
+            try self.store.checkExternalMutation(ticket:token)
+        }
+    }
+    private func failedBatch(_ ids: [String], error: any Error,handoff: TaskRequestHandoff) {
+        let state = classify(error,handoff:handoff); failure = state == .notStarted ? nil : AppErrorMessage(error)
+        items = ids.map { .init(id:$0,state:state,failure:state == .notStarted ? nil : AppErrorMessage(error)) }
         if state == .unconfirmed { uncertainIDs.formUnion(ids) }
     }
-    private func classify(_ error: any Error) -> TaskBulkItem.State {
+    private func classify(_ error: any Error,handoff: TaskRequestHandoff) -> TaskBulkItem.State {
+        if !handoff.wasDispatched { return error is CancellationError ? .notStarted : .rejected }
         if error is TaskInputError || error is TaskCategoryInputError { return .rejected }
         if case let BackendAPIError.status(code) = error, [400,401,403,404,409,413,422].contains(code) { return .rejected }
         return .unconfirmed

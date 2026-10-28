@@ -34,7 +34,7 @@ public enum TaskMutationConfirmation: Sendable {
     public private(set) var isPolling = false
     @ObservationIgnored private let service: TaskService
     @ObservationIgnored private let sleep: @MainActor (Duration) async throws -> Void
-    private var externalTicket: (id: UUID, life: UUID, kind: ExternalKind)?
+    private var externalTicket: (id: UUID, life: UUID, activity: UUID, kind: ExternalKind)?
     private var mutationTicket: MutationTicket?
     @ObservationIgnored private var acquiring = false
     @MainActor private final class MutationTicket {
@@ -108,12 +108,17 @@ public enum TaskMutationConfirmation: Sendable {
         guard !isMutating, !acquiring, !Task.isCancelled else { return nil }
         let id = UUID(), life = lifetime, visible = activity
         acquiring = true; defer { acquiring = false }
-        externalTicket = (id,life,kind); invalidateReads()
+        externalTicket = (id,life,visible,kind); invalidateReads()
         mutationFailure = nil; mutationUncertain = false; lastConfirmation = nil
         guard !Task.isCancelled, life == lifetime, visible == activity, externalTicket?.id == id, mutationTicket == nil else {
             if externalTicket?.id == id { externalTicket = nil }; return nil
         }
         return id
+    }
+    public func checkExternalMutation(ticket: UUID) throws {
+        try Task.checkCancellation()
+        guard let owner = externalTicket, owner.id == ticket, owner.life == lifetime,
+              owner.activity == activity, mutationTicket == nil else { throw CancellationError() }
     }
     public func finishCategoryMutation(ticket: UUID, change: TaskCategoryChange?) {
         guard let owner = externalTicket, owner.id == ticket, owner.kind == .category else { return }

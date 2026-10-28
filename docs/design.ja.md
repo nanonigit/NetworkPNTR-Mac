@@ -1,5 +1,7 @@
 # 設計
 
+category/bulk/archiveの送信境界はtask-external-handoff-design.ja.mdに従い、型付きの開発コード用markerと処理枠照合を使う。直列化した実行能力やUIレイアウトは追加しない。
+
 タスクhandoff再発修正はtask-mutation-handoff-design.ja.mdに従い、actor内ticketと共有取得の再照合で公開契約を維持する。外部の後続送信とLLM監査は別途残す。
 
 既存Findingsのhandoff再発監査はfindings-mutation-handoff-design.ja.mdに従い、公開サービス署名とbackend契約を保つ。Task/LLMの監査は別途残す。

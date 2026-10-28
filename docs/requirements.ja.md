@@ -1,5 +1,7 @@
 # 要件と完成ゴール
 
+外部タスクworkspaceは実handoff時に捕捉contextとlive/cold処理枠を照合し、未送信取消と送信後不明を分ける。既存レイアウトと送信後確定は保持する。task-external-handoff-design.ja.md参照。
+
 タスク直接書込とcategory/archive/bulk処理枠取得は、送信/token付与前に取消/activity/lifetimeを照合する。送信後不明とresetの終了待ちを維持する。task-mutation-handoff-design.ja.md参照。
 
 既存FindingStoreの編集/削除も取消確認済みのtransport handoffを必要とする。部分PATCHの不明とresetでゲートを保持する仕様は変えない。findings-mutation-handoff-design.ja.md参照。

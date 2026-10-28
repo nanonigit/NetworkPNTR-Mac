@@ -1,0 +1,7 @@
+# 処理枠の取得と要求のhandoffを分ける
+
+MUSUBIでcategory/bulk/archive開始→共有処理枠→サービス要求を追跡し、workspace閉鎖/live停止/cold停止で古い書込を再現した。RED6711a05はworkspace44件中10アサーション失敗。注入transportのみで実task/agent/archive job/外部サイトは実行しない。
+
+5 Whys: 停止後も要求→枠取得だけで送信許可と仮定→controller確認はasyncサービス前→send時の現lease/context確認なし→categoryはbusy後に親/入力を捕捉し、試験もこの境界を不足した。特性要因は捕捉時点・複数store所有権・要求段階。単回の開発コード専用TaskRequestHandoff、live/cold照合、毎要求のcontext照合を追加した。categoryはbusy前に捕捉し、連続削除は項目ごとにmarkerを作る。
+
+handoff前の取消は未開始・不明なし、他のローカル失敗は拒否、以後のstatus/不明方針は維持する。送信済みcategoryの確定はsuspend後も捕捉した親へ通知し、archive202はqueue受入で完了とはしない。marker再利用/validator例外/validator内取消は追加送信を起こさない。最初の既知削除後の失効で次を送らず不明にもせず、重点計83件と実装レビューが成功。元の型付き署名/本文を保ち、レイアウトや確認フローは変更しない。

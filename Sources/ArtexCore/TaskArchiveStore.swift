@@ -19,7 +19,8 @@ import Observation
     public private(set) var isRefreshing = false
     public private(set) var isPolling = false
     public var isMutating: Bool { mutationTicket != nil }
-    @ObservationIgnored private var mutationTicket: (id: UUID, session: UUID)?
+    private var mutationTicket: (id: UUID, session: UUID, view: UUID)?
+    @ObservationIgnored private var acquiringMutation = false
     public var pendingRestoreIDs: Set<Int64> { Set(pending.keys) }
     @ObservationIgnored private let service: TaskArchiveService
     @ObservationIgnored private let sleep: @MainActor (Duration) async throws -> Void
@@ -79,8 +80,19 @@ import Observation
         pending[id] = Pending(taskID:taskID); removedAfterRestoreIDs.remove(id); return true
     }
     public func beginMutation() -> UUID? {
-        guard !isMutating, !Task.isCancelled else { return nil }
-        let id = UUID(); mutationTicket = (id,sessionOwner); invalidateReads(); return id
+        guard !isMutating, !acquiringMutation, !Task.isCancelled else { return nil }
+        let id = UUID(), session = sessionOwner, view = viewOwner
+        acquiringMutation = true; defer { acquiringMutation = false }
+        mutationTicket = (id,session,view); invalidateReads()
+        guard !Task.isCancelled, session == sessionOwner, view == viewOwner, mutationTicket?.id == id else {
+            if mutationTicket?.id == id { mutationTicket = nil }; return nil
+        }
+        return id
+    }
+    public func checkMutation(ticket: UUID) throws {
+        try Task.checkCancellation()
+        guard let captured = mutationTicket, captured.id == ticket, captured.session == sessionOwner,
+              captured.view == viewOwner else { throw CancellationError() }
     }
     public func finishMutation(ticket: UUID, clearSelection: Bool) {
         guard let captured = mutationTicket, captured.id == ticket else { return }

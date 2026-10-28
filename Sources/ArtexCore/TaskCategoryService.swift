@@ -64,31 +64,46 @@ public struct TaskCategoryBatchResult: Decodable, Sendable {
         return result.categories
     }
     public func create(name: String) async throws -> TaskCategoryRecord {
-        try await request(TaskCategoryRecord.self,method:"POST",path:"/api/task-categories",body:Self.nameBody(name),status:201)
+        try await create(name:name,handoff:TaskRequestHandoff())
+    }
+    public func create(name: String,handoff: TaskRequestHandoff) async throws -> TaskCategoryRecord {
+        try await request(TaskCategoryRecord.self,method:"POST",path:"/api/task-categories",body:Self.nameBody(name),status:201,handoff:handoff)
     }
     public func rename(id: Int64, name: String) async throws -> TaskCategoryRecord {
+        try await rename(id:id,name:name,handoff:TaskRequestHandoff())
+    }
+    public func rename(id: Int64,name: String,handoff: TaskRequestHandoff) async throws -> TaskCategoryRecord {
         try Self.checkCategory(id)
-        let row = try await request(TaskCategoryRecord.self,method:"PATCH",path:"/api/task-categories/\(id)",body:Self.nameBody(name))
+        let row = try await request(TaskCategoryRecord.self,method:"PATCH",path:"/api/task-categories/\(id)",body:Self.nameBody(name),handoff:handoff)
         guard row.id == id else { throw BackendAPIError.invalidResponse }; return row
     }
     public func delete(id: Int64) async throws -> Int64 {
+        try await delete(id:id,handoff:TaskRequestHandoff())
+    }
+    public func delete(id: Int64,handoff: TaskRequestHandoff) async throws -> Int64 {
         try Self.checkCategory(id)
         struct Reply: Decodable { let deleted: Int64 }
-        let row = try await request(Reply.self,method:"DELETE",path:"/api/task-categories/\(id)")
+        let row = try await request(Reply.self,method:"DELETE",path:"/api/task-categories/\(id)",handoff:handoff)
         guard row.deleted == id else { throw BackendAPIError.invalidResponse }; return row.deleted
     }
     public func assign(taskID: String, categoryID: Int64?) async throws -> TaskRecord {
+        try await assign(taskID:taskID,categoryID:categoryID,handoff:TaskRequestHandoff())
+    }
+    public func assign(taskID: String,categoryID: Int64?,handoff: TaskRequestHandoff) async throws -> TaskRecord {
         let id = try TaskWire.canonicalID(taskID); try Self.checkCategory(categoryID)
-        let row = try await request(TaskRecord.self,method:"PATCH",path:"/api/tasks/\(id)/category",body:BackendJSONCoding.encode(Assignment(taskIds:nil,categoryId:categoryID)))
+        let row = try await request(TaskRecord.self,method:"PATCH",path:"/api/tasks/\(id)/category",body:BackendJSONCoding.encode(Assignment(taskIds:nil,categoryId:categoryID)),handoff:handoff)
         try row.validate()
         guard row.id == id, row.categoryId == categoryID else { throw BackendAPIError.invalidResponse }; return row
     }
     public func assignBatch(taskIDs: [String], categoryID: Int64?) async throws -> TaskCategoryBatchResult {
+        try await assignBatch(taskIDs:taskIDs,categoryID:categoryID,handoff:TaskRequestHandoff())
+    }
+    public func assignBatch(taskIDs: [String],categoryID: Int64?,handoff: TaskRequestHandoff) async throws -> TaskCategoryBatchResult {
         try Self.checkCategory(categoryID)
         var seen = Set<String>()
         let ids = try taskIDs.map(TaskWire.canonicalID).filter { seen.insert($0).inserted }
         guard !ids.isEmpty, ids.count <= 100 else { throw TaskCategoryInputError.invalidBatch }
-        let row = try await request(TaskCategoryBatchResult.self,method:"POST",path:"/api/tasks/category/batch",body:BackendJSONCoding.encode(Assignment(taskIds:ids,categoryId:categoryID)))
+        let row = try await request(TaskCategoryBatchResult.self,method:"POST",path:"/api/tasks/category/batch",body:BackendJSONCoding.encode(Assignment(taskIds:ids,categoryId:categoryID)),handoff:handoff)
         guard row.items.map(\.id) == ids else { throw BackendAPIError.invalidResponse }
         if let categoryID {
             if row.items.contains(where: { $0.ok }) {
@@ -127,9 +142,11 @@ public struct TaskCategoryBatchResult: Decodable, Sendable {
         let n = value.value
         return (9...13).contains(n) || [32,0x85,0xA0,0x1680,0x2028,0x2029,0x202F,0x205F,0x3000].contains(n) || (0x2000...0x200A).contains(n)
     }
-    private func request<T: Decodable>(_ type: T.Type, method: String, path: String, body: Data? = nil, status: Int = 200) async throws -> T {
+    private func request<T: Decodable>(_ type: T.Type, method: String, path: String, body: Data? = nil, status: Int = 200,
+                                       handoff: TaskRequestHandoff? = nil) async throws -> T {
         guard body.map({ $0.count <= 16 * 1024 }) ?? true else { throw TaskCategoryInputError.invalid }
         try Task.checkCancellation()
+        try handoff?.begin()
         let response = try await client.send(method:method,path:path,body:body,bearer:nil)
         try Task.checkCancellation()
         guard (200..<300).contains(response.status) else { throw BackendAPIError.status(response.status) }

@@ -49,6 +49,9 @@ import Foundation
     public func controlBatch(ids: [String], action: TaskControlAction) async throws -> [TaskBatchControlItem] {
         try await controlBatch(ids:ids,action:action,onDispatch:{})
     }
+    public func controlBatch(ids: [String],action: TaskControlAction,handoff: TaskRequestHandoff) async throws -> [TaskBatchControlItem] {
+        try await controlBatch(ids:ids,action:action,onDispatch:{try handoff.begin()})
+    }
     func controlBatch(ids: [String],action: TaskControlAction,onDispatch: @MainActor () throws -> Void) async throws -> [TaskBatchControlItem] {
         var seen = Set<String>()
         let ids = try ids.map(TaskWire.canonicalID).filter { seen.insert($0).inserted }
@@ -64,6 +67,9 @@ import Foundation
     }
     public func delete(id: String, options: TaskDeletionOptions = .init()) async throws -> TaskDeletionResult {
         try await delete(id:id,options:options,onDispatch:{})
+    }
+    public func delete(id: String,options: TaskDeletionOptions = .init(),handoff: TaskRequestHandoff) async throws -> TaskDeletionResult {
+        try await delete(id:id,options:options,onDispatch:{try handoff.begin()})
     }
     func delete(id: String,options: TaskDeletionOptions,onDispatch: @MainActor () throws -> Void) async throws -> TaskDeletionResult {
         let id = try TaskWire.canonicalID(id)

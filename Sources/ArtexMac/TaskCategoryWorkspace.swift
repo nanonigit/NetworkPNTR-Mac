@@ -116,9 +116,9 @@ struct TaskCategoryDecision: Identifiable {
         case .select(let value,let name): replace(value,name:name); return (true,nil)
         case .discard: uncertain = false; failure = nil; replace(.new,name:""); return (true,nil)
         case .delete, .move:
-            guard let token = claim() else { return (false,nil) }
             let life = lifetime, inline = context?.inlineOwner
-            return (false,Task { await self.execute(choice.action,token:token,life:life,inline:inline) })
+            guard let token = claim() else { return (false,nil) }
+            return (false,Task { await self.execute(choice.action,token:token,life:life,inline:inline,owner:contextID,editor:choice.editorID) })
         }
     }
     private func claim() -> UUID? {
@@ -132,32 +132,37 @@ struct TaskCategoryDecision: Identifiable {
             replace(.category(existing.id),name:existing.name); failure = nil; lastChange = nil
             onCatalog?(categories); onChange?(.saved(existing),inline); context = nil; return true
         }
-        guard let token = claim() else { return false }
         let life = lifetime, inline = context?.inlineOwner, selected = self.selection, submittedName = self.name
-        return await finish(token:token,life:life,inline:inline) {
+        guard let token = claim() else { return false }
+        return await finish(token:token,life:life,inline:inline,owner:contextID,editor:editorID) { handoff in
             let row: TaskCategoryRecord
-            if case .category(let id) = selected { row = try await self.service.rename(id:id,name:submittedName) }
-            else { row = try await self.service.create(name:submittedName) }
+            if case .category(let id) = selected { row = try await self.service.rename(id:id,name:submittedName,handoff:handoff) }
+            else { row = try await self.service.create(name:submittedName,handoff:handoff) }
             return .saved(row)
         }
     }
-    private func execute(_ action: TaskCategoryDecision.Action, token: UUID, life: UUID, inline: UUID?) async -> Bool {
-        await finish(token:token,life:life,inline:inline) {
+    private func execute(_ action: TaskCategoryDecision.Action, token: UUID, life: UUID, inline: UUID?,owner: UUID,editor: UUID) async -> Bool {
+        await finish(token:token,life:life,inline:inline,owner:owner,editor:editor) { handoff in
             switch action {
-            case .delete(let row): return .deleted(try await self.service.delete(id:row.id))
+            case .delete(let row): return .deleted(try await self.service.delete(id:row.id,handoff:handoff))
             case .move(let ids,let target):
-                if ids.count == 1 { return .assigned(try await self.service.assign(taskID:ids[0],categoryID:target)) }
-                return .batchAssigned(try await self.service.assignBatch(taskIDs:ids,categoryID:target))
+                if ids.count == 1 { return .assigned(try await self.service.assign(taskID:ids[0],categoryID:target,handoff:handoff)) }
+                return .batchAssigned(try await self.service.assignBatch(taskIDs:ids,categoryID:target,handoff:handoff))
             default: throw TaskCategoryInputError.invalid
             }
         }
     }
-    private func finish(token: UUID, life: UUID, inline: UUID?, operation: () async throws -> TaskCategoryChange) async -> Bool {
+    private func finish(token: UUID, life: UUID, inline: UUID?,owner: UUID,editor: UUID,
+                        operation: @MainActor (TaskRequestHandoff) async throws -> TaskCategoryChange) async -> Bool {
         var receipt: TaskCategoryChange?
         defer { store.finishCategoryMutation(ticket:token,change:receipt); isMutating = false }
-        guard life == lifetime, !Task.isCancelled else { return false }
+        guard life == lifetime, context?.id == owner, editorID == editor, !Task.isCancelled else { return false }
+        let handoff = TaskRequestHandoff {
+            guard life == self.lifetime, self.context?.id == owner, self.editorID == editor else { throw CancellationError() }
+            try self.store.checkExternalMutation(ticket:token)
+        }
         do {
-            let change = try await operation(); guard life == lifetime else { return false }
+            let change = try await operation(handoff); guard life == lifetime else { return false }
             receipt = change; lastChange = change; uncertain = false; countsStale = true
             tasks = change.applying(to:tasks)
             switch change {
@@ -174,6 +179,9 @@ struct TaskCategoryDecision: Identifiable {
             return true
         } catch {
             guard life == lifetime else { return false }
+            if !handoff.wasDispatched {
+                failure = error is CancellationError ? nil : AppErrorMessage(error); uncertain = false; return false
+            }
             failure = AppErrorMessage(error)
             if error is TaskCategoryInputError || error is TaskInputError { uncertain = false }
             else if case let BackendAPIError.status(code) = error, [400,401,403,404,409,413,422].contains(code) { uncertain = false }

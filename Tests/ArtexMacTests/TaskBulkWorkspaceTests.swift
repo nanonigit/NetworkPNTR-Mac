@@ -42,6 +42,15 @@ final class TaskBulkWorkspaceTests: XCTestCase {
         XCTAssertFalse(api.calls.contains{$0.0 == "DELETE"});XCTAssertEqual(model.items.map(\.state),[.notStarted,.notStarted])
         XCTAssertTrue(model.uncertainIDs.isEmpty);XCTAssertFalse(store.isMutating)
     }
+    @MainActor func testRevocationAfterFirstKnownDeleteDoesNotSendNextOrMarkItUnknown() async throws {
+        let (api,model,store)=try await make();select(["7","8"],model);XCTAssertTrue(model.begin(.delete))
+        let owner=try XCTUnwrap(model.context).id
+        withObservationTracking {_ = model.items.count} onChange:{MainActor.assumeIsolated{store.stop()}}
+        _ = await model.submit(contextID:owner)
+        XCTAssertEqual(api.calls.filter{$0.0 == "DELETE"}.map(\.1),["/api/tasks/7"])
+        XCTAssertEqual(model.items.map(\.state),[.succeeded,.notStarted]);XCTAssertTrue(model.uncertainIDs.isEmpty)
+        XCTAssertFalse(store.isMutating)
+    }
     @MainActor private func make(_ count: Int = 3) async throws -> (BulkAPI,TaskBulkWorkspace,TaskStore) {
         let api = BulkAPI()
         let url = URL(fileURLWithPath:#filePath).deletingLastPathComponent().deletingLastPathComponent().appendingPathComponent("ArtexCoreTests/Fixtures/task-contract.json")
