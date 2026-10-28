@@ -21,6 +21,8 @@ import Observation
     @ObservationIgnored private var activity = UUID()
     @ObservationIgnored private var acquiring = false
     @ObservationIgnored private var stopping = false
+    @ObservationIgnored private var resuming = false
+    @ObservationIgnored private var stopAfterResume = false
     @ObservationIgnored private var reviewedRevision: UUID?
     private var read: ReadTicket?
     private var write: WriteTicket?
@@ -104,6 +106,7 @@ import Observation
         return true
     }
     public func stop() {
+        if resuming { stopAfterResume = true; return }
         guard !stopping, isActive else { return }
         stopping = true
         defer { stopping = false }
@@ -111,8 +114,11 @@ import Observation
         if let write { recordUnknown(write) }
     }
     public func resume() {
-        guard !stopping, !isActive else { return }
+        guard !stopping, !resuming, !isActive else { return }
+        resuming = true
         activity = UUID(); isActive = true
+        resuming = false
+        if stopAfterResume { stopAfterResume = false; stop() }
     }
     private func perform(_ message: AppStringKey,
                          operation: (@MainActor () throws -> Void) async throws -> LLMRetryPolicy?) async -> Bool {
