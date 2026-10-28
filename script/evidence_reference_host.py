@@ -1,10 +1,70 @@
 """Owned offline reference orchestration. No host mounts, external downloads or import side effects."""
 import contextlib
 import hashlib
+import json
 import os
 from pathlib import Path
 import re
 import stat
+
+
+def builder_is_local(text):
+    name = re.search(r'^Name:\s+(\S+)', text, re.M)
+    return bool(name and name[1] == 'desktop-linux' and re.search(r'^Driver:\s+docker$', text, re.M)
+                and re.findall(r'^Endpoint:\s+(\S+)', text, re.M) == ['desktop-linux'])
+
+
+def _read_regular(path, maximum):
+    named = path.lstat()
+    if not stat.S_ISREG(named.st_mode) or named.st_uid != os.getuid() or not 0 <= named.st_size <= maximum:
+        raise RuntimeError('Reference native receipt file type/size failed')
+    fd = os.open(path, os.O_RDONLY | os.O_NOFOLLOW | os.O_NONBLOCK | os.O_CLOEXEC)
+    try:
+        before = os.fstat(fd)
+        if (before.st_dev, before.st_ino) != (named.st_dev, named.st_ino):
+            raise RuntimeError('Reference native receipt inode failed')
+        data = bytearray()
+        while True:
+            chunk = os.read(fd, min(65536, maximum + 1 - len(data)))
+            if not chunk:
+                break
+            data.extend(chunk)
+            if len(data) > maximum:
+                raise RuntimeError('Reference native receipt growth failed')
+        after = os.fstat(fd)
+        if (after.st_dev, after.st_ino, after.st_size, after.st_mtime_ns, after.st_ctime_ns) != (before.st_dev, before.st_ino, before.st_size, before.st_mtime_ns, before.st_ctime_ns) or len(data) != before.st_size:
+            raise RuntimeError('Reference native receipt changed')
+        return bytes(data)
+    finally:
+        os.close(fd)
+
+
+def verify_native_receipt(record, workspace, repo):
+    try:
+        info = workspace.lstat()
+        if not stat.S_ISDIR(info.st_mode) or info.st_uid != os.getuid():
+            raise RuntimeError('Reference native workspace failed')
+        inputs = json.loads(_read_regular(workspace / 'inputs.json', 1024 * 1024))
+        private_report = json.loads(_read_regular(workspace / 'run/evidence-native.json', 1024 * 1024))
+        exit_code = _read_regular(workspace / 'exit-code.txt', 16).strip()
+        flags = ('nativeProbePassed', 'machineStopped', 'cleanupComplete', 'witnessedInFlightCancellation', 'witnessedVMStop')
+        if (type(record['observedExitCode']) is not int or record['observedExitCode'] != 0 or exit_code != b'0'
+                or private_report != record['report'] or not all(private_report.get(key) is True for key in flags)
+                or re.fullmatch('[0-9a-f]{40}', record['nativeHead']) is None
+                or inputs['nativeHead'] != record['nativeHead'] or inputs['probeSHA256'] != record['nativeBinarySHA256']
+                or inputs['sourceSHA256'] != record['inputSourceSHA256'] or not inputs['sourceSHA256']):
+            raise RuntimeError('Reference private native execution binding failed')
+        binary = workspace / 'VMProbe'
+        compare_files(binary, binary, binary.lstat().st_size, record['nativeBinarySHA256'])
+        for name, digest in inputs['sourceSHA256'].items():
+            relative = Path(name)
+            if not relative.parts or relative.is_absolute() or '..' in relative.parts or relative.parts[0] not in ('Sources', 'script'):
+                raise RuntimeError('Reference native source path failed')
+            source = repo / relative
+            if not source.resolve().is_relative_to(repo.resolve()) or hashlib.sha256(_read_regular(source, 512 * 1024)).hexdigest() != digest:
+                raise RuntimeError('Reference current native source binding failed')
+    except (OSError, ValueError, KeyError, TypeError):
+        raise RuntimeError('Reference native execution receipt failed') from None
 
 
 def compare_files(left, right, expected_size, expected_hash):
@@ -183,8 +243,8 @@ def main():
     try:
         print('reference_stage=preflight', flush=True)
         require(run('context', ['context','inspect','desktop-linux','--format','{{.Endpoints.docker.Host}}']).stdout.decode().strip().startswith('unix://'), 'local daemon')
-        builder=run('builder',['buildx','inspect']).stdout.decode()
-        require(re.search(r'^Driver:\s+docker$',builder,re.M) and re.findall(r'^Endpoint:\s+(\S+)',builder,re.M)==['desktop-linux'], 'local builder')
+        builder=run('builder',['buildx','inspect','desktop-linux']).stdout.decode()
+        require(builder_is_local(builder), 'named local builder')
         for label,identifier in [('backend',BACKEND),('runtime',RUNTIME)]:
             record=json.loads(run(label+'-image',['image','inspect',identifier]).stdout)[0]
             require(record['Id']==identifier and record['Architecture']=='arm64' and record['Os']=='linux' and record['RepoTags'],'cached image')
@@ -230,6 +290,7 @@ def main():
         reference=json.loads(exercise.stdout);reference['hostIsolation']=guard
         native=json.loads((REPO/'evidence/findings/evidence-export-native.json').read_text())
         native_workspace=Path(Path('/tmp/artex-evidence-vm-workspace.txt').read_text().strip())
+        verify_native_receipt(native, native_workspace, REPO)
         native_private=json.loads((native_workspace/'inputs.json').read_text())
         require(native['observedExitCode']==0 and native['report']['nativeProbePassed'] and native_private['nativeHead']==native['nativeHead'] and native_private['probeSHA256']==native['nativeBinarySHA256'],'native executed identity')
         require(reference['passed'] and reference['backendSHA256']==native['artifactHashes']['backendSHA256']==EXPECTED and reference['sourceCommit']==native['baselineCommit'],'native backend/source binding')
