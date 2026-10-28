@@ -18,6 +18,7 @@ import Virtualization
     @ObservationIgnored private var logURL: URL?
     @ObservationIgnored private var backendConnections: [UUID: VZVirtioSocketConnection] = [:]
     @ObservationIgnored private var backendUploads: [UUID: BackendUploadSocket] = [:]
+    @ObservationIgnored private var evidenceEpoch = UUID()
     @ObservationIgnored private var pendingConnections: [UUID: CheckedContinuation<UUID, Error>] = [:]
     public var mayStart: Bool { state.canStart && machine == nil }
     public var hasMachine: Bool { machine != nil }
@@ -222,8 +223,45 @@ import Virtualization
             return response
         } onCancel: { socket.cancel() }
     }
+    func stageBackendEvidence(request: Data, manifest: FindingEvidenceDownload, destination: EvidenceExportDestination, provisioning: GuestProvisioning) async throws -> EvidenceExportReceipt {
+        try Task.checkCancellation()
+        guard guestReady, state == .running else { throw RuntimeError.integrity("backend not ready") }
+        let epoch = evidenceEpoch
+        let identifier = try await connectBackend()
+        defer {
+            backendUploads.removeValue(forKey: identifier)?.finish()
+            backendConnections.removeValue(forKey: identifier)?.close()
+        }
+        try Task.checkCancellation()
+        guard guestReady, state == .running, evidenceEpoch == epoch,
+              let connection = backendConnections[identifier] else { throw CancellationError() }
+        let descriptor = dup(connection.fileDescriptor)
+        guard descriptor >= 0 else { throw POSIXError(.EIO) }
+        let socket = BackendUploadSocket(owning: descriptor)
+        backendUploads[identifier] = socket
+        guard fcntl(descriptor, F_SETFD, FD_CLOEXEC) == 0 else { throw POSIXError(.EIO) }
+        let preamble = Data(("ARTEX_VSOCK_1 " + provisioning.transportToken + "\n").utf8)
+        return try await withTaskCancellationHandler {
+            try Task.checkCancellation()
+            let response = try await Task.detached {
+                try EvidenceDownloadStaging.exchange(socket: socket, preamble: preamble, request: request, manifest: manifest, destination: destination)
+            }.value
+            do {
+                try Task.checkCancellation()
+                try socket.validateCompletion()
+                guard guestReady, state == .running, evidenceEpoch == epoch, backendUploads[identifier] === socket else { throw CancellationError() }
+                return EvidenceExportReceipt(response: response, validate: { [weak self] in
+                    guard let self, self.guestReady, self.state == .running, self.evidenceEpoch == epoch else { throw CancellationError() }
+                })
+            } catch {
+                try response.file?.discard()
+                throw error
+            }
+        } onCancel: { socket.cancel() }
+    }
     @discardableResult private func cancelBackendUploads() -> Int {
-        backendUploads.values.reduce(0) { count, socket in count + (socket.cancel() ? 1 : 0) }
+        evidenceEpoch = UUID()
+        return backendUploads.values.reduce(0) { count, socket in count + (socket.cancel() ? 1 : 0) }
     }
     private func connectBackend() async throws -> UUID {
         guard let device = machine?.socketDevices.first as? VZVirtioSocketDevice else { throw RuntimeError.integrity("backend vsock device") }

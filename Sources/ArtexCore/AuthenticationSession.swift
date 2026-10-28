@@ -123,6 +123,26 @@ public enum AuthenticationPhase: String, Sendable { case checking, needsSetup, n
         try validateReply(BackendHTTPResponse(status: response.status, body: Data()), ticket: ticket)
         return response
     }
+    public func authenticatedEvidenceExport(_ manifest: FindingEvidenceDownload, destination: EvidenceExportDestination) async throws -> EvidenceExportReceipt {
+        try Task.checkCancellation()
+        guard phase == .authenticated, let token else { throw BackendAPIError.status(401) }
+        guard let downloader = client as? any BackendEvidenceDownloadTransport else { throw BackendAPIError.invalidResponse }
+        let ticket = revision
+        let receipt = try await downloader.stageEvidence(manifest, destination: destination, bearer: token)
+        do {
+            try Task.checkCancellation()
+            try validateReply(BackendHTTPResponse(status: receipt.result.status, body: Data()), ticket: ticket)
+            guard receipt.result.status == 200 else { throw BackendAPIError.status(receipt.result.status) }
+            try receipt.requireSuccess(manifest)
+            receipt.restrict { [weak self] in
+                guard let self, self.revision == ticket, self.phase == .authenticated else { throw CancellationError() }
+            }
+            return receipt
+        } catch {
+            try receipt.discard()
+            throw error
+        }
+    }
     private func validateReply(_ response: BackendHTTPResponse, ticket: UUID) throws {
         guard revision == ticket, phase == .authenticated else { throw CancellationError() }
         if response.status == 401 {
