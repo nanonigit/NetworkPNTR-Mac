@@ -371,3 +371,12 @@ See evidence-export-runtime-design.md and evidence-export-runtime-design.ja.md.
 F5d runtime: initial be693f7 and final9b41048 experiments each exited0/two boots; four complete bodies per boot incl135266321 bytes. Final caller237320/VMstop696832 staged bytes; operation-specific interrupted socket proof and VMstop count1; no final/partial files after cancellation, persisted downloads match.767Swift(766pass/1existingAXskip),137Python, release diagnostic exclusion and signed app checks pass locally. See evidence-export-runtime-verification.md and Japanese counterpart. Browser/API exact comparison, full F5 controls/UI and all full-product gates remain open. All our push HEADs still use [skip ci].
 
 F5 remaining integration gates also include nonempty captured-traffic bind/edit/remove/reorder, actual conflict/unknown-outcome behavior and persistence against both guest and pinned reference. The original-body SQL fixture does not populate disposable captured traffic and does not prove those mutation/picker gates.
+
+## F5d independent reference
+
+- [ ] BR1 independent bounded HTTP/body verifier and error-path tests.
+- [ ] BR2 two-start fixed reference fixture, persisted full downloads and activity/isolation audits.
+- [ ] BR3 private export of eight response files, byte-for-byte native comparison and owned cleanup.
+- [ ] BR4 detailed preview/captured mutation/UI/full product acceptance remains open.
+
+See evidence-reference-design.md and evidence-reference-design.ja.md.
