@@ -3,6 +3,7 @@ import ast
 import hashlib
 import importlib.util
 import os
+import json
 from pathlib import Path
 import tempfile
 import unittest
@@ -43,3 +44,32 @@ class EvidenceReferenceHostTests(unittest.TestCase):
         sql = eval(compile(ast.Expression(node.value), '<fixed bootstrap SQL>', 'eval'), {'__builtins__': {}, 'password': 'a' * 64})
         self.assertIn('\nCREATE DATABASE artex OWNER artex;\n', sql)
         self.assertNotIn('\\n', sql)
+
+    def test_builder_proof_names_the_exact_local_builder_and_rejects_other_endpoints(self):
+        local = 'Name: desktop-linux\nDriver: docker\nNodes:\nName: desktop-linux\nEndpoint: desktop-linux\n'
+        self.assertTrue(HOST.builder_is_local(local))
+        for bad in (local.replace('Driver: docker', 'Driver: remote'), local.replace('Endpoint: desktop-linux', 'Endpoint: ssh://outside'), local.replace('Name: desktop-linux', 'Name: other'), local + 'Endpoint: extra\n'):
+            self.assertFalse(HOST.builder_is_local(bad))
+
+    def test_native_receipt_requires_private_exit_report_binary_and_current_source(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory); workspace, repo = root / 'native', root / 'repo'
+            (workspace / 'run').mkdir(parents=True); (repo / 'Sources').mkdir(parents=True)
+            binary = workspace / 'VMProbe'; binary.write_bytes(b'known signed probe identity')
+            source = repo / 'Sources/fixed.swift'; source.write_bytes(b'fixed native source')
+            sources = {'Sources/fixed.swift': hashlib.sha256(source.read_bytes()).hexdigest()}
+            private_report = {'nativeProbePassed': True, 'machineStopped': True, 'cleanupComplete': True, 'witnessedInFlightCancellation': True, 'witnessedVMStop': True}
+            inputs = {'nativeHead': 'a' * 40, 'probeSHA256': hashlib.sha256(binary.read_bytes()).hexdigest(), 'sourceSHA256': sources}
+            record = {'nativeHead': inputs['nativeHead'], 'nativeBinarySHA256': inputs['probeSHA256'], 'observedExitCode': 0, 'report': private_report, 'inputSourceSHA256': sources}
+            (workspace / 'inputs.json').write_text(json.dumps(inputs)); (workspace / 'run/evidence-native.json').write_text(json.dumps(private_report)); (workspace / 'exit-code.txt').write_text('0')
+            HOST.verify_native_receipt(record, workspace, repo)
+            (workspace / 'exit-code.txt').write_text('1')
+            with self.assertRaises(RuntimeError): HOST.verify_native_receipt(record, workspace, repo)
+            (workspace / 'exit-code.txt').write_text('0')
+            changed = dict(private_report, machineStopped=False); (workspace / 'run/evidence-native.json').write_text(json.dumps(changed))
+            with self.assertRaises(RuntimeError): HOST.verify_native_receipt(record, workspace, repo)
+            (workspace / 'run/evidence-native.json').write_text(json.dumps(private_report))
+            source.write_bytes(b'changed source')
+            with self.assertRaises(RuntimeError): HOST.verify_native_receipt(record, workspace, repo)
+            source.write_bytes(b'fixed native source'); binary.write_bytes(b'replaced executable')
+            with self.assertRaises(RuntimeError): HOST.verify_native_receipt(record, workspace, repo)
