@@ -4,7 +4,7 @@ import SwiftUI
 @MainActor enum FindingBindings {
     static func traffic(_ model: FindingScreenModel,id: UUID?) -> Binding<FindingTrafficWorkspace?> {
         Binding(get:{model.trafficWorkspace},set:{ value in
-            if value == nil, let current = model.trafficWorkspace?.id { model.closeTraffic(id:current) }
+            if value == nil, let id { model.closeTraffic(id:id) }
         })
     }
     static func detail(_ model: FindingScreenModel,owner: UUID,revision: UUID) -> Binding<Bool> {
