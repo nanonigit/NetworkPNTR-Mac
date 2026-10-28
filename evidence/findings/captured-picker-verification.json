@@ -71,5 +71,13 @@
     "Sources/ArtexCore/CapturedTrafficService.swift": "7393a4e72a683dd2f39619e1384b20818b8c902264bfda18c7ddc7a18077071e",
     "Tests/ArtexCoreTests/CapturedTrafficPickerTests.swift": "a959f14104c681698554c63bef1b419683107d66b7559f1b9e7d53123774163e",
     "Tests/ArtexCoreTests/FindingReadAcquisitionTests.swift": "2313352e46f1c6095b8555d6a63e0a3bd719abfb772247b05d55396d107d5a1a"
+  },
+  "ci": {
+    "run": "https://github.com/nanonigit/artex-mac/actions/runs/40640261823",
+    "head": "e34c3251b959a3df1ab80a0cb84bd7dbfe08fc79",
+    "conclusion": "failure",
+    "test_steps_started": false,
+    "annotation": "The job was not started because recent account payments have failed or your spending limit needs to be increased. Please check the Billing & plans section in your settings",
+    "account_settings_action_required": true
   }
 }
