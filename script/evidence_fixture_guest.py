@@ -53,6 +53,7 @@ def _path(row):
 
 def write_bodies():
     created = []
+    incomplete = False
     try:
         _directory(ROOT)
         _directory(ROOT / 'blobs')
@@ -61,7 +62,13 @@ def write_bodies():
             path = _path(row)
             _directory(path.parent)
             fd = os.open(path, os.O_WRONLY | os.O_CREAT | os.O_EXCL | os.O_NOFOLLOW | os.O_CLOEXEC, 0o600)
-            created.append(path)
+            try:
+                info = os.fstat(fd)
+                created.append((path, info.st_dev, info.st_ino))
+            except OSError:
+                os.close(fd)
+                incomplete = True
+                raise
             with os.fdopen(fd, 'wb') as output:
                 for chunk in body_chunks(name):
                     if output.write(chunk) != len(chunk):
@@ -72,11 +79,19 @@ def write_bodies():
         return manifest
     except (OSError, RuntimeError):
         # Only files exclusively created by this invocation are eligible for cleanup.
-        for path in reversed(created):
+        for path, device, inode in reversed(created):
             try:
-                path.unlink()
+                info = path.lstat()
+                if stat.S_ISREG(info.st_mode) and (info.st_dev, info.st_ino) == (device, inode):
+                    path.unlink()
+                else:
+                    incomplete = True
+            except FileNotFoundError:
+                continue
             except OSError:
-                pass
+                incomplete = True
+        if incomplete:
+            raise RuntimeError('Evidence fixture body creation failed; cleanup incomplete') from None
         raise RuntimeError('Evidence fixture body creation failed') from None
 
 
@@ -92,7 +107,7 @@ def audit_bodies():
             info = path.parent.lstat()
             if not stat.S_ISDIR(info.st_mode) or info.st_uid != os.getuid():
                 raise RuntimeError('Evidence fixture prefix audit failed')
-            fd = os.open(path, os.O_RDONLY | os.O_NOFOLLOW | os.O_CLOEXEC)
+            fd = os.open(path, os.O_RDONLY | os.O_NOFOLLOW | os.O_CLOEXEC | os.O_NONBLOCK)
             with os.fdopen(fd, 'rb') as stream:
                 info = os.fstat(stream.fileno())
                 if not stat.S_ISREG(info.st_mode) or info.st_uid != os.getuid() or info.st_size != row['size']:
