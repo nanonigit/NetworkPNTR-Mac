@@ -347,3 +347,10 @@ See investigation-harness-design.md and investigation-harness-design.ja.md.
 - [ ] H5: en/ja native UI, browser parity for shared workflows, accessibility and packaging.
 
 Existing full-byte export and browser parity work retain their current priority. No tools have been installed or scans run for this proposal.
+
+## F5d2 evidence export connection
+
+- [ ] RED: authenticated staging/current commit, stale/401/cancel/VM/UI ownership and concrete stopped-client tests using actual files.
+- [ ] GREEN: receipt ownership, typed transport/client and registered VM transfer with evidence lifetime epoch.
+- [ ] Review, full regression/coverage, guest artifact tests, signed build, publication/remote receipt.
+- [ ] Actual guest transfer/VM-stop comparisons and full native save controls remain required beyond this software checkpoint.
