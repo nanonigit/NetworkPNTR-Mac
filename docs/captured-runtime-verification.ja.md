@@ -10,4 +10,10 @@ stdlib traceとAST文の行番号によるunionはcaptured_reference_host.py141/
 
 不完全headerによる停止待ち、別sourceを正解とするreceipt、filter行の不一致、元tag削除前条件不足、実行入力の可変性をnegative試験で再現し修正。bugs/captured-runtime.ja.md参照。capture有効backend-initはソース変更済みだが、導入済みnative system imageの再build／boot検証は未完。クラウドegressやホストCA信頼は有効化していない。固定backend由来のbinary表示placeholderは、raw packet byteを改変しない型付き表示の翻訳監査が残る。
 
-残る条件：実証済み候補kernelを標準昇格せずfresh native imageを作成し、同一fixtureをtyped native service／storeから検証、実VM2bootで保持と参照結果を比較、結果不明write回復、新UI／保存panel／keyboard／VoiceOver／複数window／固定browser画面比較、全21workflow・4社・調査harness・release条件。hosted CIは未検証で、公開HEADには[skip ci]を付ける。
+残るcapture比較条件（後述の別候補image／原本保存回帰試験だけでは閉じない）：同一の実通信fixtureをtyped native service／storeから検証し、recorder操作を実VM2bootで保持・参照比較、結果不明write回復、新UI／保存panel／keyboard／VoiceOver／複数window／固定browser画面比較、全21workflow・4社・調査harness・release条件。hosted CIは未検証で、公開HEADには[skip ci]を付ける。
+
+## 別候補イメージのnative段階試験
+
+dcbd057時点で、厳密に固定したcache735d runtime親から、レビュー済みbackend-initだけを置き換えた768MiB system imageをoffline build。実証済みsource kernel／initramfs・CPU1を新candidate directoryに保持し、標準設定・導入済みappは置き換えていない。hash／実VM2boot記録はevidence/findings/captured-native-candidate.json。最初のdriverはhost Pythonにhashlib.file_digestがなく変更前に失敗し、streaming SHA256で修正した。成功buildは所有container／tag／aliasを削除、親tagを保持。レビューで異常時cleanup中断の弱点が見つかったため、private driverを独立cleanupへ直し故障注入で後続処理を確認した。成功済みimage buildは繰り返していない。
+
+署名済みDEBUG VMProbeの--evidence-exportが新imageでexit0：実VZ VM2boot、各bootで4原本の保存／hash確認、261896byte後のcaller中断、433928byte後のVM停止、staging残留なし、logout／stop／restart後の古いreceipt拒否、協調停止、初回のみformat、分類済み異常なし、隔離・上限付きlog内の認証値不在。fixtureソースhashは現ファイルと一致する。ただし既存SQL-bound snapshot fixtureの回帰試験であり、recorder API利用可否・非空native capture更新・結果不明状態・新UIは未検証。R4／R5は未完のまま。

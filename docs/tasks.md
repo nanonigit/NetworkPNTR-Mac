@@ -434,3 +434,5 @@ F5e3 software checkpoint:20 new picker cases,824 full Swift (823 pass,one existi
 - [ ] R5 actual new UI/browser/keyboard/AX/multiwindow/save-panel and binary display localization acceptance.
 
 See captured-runtime-verification.md and Japanese counterpart. Reference-only success does not close P4/M5/E4/E5 or any full-product gate. CP1–CP4 and H0–H5 stay planned. Hosted CI is unverified; pushed HEAD uses [skip ci].
+
+R4 partial checkpoint: fresh capture-configured candidate image built offline; signed DEBUG --evidence-export exited0 across two actual CPU1 VZ boots, retaining the prior four-body export/persistence/interruption checks. No default promotion or app replacement. Actual recorder API/nonempty typed native capture mutations and unknown outcomes remain unverified, so R4/P4/M5/E4/E5 stay open. See captured-native-candidate.json and captured-runtime-verification in en/ja.

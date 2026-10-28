@@ -7,3 +7,9 @@ SQLiteへの偽record投入でなく、記録proxyを通して固定loopback HTT
 まず所有するoffline containerの固定backendへ、独立Python HTTPで非空candidate／filter／page／原文、追加／編集／順序／削除、古いversion409、readback、2起動の永続化を確認。長さ／hash／上限付きpreviewを比較し、実行ごとに異なる生成ID／時刻を同一とみなさない。固定URL ordinalと不変本文で独立実行を対応付ける。失敗とprivate DB／logを保持し、本文・キー・runtime stateはGitへ入れない。
 
 次にcapture有効のfresh native artifactを再buildし、検証済みsource kernel候補を標準昇格せず使用、認証vsockからtyped native service／storeで同じfixtureを試験。独立した正規化結果と原本、再起動状態を比較。fixture／API実証で新UIのmouse／keyboard／VoiceOver／browser画面受入を代替しない。以前のSQL snapshot紐づけだけのfixtureを非空capture更新試験の代用にしない。21workflow、VM／kernel／release、4社、調査roadmapを維持。今回はguest／基盤作業でLazyweb対象外。
+
+## 次のnative診断契約
+
+capture設定候補は既存の原本保存回帰試験を通過したが、実記録indexは未検証。別のDEBUG限定captured fixture／probeを実装する。seed／listen前にLinux／aarch64／UID1000・明示flag・正確なloopback PostgreSQL DSN・外部接続なし・freshな終了済みfixture活動・既存capture index空を確認。診断sourceを固定しhash照合し、bearer／passwordをscriptへ埋め込まない。ゲスト側の独立guardには/state/app/data/traffic/_index/index.sqliteへの固定read-only queryを使ってよいが、capture行は挿入しない。native認証とcapture API照合は認証付きvsock上のtyped serviceで行う。
+
+参照環境と同じ29通信manifest／URL ordinalで対応付け、page／filter／detailの実byte、CapturedTrafficPickerStore／FindingTrafficStoreからの追加、厳密sourceID・role／note／order／version・古いversion conflict・原本／分割previewを確認する。boot2は同じprivate diskを再利用しseed／通信再生成せず、index29／binding1／snapshot2／最終versionを確認。結果不明回復は期限付きtransport故障と実readback／明示ackで証明し、mockだけで完了扱いにせず未確定writeを再実行しない。両bootで協調停止・private認証値監査・NIC／shareなしを確認する。新UIの画面／keyboard／AXは解除後の別gate。
