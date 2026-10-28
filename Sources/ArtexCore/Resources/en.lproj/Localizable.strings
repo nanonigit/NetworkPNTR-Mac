@@ -812,6 +812,14 @@
 	<string>Proxy configured</string>
 	<key>llm.ui.rates</key>
 	<string>{second}/s · {minute}/min</string>
+	<key>llm.ui.recoveryHelp</key>
+	<string>The server may have completed the last change. Reload and review the current settings before resuming. Resuming does not repeat the change.</string>
+	<key>llm.ui.recoveryOverview</key>
+	<string>Latest configuration overview</string>
+	<key>llm.ui.recoveryResume</key>
+	<string>I reviewed the current settings — resume changes</string>
+	<key>llm.ui.recoveryTitle</key>
+	<string>Changes paused: result not confirmed</string>
 	<key>llm.ui.refetch</key>
 	<string>Reload</string>
 	<key>llm.ui.reload</key>

@@ -1,6 +1,11 @@
 import Foundation
 
 public enum AppStringKey: String, CaseIterable, Sendable {
+    case llmUIRecoveryTitle = "llm.ui.recoveryTitle"
+    case llmUIRecoveryHelp = "llm.ui.recoveryHelp"
+    case llmUIRecoveryResume = "llm.ui.recoveryResume"
+    case llmUIRecoveryOverview = "llm.ui.recoveryOverview"
+
     case findingUIUnassignedAssets = "finding.ui.unassignedAssets"
     case findingUIExpand = "finding.ui.expand"
     case findingUICollapse = "finding.ui.collapse"

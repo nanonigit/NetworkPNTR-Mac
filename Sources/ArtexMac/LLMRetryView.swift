@@ -32,7 +32,7 @@ import SwiftUI
                 Button(s(.llmUISave)) {
                     let snapshot = policy
                     Task { if await store.saveRetry(snapshot) { policy = store.retryPolicy ?? snapshot.clamped(); dirty = false; fieldGeneration = UUID(); invalid = [] } }
-                }.buttonStyle(.borderedProminent).disabled(!invalid.isEmpty || store.retryPolicy == nil)
+                }.buttonStyle(.borderedProminent).disabled(!invalid.isEmpty || store.retryPolicy == nil || store.unknownRevision != nil)
             }.disabled(store.isLoading || store.isMutating)
         }
         .task { if let saved = store.retryPolicy { policy = saved } }

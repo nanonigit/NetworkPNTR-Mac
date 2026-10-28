@@ -21,7 +21,7 @@ import SwiftUI
         self.store = store; self.context = context
         _draft = State(initialValue: context.draft)
     }
-    private var busy: Bool { testing || loadingModels || store.isMutating }
+    private var busy: Bool { testing || loadingModels || store.isLoading || store.isMutating }
     var body: some View {
         VStack(alignment: .leading, spacing: 0) {
             VStack(alignment: .leading, spacing: 6) {
@@ -92,6 +92,7 @@ import SwiftUI
                 }
             }.formStyle(.grouped).disabled(busy)
             VStack(alignment: .leading, spacing: 10) {
+                LLMRecoveryView(store: store)
                 if let error { Text(error.text(language: language)).foregroundStyle(.red).textSelection(.enabled) }
                 if let result = testResult {
                     Text(f(.llmUITestSuccess, ["model": result.model ?? draft.model, "latency": (result.latencyMs ?? 0).formatted(.number.precision(.fractionLength(0)))])).foregroundStyle(.green)
@@ -103,7 +104,7 @@ import SwiftUI
                     if busy { ProgressView().controlSize(.small) }
                     Button(s(.llmUITest)) { test() }.disabled(busy || !numberErrors.isEmpty)
                     Button(s(.llmUISave)) { save() }.buttonStyle(.borderedProminent).keyboardShortcut(.defaultAction)
-                        .disabled(busy || !numberErrors.isEmpty || draft.name.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty || draft.model.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty)
+                        .disabled(busy || store.unknownRevision != nil || !numberErrors.isEmpty || draft.name.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty || draft.model.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty)
                 }
             }.padding(20)
         }

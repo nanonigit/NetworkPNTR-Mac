@@ -8,12 +8,13 @@ import SwiftUI
     private func f(_ key: AppStringKey, _ values: [String: String]) -> String { AppStrings.formatted(key, language: language, values: values) }
     let store: LLMStore
     @Environment(\.dismiss) private var dismiss
-    private var busy: Bool { store.isLoading || store.isMutating }
+    private var busy: Bool { store.isLoading || store.isMutating || store.unknownRevision != nil }
     var body: some View {
         VStack(alignment: .leading, spacing: 18) {
             Text(s(.llmUIRotationTitle)).font(.title2.bold())
             Text(s(.llmUIRotationHelp))
                 .foregroundStyle(.secondary)
+            LLMRecoveryView(store: store)
             if store.pool == nil { ProgressView(s(.llmUIFetching)) }
             Toggle(s(.llmUIEnableRotation), isOn: Binding(get: { store.pool?.enabled ?? false }, set: { enabled in Task { await store.setRotation(enabled: enabled) } }))
                 .disabled(busy || store.pool == nil)

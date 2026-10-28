@@ -171,3 +171,25 @@ extension LLMMutationRecoveryTests {
         XCTAssertFalse(store.acknowledgeUnknown(revision: revision))
     }
 }
+
+extension LLMMutationRecoveryTests {
+    @MainActor func testStopIsSafeWhenItsOwnActiveNotificationCallsStopAgain() {
+        let api = LLMHeldTransport(); let store = LLMStore(service: LLMService(client: api))
+        withObservationTracking { _ = store.isActive } onChange: { MainActor.assumeIsolated { store.stop() } }
+        store.stop(); store.stop()
+        XCTAssertFalse(store.isActive); XCTAssertFalse(store.isLoading); XCTAssertFalse(store.isMutating)
+        store.resume(); XCTAssertTrue(store.isActive); XCTAssertTrue(api.paths.isEmpty)
+    }
+    @MainActor func testAcknowledgementFromPreviousFailureCannotResumeNewFailure() async throws {
+        let api = LLMHeldTransport(); let store = LLMStore(service: LLMService(client: api))
+        api.queue("{}", status: 503); _ = await store.save(fixture())
+        let first = try XCTUnwrap(store.unknownRevision)
+        try api.fullLoad(); await store.load(); XCTAssertTrue(store.acknowledgeUnknown(revision: first))
+        api.queue("{}", status: 503); _ = await store.save(fixture())
+        let second = try XCTUnwrap(store.unknownRevision); XCTAssertNotEqual(first, second)
+        try api.fullLoad(); await store.load()
+        XCTAssertFalse(store.acknowledgeUnknown(revision: first))
+        XCTAssertTrue(store.acknowledgeUnknown(revision: second))
+        XCTAssertEqual(api.methods.filter { $0 != "GET" }.count, 2)
+    }
+}

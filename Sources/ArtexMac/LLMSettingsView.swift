@@ -33,6 +33,7 @@ import SwiftUI
                 Label(error, systemImage: "exclamationmark.triangle").foregroundStyle(.red).textSelection(.enabled)
                 if store.hasLoaded { Text(s(.llmUIStale)).font(.caption).foregroundStyle(.secondary) }
             }
+            LLMRecoveryView(store: store)
             if let key = store.noticeKey { Text(AppStrings.text(key, language: language)).font(.callout).foregroundStyle(.green) }
             if busy { ProgressView(store.isMutating ? s(.llmUISaving) : s(.llmUILoading)).controlSize(.small) }
             Picker(s(.llmUIDisplay), selection: $selectedTab) {
@@ -54,7 +55,8 @@ import SwiftUI
         .padding(28)
         .background(Color(nsColor: .windowBackgroundColor))
         .navigationTitle("LLM")
-        .task { await store.load() }
+        .task { store.resume(); await store.load() }
+        .onDisappear { store.stop() }
         .sheet(item: $editor) { context in LLMProfileEditor(store: store, context: context) }
         .sheet(isPresented: $rotationOpen) { LLMRotationView(store: store) }
         .confirmationDialog(s(.llmUIDeleteConfirm), isPresented: Binding(get: { deleteCandidate != nil }, set: { if !$0 { deleteCandidate = nil } }), titleVisibility: .visible) {
@@ -87,9 +89,9 @@ import SwiftUI
                         do { editor = LLMEditorContext(draft: try LLMProfileDraft(profile: profile), keyHint: profile.apiKeyHint ?? ""); localError = nil }
                         catch { localError = AppErrorMessage(error) }
                     }
-                    Button(profile.isDefault ? s(.llmUIActive) : s(.llmUIActivate)) { Task { await store.activate(profile) } }.disabled(profile.isDefault)
+                    Button(profile.isDefault ? s(.llmUIActive) : s(.llmUIActivate)) { Task { await store.activate(profile) } }.disabled(profile.isDefault || store.unknownRevision != nil)
                     Spacer()
-                    Button(role: .destructive) { deleteCandidate = profile } label: { Image(systemName: "trash") }.disabled(profile.isDefault).help(s(.llmUIDeleteProfile))
+                    Button(role: .destructive) { deleteCandidate = profile } label: { Image(systemName: "trash") }.disabled(profile.isDefault || store.unknownRevision != nil).help(s(.llmUIDeleteProfile))
                 }.disabled(busy)
             }.frame(maxWidth: .infinity, alignment: .leading).padding(8)
         }

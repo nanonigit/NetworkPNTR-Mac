@@ -812,6 +812,14 @@
 	<string>プロキシ設定あり</string>
 	<key>llm.ui.rates</key>
 	<string>{second}/秒 · {minute}/分</string>
+	<key>llm.ui.recoveryHelp</key>
+	<string>直前の変更はサーバーで完了している可能性があります。再読み込みして現在の設定を確認してから操作を再開してください。再開しても変更は再送しません。</string>
+	<key>llm.ui.recoveryOverview</key>
+	<string>取得した設定の概要</string>
+	<key>llm.ui.recoveryResume</key>
+	<string>現在の設定を確認したので操作を再開</string>
+	<key>llm.ui.recoveryTitle</key>
+	<string>結果を確認できないため操作を停止中</string>
 	<key>llm.ui.refetch</key>
 	<string>再取得</string>
 	<key>llm.ui.reload</key>

@@ -20,6 +20,7 @@ import Observation
     @ObservationIgnored public let service: LLMService
     @ObservationIgnored private var activity = UUID()
     @ObservationIgnored private var acquiring = false
+    @ObservationIgnored private var stopping = false
     @ObservationIgnored private var reviewedRevision: UUID?
     private var read: ReadTicket?
     private var write: WriteTicket?
@@ -60,6 +61,7 @@ import Observation
     private func reload() async {
         guard let ticket = beginRead() else { return }
         let revision = unknownRevision
+        reviewedRevision = nil
         defer { if read?.id == ticket.id { read = nil } }
         do {
             guard owns(ticket) else { return }
@@ -102,11 +104,14 @@ import Observation
         return true
     }
     public func stop() {
+        guard !stopping, isActive else { return }
+        stopping = true
+        defer { stopping = false }
         isActive = false; activity = UUID(); read = nil; noticeKey = nil; reviewedRevision = nil
         if let write { recordUnknown(write) }
     }
     public func resume() {
-        guard !isActive else { return }
+        guard !stopping, !isActive else { return }
         activity = UUID(); isActive = true
     }
     private func perform(_ message: AppStringKey,

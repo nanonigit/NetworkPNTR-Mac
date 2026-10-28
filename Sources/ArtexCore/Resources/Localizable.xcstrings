@@ -13002,6 +13002,74 @@
           }
         }
       }
+    },
+    "llm.ui.recoveryTitle": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Changes paused: result not confirmed"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "結果を確認できないため操作を停止中"
+          }
+        }
+      }
+    },
+    "llm.ui.recoveryHelp": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The server may have completed the last change. Reload and review the current settings before resuming. Resuming does not repeat the change."
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "直前の変更はサーバーで完了している可能性があります。再読み込みして現在の設定を確認してから操作を再開してください。再開しても変更は再送しません。"
+          }
+        }
+      }
+    },
+    "llm.ui.recoveryResume": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "I reviewed the current settings — resume changes"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "現在の設定を確認したので操作を再開"
+          }
+        }
+      }
+    },
+    "llm.ui.recoveryOverview": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Latest configuration overview"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "取得した設定の概要"
+          }
+        }
+      }
     }
   },
   "version": "1.0"
