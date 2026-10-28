@@ -81,7 +81,7 @@ unset password
 export ARTEX_SETUP_TOKEN="$setup" ARTEX_LANG=ja ARTEX_SKILL_DIR=/opt/artex/skills HOME=/state/home
 unset setup
 cd /state/app/data
-su-exec 1000:1000 /opt/artex/artex -addr 127.0.0.1:8787 -data /state/app/data -proxy '' >/run/artex.log 2>&1 &
+su-exec 1000:1000 /opt/artex/artex -addr 127.0.0.1:8787 -data /state/app/data -proxy 127.0.0.1:8788 >/run/artex.log 2>&1 &
 artex_pid=$!
 unset ARTEX_PG_DSN ARTEX_SETUP_TOKEN
 su-exec 65534:65534 python3 /opt/artex-mac/vsock_relay.py >/run/relay.log 2>&1 &
