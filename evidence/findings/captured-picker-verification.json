@@ -1,0 +1,75 @@
+{
+  "schema": 1,
+  "baseline": "e75ae371ad777ffd1eecdd28d2781a6519b05591",
+  "code_checkpoint": "ed3f6b7",
+  "missing_red": "e1ba09a",
+  "behavioral_red": [
+    {
+      "commit": "b1f4d5f",
+      "cases": 14,
+      "failed_assertions": 7
+    },
+    {
+      "commit": "ca191b7",
+      "cases": 21,
+      "failed_assertions": 8
+    }
+  ],
+  "owner_tests": {
+    "picker": 18,
+    "shared_read_acquisition": 3,
+    "passed": 21
+  },
+  "related_tests_passed": 50,
+  "swift": {
+    "total": 726,
+    "passed": 725,
+    "skipped_existing_external_ax": 1,
+    "failures": 0
+  },
+  "python": {
+    "passed": 123
+  },
+  "line_coverage": {
+    "CapturedTrafficPickerStore.swift": {
+      "count": 208,
+      "covered": 206,
+      "percent": 99.03846153846155
+    },
+    "FindingReadState.swift": {
+      "count": 56,
+      "covered": 56,
+      "percent": 100
+    },
+    "FindingTrafficStore.swift": {
+      "count": 170,
+      "covered": 168,
+      "percent": 98.82352941176471
+    }
+  },
+  "review": "selection restoration reproduced and repaired; scoped parent/child/shared-read/lifecycle review has no unresolved blocker",
+  "signed_build_only": true,
+  "strict_signature": true,
+  "localization_export_check": true,
+  "inventory": {
+    "navigation": 21,
+    "routes": 27,
+    "handlers": 243
+  },
+  "native_controls_connected": false,
+  "full_byte_export_implemented": false,
+  "actual_guest_acceptance": false,
+  "actual_provider_requests": false,
+  "browser_native_visual_acceptance": false,
+  "full_goal_complete": false,
+  "new_code_ci_verified": false,
+  "source_sha256": {
+    "Sources/ArtexCore/CapturedTrafficPickerStore.swift": "bc080e4f04bad6f218e427f97091960d88e7d5cb0402900f6277891408d0c7fd",
+    "Sources/ArtexCore/FindingTrafficStore.swift": "5850c78f0a854362dc555c9fb4031da93065c56cd84f4b6fb73ba4dd1e884ae2",
+    "Sources/ArtexCore/FindingReadState.swift": "202ecc8584d842be33a4cb3f8c16612e44ae7988cf2c88917c6cdd729fce73bf",
+    "Sources/ArtexCore/CapturedTraffic.swift": "a98cbfd6013ec61fe980fb1b0840e66c22170a4c60a1ca336b518e22ba243043",
+    "Sources/ArtexCore/CapturedTrafficService.swift": "7393a4e72a683dd2f39619e1384b20818b8c902264bfda18c7ddc7a18077071e",
+    "Tests/ArtexCoreTests/CapturedTrafficPickerTests.swift": "a959f14104c681698554c63bef1b419683107d66b7559f1b9e7d53123774163e",
+    "Tests/ArtexCoreTests/FindingReadAcquisitionTests.swift": "2313352e46f1c6095b8555d6a63e0a3bd719abfb772247b05d55396d107d5a1a"
+  }
+}

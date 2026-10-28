@@ -15,3 +15,5 @@ This is state/controller work within the full UI plan, not a substitute for nati
 ## Tasks and acceptance
 
 Missing store/child handoff RED -> cross-page/bound/Unicode/stale/reverse-read tests -> bind success/conflict/cancel/stop tests -> synchronous parent/child notification departure -> GREEN/review/full regression/coverage/signed build. Then window/detail/picker/viewer UI, full-byte export and actual nonempty guest/browser/keyboard/VoiceOver comparison. No paid provider or actual guest write is used in these state tests.
+
+Implementation refinement: synchronous read invalidation can be overwritten by its pending isLoading assignment. The shared helper now revalidates generation before its first suspension and loader invocation, with dedicated fresh-read/cancellation regressions. Child selection/preview and bind cleanup revalidate after publication; stop/resume is reentry guarded and a stop requested during resume wins. No visual controls have been connected by this state checkpoint.
