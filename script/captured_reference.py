@@ -116,6 +116,14 @@ def normalized(summary):
              req_len=row['snapshot']['req_len'],resp_len=row['snapshot']['resp_len'],req_hash=row['snapshot']['req_hash'],resp_hash=row['snapshot']['resp_hash']) for row in summary['bindings']])
 
 
+def validate_bound_sources(summary,records):
+    require(len(summary['bindings'])==2,'bound source receipt count')
+
+
+def validate_filtered_page(page,expected):
+    require(page['total']==len(expected),'filtered receipt count')
+
+
 def exercise(client,records):
     pages=[client.api('GET','/api/traffic?page='+str(page)+'&size=25') for page in (0,1)]
     require([len(page['exchanges']) for page in pages]==[25,4] and len({row['id'] for page in pages for row in page['exchanges']})==29,'actual paging')
@@ -127,6 +135,7 @@ def exercise(client,records):
     initial=client.api('GET',BASE);require(initial['bindings']==[],'fresh bindings')
     refs=[{'traffic_id':records[index]['id'],'role':'supporting','note':'F5 captured source '+str(index)} for index in (3,4)]
     bound=client.api('POST',BASE,{'traffic_refs':refs});require(len(bound['bindings'])==2 and bound['version']>initial['version'],'bind receipt')
+    validate_bound_sources(bound,records)
     fixture.audit_activity(2,2)
     sources={row['url']:row for row in fixture.exchange_manifest()};body_proofs=[];previews=[]
     for binding in bound['bindings']:

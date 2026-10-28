@@ -33,6 +33,22 @@ class CapturedReferenceTests(unittest.TestCase):
         self.assertEqual(m.preview_expected(b'',0)['total'],0)
         with self.assertRaises(RuntimeError): m.preview_expected(b'abc',4)
 
+    def test_wrong_bound_record_or_source_identity_cannot_satisfy_body_gates(self):
+        m=load();records=[{'id':str(1792663200)+'-%04d'%i,'url':row['url']} for i,row in enumerate(m.fixture.exchange_manifest())]
+        good={'bindings':[{'id':str(i),'snapshot':{'source_traffic_id':records[n]['id'],'url':records[n]['url']}} for i,n in [(1,3),(2,4)]]}
+        m.validate_bound_sources(good,records)
+        import copy
+        for field,value in [('url',records[1]['url']),('source_traffic_id',records[1]['id'])]:
+            bad=copy.deepcopy(good);bad['bindings'][0]['snapshot'][field]=value
+            with self.assertRaises(RuntimeError):m.validate_bound_sources(bad,records)
+
+    def test_correct_filter_total_cannot_hide_wrong_rows(self):
+        m=load();expected=[{'id':'one','url':'http://127.0.0.1:8799/f5-captured/01'}]
+        good={'total':1,'count':29,'page':0,'size':500,'exchanges':expected}
+        m.validate_filtered_page(good,expected)
+        bad=dict(good,exchanges=[{'id':'other','url':'http://127.0.0.1:8799/f5-captured/02'}])
+        with self.assertRaises(RuntimeError):m.validate_filtered_page(bad,expected)
+
     def test_main_rejects_host_before_starting_backend(self):
         m=load()
         with patch.object(m.fixture,'environment',side_effect=RuntimeError('guard')),patch.object(m.subprocess,'Popen') as process:
