@@ -17,6 +17,7 @@ public enum FindingTrafficMutationOutcome: Sendable {
     public private(set) var bodyOffset: Int64 = 0
     public private(set) var isActive = true
     public var isMutating: Bool { write != nil }
+    public var canMutateSelected: Bool { target?.canMutate == true }
     public private(set) var unknownIDs = Set<String>()
     public private(set) var unknownRevision = UUID()
     public private(set) var lastConfirmation: FindingTraffic?
@@ -99,6 +100,9 @@ public enum FindingTrafficMutationOutcome: Sendable {
         }
     }
     public func apply(_ change: FindingTrafficChange,owner: UUID) async -> FindingTrafficMutationOutcome {
+        await apply(change,owner:owner,onDispatch:{})
+    }
+    func apply(_ change: FindingTrafficChange,owner: UUID,onDispatch: @MainActor () throws -> Void) async -> FindingTrafficMutationOutcome {
         guard readable(owner), !isMutating, unknownIDs.isEmpty, !summary.isLoading, !summary.isStale,
               let target, let snapshot = summary.value else { return .notStarted }
         let request: FindingTrafficWriteRequest
@@ -110,6 +114,7 @@ public enum FindingTrafficMutationOutcome: Sendable {
         defer { if write?.id == ticket.id { write = nil } }
         do {
             let value = try await service.execute(request) {
+                try onDispatch()
                 guard ticket.session == self.session, ticket.activity == self.activity, ticket.owner == self.owner,
                       self.isActive, self.write?.id == ticket.id else { throw CancellationError() }
                 ticket.handedOff = true
