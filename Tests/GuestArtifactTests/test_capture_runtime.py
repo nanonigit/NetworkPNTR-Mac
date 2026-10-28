@@ -1,6 +1,7 @@
 import importlib.util
 import os
 from pathlib import Path
+import subprocess
 import sys
 import types
 import unittest
@@ -54,6 +55,23 @@ class CaptureRuntimeTests(unittest.TestCase):
                 with self.assertRaises(RuntimeError): fixture.environment()
             with patch.object(network,'is_isolated',return_value=False):
                 with self.assertRaises(RuntimeError): fixture.environment()
+
+    def test_incomplete_headers_cannot_block_server_shutdown(self):
+        code = """import importlib.util,socket,threading,time
+spec=importlib.util.spec_from_file_location('fixture',FILE)
+fixture=importlib.util.module_from_spec(spec);spec.loader.exec_module(fixture)
+server=fixture.HTTPServer(('127.0.0.1',0),fixture.FixedHandler)
+thread=threading.Thread(target=lambda:server.serve_forever(poll_interval=.05),daemon=True);thread.start()
+client=socket.create_connection(server.server_address,timeout=1)
+client.sendall(b'GET /f5-captured/00 HTTP/1.1\\r\\nHost: partial')
+time.sleep(.1);started=time.monotonic()
+server.shutdown();thread.join(1);server.server_close();client.close()
+assert not thread.is_alive() and time.monotonic()-started<4.5
+print('shutdown-bound')
+""".replace('FILE',repr(str(SCRIPT)))
+        result = subprocess.run([sys.executable,'-c',code],stdout=subprocess.PIPE,stderr=subprocess.PIPE,timeout=7)
+        self.assertEqual(result.returncode,0,result.stderr.decode(errors='replace'))
+        self.assertIn(b'shutdown-bound',result.stdout)
 
     def test_http_capture_guard_uses_fixed_ports_and_no_environment_proxy(self):
         fixture = load(); source = SCRIPT.read_text()
