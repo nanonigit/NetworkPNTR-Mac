@@ -359,10 +359,15 @@ F5d2 software checkpoint:36focused/755Swift(754pass/1existingAXskip)/123Python; 
 
 ## F5d runtime acceptance
 
-- [ ] R1 fixed diagnostic bodies, full streaming audit and environment/file/SQL negative tests.
-- [ ] R2 typed DEBUG fixture client and bounded proofs.
-- [ ] R3 fresh signed zero-NIC VM export, stop/restart and persistence proof.
+- [x] R1 fixed diagnostic bodies, full streaming audit and environment/file/SQL negative tests (14 cases plus actual guest execution).
+- [x] R2 typed DEBUG fixture client and bounded proofs (3 cases and both native experiments).
+- [x] R3 fresh signed zero-NIC VM original-body export, witnessed caller cancellation/live VM stop, receipt stop/restart and persistence proof.
+- [ ] R3/R4 detailed preview content/binary/truncation comparison; metadata reads alone are insufficient.
 - [ ] R4 independent pinned reference exact-byte comparison.
 - [ ] R5 full native controls and unlocked UI acceptance.
 
 See evidence-export-runtime-design.md and evidence-export-runtime-design.ja.md.
+
+F5d runtime: initial be693f7 and final9b41048 experiments each exited0/two boots; four complete bodies per boot incl135266321 bytes. Final caller237320/VMstop696832 staged bytes; operation-specific interrupted socket proof and VMstop count1; no final/partial files after cancellation, persisted downloads match.767Swift(766pass/1existingAXskip),137Python, release diagnostic exclusion and signed app checks pass locally. See evidence-export-runtime-verification.md and Japanese counterpart. Browser/API exact comparison, full F5 controls/UI and all full-product gates remain open. All our push HEADs still use [skip ci].
+
+F5 remaining integration gates also include nonempty captured-traffic bind/edit/remove/reorder, actual conflict/unknown-outcome behavior and persistence against both guest and pinned reference. The original-body SQL fixture does not populate disposable captured traffic and does not prove those mutation/picker gates.

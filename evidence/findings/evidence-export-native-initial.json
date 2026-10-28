@@ -1,0 +1,136 @@
+{
+  "schema": 1,
+  "baselineCommit": "e75ae371ad777ffd1eecdd28d2781a6519b05591",
+  "nativeHead": "be693f7c6d065ccd18612c1eb1e565233e5298b5",
+  "nativeBinarySHA256": "a06e64f71886e536847f2f94f799b618e445d6a1103505dcd920b0e4bbf68b3b",
+  "observedExitCode": 0,
+  "fullGoalComplete": false,
+  "artifactProfile": "source candidate, one CPU; not promoted to default",
+  "artifactHashes": {
+    "architecture": "arm64",
+    "backendSHA256": "0ebad83ddda276b03b415d64ce30af44e7a587860f3b660c12563462a0ac5e80",
+    "packageLockSHA256": "619e4e6c33cc2a1e2fce48e28ac138cd2020fbfc74d5c71b6500a6eec8c9a5aa",
+    "networkDevices": 0,
+    "hostShares": 0,
+    "kernelSHA256": "8e57308787c420cb42e4c4ea80e6def6438a52232692c010dc4609bb9bf21879",
+    "initramfsSHA256": "88de8582409a9ad861a69035f056e65953b36803fbc77b391e0a9deb77e335ba",
+    "systemDiskSHA256": "82e32042ec52dd316c74357d3ce5ef4dbbaf76c22a16a1dc73c925bc38fb9346",
+    "cpuCount": 1,
+    "guestRuntimeRecipeSHA256": "2c0e8fe50729d79025b89e1586384e92796e38b465208f2714ef3860bb24e107",
+    "guestRuntimeSourceSHA256": {
+      "backend.Dockerfile": "bc2553a80922c4893a8b0fd5a8206197aee10b4d8ebe6ca9d7afd05d5109a104",
+      "backend-init": "3141204720cd63c5651470fefe28a89e6a50b6b94dc1d478fd407f7e66efcb0d",
+      "vsock_relay.py": "4995c4551fac64e15d0be14f211689937edbab3d91e72abc373b81558fd1f1d2",
+      "check_blank_disk.py": "cc1776fae8120feca24d11dbf0ad94143715572f1d5e398898ca6607aa993b1d",
+      "check_network.py": "4bc167e71c655d31eda1872f11ad4b8a90b201994834a63c82194a3fa317ee2e",
+      "summarize_failure.py": "a68c74cd4a84447a9b6b5531e3ef3e31b5d372d9c6175cc6f72379af3047124d",
+      "backend-packages.lock": "619e4e6c33cc2a1e2fce48e28ac138cd2020fbfc74d5c71b6500a6eec8c9a5aa"
+    }
+  },
+  "inputSourceSHA256": {
+    "Sources/VMProbe/EvidenceExportProbe.swift": "b153895c691f98555cd4d4f5a9c46ed88d327597acce87a4740842eba31a4b2c",
+    "Sources/VMProbe/EvidenceFixtureClient.swift": "42a47379e73111b97fc67c6e0826faa941e2b0703057c24d44f9f2624e9b6436",
+    "Sources/VMProbe/EvidenceProbeFile.swift": "19e14dc7d0ebfde1cfb03e1c76c4669b151ccac63beba6bd749bc45035a68955",
+    "Sources/ArtexCore/VMController.swift": "3baa84f7e769ea2290ff145ecbcae57c957cfa7ae24d3f2e233f0c7e10664e96",
+    "Sources/ArtexCore/AuthenticationSession.swift": "991cfb67d966e99cba906440a5d70d0e90c605f4803895e71335edea881178b7",
+    "Sources/ArtexCore/EvidenceExportReceipt.swift": "41a417ade70d015171c0567663251d546a5ecf01ff661ef870ee8502bbc7135f",
+    "Sources/ArtexCore/EvidenceExportFile.swift": "7f98b1f3a2443b3af0cb8a124f00bc5e164ab8a8af7cc1f9aff40272f2262492",
+    "Sources/ArtexCore/EvidenceDownloadStaging.swift": "acd095f5b4a3240559e3213c2e3a563929a9b7132eac432e0b96003a91a9dc93",
+    "script/evidence_fixture_guest.py": "3d0d33c55ee39ab41725195a7177dd550a8d31da2f556b6c12134c745d5f08a7",
+    "script/findings_seed_guest.py": "ff65b9603ddd06704a6ace53398554f14479c5825ec0da573bc775f52036b70f",
+    "script/findings_fixture_control.py": "0ed7fbb3561758de6e8651d4ec794ded957ae32fb145f598dc794ba51a600514"
+  },
+  "report": {
+    "bootAttempts": 2,
+    "boots": [
+      {
+        "cooperativeStop": true,
+        "cpuCount": 1,
+        "credentialsAbsent": true,
+        "diagnostics": [],
+        "files": [
+          {
+            "body": "literal",
+            "byteCount": 52,
+            "sha256": "e34ddc517f3d74c938352c489e37a79bd855818916bfbce320c03115d6a35224"
+          },
+          {
+            "body": "binary",
+            "byteCount": 5242897,
+            "sha256": "732df94bc2b263d03992bc8f8858ab72863d04ced999b95f3552fd2f48270a1d"
+          },
+          {
+            "body": "empty",
+            "byteCount": 0,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          },
+          {
+            "body": "large",
+            "byteCount": 135266321,
+            "sha256": "97ac5b8e9511e77429ebaf443a3359234751dc8d3fa47b98a5c7abc51ab9d569"
+          }
+        ],
+        "formatObserved": true,
+        "index": 1,
+        "isolationWitnesses": true,
+        "ready": true
+      },
+      {
+        "cooperativeStop": true,
+        "cpuCount": 1,
+        "credentialsAbsent": true,
+        "diagnostics": [],
+        "files": [
+          {
+            "body": "literal",
+            "byteCount": 52,
+            "sha256": "e34ddc517f3d74c938352c489e37a79bd855818916bfbce320c03115d6a35224"
+          },
+          {
+            "body": "binary",
+            "byteCount": 5242897,
+            "sha256": "732df94bc2b263d03992bc8f8858ab72863d04ced999b95f3552fd2f48270a1d"
+          },
+          {
+            "body": "empty",
+            "byteCount": 0,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          },
+          {
+            "body": "large",
+            "byteCount": 135266321,
+            "sha256": "97ac5b8e9511e77429ebaf443a3359234751dc8d3fa47b98a5c7abc51ab9d569"
+          }
+        ],
+        "formatObserved": false,
+        "index": 2,
+        "isolationWitnesses": true,
+        "ready": true
+      }
+    ],
+    "browserComparison": false,
+    "cleanupComplete": true,
+    "expectedCPUCount": 1,
+    "logoutReceiptRejected": true,
+    "machineStopped": true,
+    "nativeProbePassed": true,
+    "nativeUIAcceptance": false,
+    "noClobber": true,
+    "restartReceiptRejected": true,
+    "sourceSHA256": {
+      "evidence_fixture_guest.py": "3d0d33c55ee39ab41725195a7177dd550a8d31da2f556b6c12134c745d5f08a7",
+      "findings_fixture_control.py": "0ed7fbb3561758de6e8651d4ec794ded957ae32fb145f598dc794ba51a600514",
+      "findings_seed_guest.py": "ff65b9603ddd06704a6ace53398554f14479c5825ec0da573bc775f52036b70f"
+    },
+    "stage": "complete",
+    "stopReceiptRejected": true,
+    "witnessedInFlightCancellation": false
+  },
+  "remaining": [
+    "independent pinned browser API full-byte comparison",
+    "witnessed live transfer cancellation/VM stop",
+    "full native F5 controls/SavePanel/visual/keyboard/VoiceOver acceptance",
+    "all original full-product release gates",
+    "remote CI while quota unavailable"
+  ]
+}

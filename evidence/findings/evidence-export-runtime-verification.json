@@ -1,0 +1,88 @@
+{
+  "schema": 1,
+  "nativeHead": "9b41048bbd538870c1cd19867c6dbf90e1640d01",
+  "fullGoalComplete": false,
+  "scope": "F5d original-body VM runtime only; browser and UI gates remain open",
+  "swift": {
+    "total": 767,
+    "passed": 766,
+    "existingExternalAXSkipped": 1,
+    "failed": 0
+  },
+  "python": {
+    "total": 137,
+    "failed": 0,
+    "fixtureCases": 14,
+    "fixtureTraceExecutableLines": 182,
+    "fixtureTraceReportedPercent": 94
+  },
+  "unitCoverageLines": {
+    "EvidenceCancellationProbe.swift": {
+      "count": 19,
+      "covered": 19,
+      "percent": 100
+    },
+    "EvidenceExportProbe.swift": {
+      "count": 315,
+      "covered": 63,
+      "percent": 20
+    },
+    "EvidenceFixtureClient.swift": {
+      "count": 58,
+      "covered": 55,
+      "percent": 94.82758620689656
+    },
+    "EvidenceProbeFile.swift": {
+      "count": 68,
+      "covered": 64,
+      "percent": 94.11764705882352
+    }
+  },
+  "hardware": {
+    "experiments": 2,
+    "totalBoots": 4,
+    "experimentExitCodes": [
+      0,
+      0
+    ],
+    "finalExperiment": "evidence-export-native.json",
+    "initialExperiment": "evidence-export-native-initial.json",
+    "liveCallerCancelObservedBytes": 237320,
+    "liveVMStopObservedBytes": 696832,
+    "interruptedTransfersByBoot": [
+      1,
+      0
+    ]
+  },
+  "checks": {
+    "review": true,
+    "localization": true,
+    "frozenInventory21_27_243": true,
+    "releaseProbeBuild": true,
+    "releaseHookSymbolsAbsent": true,
+    "releaseFixtureModeExit": 2,
+    "appBuild": true,
+    "strictAppSignature": true,
+    "remoteCI": false,
+    "browserAPIComparison": false,
+    "previewContentParity": false,
+    "nativeUIAcceptance": false,
+    "defaultKernelPromotion": false
+  },
+  "hostedCIStatus": "not triggered: exhausted Actions quota; pushed HEAD must include skip ci",
+  "newDependencyPackages": false,
+  "sourceSHA256": {
+    "Sources/VMProbe/EvidenceExportProbe.swift": "34a840b437e879485dd7ca084c5ad89ce0236545df33213445631c6f90c343e8",
+    "Sources/VMProbe/EvidenceFixtureClient.swift": "42a47379e73111b97fc67c6e0826faa941e2b0703057c24d44f9f2624e9b6436",
+    "Sources/VMProbe/EvidenceProbeFile.swift": "7a5208aba13b251faf6c8d90558afb87383cc886d497cc870a44c47c8cef4346",
+    "Sources/ArtexCore/VMController.swift": "4666b52750b646753428be0ce7534c4e99f3f7875d53675e8f91b5efbf44d6d8",
+    "Sources/ArtexCore/AuthenticationSession.swift": "991cfb67d966e99cba906440a5d70d0e90c605f4803895e71335edea881178b7",
+    "Sources/ArtexCore/EvidenceCancellationProbe.swift": "336cbe3592e4675dd144cd1e447fdb3bd0ebba222391ed2b33d24e4dd5aa0554",
+    "Sources/ArtexCore/EvidenceExportReceipt.swift": "41a417ade70d015171c0567663251d546a5ecf01ff661ef870ee8502bbc7135f",
+    "Sources/ArtexCore/EvidenceExportFile.swift": "7f98b1f3a2443b3af0cb8a124f00bc5e164ab8a8af7cc1f9aff40272f2262492",
+    "Sources/ArtexCore/EvidenceDownloadStaging.swift": "acd095f5b4a3240559e3213c2e3a563929a9b7132eac432e0b96003a91a9dc93",
+    "script/evidence_fixture_guest.py": "3d0d33c55ee39ab41725195a7177dd550a8d31da2f556b6c12134c745d5f08a7",
+    "script/findings_seed_guest.py": "ff65b9603ddd06704a6ace53398554f14479c5825ec0da573bc775f52036b70f",
+    "script/findings_fixture_control.py": "0ed7fbb3561758de6e8651d4ec794ded957ae32fb145f598dc794ba51a600514"
+  }
+}
