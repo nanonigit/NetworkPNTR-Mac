@@ -6,6 +6,8 @@ import os
 from pathlib import Path
 import stat
 import tempfile
+import types
+from unittest.mock import Mock
 import unittest
 from unittest.mock import patch
 
@@ -118,3 +120,57 @@ class EvidenceFixtureTests(unittest.TestCase):
             response = type('Reply', (), {'returncode': code, 'stdout': output})()
             with patch.object(FIXTURE.subprocess, 'run', return_value=response):
                 with self.assertRaises(RuntimeError): FIXTURE.run_sql(environment, 'fixed', proof=True)
+
+    def _audit_control(self):
+        zero = ('foreign_tasks', 'unsafe_tasks', 'profiles', 'activity', 'traffic_bindings', 'traffic_snapshots')
+        owned = ('tasks', 'explorations', 'relations', 'companies', 'assets', 'findings', 'finding_nodes', 'events')
+        counts = dict(zip(owned, (11, 11, 1, 1, 3, 33, 32, 0)))
+        counts.update({key: 0 for key in zero})
+        counts.update(traffic_bindings=2, traffic_snapshots=2)
+        control = types.SimpleNamespace(ZERO_KEYS=zero, COUNT_QUERIES={key: '' for key in owned}, _query=Mock(return_value=counts), audit=Mock())
+        rows = FIXTURE.snapshots()
+        proof = {'snapshots': [{key: value for key, value in row.items() if key != 'created_at'} for row in rows],
+                 'bindings': [{'id': 17001 + index, 'finding_id': 9101, 'snapshot_id': row['id'], 'role': 'supporting', 'note': 'F5 original bytes', 'position': index} for index, row in enumerate(rows)]}
+        return control, counts, proof
+
+    def test_audit_requires_no_agent_activity_exact_metadata_and_all_body_hashes(self):
+        control, counts, proof = self._audit_control()
+        with patch.dict('sys.modules', {'findings_fixture_control': control}), patch.object(FIXTURE, 'guest_environment', return_value={}), patch.object(FIXTURE, 'run_sql', return_value=proof), patch.object(FIXTURE, 'audit_bodies', return_value=FIXTURE.body_manifest()) as files:
+            result = FIXTURE.audit()
+            self.assertTrue(result['evidence_fixture']); self.assertEqual(result['binding_ids'], [17001, 17002])
+            self.assertEqual(result['counts'], counts); files.assert_called_once()
+        for key, value in [('profiles', 1), ('activity', 1), ('foreign_tasks', 1), ('unsafe_tasks', 1), ('findings', 32), ('traffic_bindings', 3), ('events', 4), ('tasks', True)]:
+            control, counts, proof = self._audit_control(); counts[key] = value
+            with self.subTest(key=key), patch.dict('sys.modules', {'findings_fixture_control': control}), patch.object(FIXTURE, 'guest_environment', return_value={}), patch.object(FIXTURE, 'run_sql') as sql, patch.object(FIXTURE, 'audit_bodies') as files:
+                with self.assertRaises(RuntimeError): FIXTURE.audit()
+                sql.assert_not_called(); files.assert_not_called()
+        control, counts, proof = self._audit_control(); proof['bindings'][0]['snapshot_id'] = 'wrong'
+        with patch.dict('sys.modules', {'findings_fixture_control': control}), patch.object(FIXTURE, 'guest_environment', return_value={}), patch.object(FIXTURE, 'run_sql', return_value=proof), patch.object(FIXTURE, 'audit_bodies') as files:
+            with self.assertRaises(RuntimeError): FIXTURE.audit()
+            files.assert_not_called()
+
+    def test_prepare_requires_fresh_seed_and_preserves_unknown_sql_outcome(self):
+        control, _, _ = self._audit_control(); seed = types.SimpleNamespace(main=Mock())
+        with patch.dict('sys.modules', {'findings_fixture_control': control, 'findings_seed_guest': seed}), patch.object(FIXTURE, 'guest_environment', return_value={}), patch.object(FIXTURE, 'write_bodies') as files, patch.object(FIXTURE, 'run_sql') as sql, patch.object(FIXTURE, 'audit', return_value={'proof': True}) as final:
+            self.assertEqual(FIXTURE.prepare(), {'proof': True})
+            self.assertEqual(control.audit.call_args_list, [unittest.mock.call(fresh=True), unittest.mock.call(fresh=False)])
+            seed.main.assert_called_once(); files.assert_called_once(); sql.assert_called_once(); final.assert_called_once()
+        control.audit.reset_mock(); seed.main.reset_mock(); control.audit.side_effect = RuntimeError('not fresh')
+        with patch.dict('sys.modules', {'findings_fixture_control': control, 'findings_seed_guest': seed}), patch.object(FIXTURE, 'guest_environment', return_value={}), patch.object(FIXTURE, 'write_bodies') as files:
+            with self.assertRaises(RuntimeError): FIXTURE.prepare()
+            seed.main.assert_not_called(); files.assert_not_called()
+        control.audit.side_effect = None
+        with patch.dict('sys.modules', {'findings_fixture_control': control, 'findings_seed_guest': seed}), patch.object(FIXTURE, 'guest_environment', return_value={}), patch.object(FIXTURE, 'write_bodies'), patch.object(FIXTURE, 'run_sql', side_effect=RuntimeError('unknown transaction')), patch.object(FIXTURE, 'audit') as final:
+            with self.assertRaises(RuntimeError): FIXTURE.prepare()
+            final.assert_not_called()
+
+    def test_database_json_type_and_successful_fixed_query_are_checked(self):
+        for output in (b'[]', b'true', b'null', b'1'):
+            response = types.SimpleNamespace(returncode=0, stdout=output)
+            with patch.object(FIXTURE.subprocess, 'run', return_value=response), self.assertRaises(RuntimeError):
+                FIXTURE.run_sql({}, 'fixed', proof=True)
+        response = types.SimpleNamespace(returncode=0, stdout=b'{"fixed":true}')
+        with patch.object(FIXTURE.subprocess, 'run', return_value=response) as run:
+            self.assertEqual(FIXTURE.run_sql({'PGHOST': '127.0.0.1'}, 'fixed', proof=True), {'fixed': True})
+            self.assertEqual(run.call_args.kwargs['input'], b'fixed')
+            self.assertEqual(run.call_args.kwargs['timeout'], 20)
