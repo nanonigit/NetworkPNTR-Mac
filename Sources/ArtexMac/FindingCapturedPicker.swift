@@ -44,6 +44,7 @@ struct CapturedPickerFilterTicket: Hashable {
     func updateDraft(_ update: () -> Void) {
         guard canEditFilters, let workspace else { return }
         workspace.publishTrafficState(update)
+        if !current { stop() }
     }
     func debounce(_ ticket: CapturedPickerFilterTicket) async {
         do { try await Task.sleep(for:.milliseconds(250)); try Task.checkCancellation() } catch { return }
@@ -51,7 +52,9 @@ struct CapturedPickerFilterTicket: Hashable {
     }
     func applyFilters(_ ticket: CapturedPickerFilterTicket) async {
         guard canEditFilters, ticket == filterTicket, let workspace else { return }
-        var query = CapturedTrafficQuery(); query.host = hostDraft; query.keyword = keywordDraft; query.method = methodDraft
+        var query = store.query
+        if !filtersCurrent { query.page = 0 }
+        query.host = hostDraft; query.keyword = keywordDraft; query.method = methodDraft
         var accepted = false
         workspace.publishTrafficState { accepted = store.configure(query,owner:store.owner); failure = nil }
         guard current, accepted, ticket == filterTicket else { return }
@@ -117,7 +120,7 @@ struct CapturedPickerFilterTicket: Hashable {
         return false
     }
     func stop() {
-        guard !stopping, isActive else { return }
+        guard !stopping else { return }
         stopping = true
         defer { stopping = false }
         isActive = false; store.stop(); hostDraft = ""; keywordDraft = ""; methodDraft = nil; failure = nil

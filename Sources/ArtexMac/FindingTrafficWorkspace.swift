@@ -56,6 +56,7 @@ struct EvidenceTextPreview {
     @ObservationIgnored private var cancelling = false
     @ObservationIgnored private let storeOwnership: UUID
     @ObservationIgnored private var stoppedStoreOwnership: UUID?
+    @ObservationIgnored private var pendingPickerClose: UUID?
 
     init(target: FindingRecord, contextTaskID: String? = nil, service: FindingTrafficService, exporter: FindingEvidenceExporter? = nil, retainedStore: FindingTrafficStore? = nil, capturedService: CapturedTrafficService? = nil, onChanged: @escaping @MainActor (UUID) async -> Void = {_ in}) throws {
         guard target.findingId != nil else { throw FindingInputError.readOnly }
@@ -82,6 +83,7 @@ struct EvidenceTextPreview {
     }
     func closePicker(id: UUID,confirmed: Bool = false) {
         guard let current = picker, current.id == id, confirmed || !current.isSubmitting else { return }
+        if transitioning { pendingPickerClose = id; return }
         transition { current.stop(); picker = nil }
     }
     func pickerMutationConfirmed() async {
@@ -96,7 +98,13 @@ struct EvidenceTextPreview {
         transitioning = true
         defer {
             transitioning = false
-            if stopRequested { stopRequested = false; stop() }
+            if stopRequested {
+                stopRequested = false; pendingPickerClose = nil; stop()
+            } else if let pending = pendingPickerClose {
+                pendingPickerClose = nil
+                // The close was accepted before busy publication, so it also revokes a just-acquired submission.
+                closePicker(id:pending,confirmed:true)
+            }
         }
         update()
     }
