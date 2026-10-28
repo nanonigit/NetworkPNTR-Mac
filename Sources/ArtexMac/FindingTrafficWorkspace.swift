@@ -45,6 +45,7 @@ struct EvidenceTextPreview {
     @ObservationIgnored private var exportTask: Task<Void, Never>?
     @ObservationIgnored private var chooser: (any EvidenceDestinationChoosing)?
     @ObservationIgnored private var exportRevision = UUID()
+    @ObservationIgnored private var exportCancelled = false
     @ObservationIgnored private var transitioning = false
     @ObservationIgnored private var stopRequested = false
     @ObservationIgnored private var stopping = false
@@ -133,7 +134,7 @@ struct EvidenceTextPreview {
         do { manifest = try FindingEvidenceDownload(binding:binding,side:side,contextTaskID:contextTaskID) }
         catch { failure = AppErrorMessage(error,fallback:.evidenceUIExportFailed); return false }
         transition {
-          let revision = UUID(); exportRevision = revision; self.chooser = chooser
+          let revision = UUID(); exportRevision = revision; self.chooser = chooser; exportCancelled = false
           isExporting = true; failure = nil; saved = nil
           exportTask = Task { [weak self] in
             guard let self else { return }
@@ -171,7 +172,7 @@ struct EvidenceTextPreview {
     }
     private func validateExport(_ revision: UUID, binding: FindingTrafficBinding) throws {
         try Task.checkCancellation()
-        guard isActive, exportRevision == revision, let current = currentBinding,
+        guard isActive, !exportCancelled, exportRevision == revision, let current = currentBinding,
               current.id == binding.id, current.snapshotId == binding.snapshotId,
               current.snapshot.requestHash == binding.snapshot.requestHash, current.snapshot.responseHash == binding.snapshot.responseHash,
               current.snapshot.requestLength == binding.snapshot.requestLength, current.snapshot.responseLength == binding.snapshot.responseLength else { throw CancellationError() }
@@ -180,6 +181,7 @@ struct EvidenceTextPreview {
         guard !cancelling else { return }
         cancelling = true
         defer { cancelling = false }
+        exportCancelled = true
         exportTask?.cancel(); chooser?.cancel()
     }
     func stop() {
