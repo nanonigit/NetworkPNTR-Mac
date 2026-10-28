@@ -1,0 +1,69 @@
+{
+  "schema": 1,
+  "baseline": "e75ae371ad777ffd1eecdd28d2781a6519b05591",
+  "code_checkpoint": "333302b",
+  "red_checkpoints": [
+    "1700475",
+    "19dd23b"
+  ],
+  "red_behavior": {
+    "cases": 15,
+    "failed_assertions": 6
+  },
+  "focused": {
+    "Core": 38,
+    "Mac": 21,
+    "passed": 59
+  },
+  "swift": {
+    "total": 697,
+    "passed": 696,
+    "skipped_existing_external_ax": 1,
+    "failures": 0
+  },
+  "python": {
+    "passed": 123
+  },
+  "line_coverage": {
+    "LLMStore.swift": {
+      "count": 174,
+      "covered": 173,
+      "percent": 99.42528735632183
+    },
+    "LLMEditorModel.swift": {
+      "count": 122,
+      "covered": 120,
+      "percent": 98.36065573770492
+    },
+    "LLMProfileEditor.swift": {
+      "count": 430,
+      "covered": 391,
+      "percent": 90.93023255813954
+    }
+  },
+  "review": "credential restoration reproduced and repaired; scoped model/UI/rendering reviews have no unresolved blocker",
+  "signed_build_only": true,
+  "strict_signature": true,
+  "localization_export_check": true,
+  "llm_localization_entries": 112,
+  "inventory": {
+    "navigation": 21,
+    "routes": 27,
+    "handlers": 243
+  },
+  "actual_guest_acceptance": false,
+  "actual_provider_acceptance": false,
+  "browser_native_visual_acceptance": false,
+  "external_keyboard_accessibility_acceptance": false,
+  "durable_unknown_recovery_complete": false,
+  "editor_task_owner_software_verified": true,
+  "actual_editor_interaction_complete": false,
+  "full_goal_complete": false,
+  "source_sha256": {
+    "Sources/ArtexCore/LLMStore.swift": "75b97638f75c51a9e7c7313cf29fd901d54225e67fb78bffce81b3b7f31c82c6",
+    "Sources/ArtexMac/LLMEditorModel.swift": "dbd2bcbc89152d51a720d28bc7f1409ce462a8eabce7636f307ca02e96b300fd",
+    "Sources/ArtexMac/LLMProfileEditor.swift": "cfbe2b1114f9d902dfc530b51254cc5e52233ee4719302957b2b78cf693e4776",
+    "Tests/ArtexMacTests/LLMEditorModelTests.swift": "44aeb8977d35763eb0f174701a15c4f35cef870b9b14a9aaab8cd0bf0c8b0a2c",
+    "Tests/ArtexMacTests/LLMEditorRenderingTests.swift": "bf82283be53e1422670685b4947bb0e22c2e51f6c6c50cfc3df74a25d35ee277"
+  }
+}

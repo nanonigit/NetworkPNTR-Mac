@@ -16,3 +16,5 @@ Primary source is pinned e75ae371ad777ffd1eecdd28d2781a6519b05591 LLM page and e
 2. Implement task/ticket lifecycle and validation; test synchronous notification departure, close/reopen, stale save and full-store unknown recovery integration.
 3. Wire existing controls, disappearance and dismissal. Offscreen render both locales without reads/writes; preserve custom CJK/FEFF/NFD values.
 4. Independent review, focused/full regression and coverage, signed build, exact-head CI. External click/keyboard/VoiceOver and browser screenshot comparison remain pending manual unlock; offline fixtures do not establish actual provider/guest acceptance. Durable uncertainty across process termination and remaining full-product gates stay open.
+
+Implementation refinement: child tickets capture LLMStore.activityID as well as active state, so a stop/resume cycle cannot revive old queued probes. Inactive draft setters scrub after publication too; the view keeps only a masked hint instead of a second immutable draft. Generation checks are internal UI ownership metadata, not wire inputs or host capabilities.
