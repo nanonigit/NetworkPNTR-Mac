@@ -68,6 +68,8 @@ def environment():
 
 class FixedHandler(BaseHTTPRequestHandler):
     protocol_version = 'HTTP/1.1'
+    # StreamRequestHandler.setup applies this before request-line/header parsing.
+    timeout = 3
     def log_message(self, *args): pass
     def do_GET(self): self.exchange()
     def do_POST(self): self.exchange()
