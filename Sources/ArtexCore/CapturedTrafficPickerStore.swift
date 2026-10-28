@@ -17,7 +17,7 @@ import Observation
     }
     public var selectedCount: Int { selectedIDs.count }
     public var canBind: Bool {
-        isCurrent && !acquiring && !isSubmitting && !evidence.isMutating && evidence.canMutateSelected &&
+        isCurrent && !stopping && !resuming && !acquiring && !isSubmitting && !evidence.isMutating && evidence.canMutateSelected &&
         evidence.unknownIDs.isEmpty && !evidence.summary.isLoading && !evidence.summary.isStale &&
         evidence.summary.value != nil && selectedCount > 0
     }
@@ -32,7 +32,10 @@ import Observation
     @ObservationIgnored private let service: CapturedTrafficService
     @ObservationIgnored private let evidence: FindingTrafficStore
     @ObservationIgnored private var parentOwner: UUID
-    @ObservationIgnored private var active = true
+    private var active = true
+    @ObservationIgnored private var stopping = false
+    @ObservationIgnored private var resuming = false
+    @ObservationIgnored private var stopAfterResume = false
     @ObservationIgnored private var acquiring = false
     private struct Ticket { let id = UUID(); let owner, parent: UUID }
     public init(service: CapturedTrafficService, evidence: FindingTrafficStore) {
@@ -40,9 +43,9 @@ import Observation
     }
     private var boundIDs: Set<Data> { Set(evidence.summary.value?.bindings.map { Data($0.snapshot.sourceTrafficId.utf8) } ?? []) }
     private var canUseCatalog: Bool {
-        isCurrent && !acquiring && !isSubmitting && !evidence.isMutating && !catalog.isLoading && !catalog.isStale && catalog.value != nil
+        isCurrent && !stopping && !resuming && !acquiring && !isSubmitting && !evidence.isMutating && !catalog.isLoading && !catalog.isStale && catalog.value != nil
     }
-    private func usable(_ owner: UUID) -> Bool { isCurrent && self.owner == owner && !Task.isCancelled }
+    private func usable(_ owner: UUID) -> Bool { isCurrent && !stopping && !resuming && self.owner == owner && !Task.isCancelled }
     private func owns(_ ticket: Ticket) -> Bool { usable(ticket.owner) && parentOwner == ticket.parent && write?.id == ticket.id }
     @discardableResult public func configure(_ value: CapturedTrafficQuery, owner: UUID) -> Bool {
         guard usable(owner), !acquiring, !isSubmitting, !evidence.isMutating else { return false }
@@ -75,7 +78,8 @@ import Observation
         if selected {
             if selectedValues[identity] == nil { selectedValues[identity] = row.id; selectedOrder.append(identity) }
         } else { selectedValues.removeValue(forKey: identity); selectedOrder.removeAll { $0 == identity } }
-        return usable(owner)
+        guard usable(owner) else { selectedOrder = []; selectedValues = [:]; return false }
+        return true
     }
     @discardableResult public func selectPage(_ selected: Bool, owner: UUID) -> Bool {
         guard usable(owner), canUseCatalog, catalog.value?.isUnavailable == false else { return false }
@@ -96,7 +100,8 @@ import Observation
             guard canUseCatalog, catalog.value?.exchanges.contains(where: { $0.identity == Data(id.utf8) }) == true else { return false }
         }
         selectedPreviewID = id; preview.invalidate(clear: true)
-        return usable(owner)
+        guard usable(owner) else { clearPreview(); return false }
+        return true
     }
     public func refreshCatalog() async {
         let owner = owner, value = query
@@ -138,17 +143,24 @@ import Observation
         case .invalidInput, .unconfirmed: failure = evidence.mutationFailure
         case .discarded, .notStarted: break
         }
+        guard owns(ticket) else { failure = nil; return .discarded }
         return result
     }
     public func stop() {
-        guard active else { return }
+        if resuming { stopAfterResume = true; return }
+        guard !stopping, active else { return }
+        stopping = true
+        defer { stopping = false }
         active = false; owner = UUID()
         catalog.invalidate(clear: true); clearPreview(); selectedOrder = []; selectedValues = [:]; failure = nil
     }
     public func resume() {
-        guard !active, !acquiring else { return }
-        parentOwner = evidence.owner; owner = UUID(); active = true
+        guard !stopping, !resuming, !active, !acquiring else { return }
+        resuming = true
+        parentOwner = evidence.owner; selectedOrder = []; selectedValues = [:]; owner = UUID(); active = true
         catalog.invalidate(clear: true); clearPreview()
+        resuming = false
+        if stopAfterResume { stopAfterResume = false; stop() }
     }
     private func clearPreview() { selectedPreviewID = nil; preview.invalidate(clear: true) }
 }
