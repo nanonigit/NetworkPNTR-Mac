@@ -29,6 +29,10 @@ final class CapturedProbeContractTests: XCTestCase {
         let changed=try preview(content:"changed",offset:0,total:9003,next:8191,binary:false,truncated:true)
         XCTAssertThrowsError(try CapturedProbeContract.validate(changed,data:data,offset:0))
     }
+    func testEmptyReconciliationSummaryFailsBeforeBindingAccess() throws {
+        let empty=try BackendJSONCoding.decode(FindingTraffic.self,from:Data(#"{"finding_id":"9101","version":2,"report_version":0,"bindings":[]}"#.utf8))
+        XCTAssertThrowsError(try CapturedProbeContract.editedBinding(empty,first:"1",second:"2"))
+    }
     func testFinalGateRequiresTwoCleanBootsComparisonAndRecovery() throws {
         let complete=CapturedProbeContract.Completion(boots:2,cooperativeStops:2,cleanAudits:2,sourceVerified:true,referenceEqual:true,persistence:true,uncertaintyRecovered:true,machineStopped:true)
         XCTAssertNoThrow(try complete.validate())
