@@ -64,8 +64,13 @@ public struct LLMConnectionResult: Decodable, Sendable {
         }
     }
     private func raw(method: String, path: String, body: Data? = nil) async throws -> Data {
+        try Task.checkCancellation()
+        guard (body?.count ?? 0) <= 4 * 1024 * 1024 else { throw BackendAPIError.invalidResponse }
         let response = try await client.send(method: method, path: path, body: body, bearer: nil)
+        // A transport may complete even after its caller has cancelled.
+        try Task.checkCancellation()
         guard (200..<300).contains(response.status) else { throw BackendAPIError.status(response.status) }
+        guard response.body.count <= 4 * 1024 * 1024 else { throw BackendAPIError.invalidResponse }
         return response.body
     }
     private func request<T: Decodable>(_ type: T.Type, method: String = "GET", path: String, body: Data? = nil) async throws -> T {
