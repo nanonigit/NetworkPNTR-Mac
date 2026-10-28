@@ -11,6 +11,28 @@ struct EvidenceFileProof: Codable, Equatable {
 }
 
 enum EvidenceProbeFile {
+    static func observedBytes(_ directory: URL, expectedSize: Int64) throws -> Int64? {
+        var info = stat()
+        guard expectedSize > 0, lstat(directory.path, &info) == 0, info.st_mode & S_IFMT == S_IFDIR,
+              info.st_uid == getuid() else { throw failure() }
+        let names = try FileManager.default.contentsOfDirectory(atPath: directory.path)
+            .filter { $0.hasPrefix(".artex-evidence-") && $0.hasSuffix(".partial") }
+        guard names.count <= 1 else { throw failure() }
+        guard let name = names.first else { return nil }
+        let stage = directory.appendingPathComponent(name)
+        if lstat(stage.path, &info) != 0 {
+            if errno == ENOENT { return nil }
+            throw failure()
+        }
+        guard info.st_mode & S_IFMT == S_IFDIR, info.st_uid == getuid() else { throw failure() }
+        let body = stage.appendingPathComponent("body.partial")
+        if lstat(body.path, &info) != 0 {
+            if errno == ENOENT { return nil }
+            throw failure()
+        }
+        guard info.st_mode & S_IFMT == S_IFREG, info.st_uid == getuid(), info.st_size >= 0, info.st_size <= expectedSize else { throw failure() }
+        return info.st_size > 0 && info.st_size < expectedSize ? Int64(info.st_size) : nil
+    }
     static func stagingAbsent(_ output: URL) -> Bool {
         for (index, directory) in [output, output.appendingPathComponent("downloads-1"), output.appendingPathComponent("downloads-2")].enumerated() {
             var info = stat()
