@@ -1,4 +1,7 @@
+import base64
+import hashlib
 import importlib.util
+import tempfile
 from pathlib import Path
 import sys
 import unittest
@@ -30,6 +33,25 @@ class CapturedReferenceHostTests(unittest.TestCase):
         self.assertIn('--read-only',args);self.assertIn('ALL',args);self.assertIn('no-new-privileges',args)
         self.assertNotIn('--privileged',args);self.assertNotIn('-v',args);self.assertNotIn('-p',args)
         with self.assertRaises(RuntimeError):m.create_arguments('unsafe\nname','a'*32,'f5-image:owned')
+
+    def test_parent_alias_is_retained_when_any_original_tag_is_missing_or_retargeted(self):
+        m=load();removed=[]
+        images={'sha256:parent':{'Id':'sha256:parent','RepoTags':['original:one']},'original:one':{'Id':'sha256:parent'},'owned:alias':{'Id':'sha256:parent'}}
+        m.remove_input_alias('owned:alias','sha256:parent',['original:one'],images.__getitem__,removed.append)
+        self.assertEqual(removed,['owned:alias'])
+        for bad in [{'sha256:parent':{'Id':'sha256:parent','RepoTags':[]}}, {'original:one':{'Id':'sha256:other'}}, {'owned:alias':{'Id':'sha256:other'}}]:
+            removed.clear();state=dict(images);state.update(bad)
+            with self.assertRaises(RuntimeError):m.remove_input_alias('owned:alias','sha256:parent',['original:one'],state.__getitem__,removed.append)
+            self.assertEqual(removed,[])
+
+    def test_source_bundle_and_hashes_are_frozen_before_later_file_edits(self):
+        m=load()
+        with tempfile.TemporaryDirectory() as directory:
+            path=Path(directory)/'fixture.py';path.write_bytes(b'before')
+            snapshot=m.freeze_sources({'fixture.py':path});path.write_bytes(b'after')
+            self.assertEqual(base64.b64decode(snapshot['bundle']['fixture.py']),b'before')
+            self.assertEqual(snapshot['hashes']['fixture.py'],hashlib.sha256(b'before').hexdigest())
+            self.assertNotEqual(snapshot['hashes']['fixture.py'],hashlib.sha256(path.read_bytes()).hexdigest())
 
     def test_install_and_execute_are_compilable_and_fixed_source_set(self):
         m=load();compile(m.INSTALL,'install','exec');compile(m.EXECUTE,'execute','exec')
