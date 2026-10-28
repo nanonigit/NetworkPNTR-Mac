@@ -114,7 +114,7 @@ import SwiftUI
                     if value.binary { Text(s(.evidenceUIBinary)).foregroundStyle(.secondary) }
                     Text(AppStrings.formatted(.evidenceUIBytes,language:language,values:["loaded":String(value.nextOffset),"total":String(value.total)])).font(.caption.monospacedDigit())
                     ScrollView([.horizontal,.vertical]) {
-                        Text(verbatim:(side == .request ? model.requestHeader : model.responseHeader)+"\n\n"+value.content)
+                        Text(verbatim:(side == .request ? model.requestHeader : model.responseHeader)+"\n\n"+value.textContent)
                             .font(.system(.body,design:.monospaced)).textSelection(.enabled).frame(maxWidth:.infinity,alignment:.topLeading).padding(10)
                     }.background(Color.primary.opacity(0.04),in:RoundedRectangle(cornerRadius:6))
                     if value.hasMore {

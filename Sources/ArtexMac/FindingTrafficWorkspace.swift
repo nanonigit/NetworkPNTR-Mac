@@ -11,16 +11,20 @@ typealias FindingEvidenceExporter = @MainActor (FindingEvidenceDownload, Evidenc
 
 struct EvidenceTextPreview {
     private(set) var content: String
+    /// Display only ordinary text pages; the view supplies its localized binary notice.
+    private(set) var textContent: String
     private(set) var nextOffset: Int64
     let total: Int64
     private(set) var binary: Bool
     var hasMore: Bool { !binary && nextOffset < total }
     init(_ value: FindingEvidencePreview) {
-        content = value.content; nextOffset = value.nextOffset; total = value.total; binary = value.binary
+        content = value.content; textContent = value.binary ? "" : value.content
+        nextOffset = value.nextOffset; total = value.total; binary = value.binary
     }
     mutating func append(_ value: FindingEvidencePreview) throws {
         guard value.offset == nextOffset, value.total == total else { throw BackendAPIError.invalidResponse }
-        content += value.content; nextOffset = value.nextOffset; binary = binary || value.binary
+        content += value.content; if !value.binary { textContent += value.content }
+        nextOffset = value.nextOffset; binary = binary || value.binary
     }
 }
 
