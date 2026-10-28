@@ -8,7 +8,7 @@ import XCTest
 @MainActor private final class NativePickerAPI: BackendJSONTransport {
     struct Call { let method,path: String; let body: Data? }
     var calls: [Call] = []
-    var version = 2
+    var version: Int64 = 2
     var bound = ["bound"]
     var unavailable = false
     var enabled = true

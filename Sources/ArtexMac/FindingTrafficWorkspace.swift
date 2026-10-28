@@ -30,6 +30,9 @@ struct EvidenceTextPreview {
     let target: FindingRecord
     let store: FindingTrafficStore
     let actions: FindingTrafficActions
+    private(set) var picker: FindingCapturedPicker?
+    @ObservationIgnored private let capturedService: CapturedTrafficService?
+    @ObservationIgnored private let onChanged: @MainActor (UUID) async -> Void
     private(set) var isActive = true
     private(set) var isReading = false
     private(set) var isExporting = false
@@ -54,8 +57,9 @@ struct EvidenceTextPreview {
     @ObservationIgnored private let storeOwnership: UUID
     @ObservationIgnored private var stoppedStoreOwnership: UUID?
 
-    init(target: FindingRecord, contextTaskID: String? = nil, service: FindingTrafficService, exporter: FindingEvidenceExporter? = nil, retainedStore: FindingTrafficStore? = nil, onChanged: @escaping @MainActor (UUID) async -> Void = {_ in}) throws {
+    init(target: FindingRecord, contextTaskID: String? = nil, service: FindingTrafficService, exporter: FindingEvidenceExporter? = nil, retainedStore: FindingTrafficStore? = nil, capturedService: CapturedTrafficService? = nil, onChanged: @escaping @MainActor (UUID) async -> Void = {_ in}) throws {
         guard target.findingId != nil else { throw FindingInputError.readOnly }
+        self.capturedService = capturedService; self.onChanged = onChanged
         self.target = target; self.contextTaskID = contextTaskID; self.exporter = exporter
         store = retainedStore ?? FindingTrafficStore(service:service)
         guard !store.isMutating else { throw FindingInputError.readOnly }
@@ -67,7 +71,23 @@ struct EvidenceTextPreview {
     }
     var confirmationControlsAvailable: Bool { isActive && store.isActive && store.owner == storeOwnership && !transitioning && !stopping && !isReading && !isExporting && !Task.isCancelled }
     var trafficControlsAvailable: Bool { usable }
-    private var usable: Bool { confirmationControlsAvailable && !actions.isSubmitting && actions.dialog == nil }
+    var pickerControlsAvailable: Bool { confirmationControlsAvailable && !actions.isSubmitting && actions.dialog == nil }
+    var canOpenPicker: Bool { usable && capturedService != nil && actions.canMutate }
+    private var usable: Bool { pickerControlsAvailable && picker == nil }
+    @discardableResult func openPicker(owner: UUID,version: Int64) -> Bool {
+        guard canOpenPicker, owner == id, store.summary.value?.version == version, let capturedService else { return false }
+        let created = FindingCapturedPicker(workspace:self,service:capturedService)
+        transition { picker = created }
+        return isActive && picker?.id == created.id
+    }
+    func closePicker(id: UUID,confirmed: Bool = false) {
+        guard let current = picker, current.id == id, confirmed || !current.isSubmitting else { return }
+        transition { current.stop(); picker = nil }
+    }
+    func pickerMutationConfirmed() async {
+        await onChanged(id)
+        if confirmationControlsAvailable { clearTrafficPreview() }
+    }
     /// Observation callbacks can synchronously depart during willSet. Drain departure after the entire publication.
     func publishTrafficState(_ update: () -> Void) { transition(update) }
     func clearTrafficPreview() { transition { requestPreview = nil; responsePreview = nil; saved = nil; failure = nil } }
@@ -207,7 +227,7 @@ struct EvidenceTextPreview {
         stopping = true
         defer { stopping = false }
         isActive = false; readRevision = UUID(); isReading = false
-        cancelExport(); actions.stop()
+        cancelExport(); actions.stop(); picker?.stop(); picker = nil
         if let stopped = store.stop(clearReadData:true,ifOwnedBy:storeOwnership) { stoppedStoreOwnership = stopped }
         requestPreview = nil; responsePreview = nil; failure = nil; saved = nil
     }

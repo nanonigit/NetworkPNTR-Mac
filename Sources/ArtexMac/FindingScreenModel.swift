@@ -35,6 +35,7 @@ struct FindingSearchTicket: Hashable {
     @ObservationIgnored private var trafficTargets: [String:(FindingRecord,String?)] = [:]
     var trafficUnknownIDs: [String] { trafficState?.unknownIDs.sorted() ?? [] }
     var hasUnknownWrites: Bool { !store.unknownIDs.isEmpty || !trafficUnknownIDs.isEmpty }
+    @ObservationIgnored private let capturedTrafficService: CapturedTrafficService?
     @ObservationIgnored private let trafficService: FindingTrafficService?
     @ObservationIgnored private let evidenceExporter: FindingEvidenceExporter?
     var expandedAssets = Set<Data>()
@@ -66,7 +67,8 @@ struct FindingSearchTicket: Hashable {
     @ObservationIgnored private var closingTraffic = false
     @ObservationIgnored private var leaving = false
 
-    init(store: FindingStore,preferences: UserDefaults? = nil,trafficService: FindingTrafficService? = nil,evidenceExporter: FindingEvidenceExporter? = nil) {
+    init(store: FindingStore,preferences: UserDefaults? = nil,trafficService: FindingTrafficService? = nil,capturedTrafficService: CapturedTrafficService? = nil,evidenceExporter: FindingEvidenceExporter? = nil) {
+        self.capturedTrafficService = capturedTrafficService
         self.trafficState = trafficService.map { FindingTrafficStore(service:$0) }; self.trafficService = trafficService; self.evidenceExporter = evidenceExporter
         self.store = store; self.reads = FindingScreenReads(store:store); self.preferences = preferences
         if let data = preferences?.data(forKey:Self.preferenceKey), data.count <= 32768,
@@ -167,7 +169,7 @@ struct FindingSearchTicket: Hashable {
         acquiringTraffic = true
         defer { acquiringTraffic = false }
         do {
-            let workspace = try FindingTrafficWorkspace(target:row,contextTaskID:context,service:service,exporter:evidenceExporter,retainedStore:trafficState,onChanged:{ [weak self] id in
+            let workspace = try FindingTrafficWorkspace(target:row,contextTaskID:context,service:service,exporter:evidenceExporter,retainedStore:trafficState,capturedService:capturedTrafficService,onChanged:{ [weak self] id in
                 guard let self, self.lifecycle == life, self.trafficWorkspace?.id == id else { return }
                 await self.store.refreshSelected()
                 guard self.lifecycle == life, self.trafficWorkspace?.id == id else { return }
