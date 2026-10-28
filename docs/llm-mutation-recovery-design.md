@@ -18,3 +18,7 @@ Lazyweb searches `settings save error recovery` and `error banner` (desktop, 202
 2. Implement service callbacks and store tickets; exercise all six mutation families, Observation reentry, busy retention, known-save/reload failure, full reload vs pool-only review.
 3. Add recovery panel to all three surfaces and exact en/ja matrix; preserve arbitrary CJK/custom values.
 4. Independent review, full regression, coverage, signed build and exact-head CI. Actual native/browser clicks, keyboard, resizing and accessibility remain pending manual unlock; software checks cannot close that gate.
+
+## Navigation ownership addendum
+
+RootView's conditional destination previously constructed a new LLMStore inside each LLMSettingsView. Store stop/resume unit tests alone cannot prove real navigation ownership. Introduce a window-owned LLMWorkspace holding one store per authentication-session object. Same-owner navigation reuses the exact store and unknown revision; a different session or auth loss stops and releases it. The view receives the retained store. Add coordinator tests before implementation. This is in-memory ownership, not persistence across app termination; crash/restart uncertainty recovery remains unproven.
