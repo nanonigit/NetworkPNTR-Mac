@@ -6,6 +6,7 @@ import Observation
     var paths: [String] = []
     var methods: [String] = []
     var hold = false
+    var holdMethod: String?
     var pending: CheckedContinuation<BackendHTTPResponse, any Error>?
     var responses: [BackendHTTPResponse] = []
     func queue(_ text: String, status: Int = 200) { responses.append(.init(status: status, body: Data(text.utf8))) }
@@ -15,7 +16,10 @@ import Observation
     }
     func send(method: String, path: String, body: Data?, bearer: String?) async throws -> BackendHTTPResponse {
         XCTAssertNil(bearer); paths.append(path); methods.append(method)
-        if hold { hold = false; return try await withCheckedThrowingContinuation { pending = $0 } }
+        if hold || holdMethod == method {
+            hold = false; holdMethod = nil
+            return try await withCheckedThrowingContinuation { pending = $0 }
+        }
         guard !responses.isEmpty else { throw BackendAPIError.invalidResponse }
         return responses.removeFirst()
     }
@@ -144,11 +148,11 @@ extension LLMMutationRecoveryTests {
     @MainActor func testConfirmedSaveStaysKnownAcrossStopDuringRefresh() async throws {
         let api = LLMHeldTransport(); let store = LLMStore(service: LLMService(client: api))
         api.queue("{\"id\":7}")
-        withObservationTracking { _ = store.noticeKey } onChange: {
-            MainActor.assumeIsolated { api.hold = true }
-        }
+        api.holdMethod = "GET"
         let draft = fixture(); let task = Task { await store.save(draft) }
-        await waitForRequest(api); store.stop(); store.resume()
+        await waitForRequest(api)
+        XCTAssertEqual(api.methods, ["POST", "GET"])
+        store.stop(); store.resume()
         XCTAssertTrue(store.isMutating); XCTAssertNil(store.unknownRevision)
         api.finish("{}", status: 503)
         let saved = await task.value; XCTAssertTrue(saved)
