@@ -58,6 +58,7 @@ final class EvidenceExportWriter: @unchecked Sendable {
     private enum State { case writing, verified, committed, closed }
     private var state = State.writing
     private var verifiedStamp: Stamp?
+    private var originalStamp: Stamp?
     private struct Stamp: Equatable {
         let device: dev_t, inode: ino_t, size: off_t
         let modifiedSeconds, modifiedNanos, changedSeconds, changedNanos: Int
@@ -82,6 +83,12 @@ final class EvidenceExportWriter: @unchecked Sendable {
             throw EvidenceExportError.storage
         }
         file = fd
+        var info = stat()
+        guard fstat(fd, &info) == 0, info.st_mode & S_IFMT == S_IFREG else {
+            if !cleanup() { throw EvidenceExportError.cleanupRequired }
+            throw EvidenceExportError.storage
+        }
+        originalStamp = Stamp(info)
     }
     deinit {
         lock.lock(); _ = cleanup()
@@ -166,8 +173,19 @@ final class EvidenceExportWriter: @unchecked Sendable {
     private func cleanup() -> Bool {
         if let file { Darwin.close(file); self.file = nil }
         if let stage {
-            if unlinkat(stage, "body.partial", 0) != 0, errno != ENOENT { return false }
-            if unlinkat(destination.directory, stageName, AT_REMOVEDIR) != 0, errno != ENOENT { return false }
+            var body = stat(), pinned = stat(), named = stat()
+            if fstatat(stage, "body.partial", &body, AT_SYMLINK_NOFOLLOW) == 0 {
+                guard let originalStamp, body.st_mode & S_IFMT == S_IFREG,
+                      body.st_dev == originalStamp.device, body.st_ino == originalStamp.inode,
+                      unlinkat(stage, "body.partial", 0) == 0 else { return false }
+            } else if errno != ENOENT { return false }
+            guard fstat(stage, &pinned) == 0 else { return false }
+            // An already-unlinked directory is gone; a moved or replaced name is not cleanup success.
+            if pinned.st_nlink != 0 {
+                guard fstatat(destination.directory, stageName, &named, AT_SYMLINK_NOFOLLOW) == 0,
+                      named.st_mode & S_IFMT == S_IFDIR, named.st_dev == pinned.st_dev, named.st_ino == pinned.st_ino,
+                      unlinkat(destination.directory, stageName, AT_REMOVEDIR) == 0 else { return false }
+            }
             Darwin.close(stage); self.stage = nil
         }
         return true
