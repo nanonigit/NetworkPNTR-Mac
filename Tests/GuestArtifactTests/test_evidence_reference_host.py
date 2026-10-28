@@ -3,6 +3,8 @@ import ast
 import hashlib
 import importlib.util
 import os
+import sys
+import time
 import json
 from pathlib import Path
 import tempfile
@@ -73,3 +75,29 @@ class EvidenceReferenceHostTests(unittest.TestCase):
             with self.assertRaises(RuntimeError): HOST.verify_native_receipt(record, workspace, repo)
             source.write_bytes(b'fixed native source'); binary.write_bytes(b'replaced executable')
             with self.assertRaises(RuntimeError): HOST.verify_native_receipt(record, workspace, repo)
+
+    def test_stream_export_copies_binary_without_archive_or_host_mount(self):
+        with tempfile.TemporaryDirectory() as directory:
+            output = Path(directory) / 'copied.bin'
+            data = bytes(range(256)) * 300
+            command = [sys.executable, '-c', 'import sys;sys.stdout.buffer.write(bytes(range(256))*300)']
+            HOST.copy_response_file(command, output, len(data), timeout=2)
+            self.assertEqual(output.read_bytes(), data)
+            self.assertEqual(output.stat().st_mode & 0o777, 0o600)
+            ast.parse(HOST.EXPORT_ONE)
+
+    def test_stream_export_rejects_short_extra_nonzero_and_excess_stderr(self):
+        programs = ["import sys;sys.stdout.buffer.write(b'x')", "import sys;sys.stdout.buffer.write(b'xxx')", "import sys;sys.stdout.buffer.write(b'xx');sys.exit(7)", "import sys;sys.stderr.buffer.write(b'x'*65537)"]
+        for code in programs:
+            with self.subTest(code=code), tempfile.TemporaryDirectory() as directory:
+                with self.assertRaises(RuntimeError):
+                    HOST.copy_response_file([sys.executable, '-c', code], Path(directory) / 'invalid.bin', 2, timeout=2)
+
+    def test_stream_export_timeout_is_bounded_and_existing_files_are_preserved(self):
+        with tempfile.TemporaryDirectory() as directory:
+            output = Path(directory) / 'timeout.bin'; started = time.monotonic()
+            with self.assertRaises(RuntimeError): HOST.copy_response_file([sys.executable, '-c', 'import time;time.sleep(10)'], output, 0, timeout=.1)
+            self.assertLess(time.monotonic() - started, 2)
+            sentinel = Path(directory) / 'keep.bin'; sentinel.write_bytes(b'keep')
+            with self.assertRaises(RuntimeError): HOST.copy_response_file([sys.executable, '-c', 'raise RuntimeError("must not start")'], sentinel, 0, timeout=1)
+            self.assertEqual(sentinel.read_bytes(), b'keep')
