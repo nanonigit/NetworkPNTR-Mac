@@ -1,0 +1,89 @@
+{
+  "schema": 1,
+  "passed": true,
+  "fullGoalComplete": false,
+  "sourceHead": "78ef8d2aac51112aecc7661ceaccdb5540102126",
+  "sourceSHA256": {
+    "Sources/ArtexMac/FindingTrafficWorkspace.swift": "0023d8b537ed546f83874ccfa10d41f0d32f35a6b6b9bf34ffad3db88686fd15",
+    "Sources/ArtexMac/FindingTrafficView.swift": "4202747033d83ed8ebcf1b755ea66656d036e56a8804b3dbbdb3b37b3603d794"
+  },
+  "behavior": {
+    "typedBinaryPlaceholderSuppressedInDisplay": true,
+    "existingENJANoticeUsedOnce": true,
+    "rawDTOsAndCumulativeContentPreserved": true,
+    "ordinaryCJKAndMarkerTextPreserved": true,
+    "earlierTextPagesPreserved": true,
+    "headersOffsetsAndDownloadsUnchanged": true,
+    "localeRendersCauseNoRequests": true
+  },
+  "tests": {
+    "focusedPassed": 28,
+    "newCases": 5,
+    "swiftTotal": 837,
+    "swiftPassed": 836,
+    "existingExternalAXSkipped": 1,
+    "pythonPassed": 179,
+    "baselineFeatures": 21,
+    "baselinePages": 27,
+    "baselineHandlers": 243,
+    "localizationExportPassed": true
+  },
+  "coverage": {
+    "method": "LLVM line coverage from full Swift suite, changed source files combined; not whole product or branch coverage",
+    "files": {
+      "FindingTrafficView.swift": {
+        "count": 362,
+        "covered": 270,
+        "percent": 74.58563535911603
+      },
+      "FindingTrafficWorkspace.swift": {
+        "count": 338,
+        "covered": 335,
+        "percent": 99.11242603550295
+      }
+    },
+    "combined": {
+      "covered": 605,
+      "total": 700,
+      "percent": 86.43
+    },
+    "typedPreviewRegions": {
+      "initializer": {
+        "covered": 3,
+        "total": 3
+      },
+      "append": {
+        "covered": 5,
+        "total": 5
+      }
+    }
+  },
+  "stagedApp": {
+    "rebuilt": true,
+    "signatureStrictValid": true,
+    "binarySHA256": "af3dbee6e85762de5cd86b992d13c282cb74ece034fe7782829fcf2d8bb7c643",
+    "newDisplaySymbolPresent": true,
+    "guestManifestSHA256": "fa0f1972c04f2a04853de37f4fd163b922ac38c841849c635d29f565fe6115ce",
+    "guestArtifactHashesVerified": true,
+    "previousGuestProfilePreserved": true,
+    "candidatePromoted": false,
+    "installedElsewhere": false,
+    "launched": false
+  },
+  "research": {
+    "lazywebVersion": "0.15.14",
+    "query": "HTTP response binary preview",
+    "coverage": "weak adjacent metadata; images not inspected",
+    "topSimilarity": 0.385266,
+    "clarifyURL": "https://raw.githubusercontent.com/pbakaus/impeccable/main/.claude/skills/impeccable/reference/clarify.md",
+    "decision": "single localized notice with action; no duplicate backend placeholder"
+  },
+  "nativeUIAcceptance": false,
+  "browserVisualComparison": false,
+  "hostedCI": "unverified; skip ci policy",
+  "remaining": [
+    "actual visible/keyboard/VoiceOver/multiwindow/save-panel comparison",
+    "untyped raw traffic preview marker audit without rewriting packet data",
+    "all original full-workflow/kernel/release/provider/harness gates"
+  ]
+}

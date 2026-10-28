@@ -446,3 +446,12 @@ Historical R4 partial checkpoint (superseded by F5e5 below): fresh capture-confi
 - [ ] N5 actual new UI/browser/mouse/keyboard/VoiceOver/multiwindow/save-panel and typed binary display localization acceptance.
 
 See captured-native-verification.md/.ja.md, bugs/captured-native.md/.ja.md, captured-picker-reference.json and captured-native-comparison.json. Native runtime closes M5/P4/R4 only; E4/E5 UI acceptance, M6/P5/R5, all21 workflow/release/kernel goals, CP1–CP4 and H0–H5 remain open. Default profile and installed app were not replaced. Hosted CI stays unverified; publication uses [skip ci].
+
+## F5e6 typed binary notice localization
+
+- [x] B1 preserve raw cumulative/API content and headers; display only nonbinary text pages under the existing EN/JA notice.
+- [x] B2 initial/later binary, ordinary identical marker/CJK/FEFF/NFD, rejected append and both-side locale/offscreen/no-request tests.
+- [x] B3 full837 Swift (836 pass,one existing AX skip),179 Python, changed-file combined line86.43%, review/localization/baseline; local staged app rebuilt/strict signed with prior guest profile retained.
+- [ ] B4 actual new UI/browser/keyboard/VoiceOver/multiwindow/save-panel comparison; untyped raw-marker audit without packet rewriting and all broader product gates.
+
+See evidence-binary-localization-design/verification and bugs/evidence-binary-localization in en/ja, plus binary-localization-verification.json. N5/P5/M6/R5 remain open: typed localization software is fixed, actual UI acceptance is not completed. CP1–CP4/H0–H5 and full21 workflow/kernel/release requirements continue. Hosted CI is unverified; pushed HEAD uses [skip ci].
