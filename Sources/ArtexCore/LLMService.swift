@@ -63,9 +63,11 @@ public struct LLMConnectionResult: Decodable, Sendable {
             apiKey = draft.apiKey; profileId = draft.id
         }
     }
-    private func raw(method: String, path: String, body: Data? = nil) async throws -> Data {
+    private func raw(method: String, path: String, body: Data? = nil, onDispatch: @MainActor () throws -> Void = {}) async throws -> Data {
         try Task.checkCancellation()
         guard (body?.count ?? 0) <= 4 * 1024 * 1024 else { throw BackendAPIError.invalidResponse }
+        try onDispatch()
+        try Task.checkCancellation()
         let response = try await client.send(method: method, path: path, body: body, bearer: nil)
         // A transport may complete even after its caller has cancelled.
         try Task.checkCancellation()
@@ -73,41 +75,56 @@ public struct LLMConnectionResult: Decodable, Sendable {
         guard response.body.count <= 4 * 1024 * 1024 else { throw BackendAPIError.invalidResponse }
         return response.body
     }
-    private func request<T: Decodable>(_ type: T.Type, method: String = "GET", path: String, body: Data? = nil) async throws -> T {
-        try LLMWire.decode(type, from: await raw(method: method, path: path, body: body))
+    private func request<T: Decodable>(_ type: T.Type, method: String = "GET", path: String, body: Data? = nil, onDispatch: @MainActor () throws -> Void = {}) async throws -> T {
+        try LLMWire.decode(type, from: await raw(method: method, path: path, body: body, onDispatch: onDispatch))
     }
     public func profiles() async throws -> [LLMProfile] {
         try await request(Profiles.self, path: "/api/llm/profiles").profiles
     }
     public func save(_ draft: LLMProfileDraft) async throws -> Int64 {
-        let saved = try await request(Saved.self, method: "POST", path: "/api/llm/profiles", body: draft.encoded())
+        try await save(draft, onDispatch: {})
+    }
+    func save(_ draft: LLMProfileDraft, onDispatch: @MainActor () throws -> Void) async throws -> Int64 {
+        let saved = try await request(Saved.self, method: "POST", path: "/api/llm/profiles", body: draft.encoded(), onDispatch: onDispatch)
         guard saved.id > 0 else { throw BackendAPIError.invalidResponse }
         return saved.id
     }
     public func activate(id: String) async throws {
+        try await activate(id: id, onDispatch: {})
+    }
+    func activate(id: String, onDispatch: @MainActor () throws -> Void) async throws {
         let body = try LLMWire.encode(IDRequest(id: LLMWire.numericID(id)))
-        let result = try await request(Acknowledgement.self, method: "POST", path: "/api/llm/profiles/active", body: body)
+        let result = try await request(Acknowledgement.self, method: "POST", path: "/api/llm/profiles/active", body: body, onDispatch: onDispatch)
         guard result.ok else { throw BackendAPIError.invalidResponse }
     }
     public func delete(id: String, isActive: Bool) async throws {
+        try await delete(id: id, isActive: isActive, onDispatch: {})
+    }
+    func delete(id: String, isActive: Bool, onDispatch: @MainActor () throws -> Void) async throws {
         guard !isActive else { throw BackendAPIError.validation(.activeProfile) }
         let identifier = try LLMWire.numericID(id)
-        let result = try await request(Deleted.self, method: "DELETE", path: "/api/llm/profiles/\(identifier)")
+        let result = try await request(Deleted.self, method: "DELETE", path: "/api/llm/profiles/\(identifier)", onDispatch: onDispatch)
         guard result.deleted == identifier else { throw BackendAPIError.invalidResponse }
     }
     public func pool() async throws -> LLMPoolStatus {
         try await request(LLMPoolStatus.self, path: "/api/llm/pool")
     }
     public func resetPool(id: String? = nil) async throws -> LLMPoolStatus {
+        try await resetPool(id: id, onDispatch: {})
+    }
+    func resetPool(id: String?, onDispatch: @MainActor () throws -> Void) async throws -> LLMPoolStatus {
         let identifier = try id.map(LLMWire.numericID) ?? 0
-        return try await request(LLMPoolStatus.self, method: "POST", path: "/api/llm/pool/reset", body: LLMWire.encode(IDRequest(id: identifier)))
+        return try await request(LLMPoolStatus.self, method: "POST", path: "/api/llm/pool/reset", body: LLMWire.encode(IDRequest(id: identifier)), onDispatch: onDispatch)
     }
     public func setRotation(enabled: Bool?, bindFallback: Bool?) async throws {
+        try await setRotation(enabled: enabled, bindFallback: bindFallback, onDispatch: {})
+    }
+    func setRotation(enabled: Bool?, bindFallback: Bool?, onDispatch: @MainActor () throws -> Void) async throws {
         var patch: [String: Bool] = [:]
         if let enabled { patch["llm_pool_enabled"] = enabled }
         if let bindFallback { patch["llm_pool_bind_fallback"] = bindFallback }
         guard !patch.isEmpty else { return }
-        let data = try await raw(method: "PUT", path: "/api/settings", body: LLMWire.encode(patch))
+        let data = try await raw(method: "PUT", path: "/api/settings", body: LLMWire.encode(patch), onDispatch: onDispatch)
         guard let settings = try JSONSerialization.jsonObject(with: data) as? [String: Any],
               patch.allSatisfy({ settings[$0.key] as? Bool == $0.value }) else { throw BackendAPIError.invalidResponse }
     }
@@ -115,7 +132,10 @@ public struct LLMConnectionResult: Decodable, Sendable {
         try await request(LLMRetryPolicy.self, path: "/api/llm/retry-policy")
     }
     public func saveRetry(_ policy: LLMRetryPolicy) async throws -> LLMRetryPolicy {
-        try await request(LLMRetryPolicy.self, method: "POST", path: "/api/llm/retry-policy", body: LLMWire.encode(policy.clamped()))
+        try await saveRetry(policy, onDispatch: {})
+    }
+    func saveRetry(_ policy: LLMRetryPolicy, onDispatch: @MainActor () throws -> Void) async throws -> LLMRetryPolicy {
+        try await request(LLMRetryPolicy.self, method: "POST", path: "/api/llm/retry-policy", body: LLMWire.encode(policy.clamped()), onDispatch: onDispatch)
     }
     public func models(_ draft: LLMProfileDraft) async throws -> [String] {
         let result = try await request(Models.self, method: "POST", path: "/api/llm/models", body: LLMWire.encode(Probe(draft)))
