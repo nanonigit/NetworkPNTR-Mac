@@ -25,7 +25,7 @@ import Observation
     var testing: Bool { operation?.kind == .test }
     var isSaving: Bool { operation?.kind == .save }
     var isActive: Bool { active }
-    @ObservationIgnored private let store: LLMStore
+    @ObservationIgnored let store: LLMStore
     @ObservationIgnored private var active = true
     @ObservationIgnored private var activity = UUID()
     @ObservationIgnored private var revision = UUID()

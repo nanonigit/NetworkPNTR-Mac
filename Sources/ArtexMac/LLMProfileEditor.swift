@@ -6,13 +6,16 @@ import SwiftUI
     private var language: AppLanguage { AppLanguage.preferred(in: [locale.identifier]) }
     private func s(_ key: AppStringKey) -> String { AppStrings.text(key, language: language) }
     private func f(_ key: AppStringKey, _ values: [String: String]) -> String { AppStrings.formatted(key, language: language, values: values) }
-    let store: LLMStore
-    let context: LLMEditorContext
+    private var store: LLMStore { model.store }
+    private let keyHint: String
     @Environment(\.dismiss) private var dismiss
     @State private var model: LLMEditorModel
     init(store: LLMStore, context: LLMEditorContext) {
-        self.store = store; self.context = context
-        _model = State(initialValue: LLMEditorModel(store: store, draft: context.draft))
+        self.init(model: LLMEditorModel(store: store, draft: context.draft), keyHint: context.keyHint)
+    }
+    init(model: LLMEditorModel, keyHint: String) {
+        self.keyHint = keyHint
+        _model = State(initialValue: model)
     }
     private var busy: Bool { model.isBusy || store.isLoading || store.isMutating }
     var body: some View {
@@ -49,7 +52,7 @@ import SwiftUI
                     Text(s(.llmUISessionHelp))
                         .font(.caption).foregroundStyle(.secondary)
                     SecureField(s(.llmUIAPIKey), text: $model.draft.apiKey)
-                    if !context.keyHint.isEmpty { Text(f(.llmUISavedKeyHint, ["hint": context.keyHint])).font(.caption).foregroundStyle(.secondary) }
+                    if !keyHint.isEmpty { Text(f(.llmUISavedKeyHint, ["hint": keyHint])).font(.caption).foregroundStyle(.secondary) }
                 }
                 Section(s(.llmUILimits)) {
                     LLMNumberField(s(.llmUIPerSecond), value: $model.draft.ratePerSecond, valid: { $0.isFinite && $0 >= 0 }) { mark("rps", $0) }
