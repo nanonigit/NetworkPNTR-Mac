@@ -24,12 +24,13 @@ struct FindingTrafficActionDialog: Identifiable {
     @ObservationIgnored private let onChanged: @MainActor (UUID) async -> Void
     init(store: FindingTrafficStore,onChanged: @escaping @MainActor (UUID) async -> Void) { self.store = store; self.onChanged = onChanged }
     var canMutate: Bool {
-        workspace?.trafficControlsAvailable == true && store.canMutateSelected && store.unknownIDs.isEmpty &&
+        workspace?.trafficControlsAvailable == true && !store.isMutating && store.canMutateSelected && store.unknownIDs.isEmpty &&
         !store.summary.isLoading && !store.summary.isStale && store.summary.value != nil
     }
-    private func open(_ kind: FindingTrafficActionDialog.Kind, owner: UUID) -> Bool {
+    private func open(_ kind: FindingTrafficActionDialog.Kind, owner: UUID, version: Int64? = nil) -> Bool {
         guard let workspace, workspace.id == owner, workspace.trafficControlsAvailable,
-              !store.summary.isLoading, !store.summary.isStale, let snapshot = store.summary.value else { return false }
+              !store.summary.isLoading, !store.summary.isStale, let snapshot = store.summary.value,
+              version == nil || snapshot.version == version else { return false }
         let context = FindingTrafficActionDialog(workspace:owner,owner:store.owner,unknownRevision:store.unknownRevision,
                                                 version:snapshot.version,membership:snapshot.bindings.map(\.id),kind:kind)
         workspace.publishTrafficState {
@@ -37,27 +38,31 @@ struct FindingTrafficActionDialog: Identifiable {
         }
         return workspace.isActive && dialog?.id == context.id
     }
-    @discardableResult func openEdit(_ id: String,owner: UUID) -> Bool {
-        guard canMutate, let binding = store.summary.value?.bindings.first(where: { $0.id == id }), open(.edit(id),owner:owner), let workspace else { return false }
+    @discardableResult func openEdit(_ id: String,owner: UUID,version: Int64? = nil) -> Bool {
+        guard canMutate, let binding = store.summary.value?.bindings.first(where: { $0.id == id }), open(.edit(id),owner:owner,version:version), let workspace else { return false }
         workspace.publishTrafficState { roleDraft = FindingTrafficRole(rawValue:binding.role); noteDraft = binding.note }
         return workspace.isActive && dialog != nil
     }
-    @discardableResult func openRemove(_ id: String,owner: UUID) -> Bool {
+    @discardableResult func openRemove(_ id: String,owner: UUID,version: Int64? = nil) -> Bool {
         guard canMutate, store.summary.value?.bindings.contains(where: { $0.id == id }) == true else { return false }
-        return open(.remove(id),owner:owner)
+        return open(.remove(id),owner:owner,version:version)
     }
-    @discardableResult func openMove(_ id: String,delta: Int,owner: UUID) -> Bool {
+    @discardableResult func openMove(_ id: String,delta: Int,owner: UUID,version: Int64? = nil) -> Bool {
         guard canMutate, delta == -1 || delta == 1, var ids = store.summary.value?.bindings.map(\.id),
               let index = ids.firstIndex(of:id), ids.indices.contains(index+delta) else { return false }
-        ids.swapAt(index,index+delta); return open(.reorder(ids),owner:owner)
+        ids.swapAt(index,index+delta); return open(.reorder(ids),owner:owner,version:version)
     }
     @discardableResult func openAcknowledgement(owner: UUID) -> Bool {
         guard let id = workspace?.target.findingId, store.unknownIDs.contains(id) else { return false }
         return open(.acknowledge,owner:owner)
     }
+    var canAcknowledge: Bool {
+        guard let workspace, let id = workspace.target.findingId else { return false }
+        return workspace.trafficControlsAvailable && !store.isMutating && store.unknownIDs.contains(id) && !store.summary.isLoading && !store.summary.isStale
+    }
     private func current(_ context: FindingTrafficActionDialog) -> Bool {
         guard let workspace, workspace.confirmationControlsAvailable, workspace.id == context.workspace,
-              store.owner == context.owner, !store.summary.isLoading, !store.summary.isStale,
+              store.owner == context.owner, !store.isMutating, !store.summary.isLoading, !store.summary.isStale,
               let summary = store.summary.value, summary.version == context.version,
               summary.bindings.map(\.id) == context.membership else { return false }
         if case .acknowledge = context.kind { return store.unknownRevision == context.unknownRevision }

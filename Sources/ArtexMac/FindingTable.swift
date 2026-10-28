@@ -36,7 +36,7 @@ import SwiftUI
                     Button(s(.findingUIEdit)) { if model.store.viewOwner == owner { _ = model.beginEdit(row) } }
                     Menu(s(.findingUIStatus)) { ForEach(FindingStatus.allCases,id:\.rawValue) { status in Button(FindingPresentation.status(status.rawValue,language:language)) { if model.store.viewOwner == owner { _ = model.beginStatus(row,status:status) } }.disabled(status.rawValue == row.status) } }
                     Button(s(.findingUIDelete),role:.destructive) { if model.store.viewOwner == owner { _ = model.beginDelete(row) } }
-                }.disabled(!model.controlsAvailable || !row.canMutate || !model.store.unknownIDs.isEmpty)
+                }.disabled(!model.controlsAvailable || !row.canMutate || model.hasUnknownWrites)
             }.width(90)
         }
         .overlay { if rows.isEmpty, loaded, !loading { Text(s(.findingUIEmpty)).foregroundStyle(.secondary).padding() } }

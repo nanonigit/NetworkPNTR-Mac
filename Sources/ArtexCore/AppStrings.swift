@@ -1,6 +1,23 @@
 import Foundation
 
 public enum AppStringKey: String, CaseIterable, Sendable {
+    case evidenceUIEdit = "evidence.ui.edit"
+    case evidenceUIRole = "evidence.ui.role"
+    case evidenceUIChooseRole = "evidence.ui.chooseRole"
+    case evidenceUINote = "evidence.ui.note"
+    case evidenceUIRemove = "evidence.ui.remove"
+    case evidenceUIRemoveHelp = "evidence.ui.removeHelp"
+    case evidenceUIReorder = "evidence.ui.reorder"
+    case evidenceUIOrderHelp = "evidence.ui.orderHelp"
+    case evidenceUIMoveUp = "evidence.ui.moveUp"
+    case evidenceUIMoveDown = "evidence.ui.moveDown"
+    case evidenceUIMoveUpID = "evidence.ui.moveUpID"
+    case evidenceUIMoveDownID = "evidence.ui.moveDownID"
+    case evidenceUIUnknownHelp = "evidence.ui.unknownHelp"
+    case evidenceUIReviewUnknown = "evidence.ui.reviewUnknown"
+    case evidenceUIUnknownID = "evidence.ui.unknownID"
+    case evidenceUIPickerPending = "evidence.ui.pickerPending"
+
     case evidenceUITitle = "evidence.ui.title"
     case evidenceUILoading = "evidence.ui.loading"
     case evidenceUIReadOnly = "evidence.ui.readOnly"

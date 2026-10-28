@@ -30,7 +30,7 @@ import SwiftUI
                         HStack {
                             Button(s(.findingUIEdit)) { if model.store.viewOwner == owner { _ = model.beginEdit(row) } }
                             Button(s(.findingUIDelete),role:.destructive) { if model.store.viewOwner == owner { _ = model.beginDelete(row) } }
-                        }.disabled(!model.controlsAvailable || !model.store.unknownIDs.isEmpty)
+                        }.disabled(!model.controlsAvailable || model.hasUnknownWrites)
                     }
                     section(.findingUISummary,row.summary); section(.findingUIAssets,row.assets.map(\.label).joined(separator:"\n"))
                     section(.findingUIEvidence,row.evidence)
@@ -56,6 +56,12 @@ import SwiftUI
         let language = AppLanguage.preferred(in:[locale.identifier])
         VStack(alignment:.leading,spacing:6) {
             if let error = model.store.mutationFailure { Text(error.text(language:language)).foregroundStyle(.red) }
+            ForEach(model.trafficUnknownIDs,id:\.self) { id in
+                HStack {
+                    Text(AppStrings.formatted(.evidenceUIUnknownID,language:language,values:["id":id])).foregroundStyle(.orange)
+                    Button(AppStrings.text(.evidenceUIReviewUnknown,language:language)) { _ = model.beginTrafficRecovery(id:id) }.disabled(!model.controlsAvailable)
+                }
+            }
             ForEach(model.store.unknownIDs.sorted(),id:\.self) { id in
                 HStack {
                     Text(AppStrings.formatted(.findingUIUnknown,language:language,values:["id":id])).foregroundStyle(.orange)

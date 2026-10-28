@@ -56,6 +56,7 @@ struct EvidenceTextPreview {
         guard target.findingId != nil else { throw FindingInputError.readOnly }
         self.target = target; self.contextTaskID = contextTaskID; self.exporter = exporter
         store = retainedStore ?? FindingTrafficStore(service:service)
+        guard !store.isMutating else { throw FindingInputError.readOnly }
         if !store.isActive { store.resume() }
         actions = FindingTrafficActions(store:store,onChanged:onChanged)
         guard store.select(target,contextTaskID:contextTaskID) else { throw FindingInputError.readOnly }

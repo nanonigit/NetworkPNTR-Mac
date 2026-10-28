@@ -19,9 +19,10 @@ import SwiftUI
     @State private var side: FindingEvidenceSide = .request
     @Environment(\.locale) private var locale
     private var language: AppLanguage { .preferred(in:[locale.identifier]) }
-    private var controlsAvailable: Bool { model.isActive && !model.isReading && !model.isExporting }
+    private var controlsAvailable: Bool { model.trafficControlsAvailable }
     private func s(_ key: AppStringKey) -> String { AppStrings.text(key,language:language) }
     var body: some View {
+        let dialogID = model.actions.dialog?.id
         VStack(alignment:.leading,spacing:12) {
             HStack {
                 VStack(alignment:.leading) { Text(s(.evidenceUITitle)).font(.title2.bold()); Text(verbatim:model.target.name).textSelection(.enabled) }
@@ -37,28 +38,47 @@ import SwiftUI
                 evidenceList.frame(minWidth:250,idealWidth:310,maxWidth:390)
                 evidenceViewer.frame(minWidth:380,maxWidth:.infinity,maxHeight:.infinity,alignment:.topLeading)
             }
-            Text(s(.evidenceUIMutationsPending)).font(.caption).foregroundStyle(.secondary)
+            if !model.store.unknownIDs.isEmpty {
+                HStack {
+                    Text(s(.evidenceUIUnknownHelp)).font(.caption).foregroundStyle(.orange)
+                    Button(s(.evidenceUIReviewUnknown)) { _ = model.actions.openAcknowledgement(owner:model.id) }.disabled(!model.actions.canAcknowledge)
+                }
+            }
+            Text(s(.evidenceUIPickerPending)).font(.caption).foregroundStyle(.secondary)
         }
         .padding(20).frame(minWidth:760,idealWidth:960,minHeight:560,idealHeight:680)
         .background(EvidenceWindowAnchor(presenter:presenter).frame(width:0,height:0))
         .onAppear { presenter.language = language }
         .onChange(of:language) { _,value in presenter.language = value }
-        .interactiveDismissDisabled(model.isExporting)
+        .interactiveDismissDisabled(model.isExporting || model.actions.isSubmitting)
+        .sheet(item:FindingTrafficActionBindings.dialog(model.actions,id:dialogID)) { context in
+            FindingTrafficActionView(actions:model.actions,id:context.id)
+        }
     }
     private var evidenceList: some View {
         ScrollView {
             LazyVStack(alignment:.leading,spacing:10) {
-                if let bindings = model.store.summary.value?.bindings {
+                if let snapshot = model.store.summary.value {
+                    let bindings = snapshot.bindings
                     if bindings.isEmpty { Text(s(.evidenceUIEmpty)).foregroundStyle(.secondary) }
-                    ForEach(bindings,id:\.id) { binding in
+                    ForEach(Array(bindings.enumerated()),id:\.element.id) { index,binding in
                         VStack(alignment:.leading,spacing:5) {
-                            HStack { Text(verbatim:binding.snapshot.method).bold(); Text(verbatim:String(binding.snapshot.status)); Spacer(); Text(role(binding.role)).font(.caption) }
+                            HStack { Text(verbatim:binding.snapshot.method).bold(); Text(verbatim:String(binding.snapshot.status)); Spacer(); Text(FindingTrafficPresentation.roleLabel(binding.role,language:language)).font(.caption) }
                             Text(verbatim:binding.snapshot.url).lineLimit(3).textSelection(.enabled)
                             Text(verbatim:binding.note).textSelection(.enabled)
                             Text(AppStrings.formatted(.evidenceUIBindingID,language:language,values:["id":binding.id])).font(.caption).foregroundStyle(.secondary)
                             Text(FindingTrafficPresentation.captureDate(seconds:binding.snapshot.capturedAt),format:.dateTime).font(.caption).foregroundStyle(.secondary)
                             Button(s(.evidenceUIInspect),systemImage:"doc.text.magnifyingglass") { Task { await model.selectBinding(binding.id,owner:model.id) } }
                                 .disabled(!controlsAvailable || model.store.summary.isStale)
+                            if model.target.canMutate {
+                                HStack {
+                                    Button(s(.evidenceUIEdit)) { _ = model.actions.openEdit(binding.id,owner:model.id,version:snapshot.version) }
+                                    Button(s(.evidenceUIMoveUp),systemImage:"arrow.up") { _ = model.actions.openMove(binding.id,delta:-1,owner:model.id,version:snapshot.version) }.disabled(index == 0)
+                                    Button(s(.evidenceUIMoveDown),systemImage:"arrow.down") { _ = model.actions.openMove(binding.id,delta:1,owner:model.id,version:snapshot.version) }.disabled(index == bindings.count-1)
+                                }.controlSize(.small).disabled(!model.actions.canMutate)
+                                Button(s(.evidenceUIRemove),role:.destructive) { _ = model.actions.openRemove(binding.id,owner:model.id,version:snapshot.version) }
+                                    .controlSize(.small).disabled(!model.actions.canMutate)
+                            }
                         }
                         .padding(10).frame(maxWidth:.infinity,alignment:.leading)
                         .background(model.store.selectedBindingID == binding.id ? Color.accentColor.opacity(0.12) : Color.secondary.opacity(0.05),in:RoundedRectangle(cornerRadius:8))
@@ -101,15 +121,5 @@ import SwiftUI
                 }
             }.padding(.leading,10)
         }
-    }
-    private func role(_ raw: String) -> String {
-        let key: AppStringKey? = switch FindingTrafficRole(rawValue:raw) {
-        case .baseline: .evidenceUIBaseline
-        case .proof: .evidenceUIProof
-        case .verification: .evidenceUIVerification
-        case .supporting: .evidenceUISupporting
-        case nil: nil
-        }
-        return key.map(s) ?? raw
     }
 }

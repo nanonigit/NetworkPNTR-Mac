@@ -480,10 +480,14 @@
 	<string>Previewed {loaded} of {total} bytes</string>
 	<key>evidence.ui.choose</key>
 	<string>Select evidence to inspect</string>
+	<key>evidence.ui.chooseRole</key>
+	<string>Choose a role</string>
 	<key>evidence.ui.cleanupFailed</key>
 	<string>Incomplete evidence could not be removed. Check the selected destination before retrying.</string>
 	<key>evidence.ui.download</key>
 	<string>Save original body…</string>
+	<key>evidence.ui.edit</key>
+	<string>Edit role and note</string>
 	<key>evidence.ui.empty</key>
 	<string>No traffic evidence is bound to this finding.</string>
 	<key>evidence.ui.exportFailed</key>
@@ -496,16 +500,40 @@
 	<string>Load more</string>
 	<key>evidence.ui.loading</key>
 	<string>Loading evidence</string>
+	<key>evidence.ui.moveDown</key>
+	<string>Move down</string>
+	<key>evidence.ui.moveDownID</key>
+	<string>Move evidence {id} down</string>
+	<key>evidence.ui.moveUp</key>
+	<string>Move up</string>
+	<key>evidence.ui.moveUpID</key>
+	<string>Move evidence {id} up</string>
 	<key>evidence.ui.mutationsPending</key>
 	<string>Adding, editing and reordering bindings are still in development.</string>
+	<key>evidence.ui.note</key>
+	<string>Note</string>
+	<key>evidence.ui.orderHelp</key>
+	<string>Save this new evidence order:</string>
+	<key>evidence.ui.pickerPending</key>
+	<string>Adding captured traffic is still in development.</string>
 	<key>evidence.ui.proof</key>
 	<string>Proof</string>
 	<key>evidence.ui.readOnly</key>
 	<string>Inherited evidence is read-only. Original bodies can still be inspected and saved.</string>
+	<key>evidence.ui.remove</key>
+	<string>Remove binding</string>
+	<key>evidence.ui.removeHelp</key>
+	<string>Remove evidence {id} from this finding? The captured traffic remains available.</string>
+	<key>evidence.ui.reorder</key>
+	<string>Confirm evidence order</string>
 	<key>evidence.ui.request</key>
 	<string>Request</string>
 	<key>evidence.ui.response</key>
 	<string>Response</string>
+	<key>evidence.ui.reviewUnknown</key>
+	<string>Review uncertain update</string>
+	<key>evidence.ui.role</key>
+	<string>Role</string>
 	<key>evidence.ui.saveHelp</key>
 	<string>Choose a new filename. Existing files are preserved.</string>
 	<key>evidence.ui.saved</key>
@@ -518,6 +546,10 @@
 	<string>Supporting</string>
 	<key>evidence.ui.title</key>
 	<string>Traffic evidence</string>
+	<key>evidence.ui.unknownHelp</key>
+	<string>The last update may already have been applied. Refresh and inspect the latest evidence before explicitly allowing further updates. No command will be repeated automatically.</string>
+	<key>evidence.ui.unknownID</key>
+	<string>Evidence update outcome is unknown for finding {id}.</string>
 	<key>evidence.ui.verification</key>
 	<string>Verification</string>
 	<key>feature.agents</key>
