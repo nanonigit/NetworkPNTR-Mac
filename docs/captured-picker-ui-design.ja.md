@@ -1,0 +1,9 @@
+# F5e3 取得済み通信を選んで追加する画面
+
+固定traffic-picker-dialog.tsxの全操作を実装：host／method／keyword、0始まり25行paging、既存紐づけを除く個別／ページ選択、ページをまたぐ選択数、記録request／response原文preview、明示追加／cancel、loading／unavailable／empty／error。既存CapturedTrafficPickerStoreの契約を表示所有modelで包み、picker UUIDとquery ownerへcallbackを固定する。ID・filter・原文のFEFF／NFD／CJKを保持し、行と選択のidentityはUTF8 Data。記録URLを取得・開かない。
+
+250ms filter taskはbyteベースのdraft ticketを所有。draftと適用queryが違えば旧結果への操作を直ちに無効化。cancelや古いticketでfilterを適用しない。filter変更はpage0へ戻し、複数ページ選択を保持。明示pagingで一度再取得。picker中は親証跡の更新／export／refreshを止める。previewは別世代で、query変更・closeで遅延応答を破棄。記録表示用previewを原本downloadと扱わない。capture停止中でも履歴は閲覧可、正確なunavailable形だけを利用不可とする。
+
+追加は既存evidence storeのhandoff／unknown gateを使用。現ownerの確認済み応答だけで親metadataを更新し、古い証跡previewを消して閉じる。dispatch後のerror／cancel／stopは閉じ直し後も結果不明で、自動再送・黙った解除をしない。外側の強制終了はpickerと所有する共有storeだけを失効し、旧pickerの消失で新pickerを閉じない。送信中の通常cancelは無効、強制消失は別途処理。生成／busy／draft消去を同期公開境界で守る。
+
+LazywebはDatabricks246635のquery table、Close251027のhistory／searchという隣接metadataでcoverageは弱い。画像未確認で画面受入の証拠ではない。固定ARTEXを基準にnative label／checkbox／paging／原文表示と英日resourceを使う。要件→設計→TDD state／binding→画面・負例→review／全体試験／build→実guest／比較側永続化と解除後の画面／keyboard／VoiceOver／複数window受入へ進む。全製品・4社・VM／kernel／release・調査目標は維持。
