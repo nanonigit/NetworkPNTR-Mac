@@ -1,5 +1,7 @@
 # F5e1 native evidence read/view/save checkpoint
 
+Historical read/view/save checkpoint at16e97f7. For current edit/remove/order/recovery controls, see findings-traffic-mutations-verification.md.
+
 The finding detail inspector now opens a window-owned evidence sheet. It lists bindings with role/note/ID/method/status/URL/capture time, permits inherited read-only inspection, preserves opaque text and headers, switches request/response, cumulatively loads explicit byte pages, displays binary feedback and saves the complete original body through the authenticated VM transport. Recorded URLs remain plain text. The actual presenting sheet anchors NSSavePanel; no global key-window lookup, host share or host agent execution was added. Existing files are preserved; only a verified staged receipt matching the selected manifest is committed. Cancellation, late receipts, parent departure and old presentation callbacks are guarded.
 
 This checkpoint implements the read/view/save portion of the full F5 design. The UI explicitly marks adding/editing/reordering as in development; deletion and the captured picker are also still required. It does not complete F5, any full21-workflow parity claim, cloud providers, kernel promotion, clean installation, notarization or release.

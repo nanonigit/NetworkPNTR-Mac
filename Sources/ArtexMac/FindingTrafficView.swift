@@ -74,7 +74,11 @@ import SwiftUI
                                 HStack {
                                     Button(s(.evidenceUIEdit)) { _ = model.actions.openEdit(binding.id,owner:model.id,version:snapshot.version) }
                                     Button(s(.evidenceUIMoveUp),systemImage:"arrow.up") { _ = model.actions.openMove(binding.id,delta:-1,owner:model.id,version:snapshot.version) }.disabled(index == 0)
+                                        .labelStyle(.iconOnly).help(s(.evidenceUIMoveUp))
+                                        .accessibilityLabel(AppStrings.formatted(.evidenceUIMoveUpID,language:language,values:["id":binding.id]))
                                     Button(s(.evidenceUIMoveDown),systemImage:"arrow.down") { _ = model.actions.openMove(binding.id,delta:1,owner:model.id,version:snapshot.version) }.disabled(index == bindings.count-1)
+                                        .labelStyle(.iconOnly).help(s(.evidenceUIMoveDown))
+                                        .accessibilityLabel(AppStrings.formatted(.evidenceUIMoveDownID,language:language,values:["id":binding.id]))
                                 }.controlSize(.small).disabled(!model.actions.canMutate)
                                 Button(s(.evidenceUIRemove),role:.destructive) { _ = model.actions.openRemove(binding.id,owner:model.id,version:snapshot.version) }
                                     .controlSize(.small).disabled(!model.actions.canMutate)

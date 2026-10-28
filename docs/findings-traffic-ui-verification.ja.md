@@ -1,5 +1,7 @@
 # F5e1 native証跡の閲覧・保存チェックポイント
 
+16e97f7時点の閲覧・保存チェックポイント。現在の編集／削除／並替え／回復はfindings-traffic-mutations-verification.ja.mdを参照。
+
 finding詳細から、そのwindowが所有する証跡sheetを開けるようにした。一覧のrole／note／ID／method／status／URL／capture時刻、継承データの読み取り専用表示、原文とheader、request／response切替、明示した追加byteページの累積表示、binary案内、認証済みVM経由の原本全体保存を接続した。記録URLは文字列のまま。NSSavePanelは実sheetへ付け、global key-window参照やホスト共有・ホストでのagent実行は追加していない。既存fileを保持し、選択manifestと一致する検証済みstagingだけをcommitする。cancel、遅いreceipt、親終了、古いcallbackを防御した。
 
 全F5設計のうち閲覧／保存部分の実装段階。画面は追加・編集・並替えを開発中と示し、削除・captured pickerも未完。F5全体、21workflow同等性、クラウド4社、kernel昇格、新規インストール、公証、releaseの完了ではない。

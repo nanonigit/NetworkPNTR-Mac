@@ -603,7 +603,7 @@
 	<key>finding.ui.actions</key>
 	<string>操作</string>
 	<key>finding.ui.advancedPending</key>
-	<string>Mac版のエクスポート・通信詳細・レポート生成・系譜・深掘り・再試験は実装中です。</string>
+	<string>取得済み通信の追加・検出結果のエクスポート・レポート生成・系譜・深掘り・再試験は開発中です。</string>
 	<key>finding.ui.all</key>
 	<string>すべて</string>
 	<key>finding.ui.asset</key>

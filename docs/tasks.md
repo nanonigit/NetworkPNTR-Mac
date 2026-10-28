@@ -402,3 +402,14 @@ Independent reference checkpoint: attempt1 exited1 at tmpfs export with complete
 - [ ] E6 unlocked visual/keyboard/VoiceOver/multiwindow and all full-product release gates.
 
 F5e software checkpoint:22 new workspace/51 related/789 full Swift (788 pass,one existing externalAX skip),155 Python. Real temporary-file tests cover publication and cancellation; actual new UI/VM/panel acceptance remains open. Gemini/Groq CP1–CP4 and investigation harness H0–H5 remain planned. Hosted CI is unverified; our publication HEAD uses [skip ci].
+
+## F5e2 evidence mutations and retained recovery
+
+- [x] M1 captured role/note/remove/adjacent-order dialogs and immutable version/membership/draft bindings.
+- [x] M2 retained window store, pending/unknown parent gate, target/context recovery, explicit acknowledgment and confirmed finding/report refresh.
+- [x] M3 scoped old-sheet/old-session teardown and byte-preserving note/Unix-second parity regressions; review and local full checks.
+- [ ] M4 native captured picker/add UI and its full selection/filter/page/raw-preview controls.
+- [ ] M5 real nonempty guest/reference mutation effects, conflict/unknown outcomes and restart persistence.
+- [ ] M6 detailed preview/binary/truncation, actual panel, unlocked visual/keyboard/VoiceOver/multiwindow and all original release gates.
+
+F5e2 software checkpoint:14 action +23 workspace/77 related/804 full Swift (803 pass,one existing externalAX skip),155 Python. See findings-traffic-mutations-design and findings-traffic-mutations-verification in en/ja, plus bugs/evidence-mutations. Previous F5e E5 remains open because its picker and real-runtime acceptance are not complete. Four-provider CP1–CP4 and harness H0–H5 remain planned. Full goal stays active; hosted CI remains unverified and our push HEAD uses [skip ci].

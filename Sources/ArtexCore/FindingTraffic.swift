@@ -5,6 +5,7 @@ public enum FindingEvidenceSide: String, Sendable { case request, response }
 public struct FindingTrafficSnapshot: Decodable, Sendable {
     public let id: String
     public let sourceTrafficId: String
+    /// Unix seconds from the pinned traffic collector, not milliseconds.
     public let capturedAt: Int64
     public let url, method, contentType: String
     public let status: Int

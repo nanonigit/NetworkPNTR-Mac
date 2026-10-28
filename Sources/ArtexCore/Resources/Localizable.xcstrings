@@ -12754,13 +12754,13 @@
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "Export, traffic, report generation, lineage, deepen and retest are not yet available in the Mac app."
+            "value": "The captured-traffic picker, finding export, report generation, lineage, deepen and retest are still in development."
           }
         },
         "ja": {
           "stringUnit": {
             "state": "translated",
-            "value": "Mac版のエクスポート・通信詳細・レポート生成・系譜・深掘り・再試験は実装中です。"
+            "value": "取得済み通信の追加・検出結果のエクスポート・レポート生成・系譜・深掘り・再試験は開発中です。"
           }
         }
       }
