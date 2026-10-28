@@ -1,5 +1,7 @@
 # F5e2 証跡の編集・削除・並替えと回復
 
+6c2eba9時点のF5e2記録。ここで未完としたpicker UIのsoftware実装はcaptured-picker-ui-verification.ja.mdを参照。実runtime／画面gateは未完のまま。
+
 native一覧にrole／note編集、確認付き紐づけ削除、隣接上下の並替えを接続。開始時のversion／membershipとdialog／draft UUIDで操作を固定する。未知roleは既知roleの明示選択が必要。noteのFEFF／NFD／CJK byteを保持し、継承は更新不可。確認済み更新後は親finding／report metadataを再取得。競合・dispatch後のcancel・所有権喪失は結果不明とし、refreshだけで解除／再送しない。
 
 認証済みwindowがevidence storeと回復target／contextを保持し、sheetを閉じても未決着／結果不明を維持。通常finding更新とbusy／unknown gateを共有し、filter変更後も親の回復操作から該当findingを開く。新しいsummaryと明示確認後だけ更新再開。古いsheetの遅延消失・旧session更新cleanupは新ownerを停止できない。終了で表示原文を消し、logoutでsession resetする。

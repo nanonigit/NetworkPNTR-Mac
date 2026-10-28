@@ -408,8 +408,19 @@ F5e software checkpoint:22 new workspace/51 related/789 full Swift (788 pass,one
 - [x] M1 captured role/note/remove/adjacent-order dialogs and immutable version/membership/draft bindings.
 - [x] M2 retained window store, pending/unknown parent gate, target/context recovery, explicit acknowledgment and confirmed finding/report refresh.
 - [x] M3 scoped old-sheet/old-session teardown and byte-preserving note/Unix-second parity regressions; review and local full checks.
-- [ ] M4 native captured picker/add UI and its full selection/filter/page/raw-preview controls.
+- [x] M4 native captured picker/add UI and its selection/filter/page/raw-preview controls (software checkpoint only; M5/M6 stay open).
 - [ ] M5 real nonempty guest/reference mutation effects, conflict/unknown outcomes and restart persistence.
 - [ ] M6 detailed preview/binary/truncation, actual panel, unlocked visual/keyboard/VoiceOver/multiwindow and all original release gates.
 
 F5e2 software checkpoint:14 action +23 workspace/77 related/804 full Swift (803 pass,one existing externalAX skip),155 Python. See findings-traffic-mutations-design and findings-traffic-mutations-verification in en/ja, plus bugs/evidence-mutations. Previous F5e E5 remains open because its picker and real-runtime acceptance are not complete. Four-provider CP1–CP4 and harness H0–H5 remain planned. Full goal stays active; hosted CI remains unverified and our push HEAD uses [skip ci].
+
+
+## F5e3 captured picker connection
+
+- [x] P1 byte-based draft tickets,250ms cancellation, query/page/selection/preview identity and parent modal gates.
+- [x] P2 EN/JA candidate filters/table/selection/page/raw tabs/add controls, disabled-history/unavailable/empty/error/loading feedback.
+- [x] P3 confirmed metadata callback, uncertain-write retention, scoped close/busy/reentry fixes, review/full regression/coverage.
+- [ ] P4 actual managed-guest/frozen-reference nonempty captured-index operations, conflicts/unknown outcomes and restart persistence.
+- [ ] P5 detailed preview/binary/truncation/download and unlocked mouse/keyboard/VoiceOver/save-panel/multiwindow/screenshots.
+
+F5e3 software checkpoint:20 new picker cases,824 full Swift (823 pass,one existing externalAX skip),155 Python. See captured-picker-ui-design/verification and bugs/captured-picker-ui in en/ja. F5's actual runtime/visual/full-workflow gates remain open. CP1–CP4 and H0–H5 remain planned; no full goal completion or hosted CI success is claimed. Our pushed HEAD uses [skip ci].

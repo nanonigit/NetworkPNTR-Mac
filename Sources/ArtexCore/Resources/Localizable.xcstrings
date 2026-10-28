@@ -12754,13 +12754,13 @@
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "The captured-traffic picker, finding export, report generation, lineage, deepen and retest are still in development."
+            "value": "Finding export, report generation, lineage, deepen and retest are still in development."
           }
         },
         "ja": {
           "stringUnit": {
             "state": "translated",
-            "value": "取得済み通信の追加・検出結果のエクスポート・レポート生成・系譜・深掘り・再試験は開発中です。"
+            "value": "検出結果のエクスポート・レポート生成・系譜・深掘り・再試験は開発中です。"
           }
         }
       }
@@ -13791,13 +13791,13 @@
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "Choose recorded exchanges to attach as evidence. Preview text may contain body-storage markers; use original-body saving after binding for complete bytes."
+            "value": "Choose recorded exchanges to attach as evidence. Previews may omit body content; save the original body after adding for complete data."
           }
         },
         "ja": {
           "stringUnit": {
             "state": "translated",
-            "value": "記録された通信を選んで証跡に追加します。プレビューに本文の保存位置が表示される場合があります。全バイトを取得するには追加後に原本を保存してください。"
+            "value": "記録された通信を選んで証跡に追加します。プレビューには本文の一部が含まれない場合があります。すべてのデータを取得するには、追加後に原本を保存してください。"
           }
         }
       }

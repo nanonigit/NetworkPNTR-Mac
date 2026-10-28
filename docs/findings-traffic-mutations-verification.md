@@ -1,5 +1,7 @@
 # F5e2 evidence edit, remove, order and recovery checkpoint
 
+Historical F5e2 checkpoint at6c2eba9. The picker UI described as pending here is implemented as software in captured-picker-ui-verification.md; its real runtime/visual gates remain open.
+
 The native evidence list now provides role/note editing, confirmed removal and adjacent up/down ordering with captured version/membership. Dialogs and draft bindings carry their own UUIDs. Unknown roles require explicit supported-role selection. Note FEFF/NFD/CJK bytes remain intact. Inherited evidence cannot mutate. Confirmed updates re-read parent finding/report metadata. Conflicts, post-dispatch cancellation and lost ownership remain uncertain; refresh does not acknowledge or replay them.
 
 The authenticated window retains the evidence store and recovery target/context across sheet closes. Ordinary finding writes share its pending/unknown gate. A parent recovery action can reopen the exact affected finding after filters changed. A fresh summary and explicit acknowledgment are required to allow further writes. Delayed old-sheet disappearance and old-session mutation cleanup cannot stop a replacement owner. Raw evidence is cleared on departure; logout resets session state.

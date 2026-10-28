@@ -61,7 +61,7 @@
 	<key>captured.ui.empty</key>
 	<string>No matching traffic.</string>
 	<key>captured.ui.help</key>
-	<string>Choose recorded exchanges to attach as evidence. Preview text may contain body-storage markers; use original-body saving after binding for complete bytes.</string>
+	<string>Choose recorded exchanges to attach as evidence. Previews may omit body content; save the original body after adding for complete data.</string>
 	<key>captured.ui.host</key>
 	<string>Host</string>
 	<key>captured.ui.keyword</key>
@@ -647,7 +647,7 @@
 	<key>finding.ui.actions</key>
 	<string>Actions</string>
 	<key>finding.ui.advancedPending</key>
-	<string>The captured-traffic picker, finding export, report generation, lineage, deepen and retest are still in development.</string>
+	<string>Finding export, report generation, lineage, deepen and retest are still in development.</string>
 	<key>finding.ui.all</key>
 	<string>All</string>
 	<key>finding.ui.asset</key>
