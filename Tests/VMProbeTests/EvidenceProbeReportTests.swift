@@ -7,8 +7,9 @@ import XCTest
         var value = EvidenceExportProbe.Report()
         value.expectedCPUCount = 1
         let files = EvidenceFixtureClient.expectedBodies.sorted(by: { $0.key < $1.key }).map { EvidenceFileProof(body: $0.key, byteCount: $0.value.size, sha256: $0.value.sha256) }
-        value.boots = (1...2).map { .init(index: $0, cpuCount: 1, ready: true, credentialsAbsent: true, isolationWitnesses: true, formatObserved: $0 == 1, cooperativeStop: true, diagnostics: [], files: files) }
+        value.boots = (1...2).map { .init(index: $0, cpuCount: 1, ready: true, credentialsAbsent: true, isolationWitnesses: true, formatObserved: $0 == 1, cooperativeStop: true, interruptedTransfers: $0 == 1 ? 1 : 0, diagnostics: [], files: files) }
         value.logoutReceiptRejected = true; value.stopReceiptRejected = true; value.restartReceiptRejected = true
+        value.witnessedInFlightCancellation = true; value.witnessedVMStop = true; value.callerCancellationBytes = 65536; value.vmStopBytes = 65536
         value.noClobber = true; value.machineStopped = true; value.cleanupComplete = true
         return value
     }
@@ -27,13 +28,16 @@ import XCTest
         var report = ready(), didWrite = false
         try report.publishFinal { didWrite = $0.nativeProbePassed }
         XCTAssertTrue(didWrite); XCTAssertTrue(report.nativeProbePassed)
-        for mode in 0..<5 {
+        for mode in 0..<8 {
             var incomplete = ready()
             if mode == 0 { incomplete.restartReceiptRejected = false }
             if mode == 1 { incomplete.boots.removeLast() }
             if mode == 2 { incomplete.expectedCPUCount = 2 }
             if mode == 3 { incomplete.cleanupComplete = false }
             if mode == 4 { incomplete.machineStopped = false }
+            if mode == 5 { incomplete.witnessedInFlightCancellation = false }
+            if mode == 6 { incomplete.witnessedVMStop = false }
+            if mode == 7 { incomplete.vmStopBytes = 135266321 }
             XCTAssertThrowsError(try incomplete.publishFinal { _ in XCTFail("Invalid proof was published") })
             XCTAssertFalse(incomplete.nativeProbePassed)
         }
