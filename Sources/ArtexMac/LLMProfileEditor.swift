@@ -9,137 +9,108 @@ import SwiftUI
     let store: LLMStore
     let context: LLMEditorContext
     @Environment(\.dismiss) private var dismiss
-    @State private var draft: LLMProfileDraft
-    @State private var numberErrors: Set<String> = []
-    @State private var error: AppErrorMessage?
-    @State private var testing = false
-    @State private var loadingModels = false
-    @State private var models: [String] = []
-    @State private var modelsOpen = false
-    @State private var testResult: LLMConnectionResult?
+    @State private var model: LLMEditorModel
     init(store: LLMStore, context: LLMEditorContext) {
         self.store = store; self.context = context
-        _draft = State(initialValue: context.draft)
+        _model = State(initialValue: LLMEditorModel(store: store, draft: context.draft))
     }
-    private var busy: Bool { testing || loadingModels || store.isLoading || store.isMutating }
+    private var busy: Bool { model.isBusy || store.isLoading || store.isMutating }
     var body: some View {
+        @Bindable var model = model
         VStack(alignment: .leading, spacing: 0) {
             VStack(alignment: .leading, spacing: 6) {
-                Text(draft.id == nil ? s(.llmUICreateTitle) : s(.llmUIEditTitle)).font(.title2.bold())
+                Text(model.draft.id == nil ? s(.llmUICreateTitle) : s(.llmUIEditTitle)).font(.title2.bold())
                 Text(s(.llmUIActivateHint)).font(.caption).foregroundStyle(.secondary)
             }.padding(24)
             Form {
                 Section(s(.llmUIConnection)) {
-                    TextField(s(.llmUIName), text: $draft.name)
-                    Picker(s(.llmUIFormat), selection: $draft.format) {
+                    TextField(s(.llmUIName), text: $model.draft.name)
+                    Picker(s(.llmUIFormat), selection: $model.draft.format) {
                         Text("Anthropic").tag(LLMFormat.anthropic)
                         Text("OpenAI Chat Completions").tag(LLMFormat.openai)
                         Text("OpenAI Responses").tag(LLMFormat.openaiResponses)
                     }
-                    TextField(s(.llmUIModel), text: $draft.model)
+                    TextField(s(.llmUIModel), text: $model.draft.model)
                     HStack {
-                        Button(s(.llmUIFetchModels)) { fetchModels() }
-                        if !models.isEmpty {
-                            Button(f(.llmUIModelCandidates, ["count": String(models.count)])) { modelsOpen = true }
-                                .popover(isPresented: $modelsOpen) {
-                                    LLMModelPicker(models: models) { draft.model = $0; modelsOpen = false }
+                        Button(s(.llmUIFetchModels)) { model.fetchModels() }
+                        if !model.models.isEmpty {
+                            Button(f(.llmUIModelCandidates, ["count": String(model.models.count)])) { model.modelsOpen = true }
+                                .popover(isPresented: $model.modelsOpen) {
+                                    LLMModelPicker(models: model.models) { model.draft.model = $0; model.modelsOpen = false }
                                 }
                         }
-                        if loadingModels { ProgressView().controlSize(.small) }
+                        if model.loadingModels { ProgressView().controlSize(.small) }
                     }
-                    TextField(s(.llmUIBaseURL), text: $draft.baseUrl)
-                    TextField(s(.llmUIProxy), text: $draft.proxy)
+                    TextField(s(.llmUIBaseURL), text: $model.draft.baseUrl)
+                    TextField(s(.llmUIProxy), text: $model.draft.proxy)
                     Text(s(.llmUIProxyHelp))
                         .font(.caption).foregroundStyle(.secondary)
-                    TextField(s(.llmUISessionHeader), text: $draft.sessionHeaderKey)
+                    TextField(s(.llmUISessionHeader), text: $model.draft.sessionHeaderKey)
                     Text(s(.llmUISessionHelp))
                         .font(.caption).foregroundStyle(.secondary)
-                    SecureField(s(.llmUIAPIKey), text: $draft.apiKey)
+                    SecureField(s(.llmUIAPIKey), text: $model.draft.apiKey)
                     if !context.keyHint.isEmpty { Text(f(.llmUISavedKeyHint, ["hint": context.keyHint])).font(.caption).foregroundStyle(.secondary) }
                 }
                 Section(s(.llmUILimits)) {
-                    LLMNumberField(s(.llmUIPerSecond), value: $draft.ratePerSecond, valid: { $0.isFinite && $0 >= 0 }) { mark("rps", $0) }
-                    LLMNumberField(s(.llmUIPerMinute), value: $draft.ratePerMinute, valid: { $0.isFinite && $0 >= 0 }) { mark("rpm", $0) }
-                    LLMNumberField(s(.llmUIContext), value: $draft.contextWindowK, valid: { (0...1000).contains($0) }) { mark("context", $0) }
+                    LLMNumberField(s(.llmUIPerSecond), value: $model.draft.ratePerSecond, valid: { $0.isFinite && $0 >= 0 }) { mark("rps", $0) }
+                    LLMNumberField(s(.llmUIPerMinute), value: $model.draft.ratePerMinute, valid: { $0.isFinite && $0 >= 0 }) { mark("rpm", $0) }
+                    LLMNumberField(s(.llmUIContext), value: $model.draft.contextWindowK, valid: { (0...1000).contains($0) }) { mark("context", $0) }
                     Text(s(.llmUILimitsHelp)).font(.caption).foregroundStyle(.secondary)
-                    LLMNumberField(s(.llmUIPriority), value: $draft.priority, valid: { _ in true }) { mark("priority", $0) }
+                    LLMNumberField(s(.llmUIPriority), value: $model.draft.priority, valid: { _ in true }) { mark("priority", $0) }
                     Text(s(.llmUIPriorityHelp)).font(.caption).foregroundStyle(.secondary)
-                    Toggle(s(.llmUIExcludeRotation), isOn: $draft.poolExclude)
+                    Toggle(s(.llmUIExcludeRotation), isOn: $model.draft.poolExclude)
                     Text(s(.llmUIExcludeHelp)).font(.caption).foregroundStyle(.secondary)
-                    Toggle(s(.llmUIStreaming), isOn: $draft.streaming)
+                    Toggle(s(.llmUIStreaming), isOn: $model.draft.streaming)
                     Text(s(.llmUIStreamingHelp)).font(.caption).foregroundStyle(.secondary)
-                    LLMNumberField(s(.llmUIMaxTokens), value: $draft.maxTokens, valid: { $0 >= 0 }) { mark("tokens", $0) }
+                    LLMNumberField(s(.llmUIMaxTokens), value: $model.draft.maxTokens, valid: { $0 >= 0 }) { mark("tokens", $0) }
                     Text(s(.llmUIMaxTokensHelp)).font(.caption).foregroundStyle(.secondary)
-                    Picker(s(.llmUIMaxTokensField), selection: $draft.maxTokensField) {
+                    Picker(s(.llmUIMaxTokensField), selection: $model.draft.maxTokensField) {
                         Text(s(.llmUIDefaultMaxTokens)).tag("")
                         Text("max_completion_tokens").tag("max_completion_tokens")
-                    }.disabled(draft.format != .openai)
+                    }.disabled(model.draft.format != .openai)
                 }
                 Section(s(.llmUIThinking)) {
-                    Picker(s(.llmUIThinkingSwitch), selection: $draft.thinkingType) {
+                    Picker(s(.llmUIThinkingSwitch), selection: $model.draft.thinkingType) {
                         Text(s(.llmUIOmit)).tag(""); Text(s(.llmUIDisabled)).tag("disabled"); Text(s(.llmUIEnabled)).tag("enabled")
                     }
-                    Picker(s(.llmUIEffort), selection: $draft.reasoningEffort) {
+                    Picker(s(.llmUIEffort), selection: $model.draft.reasoningEffort) {
                         Text(s(.llmUIOmit)).tag("")
                         ForEach(["low", "medium", "high", "xhigh", "max"], id: \.self) { Text($0).tag($0) }
                     }
                     Text(s(.llmUIThinkingHelp)).font(.caption).foregroundStyle(.secondary)
                 }
                 Section(s(.llmUIProfileRetry)) {
-                    LLMRetryRuleFields(title: s(.llmUIConnection), detail: s(.llmUIConnectDetail), rule: $draft.retry.connect) { mark("connect." + $0, $1) }
-                    LLMRetryRuleFields(title: s(.llmUIEmpty), detail: s(.llmUIEmptyDetail), rule: $draft.retry.empty) { mark("empty." + $0, $1) }
-                    LLMRetryRuleFields(title: s(.llmUIStream), detail: s(.llmUIStreamDetail), rule: $draft.retry.stream) { mark("stream." + $0, $1) }
+                    LLMRetryRuleFields(title: s(.llmUIConnection), detail: s(.llmUIConnectDetail), rule: $model.draft.retry.connect) { mark("connect." + $0, $1) }
+                    LLMRetryRuleFields(title: s(.llmUIEmpty), detail: s(.llmUIEmptyDetail), rule: $model.draft.retry.empty) { mark("empty." + $0, $1) }
+                    LLMRetryRuleFields(title: s(.llmUIStream), detail: s(.llmUIStreamDetail), rule: $model.draft.retry.stream) { mark("stream." + $0, $1) }
                 }
             }.formStyle(.grouped).disabled(busy)
             VStack(alignment: .leading, spacing: 10) {
                 LLMRecoveryView(store: store)
-                if let error { Text(error.text(language: language)).foregroundStyle(.red).textSelection(.enabled) }
-                if let result = testResult {
-                    Text(f(.llmUITestSuccess, ["model": result.model ?? draft.model, "latency": (result.latencyMs ?? 0).formatted(.number.precision(.fractionLength(0)))])).foregroundStyle(.green)
+                if let error = model.failure { Text(error.text(language: language)).foregroundStyle(.red).textSelection(.enabled) }
+                if let result = model.testResult {
+                    Text(f(.llmUITestSuccess, ["model": result.model ?? model.draft.model, "latency": (result.latencyMs ?? 0).formatted(.number.precision(.fractionLength(0)))])).foregroundStyle(.green)
                     if let reply = result.reply { Text(reply).font(.caption).lineLimit(5).textSelection(.enabled) }
                 }
                 HStack {
-                    Button(s(.llmUIClose)) { dismiss() }.keyboardShortcut(.cancelAction).disabled(store.isMutating)
+                    Button(s(.llmUIClose)) { model.close(); dismiss() }.keyboardShortcut(.cancelAction).disabled(model.isSaving || store.isMutating)
                     Spacer()
                     if busy { ProgressView().controlSize(.small) }
-                    Button(s(.llmUITest)) { test() }.disabled(busy || !numberErrors.isEmpty)
-                    Button(s(.llmUISave)) { save() }.buttonStyle(.borderedProminent).keyboardShortcut(.defaultAction)
-                        .disabled(busy || store.unknownRevision != nil || !numberErrors.isEmpty || draft.name.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty || draft.model.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty)
+                    Button(s(.llmUITest)) { model.testConnection() }.disabled(busy || !model.invalidFields.isEmpty)
+                    Button(s(.llmUISave)) { model.save() }.buttonStyle(.borderedProminent).keyboardShortcut(.defaultAction)
+                        .disabled(busy || store.unknownRevision != nil || !model.invalidFields.isEmpty || model.draft.name.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty || model.draft.model.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty)
                 }
             }.padding(20)
         }
         .frame(width: 680, height: 780)
-        .onChange(of: draft.format) { _, _ in models = []; testResult = nil; if draft.format != .openai { draft.maxTokensField = "" } }
-        .onChange(of: draft) { _, _ in testResult = nil }
-        .onDisappear { draft.apiKey = ""; draft.proxy = "" }
-    }
-    private func mark(_ field: String, _ valid: Bool) { if valid { numberErrors.remove(field) } else { numberErrors.insert(field) } }
-    private func fetchModels() {
-        guard !busy else { return }
-        let snapshot = draft
-        loadingModels = true; error = nil; models = []
-        Task {
-            defer { loadingModels = false }
-            do { models = try await store.service.models(snapshot); modelsOpen = true }
-            catch { self.error = AppErrorMessage(error) }
+        .interactiveDismissDisabled(model.isSaving || store.isMutating)
+        .onAppear { model.activate() }
+        .onChange(of: model.didSave) { _, saved in
+            if saved, model.isActive { model.close(); dismiss() }
         }
+        .onDisappear { model.close() }
     }
-    private func test() {
-        guard !busy else { return }
-        let snapshot = draft
-        testing = true; error = nil; testResult = nil
-        Task {
-            defer { testing = false }
-            do { testResult = try await store.service.test(snapshot) }
-            catch { self.error = AppErrorMessage(error) }
-        }
-    }
-    private func save() {
-        guard !busy, numberErrors.isEmpty else { return }
-        let snapshot = draft
-        error = nil
-        Task { if await store.save(snapshot) { draft.apiKey = ""; dismiss() } else { error = store.failure } }
-    }
+    private func mark(_ field: String, _ valid: Bool) { model.mark(field, valid) }
 }
 
 private struct LLMModelPicker: View {

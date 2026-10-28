@@ -7,6 +7,7 @@ import Observation
     var draft: LLMProfileDraft {
         didSet {
             guard !scrubbing else { return }
+            if !active { scrubCredentials(includeProxy: true) }
             invalidateDraft()
             if oldValue.format != draft.format, draft.format != .openai, !draft.maxTokensField.isEmpty {
                 scrubbing = true; draft.maxTokensField = ""; scrubbing = false
@@ -36,7 +37,7 @@ import Observation
     private enum Kind { case models, test, save }
     private struct Ticket {
         let id = UUID()
-        let activity, revision: UUID
+        let activity, revision, parentActivity: UUID
         let kind: Kind
     }
     init(store: LLMStore, draft: LLMProfileDraft) { self.store = store; self.draft = draft }
@@ -52,7 +53,7 @@ import Observation
         let previous = scrubbing; scrubbing = true
         defer { scrubbing = previous }
         draft.apiKey = ""
-        if includeProxy { draft.proxy = "" }
+        if includeProxy || !active { draft.proxy = "" }
     }
     func close() {
         guard !closing, active else { return }
@@ -67,7 +68,7 @@ import Observation
         activity = UUID(); active = true
     }
     private func owns(_ ticket: Ticket) -> Bool {
-        active && ticket.activity == activity && ticket.revision == revision && operation?.id == ticket.id && !Task.isCancelled
+        active && store.isActive && ticket.parentActivity == store.activityID && ticket.activity == activity && ticket.revision == revision && operation?.id == ticket.id && !Task.isCancelled
     }
     @discardableResult func fetchModels() -> Bool { start(.models) }
     @discardableResult func testConnection() -> Bool { start(.test) }
@@ -77,7 +78,7 @@ import Observation
               kind == .models || invalidFields.isEmpty,
               kind != .save || store.unknownRevision == nil else { return false }
         let snapshot = draft
-        let ticket = Ticket(activity: activity, revision: revision, kind: kind)
+        let ticket = Ticket(activity: activity, revision: revision, parentActivity: store.activityID, kind: kind)
         acquiring = true
         operation = ticket
         failure = nil; didSave = false

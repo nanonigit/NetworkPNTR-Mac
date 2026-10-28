@@ -8,6 +8,8 @@ import Observation
     public var isLoading: Bool { read != nil }
     public var isMutating: Bool { write != nil }
     public private(set) var isActive = true
+    /// Read-only lifecycle identity for child request owners; never serialized.
+    public var activityID: UUID { activity }
     public private(set) var hasLoaded = false
     public private(set) var unknownRevision: UUID?
     public var canAcknowledgeUnknown: Bool {
