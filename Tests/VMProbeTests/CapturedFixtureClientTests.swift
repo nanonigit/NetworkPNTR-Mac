@@ -68,7 +68,10 @@ final class CapturedFixtureClientTests: XCTestCase {
         for mode in 0..<4 {
             let api=CapturedFixtureAPI()
             switch mode {
-            case 1:api.reply = .init(status:200,body:Data(repeating:32,count:65537))
+            case 1:
+                try api.set(proof(preparing:false));var valid=api.reply.body;valid.append(Data(repeating:32,count:65537-valid.count))
+                _ = try JSONSerialization.jsonObject(with:valid)
+                api.reply = .init(status:200,body:valid)
             case 2:api.reply = .init(status:200,body:Data("broken".utf8))
             case 3:try api.set(proof(preparing:false));api.cancel=true
             default:break
