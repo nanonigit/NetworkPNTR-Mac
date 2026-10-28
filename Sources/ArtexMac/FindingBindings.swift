@@ -2,6 +2,11 @@ import ArtexCore
 import SwiftUI
 
 @MainActor enum FindingBindings {
+    static func traffic(_ model: FindingScreenModel,id: UUID?) -> Binding<FindingTrafficWorkspace?> {
+        Binding(get:{model.trafficWorkspace},set:{ value in
+            if value == nil, let current = model.trafficWorkspace?.id { model.closeTraffic(id:current) }
+        })
+    }
     static func detail(_ model: FindingScreenModel,owner: UUID,revision: UUID) -> Binding<Bool> {
         Binding(get:{model.store.selectedDetail != nil},set:{if !$0 { Task { await model.closeDetail(owner:owner,revision:revision) } }})
     }

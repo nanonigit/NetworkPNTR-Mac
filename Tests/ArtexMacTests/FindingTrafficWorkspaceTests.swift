@@ -1,3 +1,4 @@
+import Observation
 import AppKit
 import SwiftUI
 import CryptoKit
@@ -56,6 +57,21 @@ import XCTest
         return url
     }
     func cancel() { cancels += 1; pending?.resume(returning:nil); pending = nil }
+}
+
+@MainActor private final class ReentrantEvidenceDeparture {
+    weak var model: FindingTrafficWorkspace?
+    var changes = 0
+    func arm() {
+        guard let model else { return }
+        withObservationTracking { _ = model.isActive } onChange: { [weak self] in
+            MainActor.assumeIsolated {
+                guard let self else { return }
+                self.changes += 1
+                if self.changes < 4 { self.arm(); self.model?.stop() }
+            }
+        }
+    }
 }
 
 final class FindingTrafficWorkspaceTests: XCTestCase {
@@ -171,6 +187,92 @@ final class FindingTrafficWorkspaceTests: XCTestCase {
         await model.selectBinding(nil,owner:model.id); XCTAssertEqual(model.store.selectedBindingID,"21")
         model.stop(); continuation?.resume(returning:try XCTUnwrap(heldReceipt)); try await wait { !model.isExporting }
         XCTAssertNil(model.saved); XCTAssertNil(model.failure); XCTAssertEqual(try FileManager.default.contentsOfDirectory(atPath:root.path),[])
+    }
+    @MainActor func testSynchronousDepartureDuringBusyPublicationNeverOpensChooser() async throws {
+        let api = EvidenceWorkspaceAPI(), model = try await loaded(api,exporter:{ _,_ in throw CancellationError() })
+        let chooser = EvidenceDestinationFixture()
+        withObservationTracking { _ = model.isExporting } onChange: { MainActor.assumeIsolated { model.stop() } }
+        _ = model.startExport(.response,owner:model.id,chooser:chooser)
+        try await wait { !model.isExporting }
+        XCTAssertEqual(chooser.names,[]); XCTAssertFalse(model.isActive); XCTAssertNil(model.saved)
+    }
+    @MainActor func testSynchronousDepartureDuringPreviewPublicationCannotRestoreBody() async throws {
+        let api = EvidenceWorkspaceAPI(), model = try make(api); await model.refresh(); api.hold = true
+        let job = Task { await model.selectBinding("21",owner:model.id) }; try await wait { api.pending.count == 1 }
+        withObservationTracking { _ = model.preview(.request)?.content } onChange: { MainActor.assumeIsolated { model.stop() } }
+        api.pending.removeFirst().resume(returning:try api.response(["binding":api.binding,"request":api.page("",next:0,total:0),"response":api.page(api.literal)]))
+        await job.value
+        XCTAssertFalse(model.isActive); XCTAssertNil(model.preview(.request)); XCTAssertNil(model.preview(.response))
+        XCTAssertEqual(model.requestHeader,""); XCTAssertEqual(model.responseHeader,""); XCTAssertFalse(model.isReading)
+    }
+    @MainActor func testStopIsSafeUnderBoundedSynchronousReentry() async throws {
+        let api = EvidenceWorkspaceAPI(), model = try await loaded(api), witness = ReentrantEvidenceDeparture()
+        witness.model = model; witness.arm(); model.stop()
+        XCTAssertEqual(witness.changes,1); XCTAssertNil(model.preview(.response)); XCTAssertFalse(model.isActive)
+    }
+    @MainActor func testMismatchedVerifiedReceiptCannotPublishWrongOriginalBody() async throws {
+        let root = try directory(); defer { try? FileManager.default.removeItem(at:root) }
+        let chooser = EvidenceDestinationFixture(); chooser.url = root.appendingPathComponent("wrong.bin")
+        let api = EvidenceWorkspaceAPI(), model = try await loaded(api,exporter:{ manifest,destination in
+            let wrong = try FindingEvidenceDownload(findingID:manifest.findingID,bindingID:manifest.bindingID,side:.request,expectedSize:0,expectedSHA256:EvidenceWorkspaceAPI.hash(Data()))
+            return try self.receipt(wrong,destination)
+        })
+        XCTAssertTrue(model.startExport(.response,owner:model.id,chooser:chooser)); try await wait { !model.isExporting }
+        XCTAssertNil(model.saved); XCTAssertNotNil(model.failure)
+        XCTAssertFalse(FileManager.default.fileExists(atPath:try XCTUnwrap(chooser.url).path))
+        XCTAssertEqual(try FileManager.default.contentsOfDirectory(atPath:root.path),[])
+    }
+    @MainActor func testExistingDestinationIsPreservedAndExporterNotDispatched() async throws {
+        let root = try directory(); defer { try? FileManager.default.removeItem(at:root) }
+        let url = root.appendingPathComponent("existing.bin"); try Data([44]).write(to:url)
+        let chooser = EvidenceDestinationFixture(); chooser.url = url; var calls = 0
+        let api = EvidenceWorkspaceAPI(), model = try await loaded(api,exporter:{ _,_ in calls += 1; throw CancellationError() })
+        XCTAssertTrue(model.startExport(.response,owner:model.id,chooser:chooser)); try await wait { !model.isExporting }
+        XCTAssertEqual(calls,0); XCTAssertEqual(try Data(contentsOf:url),Data([44])); XCTAssertNotNil(model.failure)
+    }
+    @MainActor func testExportFailureAndCleanupFailureUseSafeLocalizedMessages() async throws {
+        let root = try directory(); defer { try? FileManager.default.removeItem(at:root) }
+        let chooser = EvidenceDestinationFixture(); chooser.url = root.appendingPathComponent("fail.bin")
+        let api = EvidenceWorkspaceAPI(); var cleanup = false
+        let model = try await loaded(api,exporter:{ _,_ in
+            if cleanup { throw EvidenceExportError.cleanupRequired }
+            throw NSError(domain:"private response body secret",code:99)
+        })
+        XCTAssertTrue(model.startExport(.response,owner:model.id,chooser:chooser)); try await wait { !model.isExporting }
+        for language in AppLanguage.allCases { XCTAssertFalse(model.failure?.text(language:language).contains("private") ?? true) }
+        cleanup = true
+        XCTAssertTrue(model.startExport(.response,owner:model.id,chooser:chooser)); try await wait { !model.isExporting }
+        XCTAssertEqual(model.failure?.text(language:.english),AppStrings.text(.evidenceUICleanupFailed,language:.english))
+        XCTAssertEqual(try FileManager.default.contentsOfDirectory(atPath:root.path),[])
+    }
+    @MainActor func testStoppedChooserCannotStartTransferWithLateApprovedURL() async throws {
+        let root = try directory(); defer { try? FileManager.default.removeItem(at:root) }
+        let chooser = EvidenceDestinationFixture(); chooser.url = root.appendingPathComponent("late.bin"); chooser.hold = true
+        var calls = 0
+        let api = EvidenceWorkspaceAPI(), model = try await loaded(api,exporter:{ _,_ in calls += 1; throw CancellationError() })
+        XCTAssertTrue(model.startExport(.response,owner:model.id,chooser:chooser)); try await wait { chooser.pending != nil }
+        let late = chooser.pending; chooser.pending = nil; model.stop()
+        late?.resume(returning:chooser.url); try await wait { !model.isExporting }
+        XCTAssertEqual(calls,0); XCTAssertNil(model.saved); XCTAssertEqual(try FileManager.default.contentsOfDirectory(atPath:root.path),[])
+    }
+    @MainActor func testBinaryPreviewDoesNotRequestMoreAndInvalidAppendIsRejected() throws {
+        let api = EvidenceWorkspaceAPI()
+        let raw = try JSONSerialization.data(withJSONObject:api.page(api.literal,binary:true))
+        var display = try EvidenceTextPreview(BackendJSONCoding.decode(FindingEvidencePreview.self,from:raw))
+        XCTAssertFalse(display.hasMore)
+        let wrong = try BackendJSONCoding.decode(FindingEvidencePreview.self,from:JSONSerialization.data(withJSONObject:api.page("wrong",offset:0,next:3)))
+        XCTAssertThrowsError(try display.append(wrong)); XCTAssertEqual(display.nextOffset,1)
+    }
+    @MainActor func testCapturedTrafficDismissBindingCannotCloseReplacementSheet() async throws {
+        let api = EvidenceWorkspaceAPI(), parent = FindingScreenModel(store:FindingStore(service:.init(client:api)),trafficService:.init(client:api))
+        await parent.store.refreshView(); await parent.selectDetail(id:"7",owner:parent.store.viewOwner)
+        XCTAssertTrue(parent.beginTraffic(owner:parent.store.viewOwner,revision:parent.detailRevision))
+        let first = try XCTUnwrap(parent.trafficWorkspace), dismiss = FindingBindings.traffic(parent,id:parent.trafficWorkspace?.id)
+        parent.closeTraffic(id:first.id)
+        XCTAssertTrue(parent.beginTraffic(owner:parent.store.viewOwner,revision:parent.detailRevision))
+        let second = try XCTUnwrap(parent.trafficWorkspace); dismiss.wrappedValue = nil
+        XCTAssertEqual(parent.trafficWorkspace?.id,second.id); XCTAssertTrue(second.isActive)
+        FindingBindings.traffic(parent,id:second.id).wrappedValue = nil; XCTAssertNil(parent.trafficWorkspace)
     }
     @MainActor func testParentOwnsSheetAndRejectsOldDismissAndOtherActions() async throws {
         let api = EvidenceWorkspaceAPI(), parent = FindingScreenModel(store:FindingStore(service:.init(client:api)),trafficService:.init(client:api))
