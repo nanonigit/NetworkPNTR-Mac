@@ -424,3 +424,13 @@ F5e2 software checkpoint:14 action +23 workspace/77 related/804 full Swift (803 
 - [ ] P5 detailed preview/binary/truncation/download and unlocked mouse/keyboard/VoiceOver/save-panel/multiwindow/screenshots.
 
 F5e3 software checkpoint:20 new picker cases,824 full Swift (823 pass,one existing externalAX skip),155 Python. See captured-picker-ui-design/verification and bugs/captured-picker-ui in en/ja. F5's actual runtime/visual/full-workflow gates remain open. CP1–CP4 and H0–H5 remain planned; no full goal completion or hosted CI success is claimed. Our pushed HEAD uses [skip ci].
+
+## F5e4 actual captured-index reference runtime
+
+- [x] R1 guarded loopback fixture generates29 real recorded exchanges; fixed body/source oracle and bounded shutdown.
+- [x] R2 independent reference exact pages/filters/source identities, bindings/edit/order/remove/409 and original-body previews; two backend starts persist.
+- [x] R3 frozen executed-source hashes, parent-tag checks before cleanup, repeat equality and local171 Python tests; sanitized receipt and bilingual RCA.
+- [ ] R4 rebuild capture-enabled native image with proven candidate kernel; typed native comparison, two VM boots, uncertainty recovery.
+- [ ] R5 actual new UI/browser/keyboard/AX/multiwindow/save-panel and binary display localization acceptance.
+
+See captured-runtime-verification.md and Japanese counterpart. Reference-only success does not close P4/M5/E4/E5 or any full-product gate. CP1–CP4 and H0–H5 stay planned. Hosted CI is unverified; pushed HEAD uses [skip ci].

@@ -1,0 +1,13 @@
+# 実通信記録の参照環境検証
+
+状態：独立した参照環境の段階試験は完了。ネイティブVM・UIの受入は未完。固定ブラウザソースはe75ae371ad777ffd1eecdd28d2781a6519b05591、補強後の実装はde795ec34f34b5e58aa8bc4bcdec533444b8a198。本文を含まない公開記録はevidence/findings/captured-reference.json。DB・ログ・traceはGit外のprivate領域に保持する。
+
+NIC・公開port・ホストmount・agent活動なし、UID1000・root読取専用のLinux arm64参照containerで、loopback記録proxyを通る実HTTP通信29件からindexを生成した。SQLiteへの偽行投入はしていない。独立HTTP検証でfilterの全行、25+4行paging、対応元の厳密一致、2件紐付け、note／role編集、古いversion409と不変readback、順序、削除、原本4件download、上限付きpreview5回を確認。空・FEFF／NFD／CJK・spill binary・UTF8境界のbyteを保持。backendを協調停止して2回起動し、index・残存binding／version・認証の保持を確認した。VM再起動の証明ではない。
+
+初回成功後に来歴証明を補強した。2回目は配置前にソースbyteを固定し、配置／実行hash一致と、所有alias削除前の元image tagを確認。cleanup5条件が合格し、生成IDを除いた正規化結果が初回と一致した。3回目も同じ隔離実測に成功し、新規16unit testと合わせて実行文coverageを収集。全GuestArtifactTests171件が合格。最初の全試験はPATHにNodeがなく既存oracleが失敗したため、Homebrew NodeをPATHに加えた呼出しで再確認した。依存追加なし。
+
+stdlib traceとAST文の行番号によるunionはcaptured_reference_host.py141/146（96.58%）、captured_fixture_guest.py117/133（87.97%）、captured_reference.py184/190（96.84%）。handler thread／子processはtrace対象外。新Python3ファイルのみの実行文coverageであり、branch／Swift／製品全体の数値ではない。直前のSwift824件（823合格、既存external AX1skip）は今回guest変更では再実行していない。
+
+不完全headerによる停止待ち、別sourceを正解とするreceipt、filter行の不一致、元tag削除前条件不足、実行入力の可変性をnegative試験で再現し修正。bugs/captured-runtime.ja.md参照。capture有効backend-initはソース変更済みだが、導入済みnative system imageの再build／boot検証は未完。クラウドegressやホストCA信頼は有効化していない。固定backend由来のbinary表示placeholderは、raw packet byteを改変しない型付き表示の翻訳監査が残る。
+
+残る条件：実証済み候補kernelを標準昇格せずfresh native imageを作成し、同一fixtureをtyped native service／storeから検証、実VM2bootで保持と参照結果を比較、結果不明write回復、新UI／保存panel／keyboard／VoiceOver／複数window／固定browser画面比較、全21workflow・4社・調査harness・release条件。hosted CIは未検証で、公開HEADには[skip ci]を付ける。
