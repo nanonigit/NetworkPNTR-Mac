@@ -5,6 +5,8 @@ import json
 import os
 from pathlib import Path
 import stat
+import subprocess
+import sys
 import tempfile
 import types
 from unittest.mock import Mock
@@ -174,3 +176,48 @@ class EvidenceFixtureTests(unittest.TestCase):
             self.assertEqual(FIXTURE.run_sql({'PGHOST': '127.0.0.1'}, 'fixed', proof=True), {'fixed': True})
             self.assertEqual(run.call_args.kwargs['input'], b'fixed')
             self.assertEqual(run.call_args.kwargs['timeout'], 20)
+
+    def test_cleanup_preserves_replacement_inode_and_reports_incomplete_cleanup(self):
+        manifest = FIXTURE.body_manifest()
+        with tempfile.TemporaryDirectory() as directory, patch.object(FIXTURE, 'ROOT', Path(directory) / 'evidence'):
+            original_open = os.open
+            first = FIXTURE.ROOT / 'blobs' / manifest['literal']['sha256'][:2] / (manifest['literal']['sha256'] + '.bin')
+            def fail_second(path, flags, *args, **kwargs):
+                if Path(path).name == manifest['binary']['sha256'] + '.bin':
+                    first.unlink(); first.write_bytes(b'replacement must survive')
+                    raise OSError('injected second body failure')
+                return original_open(path, flags, *args, **kwargs)
+            with patch.object(FIXTURE.os, 'open', side_effect=fail_second), self.assertRaisesRegex(RuntimeError, 'cleanup incomplete'):
+                FIXTURE.write_bodies()
+            self.assertEqual(first.read_bytes(), b'replacement must survive')
+
+    def test_cleanup_attempts_all_owned_files_and_reports_unlink_failure(self):
+        manifest = FIXTURE.body_manifest()
+        with tempfile.TemporaryDirectory() as directory, patch.object(FIXTURE, 'ROOT', Path(directory) / 'evidence'):
+            original_open, original_unlink = os.open, Path.unlink
+            attempted = []
+            def fail_third(path, flags, *args, **kwargs):
+                if Path(path).name == manifest['empty']['sha256'] + '.bin': raise OSError('third body failed')
+                return original_open(path, flags, *args, **kwargs)
+            def unlink(path, *args, **kwargs):
+                attempted.append(path.name)
+                if path.name == manifest['binary']['sha256'] + '.bin': raise OSError('unlink failed')
+                return original_unlink(path, *args, **kwargs)
+            with patch.object(FIXTURE.os, 'open', side_effect=fail_third), patch.object(Path, 'unlink', new=unlink), self.assertRaisesRegex(RuntimeError, 'cleanup incomplete'):
+                FIXTURE.write_bodies()
+            self.assertCountEqual(attempted, [manifest[name]['sha256'] + '.bin' for name in ('literal', 'binary')])
+
+    def test_fifo_audit_rejects_without_waiting_for_a_writer(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory) / 'evidence'; row = FIXTURE.body_manifest()['literal']
+            prefix = root / 'blobs' / row['sha256'][:2]; prefix.mkdir(parents=True, mode=0o700)
+            os.mkfifo(prefix / (row['sha256'] + '.bin'), 0o600)
+            code = ('import importlib.util; from pathlib import Path; '
+                    + 's=importlib.util.spec_from_file_location("fixture",' + repr(str(SCRIPT)) + '); '
+                    + 'm=importlib.util.module_from_spec(s);s.loader.exec_module(m);m.ROOT=Path(' + repr(str(root)) + ');m.audit_bodies()')
+            try:
+                reply = subprocess.run([sys.executable, '-c', code], stdout=subprocess.PIPE, stderr=subprocess.PIPE, timeout=2)
+            except subprocess.TimeoutExpired:
+                self.fail('FIFO audit blocked waiting for writer')
+            self.assertNotEqual(reply.returncode, 0)
+            self.assertIn(b'Evidence fixture body metadata failed', reply.stderr)
