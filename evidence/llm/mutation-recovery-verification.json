@@ -1,0 +1,92 @@
+{
+  "schema": 1,
+  "baseline": "e75ae371ad777ffd1eecdd28d2781a6519b05591",
+  "code_checkpoint": "525c9c8",
+  "red_checkpoints": [
+    "db2de38",
+    "6b3a35c",
+    "3c84608",
+    "3e903fb",
+    "4210528"
+  ],
+  "red_notes": {
+    "6b3a35c": "Two assertion failures plus recursive-stop signal11; not a completed 12-test run.",
+    "3e903fb": "Two bounded cases, three assertion failures."
+  },
+  "focused": {
+    "Core": 38,
+    "Mac": 4,
+    "passed": 42
+  },
+  "swift": {
+    "total": 680,
+    "passed": 679,
+    "skipped_existing_external_ax": 1,
+    "failures": 0
+  },
+  "python": {
+    "passed": 123
+  },
+  "line_coverage": {
+    "LLMService.swift": {
+      "count": 133,
+      "covered": 131,
+      "percent": 98.49624060150376
+    },
+    "LLMStore.swift": {
+      "count": 173,
+      "covered": 172,
+      "percent": 99.42196531791907
+    },
+    "LLMRecoveryView.swift": {
+      "count": 210,
+      "covered": 207,
+      "percent": 98.57142857142858
+    },
+    "LLMWorkspace.swift": {
+      "count": 13,
+      "covered": 13,
+      "percent": 100
+    }
+  },
+  "review": "no unresolved blocker in scoped core/UI/lifecycle/coordinator/rendering reviews",
+  "llm_localization_entries": 112,
+  "new_recovery_locales": [
+    "en",
+    "ja"
+  ],
+  "signed_build_only": true,
+  "strict_signature": true,
+  "localization_export_check": true,
+  "inventory": {
+    "navigation": 21,
+    "routes": 27,
+    "handlers": 243
+  },
+  "actual_guest_acceptance": false,
+  "browser_native_visual_acceptance": false,
+  "external_accessibility_acceptance": false,
+  "editor_probe_lifecycle_complete": false,
+  "durable_unknown_recovery_complete": false,
+  "full_goal_complete": false,
+  "source_sha256": {
+    "Sources/ArtexCore/LLMService.swift": "543967d1df15099f1e978f2c3b76349ee442b5e5d72d43b3698952810a5d62d8",
+    "Sources/ArtexCore/LLMStore.swift": "e240a3469f0805515d24f2a8d472de210fc9afedb2ffbdbaeb23c0e4ac74719a",
+    "Sources/ArtexCore/AppStrings.swift": "8891b897e69f1896a4d429ddbf4612f912f9b8f3a751d2d470b8612ae45eeae0",
+    "Sources/ArtexCore/Resources/Localizable.xcstrings": "aa7708e33ab3c085e60bfaf0c72d99f3afbdd52db5b682a65665472bf7760113",
+    "Sources/ArtexCore/Resources/en.lproj/Localizable.strings": "553efd5e486e621c54c1529ca1f169d03eb3e4a46d7953076842491e5add3875",
+    "Sources/ArtexCore/Resources/ja.lproj/Localizable.strings": "ed808fdb7b123737861d76e647ec66fcbcb79700aa8c23c7084f21717d6a9be4",
+    "Sources/ArtexMac/LLMSettingsView.swift": "bef82ff24da30798b69f0a2cd7c977fe413abd19e5cf16eeeeda37aaa24b1432",
+    "Sources/ArtexMac/LLMProfileEditor.swift": "c1d4ff734e536ef7ecfe2d06027ee43b8526d7c76648d126fb3905d3579fa72a",
+    "Sources/ArtexMac/LLMRotationView.swift": "8541e536d3c5a549c94f47d328f7d4ebfaae15c799499ec285f5392a45b52684",
+    "Sources/ArtexMac/LLMRetryView.swift": "dff47087c2d196f06f3653dcb5268c155878050758a1d4b1732ff833d125b31f",
+    "Sources/ArtexMac/LLMRecoveryView.swift": "93b774e836990abb130223cf89f57b42b84ff870d67ed27f148477cda6015229",
+    "Sources/ArtexMac/LLMWorkspace.swift": "4064fc77d30ea228b2b2c996bce3d81fe723d3361ca0c6eb155ac815bd363cd6",
+    "Sources/ArtexMac/RootView.swift": "a702ca40c99db526dab5a88d859cf993430cbcf34e09975645f31f6e53aa777f",
+    "Tests/ArtexCoreTests/LLMMutationRecoveryTests.swift": "f672b5aeb0653c87618b6121a7101a7317798717ecffbc99f4b69fcf85bd4726",
+    "Tests/ArtexCoreTests/LLMUILocalizationTests.swift": "36b25e3db76470509a2f82f5ef05c64c7c2a4c8d89a8de173ea40d3c5242b8eb",
+    "Tests/ArtexCoreTests/Fixtures/llm-ui-localization.json": "a158a867349c5e1244697d2649dee3ac0114674e75e2ea3fc46d79e7da5f93f1",
+    "Tests/ArtexMacTests/LLMWorkspaceTests.swift": "cd2c05d6dbd6dfcb01061411446a489a6b3f3a665badd7f14525192a57bf45a0",
+    "Tests/ArtexMacTests/LLMRecoveryRenderingTests.swift": "bbd6d130461b35faa3cedfd4f6323375422eff359346cd5cf1b69f2e0530cc38"
+  }
+}
