@@ -11,13 +11,15 @@ import XCTest
     var hold = false
     var pending: [CheckedContinuation<BackendHTTPResponse, any Error>] = []
     var status = 200
+    var binaryPages = false
+    let binaryMarker = "[二进制正文，3 字节；请下载查看]"
     let literal = "\u{FEFF}e\u{301} 中文 한국어"
     var binding: [String: Any] {
         ["id":"21", "finding_id":"7", "snapshot_id":"snap", "role":"future-role", "note":literal,
          "position":0, "created_at":"raw", "snapshot":["id":"snap", "source_traffic_id":"opaque",
          "captured_at":1792663200, "url":"https://fixture.invalid/", "method":"POST", "status":200,
          "content_type":"application/octet-stream", "req_head":literal, "resp_head":"HTTP/1.1 200 OK",
-         "req_hash":Self.hash(Data()), "resp_hash":Self.hash(Data([0,255,97])), "req_len":0, "resp_len":3]]
+         "req_hash":Self.hash(binaryPages ? Data([0,255,97]):Data()), "resp_hash":Self.hash(Data([0,255,97])), "req_len":binaryPages ? 3:0, "resp_len":3]]
     }
     static func hash(_ data: Data) -> String { SHA256.hash(data:data).map { String(format:"%02x",$0) }.joined() }
     func page(_ content: String, offset: Int = 0, next: Int = 1, total: Int = 3, binary: Bool = false) -> [String: Any] {
@@ -38,7 +40,10 @@ import XCTest
             let offset = Int(URLComponents(string:path)?.queryItems?.first { $0.name == "offset" }?.value ?? "0") ?? 0
             return try response(page(literal,offset:offset,next:3))
         }
-        if path.contains("/traffic/21") { return try response(["binding":binding,"request":page("",next:0,total:0),"response":page(literal)]) }
+        if path.contains("/traffic/21") {
+            if binaryPages {return try response(["binding":binding,"request":page(binaryMarker,next:3,binary:true),"response":page(binaryMarker,next:3,binary:true)])}
+            return try response(["binding":binding,"request":page("",next:0,total:0),"response":page(literal)])
+        }
         if path.contains("/traffic") { return try response(["finding_id":"7","version":2,"report_version":1,"bindings":[binding]]) }
         if path == "/api/exploration/findings/7" { return try response(row) }
         return try response(["items":[row],"total":1,"page":1,"page_size":20])
@@ -115,6 +120,28 @@ final class FindingTrafficWorkspaceTests: XCTestCase {
             }
         }
         XCTAssertEqual(api.calls.count,count)
+    }
+    @MainActor func testTypedBinaryWorkspacePreservesBothWirePagesAndRendersENJAWithoutRequests() async throws {
+        let api=EvidenceWorkspaceAPI();api.binaryPages=true
+        let model=try await loaded(api),count=api.calls.count
+        for side in [FindingEvidenceSide.request,.response] {
+            let preview=try XCTUnwrap(model.preview(side))
+            XCTAssertTrue(preview.binary);XCTAssertFalse(preview.hasMore);XCTAssertEqual(preview.textContent,"")
+            XCTAssertEqual(Data(preview.content.utf8),Data(api.binaryMarker.utf8))
+            await model.more(side,owner:model.id)
+        }
+        let detail=try XCTUnwrap(model.store.detail.value)
+        XCTAssertEqual(Data(detail.request.content.utf8),Data(api.binaryMarker.utf8));XCTAssertEqual(Data(detail.response.content.utf8),Data(api.binaryMarker.utf8))
+        XCTAssertEqual(Data(model.requestHeader.utf8),Data(api.literal.utf8));XCTAssertEqual(model.responseHeader,"HTTP/1.1 200 OK")
+        for language in [AppLanguage.english,.japanese] {
+            for scheme in [ColorScheme.light,.dark] {
+                let host=NSHostingView(rootView:FindingTrafficContent(model:model,presenter:EvidenceSavePanelPresenter(),close:{}).environment(\.locale,language.locale).environment(\.colorScheme,scheme))
+                host.frame=NSRect(x:0,y:0,width:900,height:640);host.layoutSubtreeIfNeeded()
+                let bitmap=try XCTUnwrap(host.bitmapImageRepForCachingDisplay(in:host.bounds));host.cacheDisplay(in:host.bounds,to:bitmap)
+                XCTAssertGreaterThan(bitmap.pixelsWide,0);XCTAssertTrue(host.fittingSize.width.isFinite)
+            }
+        }
+        XCTAssertEqual(api.calls.count,count);model.stop()
     }
     @MainActor func testSavePanelWithoutOwnedWindowDoesNotPresentOrChooseDestination() async {
         let presenter = EvidenceSavePanelPresenter()
