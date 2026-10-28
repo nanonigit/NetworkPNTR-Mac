@@ -70,6 +70,7 @@ final class EvidenceExportWriter: @unchecked Sendable {
     }
     init(destination: EvidenceExportDestination, request: FindingEvidenceDownload) throws {
         self.destination = destination; self.request = request
+        try EvidenceExportDestination.requireAbsent(destination.directory, destination.name)
         guard mkdirat(destination.directory, stageName, 0o700) == 0 else { throw EvidenceExportError.storage }
         let directory = openat(destination.directory, stageName, O_RDONLY | O_DIRECTORY | O_NOFOLLOW | O_CLOEXEC)
         guard directory >= 0 else {
