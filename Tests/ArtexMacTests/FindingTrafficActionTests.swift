@@ -163,6 +163,32 @@ final class FindingTrafficActionTests: XCTestCase {
         model.actions.close(id:id); XCTAssertEqual(note.wrappedValue,""); XCTAssertEqual(role.wrappedValue,"")
         XCTAssertEqual(api.writes.count,1)
     }
+    @MainActor func testDelayedOldSheetStopCannotRevokeReplacementStore() async throws {
+        let api = EvidenceActionAPI(), screen = try await parent(api), old = try XCTUnwrap(screen.trafficWorkspace)
+        screen.closeTraffic(id:old.id)
+        XCTAssertTrue(screen.beginTraffic(owner:screen.store.viewOwner,revision:screen.detailRevision))
+        let current = try XCTUnwrap(screen.trafficWorkspace); await current.refresh()
+        let owner = current.store.owner; old.stop()
+        XCTAssertTrue(current.store.isActive); XCTAssertEqual(current.store.owner,owner)
+        XCTAssertNotNil(current.store.summary.value); XCTAssertTrue(current.actions.openRemove("21",owner:current.id))
+    }
+    @MainActor func testOldMutationCleanupAfterResetCannotStopNewSessionWrite() async throws {
+        let api = EvidenceActionAPI(), screen = try await parent(api), old = try XCTUnwrap(screen.trafficWorkspace)
+        api.holdWrite = true; XCTAssertTrue(old.actions.openRemove("21",owner:old.id))
+        let first = Task { try await self.submit(old) }; try await wait { api.held != nil }
+        let oldReply = try XCTUnwrap(api.held); api.held = nil; screen.reset()
+        await screen.store.refreshView(); await screen.selectDetail(id:"7",owner:screen.store.viewOwner)
+        XCTAssertTrue(screen.beginTraffic(owner:screen.store.viewOwner,revision:screen.detailRevision))
+        let current = try XCTUnwrap(screen.trafficWorkspace); await current.refresh()
+        XCTAssertTrue(current.actions.openRemove("22",owner:current.id))
+        let second = Task { try await self.submit(current) }; try await wait { api.held != nil }
+        let owner = current.store.owner; api.version += 1; oldReply.resume(returning:try api.reply(api.summary))
+        let firstResult = try await first.value; XCTAssertFalse(firstResult)
+        XCTAssertTrue(current.store.isActive); XCTAssertEqual(current.store.owner,owner); XCTAssertTrue(current.store.isMutating)
+        XCTAssertTrue(current.store.unknownIDs.isEmpty)
+        api.version += 1; api.ids = ["21"]; api.held?.resume(returning:try api.reply(api.summary)); api.held = nil
+        let secondResult = try await second.value; XCTAssertTrue(secondResult); XCTAssertTrue(screen.trafficUnknownIDs.isEmpty)
+    }
     @MainActor func testActionDialogsRenderBothLocalesWithoutSendingCommands() async throws {
         let api = EvidenceActionAPI(), model = try await loaded(api)
         for kind in 0..<3 {
