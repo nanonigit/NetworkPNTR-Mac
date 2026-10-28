@@ -103,3 +103,71 @@ final class LLMMutationRecoveryTests: XCTestCase {
         XCTAssertFalse(store.acknowledgeUnknown(revision: revision))
     }
 }
+
+extension LLMMutationRecoveryTests {
+    @MainActor func testEveryMutationFamilyMarksOnlyDispatchedFailuresUncertain() async throws {
+        let profile = try LLMWire.decode(LLMProfile.self, from: Data("{\"id\":\"7\",\"name\":\"fixture\",\"format\":\"openai\",\"model\":\"fixture\",\"is_default\":false,\"rate_per_second\":0,\"rate_per_minute\":0}".utf8))
+        for kind in 0..<6 {
+            let api = LLMHeldTransport(); let store = LLMStore(service: LLMService(client: api))
+            api.queue("{}", status: 503)
+            switch kind {
+            case 0: _ = await store.save(fixture())
+            case 1: await store.activate(profile)
+            case 2: await store.delete(profile)
+            case 3: await store.setRotation(enabled: true)
+            case 4: await store.resetPool()
+            default: _ = await store.saveRetry(LLMRetryPolicy())
+            }
+            XCTAssertEqual(api.paths.count, 1, "Family \(kind)")
+            XCTAssertNotNil(store.unknownRevision, "Family \(kind)")
+            await store.activate(profile); await store.delete(profile); await store.setRotation(enabled: false)
+            await store.resetPool(); _ = await store.saveRetry(LLMRetryPolicy()); _ = await store.save(fixture())
+            XCTAssertEqual(api.paths.count, 1, "Blocked family \(kind)")
+        }
+    }
+    @MainActor func testEmptyPatchAndInvalidResetAreNotUncertain() async {
+        let api = LLMHeldTransport(); let store = LLMStore(service: LLMService(client: api))
+        await store.setRotation(); await store.resetPool(id: "7/invalid")
+        XCTAssertTrue(api.paths.isEmpty); XCTAssertNil(store.unknownRevision)
+        XCTAssertNil(store.noticeKey); XCTAssertFalse(store.isMutating)
+    }
+    @MainActor func testPreCancelledStoreDoesNotChangeOrDispatch() async {
+        let api = LLMHeldTransport(); let store = LLMStore(service: LLMService(client: api)); let draft = fixture()
+        let task = Task { @MainActor in
+            withUnsafeCurrentTask { $0?.cancel() }
+            _ = await store.save(draft); await store.load(); await store.refreshPool()
+        }
+        await task.value
+        XCTAssertTrue(api.paths.isEmpty); XCTAssertNil(store.unknownRevision)
+        XCTAssertNil(store.failure); XCTAssertFalse(store.isLoading); XCTAssertFalse(store.isMutating)
+    }
+    @MainActor func testConfirmedSaveStaysKnownAcrossStopDuringRefresh() async throws {
+        let api = LLMHeldTransport(); let store = LLMStore(service: LLMService(client: api))
+        api.queue("{\"id\":7}")
+        withObservationTracking { _ = store.noticeKey } onChange: {
+            MainActor.assumeIsolated { api.hold = true }
+        }
+        let draft = fixture(); let task = Task { await store.save(draft) }
+        await waitForRequest(api); store.stop(); store.resume()
+        XCTAssertTrue(store.isMutating); XCTAssertNil(store.unknownRevision)
+        api.finish("{}", status: 503)
+        let saved = await task.value; XCTAssertTrue(saved)
+        XCTAssertNil(store.unknownRevision); XCTAssertNil(store.noticeKey)
+        XCTAssertFalse(store.isMutating)
+    }
+    @MainActor func testReadObservationDeparturePreventsFirstRequest() async {
+        let api = LLMHeldTransport(); let store = LLMStore(service: LLMService(client: api))
+        withObservationTracking { _ = store.isLoading } onChange: { MainActor.assumeIsolated { store.stop() } }
+        await store.load()
+        XCTAssertTrue(api.paths.isEmpty); XCTAssertFalse(store.isLoading); XCTAssertFalse(store.hasLoaded)
+    }
+    @MainActor func testFailedSecondReloadRevokesPreviousReview() async throws {
+        let api = LLMHeldTransport(); let store = LLMStore(service: LLMService(client: api))
+        api.queue("{}", status: 503); _ = await store.save(fixture())
+        let revision = try XCTUnwrap(store.unknownRevision)
+        try api.fullLoad(); await store.load(); XCTAssertTrue(store.canAcknowledgeUnknown)
+        api.queue("{}", status: 503); await store.load()
+        XCTAssertFalse(store.canAcknowledgeUnknown)
+        XCTAssertFalse(store.acknowledgeUnknown(revision: revision))
+    }
+}
