@@ -30,6 +30,9 @@ struct FindingSearchTicket: Hashable {
     static let preferenceKey = "findings.screen.preferences.v1"
     let store: FindingStore
     let reads: FindingScreenReads
+    private(set) var trafficWorkspace: FindingTrafficWorkspace?
+    @ObservationIgnored private let trafficService: FindingTrafficService?
+    @ObservationIgnored private let evidenceExporter: FindingEvidenceExporter?
     var expandedAssets = Set<Data>()
     var searchDraft = ""
     var nameDraft = ""
@@ -56,13 +59,14 @@ struct FindingSearchTicket: Hashable {
     @ObservationIgnored private var lifecycle = UUID()
     @ObservationIgnored private var retainedEdit: FindingEditDraft?
 
-    init(store: FindingStore,preferences: UserDefaults? = nil) {
+    init(store: FindingStore,preferences: UserDefaults? = nil,trafficService: FindingTrafficService? = nil,evidenceExporter: FindingEvidenceExporter? = nil) {
+        self.trafficService = trafficService; self.evidenceExporter = evidenceExporter
         self.store = store; self.reads = FindingScreenReads(store:store); self.preferences = preferences
         if let data = preferences?.data(forKey:Self.preferenceKey), data.count <= 32768,
            let saved = try? JSONDecoder().decode(FindingScreenPreferences.self,from:data),
            let (view,query) = saved.validated(), store.configureFilters(query) { _ = store.setView(view) }
     }
-    var busy: Bool { isSubmitting || store.isMutating }
+    var busy: Bool { isSubmitting || store.isMutating || trafficWorkspace != nil }
     var controlsAvailable: Bool { !busy && dialog == nil }
     @discardableResult func configureFilters(_ query: FindingQuery) -> Bool {
         let previous = store.viewOwner
@@ -140,14 +144,28 @@ struct FindingSearchTicket: Hashable {
         }
         return false
     }
+    @discardableResult func beginTraffic(owner: UUID,revision: UUID) -> Bool {
+        guard controlsAvailable, !Task.isCancelled, store.viewOwner == owner, detailRevision == revision,
+              !store.detail.isStale, !store.detail.isLoading, let row = store.detail.value,
+              let selected = store.selectedDetail, row.findingId == selected.id, let trafficService else { return false }
+        do {
+            trafficWorkspace = try FindingTrafficWorkspace(target:row,contextTaskID:selected.contextTaskID,service:trafficService,exporter:evidenceExporter)
+            return true
+        } catch { return false }
+    }
+    func closeTraffic(id: UUID) {
+        guard trafficWorkspace?.id == id else { return }
+        trafficWorkspace?.stop(); trafficWorkspace = nil
+    }
     func stop() {
         if !busy, !dialogUncertain, let context = dialog, context.sessionOwner == store.sessionOwner,
            case .edit(let row) = context.kind, let id = row.findingId {
             retainedEdit = FindingEditDraft(session:context.sessionOwner,findingID:id,name:nameDraft,vulnclass:classDraft,severity:severityDraft)
         }
+        trafficWorkspace?.stop(); trafficWorkspace = nil
         lifecycle = UUID(); detailRevision = UUID(); reads.stop(); clearDialog(); store.stop()
     }
-    func reset() { lifecycle = UUID(); detailRevision = UUID(); reads.stop(); retainedEdit = nil; clearDialog(); searchDraft = ""; expandedAssets = []; store.reset() }
+    func reset() { trafficWorkspace?.stop(); trafficWorkspace = nil; lifecycle = UUID(); detailRevision = UUID(); reads.stop(); retainedEdit = nil; clearDialog(); searchDraft = ""; expandedAssets = []; store.reset() }
 
     private func canOpen(_ target: FindingRecord) -> Bool {
         guard !busy, dialog == nil, !Task.isCancelled, store.unknownIDs.isEmpty, target.canMutate else { return false }

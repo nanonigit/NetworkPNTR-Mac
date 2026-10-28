@@ -13070,6 +13070,40 @@
           }
         }
       }
+    },
+    "evidence.ui.exportFailed": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Could not save the original evidence. Choose a new filename and try again."
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "証跡の原本を保存できませんでした。新しいファイル名を選んで再試行してください。"
+          }
+        }
+      }
+    },
+    "evidence.ui.cleanupFailed": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Incomplete evidence could not be removed. Check the selected destination before retrying."
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "未完了の証跡を削除できませんでした。再試行する前に保存先を確認してください。"
+          }
+        }
+      }
     }
   },
   "version": "1.0"

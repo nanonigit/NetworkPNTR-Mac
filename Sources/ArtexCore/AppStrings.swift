@@ -1,6 +1,8 @@
 import Foundation
 
 public enum AppStringKey: String, CaseIterable, Sendable {
+    case evidenceUIExportFailed = "evidence.ui.exportFailed"
+    case evidenceUICleanupFailed = "evidence.ui.cleanupFailed"
     case llmUIRecoveryTitle = "llm.ui.recoveryTitle"
     case llmUIRecoveryHelp = "llm.ui.recoveryHelp"
     case llmUIRecoveryResume = "llm.ui.recoveryResume"

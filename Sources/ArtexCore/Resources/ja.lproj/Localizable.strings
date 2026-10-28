@@ -470,6 +470,10 @@
 	<string>利用条件を確認して同意してください。</string>
 	<key>error.validation.testModel</key>
 	<string>テストするモデルを入力してください。</string>
+	<key>evidence.ui.cleanupFailed</key>
+	<string>未完了の証跡を削除できませんでした。再試行する前に保存先を確認してください。</string>
+	<key>evidence.ui.exportFailed</key>
+	<string>証跡の原本を保存できませんでした。新しいファイル名を選んで再試行してください。</string>
 	<key>feature.agents</key>
 	<string>エージェント</string>
 	<key>feature.approvals</key>
