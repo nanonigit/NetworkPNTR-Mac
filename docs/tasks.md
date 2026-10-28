@@ -380,3 +380,12 @@ F5 remaining integration gates also include nonempty captured-traffic bind/edit/
 - [ ] BR4 detailed preview/captured mutation/UI/full product acceptance remains open.
 
 See evidence-reference-design.md and evidence-reference-design.ja.md.
+
+## Four cloud providers (new user goal; not implemented)
+
+- [ ] CP1 provider identity, wire-format/capability and backwards-compatible persistence contracts.
+- [ ] CP2 guest model discovery/stream/tool adapters and mock error/cancellation/signature tests.
+- [ ] CP3 isolated egress and actual minimal four-provider verification with app-entered keys.
+- [ ] CP4 en/ja native controls, keyboard/VoiceOver and shared browser comparisons.
+
+See cloud-providers-design.md and cloud-providers-design.ja.md. Keep current original-body comparison/export work moving; do not enable cloud egress just by adding this goal.

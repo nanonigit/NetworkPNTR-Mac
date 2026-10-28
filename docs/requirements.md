@@ -166,3 +166,7 @@ External task workspaces must validate captured context/live/cold leases at actu
 ## Investigation harness extension
 
 User-requested goal: integrate Dirsearch, Fscan, Masscan and SoftEther VPN through native task controls while retaining guest-only execution, explicit target/network policy, evidence provenance and English/Japanese UI. Implementation is pending. See [design and acceptance phases](investigation-harness-design.md). This extends rather than replaces browser parity and release requirements.
+
+## Cloud provider extension
+
+Support OpenAI, Anthropic, Gemini and Groq with model discovery, streaming and guest-only local tool calls. Preserve existing custom endpoints and protocol variants. Gemini/Groq are planned, not live-verified. See cloud-providers-design.md; existing browser/VM/release goals remain unchanged.

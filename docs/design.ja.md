@@ -113,3 +113,7 @@ Pythonの期待値はSwiftや集計JSONを読み込まず固定SQL値から独�
 ## 調査ハーネスの追加目標
 
 Dirsearch、Fscan、Masscan、SoftEther VPNをネイティブ操作から利用可能にする。ゲスト内実行、対象／ネットワーク制限、証跡の出自、英日表示を維持する。実装は未着手。[設計と段階別受入条件](investigation-harness-design.ja.md)を参照。ブラウザ互換と既存リリース要件を維持する。
+
+## クラウド接続先の追加
+
+OpenAI・Anthropic・Gemini・Groqでモデル取得、ストリーミング、ゲスト内ツール呼出しを扱う。既存カスタムURLと通信形式を維持。Gemini／Groqは計画段階で、実接続未検証。cloud-providers-design.ja.mdを参照し、既存ブラウザ／VM／リリース目標を維持する。
