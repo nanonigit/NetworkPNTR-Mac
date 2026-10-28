@@ -156,6 +156,23 @@ final class AuthenticatedEvidenceExportTests: XCTestCase {
             XCTAssertThrowsError(try export.commit()); try export.discard()
         }
     }
+    @MainActor func testReceiptDiscardDuringUIValidationCannotClearGuardsAndPublish() throws {
+        let root = try directory(); defer { try? FileManager.default.removeItem(at: root) }
+        let destination = try EvidenceExportDestination(newFileURL: root.appendingPathComponent("saved.bin"))
+        let export = try receipt(destination, validate: { throw CancellationError() })
+        XCTAssertThrowsError(try export.commit(validate: { try export.discard() })) { XCTAssertTrue($0 is CancellationError) }
+        XCTAssertTrue(try FileManager.default.contentsOfDirectory(atPath: root.path).isEmpty)
+    }
+    @MainActor func testRevokedVM401DoesNotExpireCurrentAuthentication() async throws {
+        let root = try directory(); defer { try? FileManager.default.removeItem(at: root) }
+        let destination = try EvidenceExportDestination(newFileURL: root.appendingPathComponent("saved.bin"))
+        let api = EvidenceSessionAPI(), vault = EvidenceSessionVault(), session = AuthenticationSession(client: api, vault: vault, setupToken: "fixture")
+        await session.refresh()
+        api.handler = { EvidenceExportReceipt(response: EvidenceDownloadResponse(result: .init(status: 401, byteCount: 0, sha256: ""), file: nil), validate: { throw CancellationError() }) }
+        do { _ = try await session.authenticatedEvidenceExport(try spec(), destination: destination); XCTFail("Revoked VM reply") } catch { XCTAssertTrue(error is CancellationError) }
+        XCTAssertEqual(session.phase, .authenticated); XCTAssertEqual(vault.value, "old.jwt")
+        XCTAssertTrue(try FileManager.default.contentsOfDirectory(atPath: root.path).isEmpty)
+    }
     @MainActor func testConcreteClientHonorsStoppedVMInvalidBearerAndPrecancel() async throws {
         let root = try directory(); defer { try? FileManager.default.removeItem(at: root) }
         let destination = try EvidenceExportDestination(newFileURL: root.appendingPathComponent("saved.bin"))
