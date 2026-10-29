@@ -1,0 +1,15 @@
+# 通信履歴の紐付け連携とnative dialog（TR3）
+
+21操作／VM／ブラウザ／画面／release／4社／harnessの全条件を維持する。既存TrafficBindingStoreをroot保持のTrafficScreenModel、ページをまたぐバイト識別の通信選択、250ms・page1／size20のfinding選択、成功時だけの選択解除へ接続する。blob原本保存は残す。host agentコマンド、任意接続先、実scan／provider接続は増やさない。
+
+設計前に固定LinkTrafficDialog／page／findingFilterParamsとserverのglobal findingsを確認した。queryはECMAScript trimされ既存FindingQueryと一致し、severity明示もserver既定と一致する。bindingCandidatesという読取専用メソッドで継承／legacy行を無効表示できるようにし、既存standalone listと変更検証は緩めない。固定route、20件、原文／encode後8192bytesと応答page／sizeを検証する。
+
+Lazyweb0.15.14は正常。検索6f3107eb-a894-4aa7-9de1-10b2e8f49369はRowsの保存先選択modal（screens:2e064053fc27fbb05af4dd51,.473999）とAmplitudeの検索archive（screens:fe97674052e7faeca29b07a6,.466863）を返した。中程度の関連metadataで画像未確認、ARTEX同等性の証拠ではない。既取得Clarify（https://raw.githubusercontent.com/pbakaus/impeccable/main/.claude/skills/impeccable/reference/clarify.md）の常設ラベル、明示した紐付け／閉じる／証跡再読取／承認、完結した英日の回復文を使う。native sheetは元と同じ件数・検索・候補・ページ移動・選択対象・確認／取消の順。継承／handleなし行は選択不可。検索／ページ変更でも対象を保持するが、送信前に対応するfresh証跡一覧を必要とする。
+
+TrafficLinkWorkspaceが原文検索／page／読取世代とbinding store所有権を管理する。親はweak、表示／dialog ID、開始時query所有権とflow revisionは固定。通知中stopを待機させ、古いreadで候補／選択を復活させないよう、汎用read helperの無保護な公開経路を使わない。検索ticketはUTF8／query／page／dialogを持ち、キャンセル無視の待機／要求も旧状態を公開できない。描画でIOを始めず、利用者が開く操作から初回の待機／読取を開始する。候補／選択／dismiss／送信は不変ID／ticketを渡す。
+
+親はsheetを閉じてもbinding storeを保持する。紐付けのbusy／結果不明は紐付けと通信削除の両方を止め、通信削除の結果不明も新規紐付けを止める。readonly回復は許可する。認証／reset／移動でworkspaceと原文／候補／対象を消し、未確定送信とprivate回復情報はcoreに保持する。busy通知中に親scopeが失われた場合にPOSTしないようcoreに送信直前の検証を追加する。request UUIDで古い確認を再実行しない。現在の表示／query owner／flow revisionが一致した確認成功後だけ通信選択を消し、変更後の選択は維持する。成功済みで選択が変わった場合は専用通知にし、誤って結果不明としない。
+
+結果不明中は対象／検索／新規書込みを固定し、明示した証跡再読取と正しいrevisionの承認を必要とする。閉じてもゲートは残り、回復専用sheetで別の新選択を使わず元handleを確認できる。承認でPOST／選択解除しない。元の正常sheetが有効な場合だけ新しい明示確認を再準備し、回復専用なら承認後に閉じる。永続／複数窓／process共通台帳とは主張しない。
+
+先に候補query／readonly行、原文／ページ跨ぎ／古いleaseとrevision、250ms最新入力／遅延read／対象保持、成功時の解除と変更後の保持、兄弟操作禁止、送信前後の離脱／reset、保留と閉じた後の回復、古い承認／確認／dismiss、英日light/dark非表示描画の副作用なしを試験する。その後レビュー、全試験／coverage／署名と公開。実root／ブラウザ／native／mouse／keyboard／VoiceOver／複数窓と実VM効果は未完了。Mac解除は後回しで再依頼しない。
