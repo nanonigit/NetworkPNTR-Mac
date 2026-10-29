@@ -1,0 +1,77 @@
+{
+  "schema": 1,
+  "passedPrimitiveChecks": true,
+  "fullGoalComplete": false,
+  "sourceHead": "bbe7072f39e450ac18563b4c1aa36a2925cc1607",
+  "baseCommit": "e75ae371ad777ffd1eecdd28d2781a6519b05591",
+  "sourceSHA256": {
+    "guest/backend-extension/traffic/blob_manifest.go": "5cbb15b58fd9cdb5038a8c24c9b793bd393e6b31def9324da3c7835f73649462",
+    "guest/backend-extension/traffic/blob_manifest_test.go": "14bd58112d32a7fc24ea73194a7fe99293ccbcd3b73f6547b7277e1b288d1988",
+    "guest/backend-extension/Dockerfile.tests": "05b5d8d45f083a7917f5796c72c0bbe1bdcae006d89e75dde2dd6f129e5a8525"
+  },
+  "compiler": {
+    "image": "golang:1.26.3-bookworm@sha256:386d475a660466863d9f8c766fec64d7fdad3edac2c6a05020c09534d71edb4b",
+    "platform": "linux/arm64",
+    "goModVerified": true,
+    "newDependencies": false,
+    "hostGoExecuted": false,
+    "testRUNNetwork": "none"
+  },
+  "containerImage": "sha256:f6cf2bd8e33e78c19c3497d8dea93a0c44c6f48629e163c55c50fa2f6af36174",
+  "tests": {
+    "newTopLevelCases": 7,
+    "newPassEventsIncludingSubtests": 18,
+    "fullTrafficPackagePassEventsIncludingSubtests": 61,
+    "skipped": [],
+    "observedBuildExitCode": 0,
+    "baselineFeatures": 21,
+    "baselinePages": 27,
+    "baselineHandlers": 243
+  },
+  "coverage": {
+    "method": "Go statement coverage; not branch, native UI, actual deployed backend or whole-product coverage",
+    "overlayCoveredStatements": 54,
+    "overlayStatements": 59,
+    "overlayPercent": 91.52542372881356,
+    "wholeTrafficPackagePercent": 66.3,
+    "profileSHA256": "b9c981063420f2aa8708bcd39be14aa0453043bc81c3b6037b18eb252cca5c24"
+  },
+  "testEventsSHA256": "581f253fa4da783f4a9958425d34fb73066d84496e431b838898bfe4dfd1415f",
+  "redGreen": {
+    "missingMethodRed": "c937d64",
+    "ordinaryGreen": "a4e95b9",
+    "fifoSymlinkRed": "9856893",
+    "fifoTimeoutSecondsObserved": 5.01,
+    "hardenedGreen": "c40ec74",
+    "expandedGreen": "bbe7072"
+  },
+  "review": {
+    "readOnly": true,
+    "blockingFIFOAndSymlinkFindingReproduced": true,
+    "hardenedDeltaNoAdditionalBlockerReported": true,
+    "reviewerRanTests": false
+  },
+  "deployedRoute": false,
+  "nativeControlExposed": false,
+  "guestRebuiltOrPromoted": false,
+  "frozenCheckoutChanged": false,
+  "stagedAppSignatureStillValid": true,
+  "scope": [
+    "SQL exact exchange-side blob association, no rendered marker parsing",
+    "64lowerhex hash, nonnegative Int64 length and actual file-size validation",
+    "generic unavailable errors",
+    "byte-preserving Unicode IDs and legacy two-level layout",
+    "descriptor-anchored no-follow nonblocking regular-file opens",
+    "bounded FIFO child regression and corrupt/absent/symlink/directory cases"
+  ],
+  "pending": [
+    "managed HTTP handler and route/auth tests",
+    "managed download path using hardened opener",
+    "source-image-build provenance and actual guest promotion gates",
+    "native typed manifest and verified private staging",
+    "auth/VM/UI/cancellation ownership and storage bounds",
+    "EN/JA original-blob save workflow and actual output bytes",
+    "full runtime/browser/native21-workflow/kernel/provider/harness/release acceptance"
+  ],
+  "hostedCI": "unverified; publication skip ci; no Actions dispatch/retry or billing changes"
+}

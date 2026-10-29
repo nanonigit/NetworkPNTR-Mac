@@ -1,0 +1,7 @@
+# 管理対象backend拡張
+
+基準はe75ae371ad777ffd1eecdd28d2781a6519b05591。固定ブラウザcheckoutを変更しない。現在は元blobの構造化メタデータ処理とテストだけで、API／ゲストイメージ／ネイティブ保存機能としては未導入。残りのhandler／認証／転送／ビルド／UI／実行条件はdocs/traffic-blob-design.mdを参照。
+
+固定Linux／arm64のGoビルダーでgo.mod／go.sumを検証し、ネットワークなしでtrafficパッケージ全体を試験する。ホストPythonは安全なGit archiveの配置とDocker操作だけを行い、アプリやGoコンパイラーをホストで実行しない。リポジトリrootから英語版README.mdの再現手順を使う。Pythonのtarfile.extractall(filter='data')に対応する環境が必要。
+
+依存追加はなし。現在／旧形式のblobを、ディレクトリFD基準・非ブロッキング・シンボリックリンク非追跡で開き、通常ファイルだけを許可する。固定元のBlobストリーム処理自体は変更していない。導入前に管理対象のダウンロード側も同じ安全な処理へ接続する。生HTTPのmarkerを所有関係とみなさず、保存用の架空の検出結果や紐付け変更を作らない。この手順でホスト共有、Docker socket、既存stateのマウント、外部スキャン、クラウド呼出し、通常ゲスト昇格は行わない。
