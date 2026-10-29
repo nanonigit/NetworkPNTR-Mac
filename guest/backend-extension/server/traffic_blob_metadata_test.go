@@ -139,3 +139,14 @@ func TestManagedBlobHTTPRefusesSymlinkAtStreamingBoundary(t *testing.T) {
 		t.Fatal("stream followed a symlink")
 	}
 }
+
+func TestManagedBlobHTTPLegacyHashCompatibility(t *testing.T) {
+	s, _, token, body, _ := managedBlobServer(t)
+	hash := fmt.Sprintf("%x", sha256.Sum256(body))
+	for _, value := range []string{strings.ToUpper(hash), " \t" + strings.ToUpper(hash) + "\n "} {
+		r := managedBlobRequest(s, "GET", "/api/traffic/blob?hash="+url.QueryEscape(value), token)
+		if r.Code != 200 || !bytes.Equal(r.Body.Bytes(), body) {
+			t.Fatal("legacy hash normalization changed", r.Code)
+		}
+	}
+}

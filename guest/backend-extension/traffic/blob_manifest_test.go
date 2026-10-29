@@ -213,3 +213,21 @@ func TestManagedBlobManifestRejectsCorruptMetadataAndLinkedDirectory(t *testing.
 		})
 	}
 }
+
+func TestManagedBlobLegacyHashNormalization(t *testing.T) {
+	tr, _ := openTraffic(t)
+	body := bytes.Repeat([]byte("body"), maxInlineBody)
+	tr.record(newFlow("fixture.invalid", "GET", "/", nil, body))
+	value, err := tr.BlobManifest(onlyExchangeID(t, tr), "response")
+	if err != nil {
+		t.Fatal(err)
+	}
+	file, size, err := tr.Blob(" " + strings.ToUpper(value.Hash) + "\t")
+	if err != nil {
+		t.Fatal("legacy hash input rejected", err)
+	}
+	defer file.Close()
+	if size != int64(len(body)) {
+		t.Fatal("legacy hash size changed")
+	}
+}
