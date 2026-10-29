@@ -54,6 +54,7 @@ import XCTest
         let (model, api, clock, lease) = try await fixture()
         defer { model.stop(lease); clock.releaseAll() }
         XCTAssertTrue(model.edit(.host, text: " host ", lease: lease))
+        try await reached { clock.waits.count == 2 }
         XCTAssertTrue(model.edit(.body, text: "body", lease: lease))
         try await reached { clock.waits.count == 3 }
         let old = model.store.owner
@@ -188,4 +189,36 @@ import XCTest
         XCTAssertEqual(model.store.query.host, ""); XCTAssertEqual(model.text(.host, lease: lease), "")
         XCTAssertFalse(model.store.isActive); clock.releaseAll()
     }
+    func testMaturedDraftWaitsForConfirmationClose() async throws {
+        let (model, _, clock, lease) = try await fixture()
+        defer { model.stop(lease); clock.releaseAll() }
+        XCTAssertTrue(model.edit(.host, text: "delayed", lease: lease))
+        try await reached { clock.waits.count == 2 }
+        XCTAssertTrue(model.store.prepare(.purgeAll, owner: model.store.owner))
+        let dialog = try XCTUnwrap(model.store.confirmation)
+        clock.tick(.milliseconds(300))
+        for _ in 0..<20 { await Task.yield() }
+        XCTAssertEqual(model.store.query.host, ""); XCTAssertTrue(model.hasPendingText)
+        XCTAssertTrue(model.store.cancelConfirmation(id: dialog.id, owner: dialog.owner))
+        try await reached { model.store.query.host == "delayed" }
+        XCTAssertFalse(model.hasPendingText)
+    }
+    func testResetRequestedDuringStopScrubsUnknownScope() async throws {
+        let (model, api, clock, lease) = try await fixture()
+        defer { model.reset(); clock.releaseAll() }
+        api.failWrite = true
+        XCTAssertTrue(model.store.prepare(.purgeAll, owner: model.store.owner))
+        let dialog = try XCTUnwrap(model.store.confirmation)
+        guard case .unconfirmed = await model.store.confirm(id: dialog.id, owner: dialog.owner) else { return XCTFail("Expected unknown") }
+        withObservationTracking { _ = model.store.isActive } onChange: { MainActor.assumeIsolated { model.reset() } }
+        XCTAssertTrue(model.stop(lease))
+        XCTAssertTrue(model.store.hasUnknownOutcome); XCTAssertNil(model.store.unknownChange)
+    }
+    func testResetDuringBeginRetirementPreventsReopening() async throws {
+        let (model, _, clock, _) = try await fixture()
+        defer { model.reset(); clock.releaseAll() }
+        withObservationTracking { _ = model.store.isActive } onChange: { MainActor.assumeIsolated { model.reset() } }
+        XCTAssertNil(model.begin()); XCTAssertNil(model.presentation); XCTAssertFalse(model.store.isActive)
+    }
+
 }
