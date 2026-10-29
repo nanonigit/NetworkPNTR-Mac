@@ -211,4 +211,39 @@ import XCTest
         XCTAssertTrue(model.prepareDeletion(.purgeAll, lease: lease, owner: owner))
     }
 
+    func testPickerBindingsValidateTagsAndFreezeQueryOwner() async throws {
+        let (model, api, lease) = try await fixture(); defer { model.reset() }
+        let owner = model.store.owner
+        let method = TrafficBindings.method(model, lease: lease, owner: owner)
+        let staleStatus = TrafficBindings.status(model, lease: lease, owner: owner)
+        let staleSize = TrafficBindings.size(model, lease: lease, owner: owner)
+        method.wrappedValue = "invalid"; staleStatus.wrappedValue = "1xx"; staleSize.wrappedValue = 500
+        XCTAssertNil(model.store.query.method); XCTAssertNil(model.store.query.status); XCTAssertEqual(model.store.query.size, 50)
+        XCTAssertEqual(model.store.owner, owner)
+        method.wrappedValue = "POST"
+        try await reached { !model.store.isRefreshing && !model.store.catalog.isStale }
+        XCTAssertEqual(model.store.query.method, .post)
+        method.wrappedValue = "GET"; staleStatus.wrappedValue = "4xx"; staleSize.wrappedValue = 25
+        XCTAssertEqual(model.store.query.method, .post); XCTAssertNil(model.store.query.status); XCTAssertEqual(model.store.query.size, 50)
+        for tag in ["2xx", "3xx", "4xx", "5xx", "all"] {
+            let binding = TrafficBindings.status(model, lease: lease, owner: model.store.owner)
+            binding.wrappedValue = tag
+            try await reached { !model.store.isRefreshing && !model.store.catalog.isStale }
+            XCTAssertEqual(binding.wrappedValue, tag)
+        }
+        for size in [25, 50, 100, 200] {
+            let binding = TrafficBindings.size(model, lease: lease, owner: model.store.owner)
+            binding.wrappedValue = size
+            try await reached { !model.store.isRefreshing && !model.store.catalog.isStale }
+            XCTAssertEqual(binding.wrappedValue, size)
+        }
+        let any = TrafficBindings.method(model, lease: lease, owner: model.store.owner)
+        any.wrappedValue = "all"
+        try await reached { !model.store.isRefreshing && !model.store.catalog.isStale }
+        XCTAssertEqual(any.wrappedValue, "all"); XCTAssertNil(model.store.query.method)
+        XCTAssertTrue(api.paths.contains { $0.contains("status=5xx") })
+        XCTAssertTrue(api.paths.contains { $0.contains("size=200") })
+        XCTAssertTrue(api.methods.allSatisfy { $0 == "GET" })
+    }
+
 }
