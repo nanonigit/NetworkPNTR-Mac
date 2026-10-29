@@ -1,0 +1,11 @@
+# 独立した通信履歴workflow
+
+最終対象は既存finding pickerだけでなく固定/function/traffic全体。e75ae371を保持し、0起点page（UI25／50／100／200、初期50）、global／matched件数、capture状態／proxy表示、host／query／body／path／status／応答長のAND検索、server sort（ts／status／resp_len・asc／desc）、text適用300ms・page0のみ5秒更新、host件数／sort／exact複数選択、raw request／response（表示だけのlegacy Host補完）、page跨ぎflow選択とfinding紐付け、host部分一致削除／選択host厳密削除／全消去と圧縮、blob原本downloadを移す。capture設定writeはsettings側で、元画面にないtoggleをTrafficへ勝手に足さない。元traffic削除後もbound evidenceを保持。native UI英日／layout前Lazyweb、実native／browser画面・keyboard／AX、全runtime／release／kernel／4社／harness条件を維持。
+
+TR1は型付きfinite API境界から実装し、UI／polling／host通信／任意URL取得／blob disk書込／agent操作は増やさない。既存CapturedTrafficExchange／Page／Detailとescapeを再利用し、proxy表示metadataをoptionalで互換追加。TrafficQueryでbody／path／status／size／sortを足すが既存picker queryは変えない。Int64精度、byteで区別するhost、null host list、不正／上限／error／cancel、固定routeを維持。短いbody検索は元serverが3rune未満をskipするため保持し、非負の逆転rangeも無結果という元挙動を維持。exact整数statusと削除検証のGo空白規則を扱う。値はdataで接続先にはしない。
+
+変更操作は部分一致deleteMatchingHost、厳密batch deleteHosts、purgeAll、capture単一settingを区別。captureはtraffic_captureだけをPUTしsettings全体を再送しない。host arrayの空白／重複はwireで保持し、元Go空白規則で全空の要求を拒否。JSON／body／応答上限、負／purge領域欠落receipt拒否、正確なdispatch callbackを実装し、後続storeが未dispatchと結果不明を区別できるようにする。自動再送、HTTP失敗時rollback扱い、後のreadを暗黙ackにすることは禁止。
+
+TR2はwindow所有のlast-good／stale／error readとbyteベース選択／filter ticket、確認時の破壊scope固定、結果不明dispatch後のexact revision明示回復まで全write禁止、stop／resume／session resetと遅い応答の復活防止。page0 pollingは別のUI所有taskとしreadから変更しない。TR3 native UI全control、その後TR4使い捨てVM／参照multi-host fixtureで検索／tie sort／削除scope／blob／evidence保持／capture設定往復を比較。既存の同一host29件だけで厳密対部分一致削除を証明しない。TR5実画面／browser／keyboard／AX・releaseは別gate。
+
+順序：要件／設計／task→query／DTO／route／境界TDD RED checkpoint→GREEN→敵対的lifecycle試験とstore→必須review→対象／全試験・coverage→local署名build→実隔離fixture比較→native UIと全受入。現在はbackend／CLI契約のためLazyweb UI境界外。AI／toolコマンドはMacで直接実行せず、host builderは開発orchestrationのみ。

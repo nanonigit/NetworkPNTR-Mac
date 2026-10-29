@@ -170,3 +170,6 @@ User-requested goal: integrate Dirsearch, Fscan, Masscan and SoftEther VPN throu
 ## Cloud provider extension
 
 Support OpenAI, Anthropic, Gemini and Groq with model discovery, streaming and guest-only local tool calls. Preserve existing custom endpoints and protocol variants. Gemini/Groq are planned, not live-verified. See cloud-providers-design.md; existing browser/VM/release goals remain unchanged.
+
+
+Standalone Traffic must migrate the complete pinned workflow, including full filters/sort/host and flow selections, raw detail/blob original downloads, distinct deletion scopes/compaction/evidence preservation and settings linkage. TR1 finite contracts alone do not accept this screen. See traffic-workflow-design.md; all original goals remain.

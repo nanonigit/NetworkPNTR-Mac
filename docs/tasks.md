@@ -455,3 +455,13 @@ See captured-native-verification.md/.ja.md, bugs/captured-native.md/.ja.md, capt
 - [ ] B4 actual new UI/browser/keyboard/VoiceOver/multiwindow/save-panel comparison; untyped raw-marker audit without packet rewriting and all broader product gates.
 
 See evidence-binary-localization-design/verification and bugs/evidence-binary-localization in en/ja, plus binary-localization-verification.json. N5/P5/M6/R5 remain open: typed localization software is fixed, actual UI acceptance is not completed. CP1–CP4/H0–H5 and full21 workflow/kernel/release requirements continue. Hosted CI is unverified; pushed HEAD uses [skip ci].
+
+## Standalone Traffic workflow
+
+- [ ] TR1 full-filter/sort/query, host/proxy/null/precision contracts and fixed finite read/delete/capture-setting boundaries with adversarial tests.
+- [ ] TR2 window-owned reads/selections/confirmation scopes, unknown-write recovery and reentry/stop/session lifecycle.
+- [ ] TR3 full EN/JA native traffic controls, raw detail, flow-to-finding binding, blob originals and page0 polling, with Lazyweb first.
+- [ ] TR4 actual multi-host VM/reference comparison, exact/substr/purge effects, bound evidence persistence, blob bytes, capture settings and restart.
+- [ ] TR5 actual browser/native UI/keyboard/VoiceOver/multiwindow and full release gates.
+
+See traffic-workflow-design in en/ja. Traffic remains pending in the feature map until real native controls exist; finite contracts do not close this workflow. Earlier Findings advanced lineage/retest/deepen/report and existing visual/kernel/provider/harness gates remain open.
