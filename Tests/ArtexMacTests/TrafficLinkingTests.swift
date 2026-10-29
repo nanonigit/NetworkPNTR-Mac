@@ -245,6 +245,16 @@ private struct LinkPost: Decodable { struct Ref: Decodable { let trafficId: Stri
         XCTAssertFalse(workspace.acknowledge(owner: workspace.binding.owner, revision: UUID()))
         XCTAssertFalse(api.methods.contains("POST"))
     }
+    func testCandidateSeverityLabelsFollowLocaleAndPreserveCustomData() {
+        for language in AppLanguage.allCases {
+            for raw in ["critical", "high", "medium", "low", "info"] {
+                XCTAssertEqual(TrafficLinkDialog.severityLabel(raw, language: language), DashboardLabels.text(raw, domain: .severity, language: language))
+            }
+            let literal = "\u{FEFF}e\u{301} 中文 한국어"
+            XCTAssertEqual(Data(TrafficLinkDialog.severityLabel(literal, language: language).utf8), Data(literal.utf8))
+        }
+        XCTAssertNotEqual(TrafficLinkDialog.severityLabel("high", language: .japanese), "high")
+    }
     func testOffscreenLinkDialogBothLanguagesHasNoIOOrMutation() async throws {
         let (model, api, clock, lease) = try await fixture(); defer { model.reset(); clock.release() }
         let workspace = try await open(model, clock, lease); try await choose(workspace)
