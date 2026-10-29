@@ -73,6 +73,7 @@ import Observation
         }
         guard owns(lease) else { return nil }
         if restoreSort(lease: lease) { _ = refresh(lease: lease) }
+        guard owns(lease) else { return nil }
         pollTask = Task { [weak self, sleep] in
             while !Task.isCancelled {
                 do { try await sleep(.seconds(5)) } catch { return }
