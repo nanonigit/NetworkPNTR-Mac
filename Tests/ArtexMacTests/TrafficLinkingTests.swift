@@ -195,6 +195,56 @@ private struct LinkPost: Decodable { struct Ref: Decodable { let trafficId: Stri
         for _ in 0..<20 { await Task.yield() }
         XCTAssertNil(workspace.candidates); XCTAssertEqual(workspace.searchDraft, ""); XCTAssertEqual(model.linkWorkspace?.id, next.id)
     }
+    func testEncodedCandidatePathLimitRejectsBeforeTransport() async throws {
+        let api = LinkAPI(), service = FindingService(client: api)
+        do { _ = try await service.bindingCandidates(search: String(repeating: "中", count: 1000), page: 1); XCTFail("Encoded query exceeds the boundary") }
+        catch { XCTAssertTrue(error is FindingInputError) }
+        XCTAssertTrue(api.paths.isEmpty)
+    }
+    func testCandidateFailureKeepsStaleRowsAndExplicitRetry() async throws {
+        let (model, api, clock, lease) = try await fixture(); defer { model.reset(); clock.release() }
+        let workspace = try await open(model, clock, lease)
+        api.holdSearch = true; XCTAssertTrue(workspace.edit("error"))
+        try await reached { clock.waits.contains { $0.duration == .milliseconds(250) } }; clock.fireSearch()
+        try await reached { api.searches.count == 1 }
+        api.searches.removeFirst().resume(returning: try api.reply(["error": "secret raw server error"], status: 503))
+        try await reached { !workspace.isLoading }
+        XCTAssertNotNil(workspace.failure); XCTAssertNotNil(workspace.candidates); XCTAssertFalse(workspace.pageIsCurrent)
+        let row = try XCTUnwrap(workspace.candidates?.items.first)
+        assertFalse(await workspace.choose(row.identity, ticket: workspace.searchTicket))
+        api.holdSearch = false; workspace.reloadCandidates(ticket: workspace.searchTicket)
+        try await reached { clock.waits.contains { $0.duration == .milliseconds(250) } }; clock.fireSearch()
+        try await reached { workspace.pageIsCurrent && !workspace.isLoading }
+        XCTAssertNil(workspace.failure)
+    }
+    func testCandidatePublicationDepartureScrubsAfterUpdate() async throws {
+        let (model, api, clock, lease) = try await fixture(); defer { model.reset(); clock.release() }
+        let workspace = try await open(model, clock, lease)
+        api.holdSearch = true; XCTAssertTrue(workspace.edit("sensitive"))
+        try await reached { clock.waits.contains { $0.duration == .milliseconds(250) } }; clock.fireSearch()
+        try await reached { api.searches.count == 1 }
+        withObservationTracking { _ = workspace.candidates } onChange: { MainActor.assumeIsolated { _ = model.closeLink(id: workspace.id, lease: lease) } }
+        api.searches.removeFirst().resume(returning: try api.candidates())
+        try await reached { model.linkWorkspace == nil }
+        XCTAssertNil(workspace.candidates); XCTAssertNil(workspace.selectedTarget); XCTAssertTrue(workspace.sourceIDs.isEmpty); XCTAssertEqual(workspace.searchDraft, "")
+    }
+    func testWrongCandidatePageCannotReplaceFreshGeneration() async throws {
+        let (model, api, clock, lease) = try await fixture(); defer { model.reset(); clock.release() }
+        let workspace = try await open(model, clock, lease)
+        api.holdSearch = true; XCTAssertTrue(workspace.page(1, ticket: workspace.searchTicket))
+        try await reached { clock.waits.contains { $0.duration == .milliseconds(250) } }; clock.fireSearch()
+        try await reached { api.searches.count == 1 }; api.searches.removeFirst().resume(returning: try api.candidates(page: 1))
+        try await reached { !workspace.isLoading }
+        XCTAssertNotNil(workspace.failure); XCTAssertFalse(workspace.pageIsCurrent); XCTAssertEqual(workspace.candidates?.page, 1)
+    }
+    func testStaleSubmitAndAcknowledgmentNeverDispatch() async throws {
+        let (model, api, clock, lease) = try await fixture(); defer { model.reset(); clock.release() }
+        let workspace = try await open(model, clock, lease); try await choose(workspace)
+        assertFalse(await workspace.submit(id: UUID(), owner: workspace.binding.owner))
+        assertFalse(await workspace.submit(id: workspace.binding.requestID, owner: UUID()))
+        XCTAssertFalse(workspace.acknowledge(owner: workspace.binding.owner, revision: UUID()))
+        XCTAssertFalse(api.methods.contains("POST"))
+    }
     func testOffscreenLinkDialogBothLanguagesHasNoIOOrMutation() async throws {
         let (model, api, clock, lease) = try await fixture(); defer { model.reset(); clock.release() }
         let workspace = try await open(model, clock, lease); try await choose(workspace)
