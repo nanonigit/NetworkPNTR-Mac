@@ -1,0 +1,15 @@
+# 独立通信画面Coreの実行検証
+
+新規非公開ディスクで、拡張したDEBUG CapturedProbeが実際に終了コード0で完了した。既存のsource-kernel／CPU1検証候補を使い、通常アプリのゲストは変更していない。VZで2回起動・2回協調停止し、両方でソース／エージェント非活動／隔離／秘密情報のログ非混入監査に成功、VM停止を確認。NICとホスト共有は0。固定診断スクリプトはLinuxゲスト内だけで実行し、ホストの開発操作はAIエージェントのコマンド実行ではない。
+
+StandaloneTrafficExerciseは実際のTrafficStoreでループバック通信29件を25＋4件として取得し、全識別／メタデータを照合。ページ横断選択と解除後、ordinal3／4を実際のページ位置で選択。FindingService.bindingCandidatesで最大2ページ／20件から正規の変更可能な9101を選び、TrafficBindingStoreで新鮮な証跡取得、supporting／空注記、送信前の親クエリー／選択版確認、完全な順序付き応答、同じ要求の再送拒否、一致選択だけの解除を実行した。初回は2件／版1。後続の既存pickerで同じ通信を紐付けても正規化応答／版1が完全一致し、余分な版更新は許容していない。
+
+続いて既存の検出結果側試験で、元データ全バイト、制限付きプレビュー、成功した編集応答を意図的に失わせた明示復旧、古い版への409、順序変更／解除を検証。2回目は再投入・再通信せず、同じ29件と最終1紐付け／2snapshot、活動／ソース監査を確認した。比較対象データ全体が固定ブラウザAPIの独立記録と一致し、Swift実行中と別のPython JSON完全比較の両方で確認。新しいproofは従来の比較データの外に置いた。参照SHA256はc4601040b7a0abba258a81f65183ef81bb6116d7bf5f47c743ffe1ebcac6b8e6。実ブラウザ／ネイティブ画面の操作ではない。
+
+TDD：2c495b4 helper未実装RED→da7f3ae 5件GREEN、dfb2d7aで実probeへ接続。ページ／候補取得、正規ID／既定refs、要求の再送拒否／一致解除、通信前の件数／重複／順序の不正、誤ページ、候補不在／読み取り専用、失敗／不完全応答での再送禁止を試験。読み取り専用レビューで阻害指摘なし。レビュアーは実行試験していない。全Swift972件：971成功、既存外部AX1件スキップ。Python179件成功。翻訳と固定21／27／243一覧を検証。原因記録はbugs/traffic-linking-runtime.mdと日本語版。
+
+単体全体＋実VM計測のLLVM帰属行は、新exercise104/105（99.05%）、CapturedProbe282/289（97.58%）、TrafficStore357/358（99.72%）、TrafficBindingStore261/262（99.62%）。分岐／物理行／製品全体網羅や実入力操作の証明ではない。署名済み計測バイナリーを実行前に保存し、バイナリー／ソース／結果／profileハッシュと候補manifestをevidence/traffic/linking-runtime-verification.jsonへ記録。実行ソースはdfb2d7a9f1fb00ddaa55d52c13111cabc546dad4。
+
+リリースVMProbeのビルド成功。完全な引数形の--capturedはDEBUG限定ガードで終了2。exercise／contract／応答を失わせる実装のシンボルと新診断エラー文字列は含まれない。最初は--capturedだけで最上位usageが返り、期待usageの検証に失敗したため完全な引数形で再確認した。製品ガードを緩めていない。既存ステージングアプリの厳格署名と通常ゲストmanifestを維持。候補昇格、アプリ起動／別場所へのインストール、実窓／Root／入力、外部スキャン／クラウド呼出しは行っていない。
+
+完了は独立通信Coreの実backend紐付け／参照比較の拡張範囲のみ。新TrafficScreenModel／RootViewは模擬／画面外試験までで、実画面／キーボード／VoiceOver／複数窓／ブラウザ比較は未完。今回の実応答喪失は既存FindingTrafficStoreの編集で、新TrafficBindingStoreはそのケースを単体試験までとしている。複数ホスト削除／フィルター／ソート／capture設定、blob拡張、通常カーネル信頼性／昇格、21機能／4社／ハーネス／リリース全体も未完。機能表はin_progress、ホステッドCI未検証、公開は[skip ci]。
