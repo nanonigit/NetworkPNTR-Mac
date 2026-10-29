@@ -1,0 +1,34 @@
+--- a/server/server.go
++++ b/server/server.go
+@@ -900,6 +900,7 @@
+ 	mux.HandleFunc("DELETE /api/traffic/all", s.deleteAllTraffic)
+ 	mux.HandleFunc("GET /api/traffic/exchange", s.getTrafficExchange)
+ 	mux.HandleFunc("GET /api/traffic/blob", s.getTrafficBlob)
++	mux.HandleFunc("GET /api/traffic/blob-metadata", s.getTrafficBlobMetadata)
+ 	mux.HandleFunc("GET /api/commands", s.pgListCommands)
+ 	mux.HandleFunc("GET /api/commands/stats", s.pgToolStats) // 按工具聚合调用次数
+ 	mux.HandleFunc("GET /api/llm/records", s.pgListLLMRecords)
+--- a/traffic/traffic.go
++++ b/traffic/traffic.go
+@@ -706,20 +706,7 @@
+ // Streaming matters here: the driver exposes no incremental BLOB API, so keeping
+ // large bodies on disk is what lets them be served without loading them whole.
+ func (t *Traffic) Blob(hash string) (*os.File, int64, error) {
+-	p, err := t.blobPath(hash)
+-	if err != nil {
+-		return nil, 0, err
+-	}
+-	f, err := os.Open(p)
+-	if err != nil {
+-		return nil, 0, err
+-	}
+-	st, err := f.Stat()
+-	if err != nil {
+-		f.Close()
+-		return nil, 0, err
+-	}
+-	return f, st.Size(), nil
++	return t.openManagedBlob(hash)
+ }
+ 
+ // BlobRange reads at most length bytes of a blob from offset, and reports the

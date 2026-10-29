@@ -18,6 +18,7 @@ with tempfile.TemporaryDirectory(prefix='artex-managed-blob-') as temp:
         tree.extractall(source, filter='data')
     shutil.copytree(root / 'guest/backend-extension/traffic', context / 'extension')
     shutil.copytree(root / 'guest/backend-extension/server', context / 'server-extension')
+    shutil.copy2(root / 'guest/backend-extension/managed.patch', context / 'managed.patch')
     subprocess.run(['docker', 'build', '--progress=plain', '-f', str(root / 'guest/backend-extension/Dockerfile.tests'), str(context)], check=True)
 PY
 ```

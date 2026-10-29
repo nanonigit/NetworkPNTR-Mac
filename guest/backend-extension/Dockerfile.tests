@@ -6,4 +6,6 @@ RUN go mod download && go mod verify
 COPY source/ ./
 COPY extension/ ./traffic/
 COPY server-extension/ ./server/
-RUN --network=none GOMAXPROCS=2 go test -p 2 -mod=readonly ./server -run TestManagedBlobHTTP -count=1
+COPY managed.patch /tmp/managed.patch
+RUN git apply --check /tmp/managed.patch && git apply /tmp/managed.patch
+RUN --network=none GOMAXPROCS=2 go test -p 2 -mod=readonly ./traffic ./server -run TestManagedBlob -count=1
