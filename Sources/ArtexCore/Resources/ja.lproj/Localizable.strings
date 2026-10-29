@@ -1753,6 +1753,8 @@
 	<string>一致する通信履歴がありません。検索条件を変えるか、通信を記録してから再読取してください。</string>
 	<key>traffic.ui.host</key>
 	<string>ホストの部分一致</string>
+	<key>traffic.ui.hostColumn</key>
+	<string>ホスト</string>
 	<key>traffic.ui.hostSortAscending</key>
 	<string>ホスト件数の昇順</string>
 	<key>traffic.ui.hostSortDescending</key>

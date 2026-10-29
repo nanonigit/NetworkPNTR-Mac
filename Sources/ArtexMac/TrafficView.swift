@@ -44,7 +44,7 @@ import SwiftUI
             TrafficRawPreview(model: model, lease: lease, owner: capturedOwner, revision: revision, id: selected)
         }
         .sheet(item: TrafficBindings.confirmation(model, lease: lease, id: model.deletionDialog?.id, owner: capturedOwner)) { context in
-            TrafficDeleteDialog(model: model, lease: lease, context: context)
+            TrafficDeleteDialog(model: model, lease: lease, contextID: context.id)
         }
     }
     private var header: some View {
@@ -184,7 +184,7 @@ import SwiftUI
                 } header: {
                     HStack(spacing: 12) {
                         sort(.timestamp, .trafficUITime).frame(width: 180, alignment: .leading)
-                        Text(s(.trafficUIHost)).frame(width: 150, alignment: .leading)
+                        Text(s(.trafficUIHostColumn)).frame(width: 150, alignment: .leading)
                         Text(s(.trafficUIMethod)).frame(width: 70, alignment: .leading)
                         Text(s(.trafficUIURL)).frame(minWidth: 260, maxWidth: .infinity, alignment: .leading)
                         sort(.status, .trafficUIStatusColumn).frame(width: 80, alignment: .trailing)
@@ -222,11 +222,18 @@ import SwiftUI
 @MainActor struct TrafficDeleteDialog: View {
     let model: TrafficScreenModel
     let lease: UUID
-    let context: TrafficConfirmation
+    let contextID: UUID
+    var context: TrafficConfirmation? {
+        guard model.presentation == lease, let value = model.deletionDialog, value.id == contextID else { return nil }
+        return value
+    }
     @Environment(\.locale) private var locale
     private var language: AppLanguage { .preferred(in: [locale.identifier]) }
     private func s(_ key: AppStringKey) -> String { AppStrings.text(key, language: language) }
     var body: some View {
+        Group { if let context { content(context) } }
+    }
+    private func content(_ context: TrafficConfirmation) -> some View {
         VStack(alignment: .leading, spacing: 16) {
             Text(s(.trafficUIConfirmTitle)).font(.title2.bold())
             switch context.change {

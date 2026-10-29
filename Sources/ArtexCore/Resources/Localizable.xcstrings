@@ -15127,6 +15127,23 @@
           }
         }
       }
+    },
+    "traffic.ui.hostColumn": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Host"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ホスト"
+          }
+        }
+      }
     }
   },
   "version": "1.0"

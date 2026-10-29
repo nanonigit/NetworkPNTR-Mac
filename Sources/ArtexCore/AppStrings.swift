@@ -6,6 +6,7 @@ public enum AppStringKey: String, CaseIterable, Sendable {
     case trafficUITotal = "traffic.ui.total"
     case trafficUIProxy = "traffic.ui.proxy"
     case trafficUIRefresh = "traffic.ui.refresh"
+    case trafficUIHostColumn = "traffic.ui.hostColumn"
     case trafficUIHost = "traffic.ui.host"
     case trafficUIQuery = "traffic.ui.query"
     case trafficUIBody = "traffic.ui.body"

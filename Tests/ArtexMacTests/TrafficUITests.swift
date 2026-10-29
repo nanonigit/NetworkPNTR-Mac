@@ -143,7 +143,7 @@ import XCTest
         XCTAssertTrue(model.prepareDeletion(.purgeAll, lease: lease, owner: model.store.owner))
         let context = try XCTUnwrap(model.store.confirmation), count = api.paths.count
         for language in AppLanguage.allCases {
-            let host = NSHostingView(rootView: TrafficDeleteDialog(model: model, lease: lease, context: context).environment(\.locale, language.locale))
+            let host = NSHostingView(rootView: TrafficDeleteDialog(model: model, lease: lease, contextID: context.id).environment(\.locale, language.locale))
             host.frame = NSRect(x: 0, y: 0, width: 600, height: 400); host.layoutSubtreeIfNeeded()
         }
         XCTAssertEqual(api.paths.count, count); XCTAssertTrue(api.methods.allSatisfy { $0 == "GET" })
@@ -181,7 +181,7 @@ import XCTest
         XCTAssertTrue(model.toggleHost("e\u{301}", selected: true, lease: lease, owner: owner))
         XCTAssertTrue(model.prepareDeletion(.selectedHosts, lease: lease, owner: owner))
         let context = try XCTUnwrap(model.deletionDialog)
-        let retained = TrafficDeleteDialog(model: model, lease: lease, context: context)
+        let retained = TrafficDeleteDialog(model: model, lease: lease, contextID: context.id)
         api.holdWrite = true
         let write = Task { await model.confirmDeletion(id: context.id, lease: lease, owner: owner) }
         try await reached { api.heldWrites.count == 1 }

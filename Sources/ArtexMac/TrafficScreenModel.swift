@@ -27,7 +27,8 @@ import Observation
     init(store: TrafficStore, sleep: @escaping Sleep = { try await Task.sleep(for: $0) }) {
         self.store = store; self.sleep = sleep
     }
-    var controlsAvailable: Bool {
+    var controlsAvailable: Bool { baseAvailable && store.selectedExchange == nil }
+    private var baseAvailable: Bool {
         presentation != nil && store.isActive && !changing && !tearingDown && !queuedStop && !queuedReset
             && !store.isMutating && store.confirmation == nil && deletionDialog == nil && !Task.isCancelled
     }
@@ -125,7 +126,7 @@ import Observation
         guard gateWatch == nil else { return }
         let id = UUID(); gateWatch = id
         withObservationTracking {
-            _ = store.confirmation; _ = store.isMutating; _ = store.isActive; _ = deletionDialog
+            _ = store.confirmation; _ = store.isMutating; _ = store.isActive; _ = deletionDialog; _ = store.selectedExchange
         } onChange: { [weak self] in
             Task { @MainActor [weak self] in
                 guard let self, self.gateWatch == id, self.owns(lease) else { return }
@@ -175,7 +176,7 @@ import Observation
         _ = refresh(lease: lease); return true
     }
     @discardableResult func refresh(lease: UUID) -> Bool {
-        guard controlsAvailable, owns(lease), !store.isRefreshing else { return false }
+        guard baseAvailable, owns(lease), !store.isRefreshing else { return false }
         readTask?.cancel()
         let id = UUID(); readID = id
         readTask = Task { [weak self] in
@@ -217,7 +218,7 @@ import Observation
         await store.refreshDetail()
     }
     func closeDetail(_ id: String, lease: UUID, owner: UUID, revision: UUID) {
-        guard controlsAvailable, owns(lease), store.owner == owner, previewRevision == revision,
+        guard baseAvailable, owns(lease), store.owner == owner, previewRevision == revision,
               store.selectedExchange?.identity == Data(id.utf8) else { return }
         update {
             if store.selectExchange(id: nil, owner: owner), owns(lease) { previewRevision = UUID() }

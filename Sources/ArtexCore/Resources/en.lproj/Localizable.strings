@@ -1755,6 +1755,8 @@ Archive IDs: {archives}</string>
 	<string>No matching traffic. Change the filters or reload after recording requests.</string>
 	<key>traffic.ui.host</key>
 	<string>Host contains</string>
+	<key>traffic.ui.hostColumn</key>
+	<string>Host</string>
 	<key>traffic.ui.hostSortAscending</key>
 	<string>Sort host counts ascending</string>
 	<key>traffic.ui.hostSortDescending</key>
