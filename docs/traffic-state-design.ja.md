@@ -1,0 +1,13 @@
+# Traffic window状態と確認
+
+TR2は状態管理で画面／polling taskではない。traffic-workflow-design.ja.mdの全Traffic scopeと従来gateを維持。backend／状態段階なのでLazyweb UI境界外。TrafficServiceの固定検証済みrequestを使い、internal prepare／executeへ分離して、確認の公開前に実byteを固定する。public apply互換を維持。
+
+windowはquery／owner／activity／session、last-good page／hosts／settings／detail、byte identityで順序を保つflow／host選択を所有。filter／page変更でもpage跨ぎ選択と選択exchangeを保ち、固定画面に合わせる。適用query変更でowner／read世代を更新し、失敗はlast-goodをstale表示。新選択はfreshな可視row／hostのみ。query同期検証と世代別cleanupで古い処理が新loadを消さない。page0のみのpolling可否を公開するがtaskは開始しない。
+
+確認UUIDへowner／session／activityと検証済みimmutable requestを捕捉。host部分一致はhost substringのみで他filterを混ぜず、選択hostは順序付き厳密stringを固定し、purgeは別操作。capture settingはTraffic画面controlと分離。確認中は編集／新read／dialog置換を禁止し、cancelは通信なし。一度消費した確認は再送不可。dispatch callbackは論理呼出し境界でsocket byte送信済みの証明ではない。
+
+未完write1件で変更を止める。dispatch後error／離脱で不明operation／revisionを記録。readで暗黙解除せず、その不明revision／現在ownerの下で開始したpage＋hosts＋settingsのfresh一式取得後だけ、明示ackを許す。誤owner／revision、stale／失敗／処理中readでは解除不可。stop／resumeでも不明を保持し、session resetはraw scope／read／選択を消すがgeneric不明markerと未完writeを完了まで残す。process再起動の永続journalを実装済みとはしない。
+
+同期Observation再入をpublication guardで防ぐ。受理したstop／resetはdispatch前ticketを取り消し、現在更新後に処理し、reset優先・反復teardownは冪等。更新途中のresume／configure／選択／確認は不可。古いread／writeはsession／activity／owner照合し、不明errorをrollback／自動再送扱いしない。削除成功はpage0／preview解除、選択host／purgeはhost選択も解除し、flow選択は元browser同様保持。capture成功は既知settingのみ更新してcatalogを無効化。実multi-host fixture／UI受入は別途必要。
+
+先行試験：query／選択byte、last-good／error／page所有、固定scope、dispatch前cancel、held write、stop／resume／reset・遅い応答、明示fresh回復、read／busy／選択／receipt公開中の同期stop／reset。その後review・対象／全試験・coverage・local署名build。Traffic機能はpendingのまま、試験で実削除／agent／host通信は行わない。
