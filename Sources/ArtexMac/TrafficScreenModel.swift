@@ -7,6 +7,8 @@ import Observation
     typealias Sleep = @MainActor (Duration) async throws -> Void
     let store: TrafficStore
     private(set) var presentation: UUID?
+    private(set) var previewRevision = UUID()
+    private(set) var deletionDialog: TrafficConfirmation?
     private(set) var drafts = TrafficFilterDrafts()
     @ObservationIgnored private let sleep: Sleep
     @ObservationIgnored private var changing = false
@@ -27,7 +29,7 @@ import Observation
     }
     var controlsAvailable: Bool {
         presentation != nil && store.isActive && !changing && !tearingDown && !queuedStop && !queuedReset
-            && !store.isMutating && store.confirmation == nil && !Task.isCancelled
+            && !store.isMutating && store.confirmation == nil && deletionDialog == nil && !Task.isCancelled
     }
     var hasPendingText: Bool {
         TrafficTextField.allCases.contains {
@@ -52,7 +54,7 @@ import Observation
     }
     private func retire(reset: Bool) {
         tearingDown = true; resetting = reset
-        cancelTasks(); presentation = nil; drafts = TrafficFilterDrafts()
+        cancelTasks(); presentation = nil; drafts = TrafficFilterDrafts(); previewRevision = UUID(); deletionDialog = nil
         if reset { store.resetSession() } else { store.stop() }
         tearingDown = false; resetting = false
     }
@@ -123,7 +125,7 @@ import Observation
         guard gateWatch == nil else { return }
         let id = UUID(); gateWatch = id
         withObservationTracking {
-            _ = store.confirmation; _ = store.isMutating; _ = store.isActive
+            _ = store.confirmation; _ = store.isMutating; _ = store.isActive; _ = deletionDialog
         } onChange: { [weak self] in
             Task { @MainActor [weak self] in
                 guard let self, self.gateWatch == id, self.owns(lease) else { return }
@@ -183,4 +185,73 @@ import Observation
         }
         return true
     }
+    func canUseRecords(lease: UUID, owner: UUID) -> Bool {
+        controlsAvailable && owns(lease) && store.owner == owner && !hasPendingText
+    }
+    @discardableResult func toggleHost(_ host: String, selected: Bool, lease: UUID, owner: UUID) -> Bool {
+        guard canUseRecords(lease: lease, owner: owner) else { return false }
+        var accepted = false
+        update { accepted = store.toggleHost(host, selected: selected, owner: owner) }
+        return accepted && owns(lease) && store.owner == owner
+    }
+    @discardableResult func selectHosts(_ selected: Bool, lease: UUID, owner: UUID) -> Bool {
+        guard canUseRecords(lease: lease, owner: owner) else { return false }
+        var accepted = false
+        update { accepted = store.selectAllHosts(selected, owner: owner) }
+        return accepted && owns(lease) && store.owner == owner
+    }
+    func selectDetail(_ id: String, lease: UUID, owner: UUID) async {
+        guard canUseRecords(lease: lease, owner: owner) else { return }
+        var accepted = false
+        update {
+            accepted = store.selectExchange(id: id, owner: owner)
+            if accepted && owns(lease) { previewRevision = UUID() }
+        }
+        guard accepted, owns(lease), store.owner == owner else { return }
+        await store.refreshDetail()
+    }
+    func closeDetail(_ id: String, lease: UUID, owner: UUID, revision: UUID) {
+        guard controlsAvailable, owns(lease), store.owner == owner, previewRevision == revision,
+              store.selectedExchange?.identity == Data(id.utf8) else { return }
+        update {
+            if store.selectExchange(id: nil, owner: owner), owns(lease) { previewRevision = UUID() }
+        }
+    }
+    @discardableResult func prepareDeletion(_ intent: TrafficIntent, lease: UUID, owner: UUID) -> Bool {
+        guard canUseRecords(lease: lease, owner: owner) else { return false }
+        if case .capture = intent { return false }
+        var accepted = false
+        update {
+            accepted = store.prepare(intent, owner: owner)
+            if accepted && owns(lease) { deletionDialog = store.confirmation }
+        }
+        return accepted && owns(lease) && deletionDialog != nil
+    }
+    @discardableResult func cancelDeletion(id: UUID, lease: UUID, owner: UUID) -> Bool {
+        guard owns(lease), !changing, !store.isMutating, deletionDialog?.id == id else { return false }
+        var accepted = false
+        update {
+            accepted = store.cancelConfirmation(id: id, owner: owner)
+            if accepted && owns(lease) { deletionDialog = nil }
+        }
+        return accepted && owns(lease)
+    }
+    func confirmDeletion(id: UUID, lease: UUID, owner: UUID) async -> TrafficMutationOutcome {
+        guard owns(lease), !changing, !store.isMutating, store.owner == owner,
+              deletionDialog?.id == id, store.confirmation?.id == id else { return .notStarted }
+        if case .capture = deletionDialog?.change { return .notStarted }
+        let result = await store.confirm(id: id, owner: owner)
+        guard owns(lease), !changing else { return .discarded }
+        update { if deletionDialog?.id == id { deletionDialog = nil } }
+        guard owns(lease) else { return .discarded }
+        if case .confirmed = result { _ = refresh(lease: lease) }
+        return result
+    }
+    @discardableResult func acknowledge(lease: UUID, owner: UUID, revision: UUID) -> Bool {
+        guard controlsAvailable, owns(lease), store.owner == owner else { return false }
+        var accepted = false
+        update { accepted = store.acknowledgeUnknown(owner: owner, revision: revision) }
+        return accepted && owns(lease)
+    }
+
 }

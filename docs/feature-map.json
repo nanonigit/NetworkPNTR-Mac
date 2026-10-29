@@ -58,7 +58,7 @@
       "title": "Traffic",
       "browserPath": "/function/traffic",
       "icon": "Activity",
-      "nativeStatus": "pending",
+      "nativeStatus": "in_progress",
       "phase": 4,
       "acceptance": [
         "Compare equivalent fixture data and visible controls",

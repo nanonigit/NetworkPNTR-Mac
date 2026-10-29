@@ -14,6 +14,8 @@ struct RootView: View {
     @State private var llmWorkspace = LLMWorkspace()
     @State private var findingScreen: FindingScreenModel?
     @State private var findingOwner: ObjectIdentifier?
+    @State private var trafficScreen: TrafficScreenModel?
+    @State private var trafficOwner: ObjectIdentifier?
     var body: some View {
         NavigationSplitView {
             List(selection: $selection) {
@@ -59,6 +61,12 @@ struct RootView: View {
             else if selection == "chat", let session = environment.authentication, session.phase == .authenticated {
                 ChatView(session: session).id(ObjectIdentifier(session))
             }
+            else if selection == "traffic", let session = environment.authentication, session.phase == .authenticated {
+                trafficContent(session)
+            }
+            else if selection == "traffic" {
+                ContentUnavailableView(s(.loginRequired), systemImage: "person.crop.circle", description: Text(s(.taskUILogin)))
+            }
             else if selection == "findings", let session = environment.authentication, session.phase == .authenticated {
                 findingContent(session)
             }
@@ -100,7 +108,7 @@ struct RootView: View {
             if RuntimeFactory.diagnosticsDirectory == nil { await environment.start() }
         }
         .onChange(of: environment.authentication?.phase) { _, phase in
-            if phase != .authenticated { llmWorkspace.reset(); taskScreen?.reset(); findingScreen?.reset(); taskDetailID = nil }
+            if phase != .authenticated { llmWorkspace.reset(); taskScreen?.reset(); findingScreen?.reset(); trafficScreen?.reset(); taskDetailID = nil }
             if phase == .needsSetup || phase == .needsLogin || phase == .unavailable { selection = "auth" }
         }
     }
@@ -113,6 +121,18 @@ struct RootView: View {
                 llmWorkspace.attach(owner: session) {
                     LLMStore(service: LLMService(client: AuthenticatedBackendClient(session: session)))
                 }
+            }
+        }
+    }
+    @ViewBuilder private func trafficContent(_ session: AuthenticationSession) -> some View {
+        if trafficOwner == ObjectIdentifier(session), let trafficScreen {
+            TrafficView(model: trafficScreen).id(ObjectIdentifier(session))
+        } else {
+            ProgressView().task {
+                guard !Task.isCancelled, session.phase == .authenticated else { return }
+                trafficScreen?.reset()
+                trafficScreen = TrafficScreenModel(store: TrafficStore(service: TrafficService(client: AuthenticatedBackendClient(session: session))))
+                trafficOwner = ObjectIdentifier(session)
             }
         }
     }

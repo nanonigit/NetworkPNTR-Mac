@@ -1719,5 +1719,121 @@ Archive IDs: {archives}</string>
 	<string>Choose files to attach to the task draft.</string>
 	<key>task.upload.progress</key>
 	<string>Sending {sent} of {total} bytes; awaiting storage confirmation</string>
+	<key>traffic.ui.acknowledge</key>
+	<string>Acknowledge reviewed state</string>
+	<key>traffic.ui.advanced</key>
+	<string>Advanced filters</string>
+	<key>traffic.ui.allStatuses</key>
+	<string>All statuses</string>
+	<key>traffic.ui.anyMethod</key>
+	<string>All methods</string>
+	<key>traffic.ui.body</key>
+	<string>Body contains</string>
+	<key>traffic.ui.cancel</key>
+	<string>Cancel</string>
+	<key>traffic.ui.captureOff</key>
+	<string>Recording stopped</string>
+	<key>traffic.ui.captureOn</key>
+	<string>Recording</string>
+	<key>traffic.ui.clearHosts</key>
+	<string>Clear host selection</string>
+	<key>traffic.ui.close</key>
+	<string>Close</string>
+	<key>traffic.ui.confirmDelete</key>
+	<string>Delete traffic</string>
+	<key>traffic.ui.confirmTitle</key>
+	<string>Delete recorded traffic?</string>
+	<key>traffic.ui.copy</key>
+	<string>Copy packet</string>
+	<key>traffic.ui.deleteMatching</key>
+	<string>Delete matching hosts…</string>
+	<key>traffic.ui.deleteSelected</key>
+	<string>Delete selected hosts…</string>
+	<key>traffic.ui.deleted</key>
+	<string>Deleted {count} exchanges.</string>
+	<key>traffic.ui.empty</key>
+	<string>No matching traffic. Change the filters or reload after recording requests.</string>
+	<key>traffic.ui.host</key>
+	<string>Host contains</string>
+	<key>traffic.ui.hostSortAscending</key>
+	<string>Sort host counts ascending</string>
+	<key>traffic.ui.hostSortDescending</key>
+	<string>Sort host counts descending</string>
+	<key>traffic.ui.hosts</key>
+	<string>Select hosts</string>
+	<key>traffic.ui.length</key>
+	<string>Response bytes</string>
+	<key>traffic.ui.maximum</key>
+	<string>Maximum response bytes</string>
+	<key>traffic.ui.method</key>
+	<string>Method</string>
+	<key>traffic.ui.minimum</key>
+	<string>Minimum response bytes</string>
+	<key>traffic.ui.next</key>
+	<string>Next page</string>
+	<key>traffic.ui.open</key>
+	<string>Open request and response</string>
+	<key>traffic.ui.page</key>
+	<string>Page {page} of {pages}</string>
+	<key>traffic.ui.pageSize</key>
+	<string>Rows per page</string>
+	<key>traffic.ui.path</key>
+	<string>Path contains</string>
+	<key>traffic.ui.pendingInput</key>
+	<string>Waiting to apply search input…</string>
+	<key>traffic.ui.previous</key>
+	<string>Previous page</string>
+	<key>traffic.ui.proxy</key>
+	<string>Proxy: {proxy}</string>
+	<key>traffic.ui.purge</key>
+	<string>Clear all traffic…</string>
+	<key>traffic.ui.query</key>
+	<string>Search traffic</string>
+	<key>traffic.ui.reclaimed</key>
+	<string>Deleted {count} exchanges and reclaimed {bytes} bytes.</string>
+	<key>traffic.ui.refresh</key>
+	<string>Reload traffic</string>
+	<key>traffic.ui.request</key>
+	<string>Request</string>
+	<key>traffic.ui.resetAdvanced</key>
+	<string>Reset advanced filters</string>
+	<key>traffic.ui.response</key>
+	<string>Response</string>
+	<key>traffic.ui.scopeAll</key>
+	<string>Delete all recorded traffic and compact its storage.</string>
+	<key>traffic.ui.scopeFilter</key>
+	<string>Delete traffic for every host containing this text:</string>
+	<key>traffic.ui.scopeSelected</key>
+	<string>Delete traffic for these exact hosts:</string>
+	<key>traffic.ui.scopeWarning</key>
+	<string>Other filters do not narrow this deletion. This action cannot be undone.</string>
+	<key>traffic.ui.selectAllHosts</key>
+	<string>Select all hosts</string>
+	<key>traffic.ui.selectedHosts</key>
+	<string>{count} hosts selected</string>
+	<key>traffic.ui.sortAscending</key>
+	<string>Sort {field} ascending</string>
+	<key>traffic.ui.sortDescending</key>
+	<string>Sort {field} descending</string>
+	<key>traffic.ui.status</key>
+	<string>Response status</string>
+	<key>traffic.ui.statusColumn</key>
+	<string>Status</string>
+	<key>traffic.ui.subtitle</key>
+	<string>Inspect requests and responses recorded in the isolated runtime.</string>
+	<key>traffic.ui.time</key>
+	<string>Time</string>
+	<key>traffic.ui.title</key>
+	<string>Traffic</string>
+	<key>traffic.ui.total</key>
+	<string>{matched} matching / {total} recorded</string>
+	<key>traffic.ui.uRL</key>
+	<string>URL</string>
+	<key>traffic.ui.unavailable</key>
+	<string>Traffic storage is unavailable in this runtime.</string>
+	<key>traffic.ui.unknown</key>
+	<string>The previous operation may have completed. Reload and review the current state, then acknowledge it before deleting again.</string>
+	<key>traffic.ui.wrap</key>
+	<string>Wrap lines</string>
 </dict>
 </plist>

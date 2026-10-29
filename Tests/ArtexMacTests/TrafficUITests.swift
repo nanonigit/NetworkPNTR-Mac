@@ -32,9 +32,7 @@ import XCTest
         XCTFail("Missing controlled handoff"); throw CancellationError()
     }
     private func fixture() async throws -> (TrafficScreenModel, TrafficUIAPI, UUID) {
-        let api = TrafficUIAPI(), model = TrafficScreenModel(store: TrafficStore(service: .init(client: TrafficUIAPI())))
-        // Construct the model with the same recorder used by assertions.
-        _ = model
+        let api = TrafficUIAPI()
         let screen = TrafficScreenModel(store: TrafficStore(service: .init(client: api)))
         let lease = try XCTUnwrap(screen.begin())
         try await reached { !screen.store.isRefreshing && screen.store.catalog.value != nil && screen.store.hosts.value != nil }
