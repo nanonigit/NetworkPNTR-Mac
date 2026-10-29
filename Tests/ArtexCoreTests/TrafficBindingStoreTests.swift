@@ -11,6 +11,7 @@ private struct TrafficBindingReference: Decodable { let trafficId, role, note: S
     var calls: [Call] = []
     var ids: [String] = [], version: Int64 = 2
     var failRead = false, failWrite = false, holdRead = false, holdWrite = false, omitLast = false
+    var advanceVersion = true, normalizeRefs = false
     var pendingReads: [CheckedContinuation<BackendHTTPResponse, any Error>] = []
     var pendingWrites: [CheckedContinuation<BackendHTTPResponse, any Error>] = []
     var onSend: (@MainActor (String) -> Void)?
@@ -29,11 +30,15 @@ private struct TrafficBindingReference: Decodable { let trafficId, role, note: S
             return try reply(owner: owner, status: failRead ? 503 : 200)
         }
         let object = try BackendJSONCoding.decode(TrafficBindingBody.self, from: XCTUnwrap(body))
-        ids = object.trafficRefs.map(\.trafficId); if omitLast { ids.removeLast() }; version += 1
+        ids = object.trafficRefs.map(\.trafficId)
+        if normalizeRefs { ids = ids.map { $0.precomposedStringWithCanonicalMapping } }
+        if omitLast { ids.removeLast() }; if advanceVersion { version += 1 }
         if holdWrite { return try await withCheckedThrowingContinuation { pendingWrites.append($0) } }
         return try reply(owner: owner, status: failWrite ? 503 : 200)
     }
 }
+
+@MainActor private final class TrafficBindingJob { var task: Task<FindingTrafficMutationOutcome, Never>? }
 
 @MainActor final class TrafficBindingStoreTests: XCTestCase {
     private let sources = ["é", "e\u{301}", "\u{FEFF}中文 한국어"]
@@ -191,6 +196,53 @@ private struct TrafficBindingReference: Decodable { let trafficId, role, note: S
         let api = TrafficBindingAPI(); api.ids = sources
         let value = try BackendJSONCoding.decode(FindingTraffic.self, from: api.reply().body)
         XCTAssertEqual(value.bindings.map { Data($0.snapshot.sourceTrafficId.utf8) }, sources.map { Data($0.utf8) })
+    }
+
+    func testCancellationDuringBusyPublicationHasNoDispatchOrUncertainty() async throws {
+        let api = TrafficBindingAPI(), store = try await ready(api), holder = TrafficBindingJob()
+        let owner = store.owner, request = store.requestID
+        withObservationTracking { _ = store.isMutating } onChange: { MainActor.assumeIsolated { holder.task?.cancel() } }
+        holder.task = Task { await store.bind(id: request, owner: owner) }
+        guard case .notStarted = await holder.task!.value else { return XCTFail("Cancelled before dispatch") }
+        XCTAssertEqual(api.calls.count, 1); XCTAssertFalse(store.hasUnknownOutcome); XCTAssertFalse(store.isMutating)
+    }
+    func testOldAckCannotClearASecondUncertaintyEpisode() async throws {
+        let api = TrafficBindingAPI(), store = try await ready(api); api.failWrite = true
+        let owner = store.owner, oldRequest = store.requestID
+        _ = await store.bind(id: oldRequest, owner: owner)
+        let oldRevision = store.unknownRevision
+        await store.recover(owner: owner); XCTAssertTrue(store.acknowledge(owner: owner, revision: oldRevision))
+        _ = await store.bind(id: store.requestID, owner: owner)
+        let nextRevision = store.unknownRevision; XCTAssertNotEqual(nextRevision, oldRevision)
+        await store.recover(owner: owner); XCTAssertTrue(store.canAcknowledgeUnknown)
+        XCTAssertFalse(store.acknowledge(owner: owner, revision: oldRevision)); XCTAssertTrue(store.hasUnknownOutcome)
+        XCTAssertTrue(store.acknowledge(owner: owner, revision: nextRevision))
+        guard case .notStarted = await store.bind(id: oldRequest, owner: owner) else { return XCTFail("Old request") }
+        XCTAssertEqual(api.calls.filter { $0.method == "POST" }.count, 2)
+    }
+    func testAlreadyBoundSourcesAllowIdempotentUnchangedVersion() async throws {
+        let api = TrafficBindingAPI(); api.ids = sources; api.advanceVersion = false
+        let store = try await ready(api)
+        guard case .confirmed(let value) = await store.bind(id: store.requestID, owner: store.owner) else { return XCTFail("Idempotent receipt") }
+        XCTAssertEqual(value.version, 2); XCTAssertFalse(store.hasUnknownOutcome); XCTAssertFalse(store.canBind)
+    }
+    func testNormalizationOfReceiptSourcesCannotSilentlyConfirm() async throws {
+        let api = TrafficBindingAPI(), store = try await ready(api); api.normalizeRefs = true
+        guard case .unconfirmed = await store.bind(id: store.requestID, owner: store.owner) else { return XCTFail("Changed literal identities") }
+        XCTAssertTrue(store.hasUnknownOutcome); XCTAssertNil(store.lastConfirmation)
+    }
+    func testLateRecoveryCannotReplaceFreshPostResetProof() async throws {
+        let api = TrafficBindingAPI(), store = try await ready(api); api.failWrite = true
+        _ = await store.bind(id: store.requestID, owner: store.owner)
+        api.holdRead = true
+        let owner = store.owner, read = Task { await store.recover(owner: owner) }
+        try await reached { api.pendingReads.count == 1 }
+        store.resetSession(); store.resume(); api.holdRead = false
+        await store.recover(owner: store.owner); XCTAssertTrue(store.canAcknowledgeUnknown)
+        api.version = 1; api.pendingReads.removeFirst().resume(returning: try api.reply())
+        await read.value
+        XCTAssertEqual(store.summary?.version, 3); XCTAssertFalse(store.isStale); XCTAssertNil(store.failure)
+        XCTAssertTrue(store.canAcknowledgeUnknown); XCTAssertNil(store.target); XCTAssertTrue(store.sourceIDs.isEmpty)
     }
 
 }
