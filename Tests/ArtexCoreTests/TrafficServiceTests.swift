@@ -85,6 +85,25 @@ final class TrafficServiceTests:XCTestCase {
         let sent=try XCTUnwrap(JSONSerialization.jsonObject(with:XCTUnwrap(api.calls[3].2)) as? [String:Bool]);XCTAssertEqual(sent,["traffic_capture":true]);XCTAssertEqual(dispatched,1)
         XCTAssertEqual(URLComponents(string:api.calls[0].1)?.queryItems?.first?.value,"api&x+")
     }
+    @MainActor func testFEFFOnlyHostsUseGoSpaceRulesAndRemainExactWireBytes() async throws {
+        let api=TrafficAPI(),service=TrafficService(client:api);try api.set(["deleted":0])
+        _ = try await service.apply(.deleteMatchingHost("\u{FEFF}"))
+        XCTAssertEqual(try queryBytes(api.calls[0].1)["host"],Data([0xef,0xbb,0xbf]))
+        _ = try await service.apply(.deleteHosts(["\u{FEFF}"]))
+        struct Sent:Decodable {let hosts:[String]}
+        let sent=try BackendJSONCoding.decode(Sent.self,from:XCTUnwrap(api.calls[1].2));XCTAssertEqual(sent.hosts.map{Data($0.utf8)},[Data([0xef,0xbb,0xbf])]);XCTAssertEqual(api.calls.count,2)
+    }
+    @MainActor func testPageEchoMismatchAndUnavailableRemainDistinctAndInvalidQueryDoesNotDispatch() async throws {
+        let api=TrafficAPI(),service=TrafficService(client:api)
+        for (page,size) in [(1,50),(0,25)] {
+            try api.set(["enabled":false,"count":0,"total":0,"page":page,"size":size,"exchanges":[]])
+            do{_ = try await service.list();XCTFail("Wrong page echo")}catch{}
+        }
+        try api.set(["enabled":false,"exchanges":[]]);let missing=try await service.list();XCTAssertTrue(missing.isUnavailable)
+        let calls=api.calls.count;var bad=TrafficQuery();bad.page = -1
+        do{_ = try await service.list(bad);XCTFail("Invalid query")}catch{}
+        XCTAssertEqual(api.calls.count,calls)
+    }
     @MainActor func testInvalidWritesNeverDispatchAndCallbackCanRejectBeforeTransport() async throws {
         let api=TrafficAPI(),service=TrafficService(client:api)
         for change:TrafficMutation in [.deleteMatchingHost(" \n"),.deleteHosts([]),.deleteHosts([" ","\u{85}"]),.deleteMatchingHost(String(repeating:"x",count:8193))] {
