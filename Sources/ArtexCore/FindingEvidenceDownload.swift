@@ -3,7 +3,7 @@ import Foundation
 public enum EvidenceExportError: Error, Sendable { case invalidDestination, destinationExists, invalidManifest, integrity, storage, cleanupRequired }
 
 /// Immutable body identity and fixed guest route; no guest filename or destination URL is accepted.
-public struct FindingEvidenceDownload: Sendable {
+public struct FindingEvidenceDownload: Sendable, EvidenceBodyManifest {
     public let findingID, bindingID: String
     public let side: FindingEvidenceSide
     public let expectedSize: Int64

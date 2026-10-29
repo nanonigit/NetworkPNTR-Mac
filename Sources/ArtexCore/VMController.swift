@@ -226,7 +226,7 @@ import Virtualization
             return response
         } onCancel: { socket.cancel() }
     }
-    func stageBackendEvidence(request: Data, manifest: FindingEvidenceDownload, destination: EvidenceExportDestination, provisioning: GuestProvisioning) async throws -> EvidenceExportReceipt {
+    func stageBackendEvidence(request: Data, manifest: any EvidenceBodyManifest, destination: EvidenceExportDestination, provisioning: GuestProvisioning) async throws -> EvidenceExportReceipt {
         try Task.checkCancellation()
         guard guestReady, state == .running else { throw RuntimeError.integrity("backend not ready") }
         let epoch = evidenceEpoch
@@ -266,7 +266,9 @@ import Virtualization
         } onCancel: {
             #if DEBUG
             let interrupted = socket.cancel()
-            cancellationProbe?.record(operationID: identifier, manifest: manifest, interrupted: interrupted)
+            if let finding = manifest as? FindingEvidenceDownload {
+                cancellationProbe?.record(operationID: identifier, manifest: finding, interrupted: interrupted)
+            }
             #else
             socket.cancel()
             #endif

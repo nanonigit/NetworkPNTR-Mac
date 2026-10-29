@@ -124,11 +124,23 @@ public enum AuthenticationPhase: String, Sendable { case checking, needsSetup, n
         return response
     }
     public func authenticatedEvidenceExport(_ manifest: FindingEvidenceDownload, destination: EvidenceExportDestination) async throws -> EvidenceExportReceipt {
+        try await authenticatedBodyExport(manifest) { token in
+            guard let downloader = self.client as? any BackendEvidenceDownloadTransport else { throw BackendAPIError.invalidResponse }
+            return try await downloader.stageEvidence(manifest, destination: destination, bearer: token)
+        }
+    }
+    public func authenticatedTrafficBlobExport(_ manifest: TrafficBlobDownload, destination: EvidenceExportDestination) async throws -> EvidenceExportReceipt {
+        try await authenticatedBodyExport(manifest) { token in
+            guard let downloader = self.client as? any BackendTrafficBlobDownloadTransport else { throw BackendAPIError.invalidResponse }
+            return try await downloader.stageTrafficBlob(manifest, destination: destination, bearer: token)
+        }
+    }
+    private func authenticatedBodyExport(_ manifest: any EvidenceBodyManifest,
+                                       stage: @MainActor (String) async throws -> EvidenceExportReceipt) async throws -> EvidenceExportReceipt {
         try Task.checkCancellation()
         guard phase == .authenticated, let token else { throw BackendAPIError.status(401) }
-        guard let downloader = client as? any BackendEvidenceDownloadTransport else { throw BackendAPIError.invalidResponse }
         let ticket = revision
-        let receipt = try await downloader.stageEvidence(manifest, destination: destination, bearer: token)
+        let receipt = try await stage(token)
         do {
             try Task.checkCancellation()
             try receipt.validateOwnership()

@@ -9,6 +9,13 @@ import Foundation
         guard result.isUnavailable || (result.page==query.page && result.size==query.size) else {throw BackendAPIError.invalidResponse}
         return result
     }
+    public func blobDownload(id: String, side: FindingEvidenceSide) async throws -> TrafficBlobDownload {
+        try CapturedTrafficWire.validateID(id)
+        let path = try CapturedTrafficWire.path("/api/traffic/blob-metadata", items: [.init(name: "id", value: id), .init(name: "side", value: side.rawValue)])
+        let value = try await read(TrafficBlobDownload.self, path: path)
+        guard value.identity == Data(id.utf8), value.side == side else { throw BackendAPIError.invalidResponse }
+        return value
+    }
     public func hosts() async throws -> TrafficHosts {try await read(TrafficHosts.self,path:"/api/traffic/hosts")}
     public func captureSettings() async throws -> TrafficCaptureSettings {try await read(TrafficCaptureSettings.self,path:"/api/settings")}
     public func detail(id:String) async throws -> CapturedTrafficDetail {try await CapturedTrafficService(client:client).detail(id:id)}

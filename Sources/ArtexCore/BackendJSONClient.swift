@@ -4,7 +4,7 @@ import Foundation
     func send(method: String, path: String, body: Data?, bearer: String?) async throws -> BackendHTTPResponse
 }
 
-@MainActor public final class BackendJSONClient: BackendJSONTransport, BackendMultipartTransport, BackendStagingMultipartTransport, BackendAttachmentDownloadTransport, BackendEvidenceDownloadTransport {
+@MainActor public final class BackendJSONClient: BackendJSONTransport, BackendMultipartTransport, BackendStagingMultipartTransport, BackendAttachmentDownloadTransport, BackendEvidenceDownloadTransport, BackendTrafficBlobDownloadTransport {
     private let runtime: VMController
     private let provisioning: GuestProvisioning
     public init(runtime: VMController, provisioning: GuestProvisioning) {
@@ -37,6 +37,10 @@ import Foundation
         return try await runtime.downloadBackendDigest(request: request, expectedSize: attachment.expectedSize, provisioning: provisioning)
     }
     public func stageEvidence(_ manifest: FindingEvidenceDownload, destination: EvidenceExportDestination, bearer: String) async throws -> EvidenceExportReceipt {
+        try Task.checkCancellation()
+        return try await runtime.stageBackendEvidence(request: manifest.request(bearer: bearer), manifest: manifest, destination: destination, provisioning: provisioning)
+    }
+    public func stageTrafficBlob(_ manifest: TrafficBlobDownload, destination: EvidenceExportDestination, bearer: String) async throws -> EvidenceExportReceipt {
         try Task.checkCancellation()
         return try await runtime.stageBackendEvidence(request: manifest.request(bearer: bearer), manifest: manifest, destination: destination, provisioning: provisioning)
     }

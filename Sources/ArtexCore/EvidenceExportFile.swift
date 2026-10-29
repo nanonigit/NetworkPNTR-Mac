@@ -50,7 +50,7 @@ public final class VerifiedEvidenceFile: @unchecked Sendable {
 final class EvidenceExportWriter: @unchecked Sendable {
     private let lock = NSLock()
     private let destination: EvidenceExportDestination
-    private let request: FindingEvidenceDownload
+    private let request: any EvidenceBodyManifest
     private let stageName = ".artex-evidence-" + UUID().uuidString + ".partial"
     private var stage: Int32?
     private var file: Int32?
@@ -68,7 +68,7 @@ final class EvidenceExportWriter: @unchecked Sendable {
             changedSeconds = value.st_ctimespec.tv_sec; changedNanos = value.st_ctimespec.tv_nsec
         }
     }
-    init(destination: EvidenceExportDestination, request: FindingEvidenceDownload) throws {
+    init(destination: EvidenceExportDestination, request: any EvidenceBodyManifest) throws {
         self.destination = destination; self.request = request
         try EvidenceExportDestination.requireAbsent(destination.directory, destination.name)
         guard mkdirat(destination.directory, stageName, 0o700) == 0 else { throw EvidenceExportError.storage }

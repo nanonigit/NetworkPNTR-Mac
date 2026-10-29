@@ -15,7 +15,7 @@ import Foundation
     init(response: EvidenceDownloadResponse, validate: @escaping @MainActor () throws -> Void = {}) {
         result = response.result; file = response.file; validators = [validate]
     }
-    func requireSuccess(_ manifest: FindingEvidenceDownload) throws {
+    func requireSuccess(_ manifest: any EvidenceBodyManifest) throws {
         guard !consumed, file != nil, result.status == 200,
               result.byteCount == manifest.expectedSize, result.sha256 == manifest.expectedSHA256 else {
             throw EvidenceExportError.integrity

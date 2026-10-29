@@ -8,7 +8,7 @@ struct EvidenceDownloadResponse: Sendable {
 /// Owns transfer and private staging, but leaves publication to the authenticated caller.
 enum EvidenceDownloadStaging {
     static func exchange(socket: BackendUploadSocket, preamble: Data, request: Data,
-                         manifest: FindingEvidenceDownload, destination: EvidenceExportDestination,
+                         manifest: any EvidenceBodyManifest, destination: EvidenceExportDestination,
                          timeout: Duration = .seconds(300)) throws -> EvidenceDownloadResponse {
         defer { socket.finish() }
         let writer = try EvidenceExportWriter(destination: destination, request: manifest)
