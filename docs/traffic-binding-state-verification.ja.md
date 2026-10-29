@@ -1,0 +1,11 @@
+# 通信履歴の紐付け操作状態の検証
+
+既存FindingTrafficServiceを使うコア操作管理TrafficBindingStoreを追加した。まだ親／ウィンドウ／rootやnative pickerには接続していない。250msのfinding検索、原文とページをまたぐ選択の固定、readonly行の禁止、英日ダイアログ、紐付けと削除の共通ゲート、同じ選択だけの解除、blob拡張、実VM／ブラウザ／native受入を最終範囲に維持する。
+
+正規の変更可能handleと上限付き重複なしIDを検証し、最新一覧を読んでsupporting／空noteの不変要求を準備し、request UUIDを消費する。全選択IDのUTF8が応答にある場合だけ成功とし、既存紐付けの同一versionは許可する。送信前の離脱はPOSTせず、送信後の失敗／cancel／離脱は未確定送信と一般化した結果不明を保持する。stop/resetは公開scopeを消す。明示回復用のprivate canonical handle／最低versionだけをmemoryに残し、確定後の台帳に名前／packet／source配列／秘密情報は残さない。回復はある時点の最新readで、物理socket送出やserver commitの完全な直列化の証明ではない。自動ack／再送せず、読めない／古い対象では書込みを禁止する。
+
+TDDはe8b22ebコンパイルRED→3c42891の不正fixture失敗→36fc2d3の型付き／正規fixture15GREEN→efe024aの20GREEN。初期007は既存record decoderが正しく拒否し、その後はFoundation経由のfixture parserが要求ID先頭FEFFを変えていた。fixtureのparse／期待値だけを修正し、製品の原文照合を維持した。製品不具合や実backend障害とは扱わない。証拠／5Whys／Fishbone／Timelineと回帰予防はbugs/traffic-binding-state英日版を参照。
+
+追加20件はwire／既定refs、バイト識別、上限、fresh／last-good／遅延read、nonce再送禁止、応答の欠落／正規化、同一versionの冪等性、送信前後のstop／cancel、保留reset、一覧／receipt／busy解除通知、明示回復と承認世代を検証した。読取専用レビューの追加2ケースも含み、具体的な阻害要因はなかった。全946Swiftは945成功・既存の外部AX1件スキップ。179Python、翻訳出力、21/27/243の一覧も成功。新コアのLLVM帰属行は258/259（99.61%）で、分岐／実画面／server効果／製品全体のcoverageではない。
+
+段階ビルドと厳密署名が成功し、manifest/kernel/initramfs/systemが従来profileと一致した。アプリ起動、他の場所へのインストール、候補昇格、実provider接続、実server紐付け、新しい紐付けUIは行っていない。evidence/traffic/binding-state-verification.jsonを参照。親での保持、削除との共通ゲート、選択revision一致後だけの解除は未実装の後続条件で、永続／複数窓／process共通の台帳でもない。TR3–TR5／21操作／kernel／4社／harness／releaseは未完了。HostedCIも未確認で公開に[skip ci]を使う。

@@ -1,0 +1,16 @@
+# Traffic binding action investigation and regression prevention
+
+## Evidence/reproduction
+e8b22eb is an intentional missing-store compile RED. At3c42891 the initial fixture used noncanonical finding_id007, which FindingRecord correctly rejects before store selection;14 cases consequently reported44 failures/errors. After changing it to canonical7 (keeping node ID41 distinct), three failures remained because the Foundation-based fixture request decoder yielded a16-byte source where the original FEFF-prefixed ID has19 bytes. A typed receipt roundtrip preserved19; switching only the fixture request decoder/assertions to typed JSON preserved the literal wire value. Production store/service code was not relaxed or changed.36fc2d3 passes15 cases;efe024a expands to20 and all pass.
+
+These fixture failures are not20/44 product bugs or evidence of a real server failure. The store's missing-literal-source check correctly refused success for the altered fixture response. Deliberate missing/NFC-normalized response tests retain that protection. Independent read-only reviews found no concrete store blocker and recommended additional cancellation/ack-epoch tests, now included.
+
+## Analysis
+Five Whys: invalid fixture targets never reached the operation because record decoding requires canonical IDs; route canonicalization was mistaken for DTO acceptance; the fixture bypassed the existing contract assumptions. Decode-valid7/node41 fixtures and explicit rejected007/non-numeric cases separate those boundaries. The remaining false negative came from a fixture decoding path that changed a leading scalar; comparisons initially used the same path; byte-count diagnostics and a separate typed response roundtrip isolated it. Preserve typed wire values and test the transport fixture itself rather than weakening literal receipt validation.
+
+Fishbone: input—canonical finding handle versus node ID; transport fixture—typed JSON versus Foundation object decoding; identity—UTF8 versus canonical equivalence/BOM changes; lifecycle—pre/post-dispatch departure and reset; recovery—owner/revision/minimum version; scope—controlled protocol tests versus actual UI/VM/server effects.
+
+## Prevention and limits
+Retain valid/read-only/legacy/invalid/body-limit cases, consumed nonces, idempotent unchanged versions, missing/normalized receipts, last-good/stale/late reads, pre/post-dispatch stop/cancel, held-write reset, summary/receipt/busy-release publication and repeated uncertainty epochs. Explicit recovery reads do not acknowledge or post; stale proof cannot unlock writes. A private canonical handle/minimum version remains memory-only after scope scrubbing solely for user-requested recovery; titles/packets/source arrays/credentials are not retained in the settled ledger.
+
+Parent model/root retention, linking/deletion shared gates, matching-revision flow clearing, finding search/native dialog and real VM/browser acceptance remain required integration work. No durable cross-process/window journal or server-commit linearizability is claimed. Missing/inaccessible recovery data keeps writes blocked. Final finite counts and signed-build receipt are in traffic-binding-state-verification en/ja.

@@ -1,0 +1,16 @@
+# 通信履歴の紐付け操作の調査と回帰予防
+
+## 証拠・再現
+e8b22ebはstore未実装の意図したコンパイルRED。3c42891の初期fixtureはfinding_id007を使い、FindingRecordが正しく選択前に拒否したため14件で44失敗／エラーとなった。正規7へ直しnode ID41との区別を維持した後も3失敗が残った。Foundation経由の試験用request decoderでは先頭FEFF付き19byteのIDが16byteになっていた。型付きresponse往復では19byteを保持できたため、fixtureのrequest decoder／assertionだけを型付きJSONへ変更し原文を維持した。製品store／serviceの検証を緩めたり変更していない。36fc2d3で15件、efe024aで追加した全20件が成功した。
+
+これらは20件／44件の製品不具合や実server障害を示すものではない。storeはfixtureで変わったIDを検知して正しく成功を拒否した。意図した欠落／NFC正規化の応答でも同じ保護を回帰試験に残した。読取専用レビューで具体的なstoreの問題はなく、追加提案のキャンセル／承認世代試験も含めた。
+
+## 分析
+5 Whys：不正fixtureが操作へ到達しなかったのはDTOがcanonical IDを要求するため。routeの正規化とDTO受理を混同し、既存契約に合わないデータを作った。正規7／node41と、007／非数値の拒否を別に試験する。残る偽陰性は先頭scalarを変えるfixture decode経路と、同じ経路を使った比較が原因。byte数の診断と独立した型付きresponse往復で切り分けた。受信値の保持とfixture自体を検証し、原文照合を緩めない。
+
+Fishbone：入力—finding handleとnode ID、試験通信—型付きJSONとFoundation object経由、識別—UTF8と正規等価／BOM差、寿命—送信前後の離脱とreset、回復—owner／revision／最低version、範囲—制御したprotocol試験と実画面／VM／serverの区別。
+
+## 予防と限界
+正常／readonly／legacy／不正／上限、消費nonce、同一versionの冪等応答、欠落／正規化応答、last-good／stale／遅延読取、送信前後のstop／cancel、保留送信reset、一覧／receipt／busy解除中の通知、複数回の結果不明を維持する。回復readでack／POSTせず、古いproofで書込みを解除しない。公開scope消去後は明示回復に必要なprivate canonical handle／最低versionだけをmemoryに残し、確定後の台帳に名前／packet／source一覧／秘密情報を残さない。
+
+親モデル／root保持、紐付けと削除の共通ゲート、同じ選択revisionだけの解除、finding検索／native dialogと実VM／ブラウザ受入は後続必須。process／窓をまたぐ永続台帳やserver commitの完全な直列化は主張しない。回復対象が存在しない／読めない場合は書込み禁止を維持する。最終の限定件数と署名ビルドはtraffic-binding-state-verification英日版を参照する。

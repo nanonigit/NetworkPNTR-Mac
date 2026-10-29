@@ -1,0 +1,72 @@
+{
+  "schema": 1,
+  "passedSoftwareChecks": true,
+  "fullGoalComplete": false,
+  "phase": "TR3 binding core action lifecycle only; parent/root/search/dialog integration unimplemented",
+  "sourceHead": "efe024a93925b40fa699630b3c7f4fb1189b8826",
+  "baseline": "e75ae371ad777ffd1eecdd28d2781a6519b05591",
+  "sourceSHA256": {
+    "Sources/ArtexCore/TrafficBindingStore.swift": "0bb437b77e5db1b90a9b6369cd3b4fe9d4c48c166c0c0d711f9f8672abd1033a"
+  },
+  "tests": {
+    "newCoreCases": 20,
+    "swiftTotal": 946,
+    "swiftPassed": 945,
+    "existingExternalAXSkipped": 1,
+    "pythonPassed": 179,
+    "baselineFeatures": 21,
+    "baselinePages": 27,
+    "baselineHandlers": 243,
+    "localizationExportPassed": true
+  },
+  "coverage": {
+    "method": "Full-suite LLVM attributed line entries for the new core file, not branch/UI/actual server effects or whole product acceptance",
+    "TrafficBindingStore.swift": {
+      "count": 259,
+      "covered": 258,
+      "percent": 99.61389961389962
+    }
+  },
+  "contracts": [
+    "fixed finding-handle GET/POST, default supporting role and empty note",
+    "literal source identity, bounded immutable body and consumed request nonce",
+    "fresh matching summary and receipt containing every selected source",
+    "idempotent unchanged POST version when all selected sources already exist",
+    "one unsettled write through stop/reset; scoped reads and queued reset priority",
+    "explicit current-revision recovery read with minimum baseline version, no retry or automatic ack",
+    "private canonical recovery handle and minimum version retained only in memory after raw scope scrub",
+    "post-busy-release ownership check before confirmed return"
+  ],
+  "fixtureHistory": {
+    "compileRed": "e8b22eb",
+    "initialFixtureFailures": "3c42891 used noncanonical DTO007;44 failures/errors before store selection",
+    "secondaryFixtureFailures": "Foundation object request parsing lost leading FEFF;3 failures; production literal receipt guard correctly refused success",
+    "correctedTypedFixtureGreen": "36fc2d3 fifteen cases",
+    "expandedGreen": "efe024a twenty cases",
+    "productionStoreRelaxedToPassFixture": false
+  },
+  "review": {
+    "readOnly": true,
+    "remainingConcreteBlockers": 0
+  },
+  "stagedApp": {
+    "rebuilt": true,
+    "signatureStrictValid": true,
+    "guestManifestSHA256": "fa0f1972c04f2a04853de37f4fd163b922ac38c841849c635d29f565fe6115ce",
+    "guestArtifactHashesVerified": true,
+    "previousProfilePreserved": true,
+    "candidatePromoted": false,
+    "bindingUIExposed": false,
+    "launched": false,
+    "installedElsewhere": false
+  },
+  "pending": [
+    "retained parent/root binding store",
+    "shared linking/deletion busy and unknown gate",
+    "matching-selection-revision clearing on confirmed current outcome",
+    "250ms paged finding search and actual EN/JA native dialog",
+    "blob originals and multi-host actual VM/reference/browser/keyboard/VoiceOver/multiwindow",
+    "durable cross-window/process journal and original workflow/kernel/provider/harness/release conditions"
+  ],
+  "hostedCI": "unverified; publication HEAD uses [skip ci]"
+}
