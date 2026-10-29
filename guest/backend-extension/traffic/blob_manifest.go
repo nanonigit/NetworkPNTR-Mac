@@ -3,6 +3,8 @@ package traffic
 import (
 	"database/sql"
 	"errors"
+	"os"
+	"syscall"
 	"unicode/utf8"
 )
 
@@ -40,7 +42,7 @@ func (t *Traffic) BlobManifest(id, side string) (BlobManifest, error) {
 	if err := t.db.QueryRow(query, id).Scan(&hash, &size); err != nil || !hash.Valid || !blobHashRe.MatchString(hash.String) || size < 0 {
 		return BlobManifest{}, unavailable
 	}
-	file, actualSize, err := t.Blob(hash.String)
+	file, actualSize, err := t.openManagedBlob(hash.String)
 	if err != nil {
 		return BlobManifest{}, unavailable
 	}
@@ -49,4 +51,60 @@ func (t *Traffic) BlobManifest(id, side string) (BlobManifest, error) {
 		return BlobManifest{}, unavailable
 	}
 	return BlobManifest{ID: id, Side: side, Hash: hash.String, Size: size}, nil
+}
+
+// openManagedBlob anchors every path component and never follows a symlink or
+// waits for a FIFO peer. Callers own the returned regular-file handle.
+func (t *Traffic) openManagedBlob(hash string) (*os.File, int64, error) {
+	unavailable := errors.New("original blob unavailable")
+	if t == nil || !blobHashRe.MatchString(hash) {
+		return nil, 0, unavailable
+	}
+	flags := syscall.O_RDONLY | syscall.O_CLOEXEC | syscall.O_NOFOLLOW | syscall.O_NONBLOCK
+	root, err := syscall.Open(t.dir, flags|syscall.O_DIRECTORY, 0)
+	if err != nil {
+		return nil, 0, unavailable
+	}
+	defer syscall.Close(root)
+	layouts := [][]string{
+		{"_blobs", "sha256", hash[:2], hash + ".bin"},
+		{"_blobs", "sha256", hash[:2], hash[2:4], hash + ".bin"},
+	}
+	for _, parts := range layouts {
+		fd := root
+		missing := false
+		for index, part := range parts {
+			options := flags
+			if index != len(parts)-1 {
+				options |= syscall.O_DIRECTORY
+			}
+			next, openErr := syscall.Openat(fd, part, options, 0)
+			if fd != root {
+				syscall.Close(fd)
+			}
+			if openErr != nil {
+				if openErr != syscall.ENOENT {
+					return nil, 0, unavailable
+				}
+				missing = true
+				break
+			}
+			fd = next
+		}
+		if missing {
+			continue
+		}
+		file := os.NewFile(uintptr(fd), "original blob")
+		if file == nil {
+			syscall.Close(fd)
+			return nil, 0, unavailable
+		}
+		info, statErr := file.Stat()
+		if statErr != nil || !info.Mode().IsRegular() {
+			file.Close()
+			return nil, 0, unavailable
+		}
+		return file, info.Size(), nil
+	}
+	return nil, 0, unavailable
 }
