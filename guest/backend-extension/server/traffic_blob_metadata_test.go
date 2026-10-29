@@ -150,3 +150,26 @@ func TestManagedBlobHTTPLegacyHashCompatibility(t *testing.T) {
 		}
 	}
 }
+
+func TestManagedBlobHTTPBoundsAndReadMethod(t *testing.T) {
+	s, _, token, _, _ := managedBlobServer(t)
+	for _, query := range []string{"id=%FF&side=response", "id=" + strings.Repeat("x", 8193) + "&side=response", "id=" + strings.Repeat("x", 32769) + "&side=response"} {
+		if r := managedBlobRequest(s, "GET", "/api/traffic/blob-metadata?"+query, token); r.Code != 400 {
+			t.Fatal("query boundary accepted", r.Code)
+		}
+	}
+	r := managedBlobRequest(s, "HEAD", "/api/traffic/blob-metadata?id=x&side=response", token)
+	if r.Code != 405 || r.Header().Get("Allow") != "GET" {
+		t.Fatal("metadata read method boundary")
+	}
+}
+
+func TestManagedBlobHTTPCaptureUnavailable(t *testing.T) {
+	s, _, token, _, _ := managedBlobServer(t)
+	for _, manager := range []*Manager{nil, {}} {
+		s.m = manager
+		if r := managedBlobRequest(s, "GET", "/api/traffic/blob-metadata?id=x&side=response", token); r.Code != 404 {
+			t.Fatal("disabled capture response", r.Code)
+		}
+	}
+}

@@ -8,4 +8,6 @@ COPY extension/ ./traffic/
 COPY server-extension/ ./server/
 COPY managed.patch /tmp/managed.patch
 RUN git apply --check /tmp/managed.patch && git apply /tmp/managed.patch
-RUN --network=none GOMAXPROCS=2 go test -p 2 -mod=readonly ./traffic ./server -run TestManagedBlob -count=1
+SHELL ["/bin/bash", "-o", "pipefail", "-c"]
+RUN --network=none GOMAXPROCS=2 go test -p 2 -mod=readonly ./traffic ./server -count=1 -json -coverprofile=/tmp/managed.cover | tee /tmp/managed-tests.json && go tool cover -func=/tmp/managed.cover
+RUN --network=none GOMAXPROCS=2 go build -p 2 -mod=readonly -trimpath -buildvcs=false -ldflags="-s -w -X main.version=artex-mac-e75ae371-blob1" -o /out/artex ./cmd/artex
