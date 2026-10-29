@@ -3,6 +3,9 @@ import Observation
 import XCTest
 @testable import ArtexCore
 
+private struct TrafficBindingBody: Decodable { let trafficRefs: [TrafficBindingReference] }
+private struct TrafficBindingReference: Decodable { let trafficId, role, note: String }
+
 @MainActor private final class TrafficBindingAPI: BackendJSONTransport {
     struct Call { let method, path: String; let body: Data? }
     var calls: [Call] = []
@@ -25,9 +28,8 @@ import XCTest
             if holdRead { return try await withCheckedThrowingContinuation { pendingReads.append($0) } }
             return try reply(owner: owner, status: failRead ? 503 : 200)
         }
-        let object = try XCTUnwrap(JSONSerialization.jsonObject(with: XCTUnwrap(body)) as? [String: Any])
-        let refs = try XCTUnwrap(object["traffic_refs"] as? [[String: String]])
-        ids = refs.compactMap { $0["traffic_id"] }; if omitLast { ids.removeLast() }; version += 1
+        let object = try BackendJSONCoding.decode(TrafficBindingBody.self, from: XCTUnwrap(body))
+        ids = object.trafficRefs.map(\.trafficId); if omitLast { ids.removeLast() }; version += 1
         if holdWrite { return try await withCheckedThrowingContinuation { pendingWrites.append($0) } }
         return try reply(owner: owner, status: failWrite ? 503 : 200)
     }
@@ -35,7 +37,7 @@ import XCTest
 
 @MainActor final class TrafficBindingStoreTests: XCTestCase {
     private let sources = ["é", "e\u{301}", "\u{FEFF}中文 한국어"]
-    private func target(_ id: String = "007", inherited: Bool = false, legacy: Bool = false) throws -> FindingRecord {
+    private func target(_ id: String = "7", inherited: Bool = false, legacy: Bool = false) throws -> FindingRecord {
         var value: [String: Any] = ["id": "41", "finding_id": id, "task_id": "11", "name": "private name", "vulnclass": "CWE-79", "severity": "high", "status": "pending", "summary": "private", "evidence": "raw", "ts": "raw"]
         if inherited { value["inherited"] = true; value["source_task_id"] = "11" }
         if legacy { value.removeValue(forKey: "finding_id") }
@@ -53,20 +55,23 @@ import XCTest
     func testCanonicalMutableHandleLiteralRefsAndConsumedRequest() async throws {
         let api = TrafficBindingAPI(), store = try await ready(api), owner = store.owner, request = store.requestID
         XCTAssertEqual(store.sourceIDs.map { Data($0.utf8) }, sources.map { Data($0.utf8) })
-        guard case .confirmed(let receipt) = await store.bind(id: request, owner: owner) else { return XCTFail("Expected verified bind") }
+        let outcome = await store.bind(id: request, owner: owner)
+        XCTAssertEqual(api.ids.map { Data($0.utf8) }, sources.map { Data($0.utf8) })
+        guard case .confirmed(let receipt) = outcome else { return XCTFail("Expected verified bind: " + (store.failure?.text(language: .english) ?? "no error")) }
         XCTAssertEqual(receipt.findingId, "7"); XCTAssertEqual(api.calls.map(\.method), ["GET", "POST"])
         XCTAssertTrue(api.calls.allSatisfy { $0.path == "/api/exploration/findings/7/traffic" })
         let body = try XCTUnwrap(JSONSerialization.jsonObject(with: XCTUnwrap(api.calls.last?.body)) as? [String: Any])
-        let refs = try XCTUnwrap(body["traffic_refs"] as? [[String: String]])
+        let refs = try BackendJSONCoding.decode(TrafficBindingBody.self, from: XCTUnwrap(api.calls.last?.body)).trafficRefs
         XCTAssertEqual(Set(body.keys), ["traffic_refs"])
-        XCTAssertEqual(refs.compactMap { $0["traffic_id"] }.map { Data($0.utf8) }, sources.map { Data($0.utf8) })
-        XCTAssertTrue(refs.allSatisfy { $0["role"] == "supporting" && $0["note"] == "" })
+        XCTAssertEqual(refs.map(\.trafficId).map { Data($0.utf8) }, sources.map { Data($0.utf8) })
+        XCTAssertTrue(refs.allSatisfy { $0.role == "supporting" && $0.note == "" })
         guard case .notStarted = await store.bind(id: request, owner: owner) else { return XCTFail("Replay") }
         XCTAssertEqual(api.calls.count, 2)
     }
     func testInvalidTargetsIDsDuplicatesAndBodyLimitHaveNoDispatch() throws {
         let api = TrafficBindingAPI(), store = TrafficBindingStore(service: .init(client: api)), owner = store.owner
-        for row in [try target(inherited: true), try target(legacy: true), try target("not-a-number")] {
+        XCTAssertThrowsError(try target("007")); XCTAssertThrowsError(try target("not-a-number"))
+        for row in [try target(inherited: true), try target(legacy: true)] {
             XCTAssertFalse(store.select(row, sourceIDs: sources, owner: owner))
         }
         for ids in [[], [""], [" "], ["bad\nID"], ["same", "same"], [String(repeating: "x", count: 8193)], (0..<140).map { String($0) + String(repeating: "x", count: 8180) }] {
@@ -182,4 +187,10 @@ import XCTest
         guard case .discarded = await store.bind(id: store.requestID, owner: store.owner) else { return XCTFail("Busy-release departure") }
         XCTAssertNil(store.lastConfirmation); XCTAssertFalse(store.hasUnknownOutcome); XCTAssertFalse(store.isMutating)
     }
+    func testFixtureReceiptRoundTripPreservesLiteralSources() throws {
+        let api = TrafficBindingAPI(); api.ids = sources
+        let value = try BackendJSONCoding.decode(FindingTraffic.self, from: api.reply().body)
+        XCTAssertEqual(value.bindings.map { Data($0.snapshot.sourceTrafficId.utf8) }, sources.map { Data($0.utf8) })
+    }
+
 }
