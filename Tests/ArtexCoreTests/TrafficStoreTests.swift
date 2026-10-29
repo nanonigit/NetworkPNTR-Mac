@@ -179,6 +179,14 @@ import XCTest
         XCTAssertTrue(store.toggleHost("é",selected:true,owner:owner));XCTAssertTrue(store.toggleHost("é",selected:false,owner:owner));XCTAssertTrue(store.toggleHost("é",selected:true,owner:owner));XCTAssertTrue(store.clearHostSelection(owner:owner));let revision=store.hostRevision;XCTAssertTrue(store.clearHostSelection(owner:owner));XCTAssertEqual(store.hostRevision,revision)
         XCTAssertTrue(store.prepare(.purgeAll,owner:owner));let confirmation=try XCTUnwrap(store.confirmation);XCTAssertFalse(store.cancelConfirmation(id:UUID(),owner:owner));XCTAssertTrue(store.cancelConfirmation(id:confirmation.id,owner:owner));XCTAssertEqual(api.calls.count,calls)
     }
+    func testDepartureDuringBusyReleaseCannotPublishAConfirmedOutcomeToRetiredOwner() async throws {
+        let api=TrafficStateAPI(),store=await loaded(api)
+        XCTAssertTrue(store.prepare(.purgeAll,owner:store.owner));let confirmation=try XCTUnwrap(store.confirmation);let calls=api.calls.count
+        api.onSend={method in if method != "GET" {withObservationTracking{_ = store.isMutating}onChange:{MainActor.assumeIsolated{store.stop();store.resume()}}}}
+        let outcome=await store.confirm(id:confirmation.id,owner:confirmation.owner)
+        guard case .discarded=outcome else {return XCTFail("Retired owner received confirmed outcome")}
+        XCTAssertFalse(store.isActive);XCTAssertFalse(store.isMutating);XCTAssertNil(store.lastReceipt);XCTAssertEqual(api.calls.count,calls+1)
+    }
     func testSynchronousStopDuringBusyAndReadPublicationRevokesDispatch() async throws {
         for write in [false,true] {
             let api=TrafficStateAPI(),store=await loaded(api);let count=api.calls.count
