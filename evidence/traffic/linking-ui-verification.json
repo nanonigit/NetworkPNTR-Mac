@@ -1,0 +1,122 @@
+{
+  "schema": 1,
+  "passedSoftwareChecks": true,
+  "fullGoalComplete": false,
+  "phase": "TR3 linking parent/search/dialog software integration; actual VM/browser/native acceptance pending",
+  "sourceHead": "dcbadfe502a86cf023ecf99e707d5d7751508d30",
+  "baseline": "e75ae371ad777ffd1eecdd28d2781a6519b05591",
+  "sourceSHA256": {
+    "Sources/ArtexCore/FindingService.swift": "c030d6c510beb4b09f8db978828c2e8c7c78f1891488fbb1923cffe27b1951e8",
+    "Sources/ArtexCore/TrafficBindingStore.swift": "b3719b041cca33d6f3e86733e1279d9aba0a52c24ec88efd926a9d29b8428432",
+    "Sources/ArtexMac/TrafficLinkWorkspace.swift": "604e4551f80fc1cd392f45d4427d81fa4ced72215e88a7e32ed3b160ead65cad",
+    "Sources/ArtexMac/TrafficLinkDialog.swift": "26c3e19bfd1d42e4173bab37fedd038d045bcf8e92dcab8edfe9fe981b985b74",
+    "Sources/ArtexMac/TrafficScreenModel.swift": "1b486a8966d1e936d2a9a3088ad6e7a1b33f46c169259e6168c5dc4b81a03fbb",
+    "Sources/ArtexMac/TrafficBindings.swift": "e9d4dd0d9542aac1d0a851f0f14991f0d819a5f1a244fd25cec1e8715bea2694",
+    "Sources/ArtexMac/TrafficView.swift": "07b285393a2c8a924998275bbcfa89c217fcc56a55f32438fd2d0c879b074cf3",
+    "Sources/ArtexMac/RootView.swift": "bdbf8976301989608687050bcbb7faaecee841630ff92585cc1700658eab1705",
+    "Tests/ArtexMacTests/TrafficLinkingTests.swift": "5998f566d8cd6bec1b4af8334a2de72e1c4c13ae30420b97cdb01da13a197231"
+  },
+  "tests": {
+    "newIntegrationCases": 21,
+    "swiftTotal": 967,
+    "swiftPassed": 966,
+    "existingExternalAXSkipped": 1,
+    "pythonPassed": 179,
+    "baselineFeatures": 21,
+    "baselinePages": 27,
+    "baselineHandlers": 243,
+    "localizationExportPassed": true
+  },
+  "coverage": {
+    "method": "Full-suite LLVM attributed line entries; not branch, physical lines, actual UI acceptance or whole-product coverage",
+    "files": {
+      "FindingService.swift": {
+        "count": 148,
+        "covered": 148,
+        "percent": 100
+      },
+      "TrafficBindingStore.swift": {
+        "count": 262,
+        "covered": 261,
+        "percent": 99.61832061068702
+      },
+      "RootView.swift": {
+        "count": 339,
+        "covered": 0,
+        "percent": 0
+      },
+      "TrafficBindings.swift": {
+        "count": 111,
+        "covered": 107,
+        "percent": 96.3963963963964
+      },
+      "TrafficLinkDialog.swift": {
+        "count": 297,
+        "covered": 273,
+        "percent": 91.91919191919192
+      },
+      "TrafficLinkWorkspace.swift": {
+        "count": 165,
+        "covered": 163,
+        "percent": 98.7878787878788
+      },
+      "TrafficScreenModel.swift": {
+        "count": 503,
+        "covered": 481,
+        "percent": 95.62624254473161
+      },
+      "TrafficView.swift": {
+        "count": 832,
+        "covered": 618,
+        "percent": 74.27884615384616
+      }
+    }
+  },
+  "stagedApp": {
+    "rebuilt": true,
+    "signatureStrictValid": true,
+    "guestManifestSHA256": "fa0f1972c04f2a04853de37f4fd163b922ac38c841849c635d29f565fe6115ce",
+    "guestSHA256": {
+      "kernel": "42a15047f7cfc785e008b43f48c090f6340f34ead8446d7568126bb5cb9bc9f1",
+      "initramfs": "88de8582409a9ad861a69035f056e65953b36803fbc77b391e0a9deb77e335ba",
+      "systemDisk": "58ccf79df20d21831083e38a11815232d5ea4c953b49f92f92f9553148012e88"
+    },
+    "sameGuestManifest": true,
+    "networkDevices": 0,
+    "hostShares": 0,
+    "launched": false,
+    "installedElsewhere": false,
+    "candidatePromoted": false
+  },
+  "review": {
+    "readOnly": true,
+    "severityFindingFixed": true,
+    "finalDeltaNoAdditionalBlockerReported": true,
+    "reviewerRanTests": false
+  },
+  "scope": [
+    "cross-page literal selection",
+    "250ms page1/size20 finding search",
+    "read-only inherited/legacy candidates",
+    "parent query/flow revision and immutable dispatch scope",
+    "confirmed-only matching selection clear",
+    "newer selection preserved on confirmed response",
+    "shared binding/deletion busy and uncertainty gates",
+    "explicit recovery-only sheet and revision acknowledgment",
+    "stale submit/read/dismiss/ack rejection",
+    "EN/JA labels and preserved custom literals",
+    "passive normal/loading/error/empty/unknown/recovery rendering"
+  ],
+  "pending": [
+    "TR3 blob extension",
+    "real VM and server linking effects",
+    "actual browser/native UI comparison",
+    "actual Root execution",
+    "mouse/keyboard/VoiceOver/multiwindow acceptance",
+    "default kernel reliability and promotion",
+    "full21 workflows and release gates",
+    "OpenAI/Anthropic/Gemini/Groq live acceptance",
+    "investigation harness phases"
+  ],
+  "hostedCI": "unverified; publication skip ci; no dispatch/retry/billing changes"
+}
