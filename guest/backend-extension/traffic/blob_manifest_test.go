@@ -2,11 +2,15 @@ package traffic
 
 import (
 	"bytes"
+	"context"
 	"crypto/sha256"
 	"fmt"
 	"os"
+	"os/exec"
 	"path/filepath"
+	"syscall"
 	"testing"
+	"time"
 )
 
 func TestManagedBlobManifestBothSides(t *testing.T) {
@@ -66,6 +70,76 @@ func TestManagedBlobManifestMissingFileWrongLengthAndClosedDB(t *testing.T) {
 			}
 			if _, err := tr.BlobManifest(id, "response"); err == nil {
 				t.Fatal("unavailable metadata accepted")
+			}
+		})
+	}
+}
+
+func TestManagedBlobManifestRejectsFIFOWithinDeadline(t *testing.T) {
+	if os.Getenv("ARTEX_BLOB_FIFO_CHILD") == "1" {
+		tr, dir := openTraffic(t)
+		body := bytes.Repeat([]byte("body"), maxInlineBody)
+		tr.record(newFlow("fixture.invalid", "GET", "/", nil, body))
+		id := onlyExchangeID(t, tr)
+		value, err := tr.BlobManifest(id, "response")
+		if err != nil {
+			t.Fatal(err)
+		}
+		path := filepath.Join(dir, "_blobs", "sha256", value.Hash[:2], value.Hash+".bin")
+		if err := os.Remove(path); err != nil {
+			t.Fatal(err)
+		}
+		if err := syscall.Mkfifo(path, 0600); err != nil {
+			t.Fatal(err)
+		}
+		if _, err := tr.BlobManifest(id, "response"); err == nil {
+			t.Fatal("FIFO accepted")
+		}
+		return
+	}
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+	cmd := exec.CommandContext(ctx, os.Args[0], "-test.run=^TestManagedBlobManifestRejectsFIFOWithinDeadline$")
+	cmd.Env = append(os.Environ(), "ARTEX_BLOB_FIFO_CHILD=1")
+	output, err := cmd.CombinedOutput()
+	if ctx.Err() != nil {
+		t.Fatal("metadata lookup blocked on FIFO")
+	}
+	if err != nil {
+		t.Fatalf("FIFO child failed: %s", output)
+	}
+}
+
+func TestManagedBlobManifestRejectsSymlinkAndDirectory(t *testing.T) {
+	for _, kind := range []string{"symlink", "directory"} {
+		t.Run(kind, func(t *testing.T) {
+			tr, dir := openTraffic(t)
+			body := bytes.Repeat([]byte("body"), maxInlineBody)
+			tr.record(newFlow("fixture.invalid", "GET", "/", nil, body))
+			id := onlyExchangeID(t, tr)
+			value, err := tr.BlobManifest(id, "response")
+			if err != nil {
+				t.Fatal(err)
+			}
+			path := filepath.Join(dir, "_blobs", "sha256", value.Hash[:2], value.Hash+".bin")
+			if err := os.Remove(path); err != nil {
+				t.Fatal(err)
+			}
+			if kind == "symlink" {
+				target := filepath.Join(dir, "outside.bin")
+				if err := os.WriteFile(target, body, 0600); err != nil {
+					t.Fatal(err)
+				}
+				if err := os.Symlink(target, path); err != nil {
+					t.Fatal(err)
+				}
+			} else {
+				if err := os.Mkdir(path, 0700); err != nil {
+					t.Fatal(err)
+				}
+			}
+			if _, err := tr.BlobManifest(id, "response"); err == nil {
+				t.Fatal("nonregular or symlink accepted")
 			}
 		})
 	}
