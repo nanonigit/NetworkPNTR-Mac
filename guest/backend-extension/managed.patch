@@ -28,7 +28,7 @@
 -		return nil, 0, err
 -	}
 -	return f, st.Size(), nil
-+	return t.openManagedBlob(hash)
++	return t.openManagedBlob(strings.ToLower(strings.TrimSpace(hash)))
  }
  
  // BlobRange reads at most length bytes of a blob from offset, and reports the
