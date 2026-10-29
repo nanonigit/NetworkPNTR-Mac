@@ -11,6 +11,9 @@ import Observation
     @ObservationIgnored private let sleep: Sleep
     @ObservationIgnored private var changing = false
     @ObservationIgnored private var tearingDown = false
+    @ObservationIgnored private var resetting = false
+    @ObservationIgnored private var ready: [TrafficTextField: TrafficFilterTicket] = [:]
+    @ObservationIgnored private var gateWatch: UUID?
     @ObservationIgnored private var queuedStop = false
     @ObservationIgnored private var queuedReset = false
     @ObservationIgnored private var debounces: [TrafficTextField: Task<Void, Never>] = [:]
@@ -43,23 +46,22 @@ import Observation
     }
     private func cancelTasks() {
         for job in debounces.values { job.cancel() }
-        debounces = [:]; debounceIDs = [:]
+        debounces = [:]; debounceIDs = [:]; ready = [:]; gateWatch = nil
         readID = UUID(); readTask?.cancel(); readTask = nil
         pollTask?.cancel(); pollTask = nil
     }
     private func retire(reset: Bool) {
-        tearingDown = true
+        tearingDown = true; resetting = reset
         cancelTasks(); presentation = nil; drafts = TrafficFilterDrafts()
         if reset { store.resetSession() } else { store.stop() }
-        tearingDown = false
+        tearingDown = false; resetting = false
     }
     @discardableResult func begin() -> UUID? {
         guard !changing, !tearingDown, !Task.isCancelled else { return nil }
         let lease = UUID()
         update {
             retire(reset: false)
-            store.resume()
-            if !queuedReset { presentation = lease }
+            if !queuedReset { store.resume(); presentation = lease }
         }
         guard owns(lease) else { return nil }
         _ = refresh(lease: lease)
@@ -78,7 +80,7 @@ import Observation
         update { retire(reset: false) }; return true
     }
     func reset() {
-        guard !tearingDown else { return }
+        if tearingDown { if !resetting { queuedReset = true }; return }
         if changing { queuedReset = true; return }
         update { retire(reset: true) }
     }
@@ -91,19 +93,43 @@ import Observation
         var next = drafts; next.edit(field, text: text)
         let ticket = next.ticket(field)
         if previous == ticket { return true }
-        update { drafts = next }
+        update { ready[field] = nil; drafts = next }
         guard owns(lease) else { return false }
         debounces[field]?.cancel()
         let id = UUID(); debounceIDs[field] = id
         debounces[field] = Task { [weak self, sleep] in
             do { try await sleep(.milliseconds(300)) } catch { return }
             guard let self, self.owns(lease), self.debounceIDs[field] == id else { return }
-            _ = self.apply(ticket, lease: lease)
+            self.ready[field] = ticket
+            self.drainReady(lease: lease)
             if self.debounceIDs[field] == id {
                 self.debounces[field] = nil; self.debounceIDs[field] = nil
             }
         }
         return true
+    }
+    private func drainReady(lease: UUID) {
+        guard owns(lease) else { return }
+        for field in TrafficTextField.allCases {
+            guard let ticket = ready[field] else { continue }
+            guard controlsAvailable else { observeGate(lease: lease); return }
+            if ticket == drafts.ticket(field) { _ = apply(ticket, lease: lease) }
+            guard owns(lease) else { return }
+            ready[field] = nil
+        }
+        gateWatch = nil
+    }
+    private func observeGate(lease: UUID) {
+        guard gateWatch == nil else { return }
+        let id = UUID(); gateWatch = id
+        withObservationTracking {
+            _ = store.confirmation; _ = store.isMutating; _ = store.isActive
+        } onChange: { [weak self] in
+            Task { @MainActor [weak self] in
+                guard let self, self.gateWatch == id, self.owns(lease) else { return }
+                self.gateWatch = nil; self.drainReady(lease: lease)
+            }
+        }
     }
     private func apply(_ ticket: TrafficFilterTicket, lease: UUID) -> Bool {
         guard controlsAvailable, owns(lease), let proposal = drafts.proposal(for: ticket, query: store.query) else { return false }
@@ -134,7 +160,7 @@ import Observation
         let proposal = drafts.resetAdvanced(query: store.query)
         guard adopt(proposal, lease: lease) else { return false }
         for field in TrafficTextField.advanced {
-            debounces[field]?.cancel(); debounces[field] = nil; debounceIDs[field] = nil
+            debounces[field]?.cancel(); debounces[field] = nil; debounceIDs[field] = nil; ready[field] = nil
         }
         return true
     }
