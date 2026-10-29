@@ -19,7 +19,8 @@ import XCTest
 
 @MainActor private final class TrafficScreenAPI: BackendJSONTransport {
     var paths: [String] = [], methods: [String] = []
-    var holdPage = false, failWrite = false
+    var holdPage = false, failWrite = false, holdWrite = false
+    var heldWrites: [CheckedContinuation<BackendHTTPResponse, any Error>] = []
     var held: [CheckedContinuation<BackendHTTPResponse, any Error>] = []
     func response(_ object: Any, status: Int = 200) throws -> BackendHTTPResponse {
         .init(status: status, body: try JSONSerialization.data(withJSONObject: object))
@@ -29,7 +30,10 @@ import XCTest
     }
     func send(method: String, path: String, body: Data?, bearer: String?) async throws -> BackendHTTPResponse {
         paths.append(path); methods.append(method); XCTAssertNil(bearer)
-        if method != "GET" { return try response(["deleted": 1, "reclaimed": 0], status: failWrite ? 500 : 200) }
+        if method != "GET" {
+            if holdWrite { return try await withCheckedThrowingContinuation { heldWrites.append($0) } }
+            return try response(["deleted": 1, "reclaimed": 0], status: failWrite ? 500 : 200)
+        }
         if path == "/api/traffic/hosts" { return try response(["hosts": [["host": "fixture", "count": 200]]]) }
         if path == "/api/settings" { return try response(["traffic_capture": true]) }
         if holdPage { return try await withCheckedThrowingContinuation { held.append($0) } }
@@ -219,6 +223,54 @@ import XCTest
         defer { model.reset(); clock.releaseAll() }
         withObservationTracking { _ = model.store.isActive } onChange: { MainActor.assumeIsolated { model.reset() } }
         XCTAssertNil(model.begin()); XCTAssertNil(model.presentation); XCTAssertFalse(model.store.isActive)
+    }
+
+    func testMaturedDraftResumesAfterUnknownWriteWithoutRetryOrAcknowledgment() async throws {
+        let (model, api, clock, lease) = try await fixture()
+        defer { model.stop(lease); clock.releaseAll() }
+        XCTAssertTrue(model.edit(.host, text: "after write", lease: lease))
+        try await reached { clock.waits.count == 2 }
+        api.holdWrite = true
+        XCTAssertTrue(model.store.prepare(.purgeAll, owner: model.store.owner))
+        let dialog = try XCTUnwrap(model.store.confirmation)
+        let write = Task { await model.store.confirm(id: dialog.id, owner: dialog.owner) }
+        try await reached { api.heldWrites.count == 1 }
+        clock.tick(.milliseconds(300)); for _ in 0..<20 { await Task.yield() }
+        XCTAssertEqual(model.store.query.host, ""); XCTAssertTrue(model.hasPendingText)
+        api.heldWrites.removeFirst().resume(returning: try api.response([:], status: 503))
+        guard case .unconfirmed = await write.value else { return XCTFail("Expected unknown") }
+        try await reached { model.store.query.host == "after write" && model.store.canAcknowledgeUnknown }
+        XCTAssertTrue(model.store.hasUnknownOutcome); XCTAssertFalse(model.hasPendingText)
+        XCTAssertEqual(api.methods.filter { $0 == "DELETE" }.count, 1)
+    }
+    func testAdvancedResetDiscardsMaturedTicketBeforeGateCallback() async throws {
+        let (model, _, clock, lease) = try await fixture()
+        defer { model.stop(lease); clock.releaseAll() }
+        XCTAssertTrue(model.edit(.body, text: "retired", lease: lease))
+        try await reached { clock.waits.count == 2 }
+        XCTAssertTrue(model.store.prepare(.purgeAll, owner: model.store.owner))
+        let dialog = try XCTUnwrap(model.store.confirmation)
+        clock.tick(.milliseconds(300)); for _ in 0..<20 { await Task.yield() }
+        XCTAssertTrue(model.store.cancelConfirmation(id: dialog.id, owner: dialog.owner))
+        XCTAssertTrue(model.resetAdvanced(lease: lease))
+        for _ in 0..<20 { await Task.yield() }
+        XCTAssertEqual(model.store.query.body, ""); XCTAssertFalse(model.hasPendingText)
+    }
+    func testPresentationAndTeardownObserversCannotReenterBegin() async throws {
+        let (model, _, clock, lease) = try await fixture()
+        XCTAssertTrue(model.stop(lease)); clock.releaseAll()
+        withObservationTracking { _ = model.presentation } onChange: {
+            MainActor.assumeIsolated { XCTAssertNil(model.begin()) }
+        }
+        let next = model.begin()
+        // Observation runs before assignment; a nil old value cannot supply the new lease.
+        // Retire explicitly and verify observers cannot restart inside reset teardown.
+        let active = try XCTUnwrap(next)
+        withObservationTracking { _ = model.store.isActive } onChange: {
+            MainActor.assumeIsolated { XCTAssertNil(model.begin()); model.reset() }
+        }
+        XCTAssertTrue(model.stop(active)); XCTAssertNil(model.presentation); XCTAssertFalse(model.store.isActive)
+        clock.releaseAll()
     }
 
 }
