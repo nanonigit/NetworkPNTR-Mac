@@ -9,3 +9,5 @@
 TDDは要求／応答の独立blob、正しいhash／長さ／側／ID、Unicode ID、inlineの偽marker無視、不正側／ID、削除済みblob、不整合長／関連、閉じたDB。HTTP境界では汎用エラーにする。hashは内容の完全性とblob識別であり、リモート由来の真正性ではない。元通信の削除後は未紐付けblobが使えないことがあり、既存の紐付け済みsnapshot保存は独立して維持する。
 
 構造化handler、ソース／イメージの来歴、VM転送、認証／中断／保存制限、実出力バイト、現画面の保存操作と実UI比較まで完了扱いにしない。昇格条件が通るまで通常ゲストとインストール済みアプリを保持し、Actions枠未確認の間はskip ciを維持。
+
+HTTP接続条件：既存blob経路と同じrequireAuth mux内へ登録し、認証除外を増やさない。idと小文字sideを各1個だけ許可し、UTF8／長さ／制御文字／余分なqueryを検証、生IDを保持。正常manifestはno-store JSON、不正指定400、不在／inline404、保存領域の読取障害503とし、固定汎用メッセージだけ返す。管理対象コピーのTraffic.Blobだけを安全なopenerへ接続し、既存interfaceと現在／旧配置を維持。実Handler／JWT、元バイナリー／長さ、不正・重複query、不在／inline、DB停止、ストリーム境界のリンク拒否を試験。Go fixtureは非公開SQLite／blobと明示したテスト専用JWT鍵だけで、PostgreSQL／エージェント／プロファイル／外部対象を作らない。ソース／イメージ／ネイティブ保存の実受入は別条件。
