@@ -36,6 +36,31 @@ import XCTest
     private func manifest(_ size: Int64? = nil) throws -> TrafficBlobDownload {
         try TrafficBlobDownload(trafficID: id, side: .response, expectedSize: size ?? Int64(bytes.count), expectedSHA256: bodyHash)
     }
+    // Decode percent bytes independently; Foundation's String decoding can consume a leading UTF8 BOM.
+    private func queryBytes(_ path: String) throws -> [String: Data] {
+        let components = try XCTUnwrap(URLComponents(string: path))
+        let query = try XCTUnwrap(components.percentEncodedQuery)
+        var result: [String: Data] = [:]
+        for item in query.split(separator: "&") {
+            let pair = item.split(separator: "=", maxSplits: 1, omittingEmptySubsequences: false)
+            XCTAssertEqual(pair.count, 2)
+            let raw = Array(pair[1].utf8)
+            var decoded = Data(), cursor = 0
+            while cursor < raw.count {
+                if raw[cursor] == 37 {
+                    XCTAssertLessThan(cursor + 2, raw.count)
+                    let hex = String(decoding: raw[(cursor + 1)...(cursor + 2)], as: UTF8.self)
+                    decoded.append(try XCTUnwrap(UInt8(hex, radix: 16))); cursor += 3
+                } else {
+                    XCTAssertNotEqual(raw[cursor], 43, "A literal plus would become a space in the Go server")
+                    decoded.append(raw[cursor]); cursor += 1
+                }
+            }
+            result[String(pair[0])] = decoded
+        }
+        return result
+    }
+
     private func directory() throws -> URL {
         let root = FileManager.default.temporaryDirectory.appendingPathComponent("artex-blob-native-" + UUID().uuidString)
         try FileManager.default.createDirectory(at: root, withIntermediateDirectories: false); return root
@@ -52,7 +77,7 @@ import XCTest
         XCTAssertEqual(Data(value.trafficID.utf8), Data(id.utf8)); XCTAssertEqual(value.expectedSize, 9007199254740993)
         let path = try XCTUnwrap(api.paths.first), parts = try XCTUnwrap(URLComponents(string: path))
         XCTAssertEqual(parts.path, "/api/traffic/blob-metadata")
-        XCTAssertEqual(Data(try XCTUnwrap(parts.queryItems?.first { $0.name == "id" }?.value).utf8), Data(id.utf8))
+        XCTAssertEqual(try queryBytes(path)["id"], Data(id.utf8))
         XCTAssertEqual(parts.queryItems?.first { $0.name == "side" }?.value, "response")
         let request = String(decoding: try value.request(bearer: "fixture.jwt"), as: UTF8.self)
         XCTAssertTrue(request.hasPrefix("GET /api/traffic/blob?hash=" + bodyHash + " HTTP/1.1\r\n"))
@@ -128,6 +153,19 @@ import XCTest
             do { _ = try await job.value; XCTFail("Stale blob result") } catch { XCTAssertTrue(error is CancellationError) }
             XCTAssertEqual(session.phase, .authenticated); XCTAssertTrue(try FileManager.default.contentsOfDirectory(atPath: root.path).isEmpty)
         }
+    }
+    func testCancelledLateBlobSuccessDiscardsPrivateStaging() async throws {
+        let root = try directory(); defer { try? FileManager.default.removeItem(at: root) }
+        let api = BlobAPI(), session = AuthenticationSession(client: api, vault: BlobVault(), setupToken: "fixture"); await session.refresh()
+        var pending: CheckedContinuation<EvidenceExportReceipt, any Error>?
+        api.stage = { _, _ in try await withCheckedThrowingContinuation { pending = $0 } }
+        let destination = try EvidenceExportDestination(newFileURL: root.appendingPathComponent("saved.bin"))
+        let job = Task { try await session.authenticatedTrafficBlobExport(try manifest(), destination: destination) }
+        while pending == nil { await Task.yield() }
+        job.cancel(); pending?.resume(returning: try receipt(manifest(), destination))
+        do { _ = try await job.value; XCTFail("Cancelled late success") } catch { XCTAssertTrue(error is CancellationError) }
+        XCTAssertEqual(session.phase, .authenticated); XCTAssertEqual(api.bearers.count, 1)
+        XCTAssertTrue(try FileManager.default.contentsOfDirectory(atPath: root.path).isEmpty)
     }
     func testCurrentBlob401ExpiresAuthButRevokedVM401DoesNot() async throws {
         for revoked in [false, true] {
