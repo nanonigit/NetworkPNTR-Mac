@@ -43,7 +43,7 @@ import XCTest
         let expected = "GET / HTTP/1.1\r\nHost: example.invalid\r\nX-Raw: \u{FEFF}e\u{301} 中文 한국어\r\n\r\n"
         XCTAssertEqual(Data(TrafficPresentation.request(raw, url: "https://example.invalid/path", host: "fallback").utf8), Data(expected.utf8))
         XCTAssertEqual(Data(raw.utf8), Data("GET / HTTP/1.1\r\nX-Raw: \u{FEFF}e\u{301} 中文 한국어\r\n\r\n".utf8))
-        for value in ["", " \u{FEFF} ", "GET /\nHOST\u{FEFF}: literal\n", "GET /\u{2028}Host: literal\n"] {
+        for value in ["", " \u{FEFF} ", "GET /\nHOST\u{FEFF}: literal\n", "GET /\u{2028}Host: literal\n", "GET /\nHost\n:\n"] {
             XCTAssertEqual(Data(TrafficPresentation.request(value, url: "https://other.invalid", host: "fallback").utf8), Data(value.utf8))
         }
         XCTAssertEqual(TrafficPresentation.request("GET /", url: "/relative", host: "fallback"), "GET /\nHost: fallback")
@@ -100,6 +100,10 @@ import XCTest
         XCTAssertTrue(model.store.hasUnknownOutcome)
         XCTAssertFalse(model.acknowledge(lease: UUID(), owner: owner, revision: revision))
         XCTAssertFalse(model.acknowledge(lease: lease, owner: owner, revision: UUID()))
+        XCTAssertTrue(model.edit(.host, text: "pending", lease: lease))
+        XCTAssertFalse(model.acknowledge(lease: lease, owner: owner, revision: revision))
+        XCTAssertTrue(model.store.hasUnknownOutcome)
+        XCTAssertTrue(model.edit(.host, text: "", lease: lease))
         XCTAssertTrue(model.acknowledge(lease: lease, owner: owner, revision: revision)); XCTAssertFalse(model.store.hasUnknownOutcome)
     }
     func testPendingDraftAndStaleOwnerCannotPrepareOrSelect() async throws {
