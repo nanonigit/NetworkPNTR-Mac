@@ -1,0 +1,58 @@
+{
+  "schema": 1,
+  "passed": true,
+  "fullGoalComplete": false,
+  "phase": "TR3 input reducer only; screen not implemented",
+  "sourceHead": "b0a593c75bedf2df11b596361665f921bc124222",
+  "baseline": "e75ae371ad777ffd1eecdd28d2781a6519b05591",
+  "sourceSHA256": {
+    "Sources/ArtexMac/TrafficFilterDrafts.swift": "e74745a893231853d650921c2e069947025eb409184440bcb06618270a08658a"
+  },
+  "tests": {
+    "newInputCases": 17,
+    "swiftTotal": 887,
+    "swiftPassed": 886,
+    "existingExternalAXSkipped": 1,
+    "pythonPassed": 179,
+    "pythonInitialAttempt": "178 passed; 1 missing-node environment error; full rerun with bundled Node passed",
+    "baselineFeatures": 21,
+    "baselinePages": 27,
+    "baselineHandlers": 243,
+    "localizationExportPassed": true
+  },
+  "coverage": {
+    "method": "LLVM source-line coverage from full Swift suite, not branch/UI/timer or whole-product acceptance",
+    "TrafficFilterDrafts.swift": {
+      "count": 98,
+      "covered": 97,
+      "percent": 98.9795918367347
+    }
+  },
+  "review": {
+    "readOnly": true,
+    "remainingConcreteFindings": 0,
+    "integrationObligations": [
+      "Adopt copied state only after synchronous accepted store configuration under current presentation and draft generation",
+      "Merge independent text proposals into the current query",
+      "Keep sibling timers alive when applied-query store ownership changes"
+    ]
+  },
+  "stagedApp": {
+    "rebuilt": true,
+    "signatureStrictValid": true,
+    "guestManifestSHA256": "fa0f1972c04f2a04853de37f4fd163b922ac38c841849c635d29f565fe6115ce",
+    "guestArtifactHashesVerified": true,
+    "previousProfilePreserved": true,
+    "candidatePromoted": false,
+    "newTrafficScreenExposed": false,
+    "launched": false,
+    "installedElsewhere": false
+  },
+  "pending": [
+    "TR3 screen, actual debounce/polling tasks, flow binding and blob-original extension",
+    "TR4 multi-host native/reference and backend effects",
+    "TR5 actual browser/native UI, keyboard, VoiceOver and multiwindow",
+    "All original workflow, kernel, provider, harness and release gates"
+  ],
+  "hostedCI": "unverified; publication HEAD uses [skip ci]"
+}
