@@ -14,6 +14,9 @@ import Foundation
     public func detail(id:String) async throws -> CapturedTrafficDetail {try await CapturedTrafficService(client:client).detail(id:id)}
 
     public func apply(_ change:TrafficMutation,onDispatch:@MainActor () throws -> Void = {}) async throws -> TrafficMutationReceipt {
+        try await execute(prepare(change),onDispatch:onDispatch)
+    }
+    func prepare(_ change:TrafficMutation) throws -> TrafficWriteRequest {
         try Task.checkCancellation()
         let method:String,path:String,body:Data?
         switch change {
@@ -33,14 +36,17 @@ import Foundation
             method="PUT";path="/api/settings";body=try BackendJSONCoding.encode(Body(trafficCapture:value))
         }
         guard body.map({$0.count<=1024*1024}) ?? true else {throw FindingInputError.bodyLimit}
-        let raw=try await request(method:method,path:path,body:body,onDispatch:onDispatch)
-        if case .capture(let expected)=change {
+        return TrafficWriteRequest(method:method,path:path,body:body,change:change)
+    }
+    func execute(_ prepared:TrafficWriteRequest,onDispatch:@MainActor () throws -> Void) async throws -> TrafficMutationReceipt {
+        let raw=try await request(method:prepared.method,path:prepared.path,body:prepared.body,onDispatch:onDispatch)
+        if case .capture(let expected)=prepared.change {
             let settings=try BackendJSONCoding.decode(TrafficCaptureSettings.self,from:raw)
             guard settings.trafficCapture==expected else {throw BackendAPIError.invalidResponse}
             return .capture(settings)
         }
         let receipt=try BackendJSONCoding.decode(TrafficDeletionReceipt.self,from:raw)
-        if case .purgeAll=change {guard receipt.reclaimed != nil else {throw BackendAPIError.invalidResponse}}
+        if case .purgeAll=prepared.change {guard receipt.reclaimed != nil else {throw BackendAPIError.invalidResponse}}
         return .deleted(receipt)
     }
     private func validate(_ host:String) throws {guard host.utf8.count<=8192 else {throw FindingInputError.query}}
@@ -55,4 +61,10 @@ import Foundation
         guard response.body.count<=4*1024*1024 else {throw BackendAPIError.invalidResponse}
         return response.body
     }
+}
+
+struct TrafficWriteRequest:Sendable {
+    let method:String,path:String
+    let body:Data?
+    let change:TrafficMutation
 }
