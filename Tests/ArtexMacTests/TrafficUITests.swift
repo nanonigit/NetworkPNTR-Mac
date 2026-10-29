@@ -198,4 +198,17 @@ import XCTest
         XCTAssertEqual(api.methods.filter { $0 == "DELETE" }.count, 1)
     }
 
+    func testPreviewBlocksQueuedDeletionAndControlsUntilDismissed() async throws {
+        let (model, _, lease) = try await fixture(); defer { model.reset() }
+        let owner = model.store.owner
+        await model.selectDetail("é", lease: lease, owner: owner)
+        XCTAssertNotNil(model.store.selectedExchange)
+        XCTAssertFalse(model.prepareDeletion(.purgeAll, lease: lease, owner: owner))
+        XCTAssertFalse(model.control(.method(.post), lease: lease))
+        XCTAssertNil(model.deletionDialog)
+        model.closeDetail("é", lease: lease, owner: owner, revision: model.previewRevision)
+        XCTAssertNil(model.store.selectedExchange)
+        XCTAssertTrue(model.prepareDeletion(.purgeAll, lease: lease, owner: owner))
+    }
+
 }
