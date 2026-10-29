@@ -1,0 +1,11 @@
+# 通信履歴から検出結果への紐付け状態（TR3）
+
+最終対象は元LinkTrafficDialog全体。ページをまたぐバイト識別の通信選択、250ms検索とpage1／size20、継承／handleなし行の禁止、通信IDとfinding handleの固定、成功時だけ該当選択を消去、英日ダイアログと実VM／ブラウザ比較を維持する。今回は画面接続前のコア操作管理だけで、APIデモを完成条件に置き換えない。状態のみの段階なのでLazywebは対象外、配置前には必要。
+
+既存FindingTrafficServiceの固定GET/POSTと要求検証を使う。TrafficBindingStoreが変更可能なFindingRecordと重複のない通信ID原文を選び、最新の証跡一覧を読んでsupporting／空noteで紐付ける。node IDをfinding handleに代用しない。公開前にID／body上限を検証し、選択ごとのownerとrequest UUIDを送信時に消費して遅延再実行を拒否する。busy通知前に要求bytesを固定する。選択した全source IDが応答に存在するときだけ成功とし、既に紐付いている場合の同一versionは許可する。IDの欠落／正規化は成功ではなく結果不明とする。
+
+送信は1件に制限し、stop/reset後も結果確定までゲートを保持する。所有権付きstop、再入／reset優先、世代付き読取、不変ticket、busy解除後の検証は既存Traffic storeと同じ境界を使う。stop/resetでtarget／source／一覧／receipt／errorを消す。結果不明markerと、明示回復に必要なprivate canonical finding handle／最低versionだけは残し、確定後の台帳に名前／packet／source一覧／秘密情報は保持しない。private handleはメモリーだけで公開／保存せず、明示した認証付き回復読取から新しいserver一覧を得る。永続／複数窓／process共通の台帳ではない。
+
+送信後の失敗／キャンセル／離脱は保守的に結果不明とし、dispatchは論理的な通信呼出でsocket送出の証拠ではない。自動再送／承認は禁止。現在owner／revisionで、一致するfresh一覧と準備時以上のversion、送信中なしを確認してから明示承認する。承認はrequest UUIDを更新するだけでPOSTしない。存在しない／読めない対象は書込み禁止を維持する。後続root／画面はこのstoreを保持し、紐付けと通信削除の両方にbusy／unknownを反映し、現在の成功と選択revision一致後だけ親の選択を消す。親／画面接続は後続契約として残す。
+
+先にcanonical／変更可能target、バイト識別／既定role／上限、fresh／last-good／stale／遅延読取、全ID存在／冪等／再送禁止、送信前後のstop、保留送信／reset／再入／callerキャンセル、明示回復／旧revision／version、通知中のstop/resetとbusy解除後の離脱を試験する。その後レビュー、全試験／coverage、署名ビルドと限定証跡。通信スタブで実server変更や実画面受入を主張しない。
