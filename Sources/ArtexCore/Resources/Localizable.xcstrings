@@ -15433,6 +15433,23 @@
           }
         }
       }
+    },
+    "traffic.ui.linkPrompt": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Select a finding to link the selected traffic."
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "選択した通信の紐付け先となる検出結果を選んでください。"
+          }
+        }
+      }
     }
   },
   "version": "1.0"

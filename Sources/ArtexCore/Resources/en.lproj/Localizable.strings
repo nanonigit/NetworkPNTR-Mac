@@ -1781,6 +1781,8 @@ Archive IDs: {archives}</string>
 	<string>Finding {id}: {count} linked records</string>
 	<key>traffic.ui.linkPreserved</key>
 	<string>Linking completed. Your changed traffic selection was preserved.</string>
+	<key>traffic.ui.linkPrompt</key>
+	<string>Select a finding to link the selected traffic.</string>
 	<key>traffic.ui.linkReadOnly</key>
 	<string>Read-only finding</string>
 	<key>traffic.ui.linkRecovery</key>

@@ -5,6 +5,9 @@ import SwiftUI
     static func severityLabel(_ raw: String, language: AppLanguage) -> String {
         DashboardLabels.text(raw, domain: .severity, language: language)
     }
+    static func candidateTitle(_ row: FindingRecord) -> String {
+        "#" + (row.findingId ?? row.id) + " · " + (row.name.isEmpty ? row.vulnclass : row.name)
+    }
     let model: TrafficScreenModel
     let lease: UUID
     let id: UUID
@@ -38,8 +41,8 @@ import SwiftUI
                 Text(f(.trafficUILinkCount, ["count": String(workspace.sourceIDs.count)]))
                 candidates(workspace)
                 if let target = workspace.selectedTarget {
-                    Text(f(.trafficUILinkTarget, ["name": target.name])).textSelection(.enabled)
-                }
+                    Text(f(.trafficUILinkTarget, ["name": Self.candidateTitle(target)])).textSelection(.enabled)
+                } else { Text(s(.trafficUILinkPrompt)).foregroundStyle(.secondary) }
             }
             if let failure = workspace.binding.failure { Text(failure.text(language: language)).foregroundStyle(.red) }
             if workspace.binding.isLoading || workspace.isSubmitting { ProgressView().controlSize(.small) }
@@ -77,7 +80,7 @@ import SwiftUI
                             HStack(alignment: .top) {
                                 Image(systemName: workspace.selectedTarget?.identity == row.identity ? "largecircle.fill.circle" : "circle")
                                 VStack(alignment: .leading, spacing: 4) {
-                                    Text(row.name).font(.headline)
+                                    Text(Self.candidateTitle(row)).font(.headline)
                                     Text(row.summary).font(.caption).lineLimit(3)
                                     if !row.canMutate { Text(s(.trafficUILinkReadOnly)).font(.caption) }
                                 }

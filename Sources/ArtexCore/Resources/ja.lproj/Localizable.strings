@@ -1779,6 +1779,8 @@
 	<string>検出結果 {id}：紐付け済み {count} 件</string>
 	<key>traffic.ui.linkPreserved</key>
 	<string>紐付けが完了しました。変更後の通信の選択は保持されています。</string>
+	<key>traffic.ui.linkPrompt</key>
+	<string>選択した通信の紐付け先となる検出結果を選んでください。</string>
 	<key>traffic.ui.linkReadOnly</key>
 	<string>読み取り専用の検出結果</string>
 	<key>traffic.ui.linkRecovery</key>

@@ -1,6 +1,7 @@
 import Foundation
 
 public enum AppStringKey: String, CaseIterable, Sendable {
+    case trafficUILinkPrompt = "traffic.ui.linkPrompt"
     case trafficUILink = "traffic.ui.link"
     case trafficUILinkRecovery = "traffic.ui.linkRecovery"
     case trafficUILinkUnknown = "traffic.ui.linkUnknown"
