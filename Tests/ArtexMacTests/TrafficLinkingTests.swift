@@ -263,6 +263,45 @@ private struct LinkPost: Decodable { struct Ref: Decodable { let trafficId: Stri
         let fallback = try BackendJSONCoding.decode(FindingRecord.self, from: JSONSerialization.data(withJSONObject: empty))
         XCTAssertEqual(TrafficLinkDialog.candidateTitle(fallback), "#8 · CWE-79")
     }
+    private func render(_ model: TrafficScreenModel, _ workspace: TrafficLinkWorkspace, _ lease: UUID) {
+        for language in AppLanguage.allCases { for scheme in [ColorScheme.light, .dark] {
+            let host = NSHostingView(rootView: TrafficLinkDialog(model: model, lease: lease, id: workspace.id).environment(\.locale, language.locale).environment(\.colorScheme, scheme))
+            host.frame = NSRect(x: 0, y: 0, width: 620, height: 700); host.layoutSubtreeIfNeeded(); XCTAssertNil(host.window)
+        } }
+    }
+    func testRecoveryDialogRenderingNeverAcknowledgesOrRetries() async throws {
+        let (model, api, clock, lease) = try await fixture(); defer { model.reset(); clock.release() }
+        let workspace = try await open(model, clock, lease); try await choose(workspace); api.failWrite = true
+        assertFalse(await workspace.submit(id: workspace.binding.requestID, owner: workspace.binding.owner))
+        var count = api.paths.count; render(model, workspace, lease)
+        XCTAssertEqual(api.paths.count, count); XCTAssertTrue(model.linkHasUnknown)
+        XCTAssertTrue(model.closeLink(id: workspace.id, lease: lease)); XCTAssertTrue(model.openLinkRecovery(lease: lease))
+        let recovery = try XCTUnwrap(model.linkWorkspace), revision = recovery.binding.unknownRevision
+        count = api.paths.count; render(model, recovery, lease)
+        XCTAssertEqual(api.paths.count, count); XCTAssertFalse(recovery.binding.canAcknowledgeUnknown)
+        await recovery.recover(owner: recovery.binding.owner)
+        count = api.paths.count; render(model, recovery, lease)
+        XCTAssertEqual(api.paths.count, count); XCTAssertTrue(recovery.binding.canAcknowledgeUnknown)
+        XCTAssertTrue(model.linkHasUnknown); XCTAssertEqual(recovery.binding.unknownRevision, revision)
+        XCTAssertEqual(api.methods.filter { $0 == "POST" }.count, 1)
+    }
+    func testCandidateLoadingErrorAndEmptyRenderingDoesNotFetchOrBind() async throws {
+        let (model, api, clock, lease) = try await fixture(); defer { model.reset(); clock.release() }
+        let workspace = try await open(model, clock, lease)
+        api.holdSearch = true; XCTAssertTrue(workspace.edit("held"))
+        var count = api.paths.count; render(model, workspace, lease); XCTAssertEqual(api.paths.count, count)
+        try await reached { clock.waits.contains { $0.duration == .milliseconds(250) } }; clock.fireSearch()
+        try await reached { api.searches.count == 1 }
+        api.searches.removeFirst().resume(returning: try api.reply([:], status: 503)); try await reached { !workspace.isLoading }
+        count = api.paths.count; render(model, workspace, lease); XCTAssertEqual(api.paths.count, count)
+        workspace.reloadCandidates(ticket: workspace.searchTicket)
+        try await reached { clock.waits.contains { $0.duration == .milliseconds(250) } }; clock.fireSearch()
+        try await reached { api.searches.count == 1 }
+        api.searches.removeFirst().resume(returning: try api.reply(["items": [], "page": 1, "page_size": 20, "total": 0]))
+        try await reached { !workspace.isLoading }; count = api.paths.count
+        render(model, workspace, lease); XCTAssertEqual(api.paths.count, count)
+        XCTAssertTrue(workspace.pageIsCurrent); XCTAssertFalse(workspace.canSubmit); XCTAssertFalse(api.methods.contains("POST"))
+    }
     func testOffscreenLinkDialogBothLanguagesHasNoIOOrMutation() async throws {
         let (model, api, clock, lease) = try await fixture(); defer { model.reset(); clock.release() }
         let workspace = try await open(model, clock, lease); try await choose(workspace)
