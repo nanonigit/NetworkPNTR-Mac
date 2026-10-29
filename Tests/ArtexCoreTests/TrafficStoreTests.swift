@@ -129,7 +129,7 @@ import XCTest
         for reset in [true,false] {
             let api=TrafficStateAPI(),store=await loaded(api);XCTAssertTrue(store.prepare(.purgeAll,owner:store.owner));let confirmation=try XCTUnwrap(store.confirmation);let calls=api.calls.count
             if reset {withObservationTracking{_ = store.isMutating}onChange:{MainActor.assumeIsolated{store.resetSession();store.resume()}}}
-            else {withObservationTracking{_ = store.lastReceipt}onChange:{MainActor.assumeIsolated{store.stop();store.resume()}}}
+            else {api.onSend={method in if method != "GET" {withObservationTracking{_ = store.lastReceipt}onChange:{MainActor.assumeIsolated{store.stop();store.resume()}}}}}
             let result=await store.confirm(id:confirmation.id,owner:confirmation.owner)
             if reset {guard case .notStarted=result else {return XCTFail("Reset before dispatch")};XCTAssertEqual(api.calls.count,calls);XCTAssertFalse(store.hasUnknownOutcome)}
             else {guard case .discarded=result else {return XCTFail("Departed receipt")};XCTAssertEqual(api.calls.count,calls+1);XCTAssertTrue(store.hasUnknownOutcome)}
