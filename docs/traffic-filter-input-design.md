@@ -1,0 +1,11 @@
+# Traffic filter input contract (TR3 preparation)
+
+This checkpoint implements the input reducer before the native screen. Requirements remain all TR3–TR5 controls, binding, original export, polling and actual browser/native comparisons. No screen or transport is added. Lazyweb is outside this input-only work; screen design still requires it.
+
+The pinned page at e75ae371 uses six independent 300ms text timers, ECMAScript trim, immediate method/status/size/sort controls and page0 only when applied conditions change. Each field receives an immutable ticket containing presentation scope, revision and raw UTF8 bytes. Editing one field must not retire another field's timer. Replacing a presentation invalidates every old ticket, even after identical retyping. NFC/NFD must remain byte-distinct. Raw drafts never enter preferences.
+
+The reducer proposes a copied draft state and query without changing the original. Its caller must synchronously validate/configure TrafficStore first and adopt the proposed state only on acceptance, under the same presentation owner; a rejected query must not become applied. Query/encoded-path validation remains TrafficStore's responsibility. Scheduling, cancellation, Observation publication, modal/owner guards and polling belong to the future screen model and are not claimed here.
+
+Response-size inputs retain normalized text as their applied identity: changing 1 to 01 resets page even though both lower to 1. Lowering follows the pinned Linux64 Go Atoi and >=0 filtering: ASCII signed decimal within Int64, otherwise no bound. Inverted nonnegative bounds remain valid. This preserves filtering semantics, not exact HTTP spelling of ignored numeric tokens. Advanced reset clears four advanced fields immediately and removes status, retaining host/query/method/size/sort; its old advanced tickets must become invalid. Same-sort click toggles direction; selecting a new sort defaults descending. Page-size choices are25/50/100/200.
+
+Test first: independent/stale/retyped/lifecycle tickets; trim and literal Unicode; normalized no-op/history; numeric boundaries/ignored values; transactional rejection; advanced reset and pending drafts; immediate controls and sort. Review and scoped/full tests follow. TR3 stays unchecked until a working screen and remaining operations exist.
