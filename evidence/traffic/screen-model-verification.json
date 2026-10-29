@@ -1,0 +1,77 @@
+{
+  "schema": 1,
+  "passed": true,
+  "fullGoalComplete": false,
+  "phase": "TR3 presentation/read scheduling only; native screen and root integration remain pending",
+  "sourceHead": "df2fd604f71b88b0c7cbac238b530d1ff01b37f5",
+  "baseline": "e75ae371ad777ffd1eecdd28d2781a6519b05591",
+  "sourceSHA256": {
+    "Sources/ArtexMac/TrafficScreenModel.swift": "0d6f58551a0054821edff6962db4de727e845e7fcf52dce42e2846b435be98ec"
+  },
+  "tests": {
+    "newScreenModelCases": 18,
+    "swiftTotal": 905,
+    "swiftPassed": 904,
+    "existingExternalAXSkipped": 1,
+    "pythonPassed": 179,
+    "baselineFeatures": 21,
+    "baselinePages": 27,
+    "baselineHandlers": 243,
+    "localizationExportPassed": true
+  },
+  "clock": {
+    "injectedMainActorClock": true,
+    "requestedDebounceMilliseconds": 300,
+    "requestedPollSeconds": 5,
+    "actualElapsedTimeOrUIVerified": false
+  },
+  "coverage": {
+    "method": "Full-suite LLVM attributed entries and deduplicated physical LCOV mappings; Observation-generated mappings make these different. Not branch/UI/real-time/backend coverage.",
+    "TrafficScreenModel.swift": {
+      "llvmAttributedCount": 240,
+      "llvmAttributedCovered": 239,
+      "llvmPercent": 99.58333333333333,
+      "uniquePhysicalMappedLines": 171,
+      "uniquePhysicalCoveredLines": 171
+    },
+    "TrafficFilterDrafts.swift": {
+      "llvmAttributedCount": 98,
+      "llvmAttributedCovered": 97
+    }
+  },
+  "actualBoundaryRed": {
+    "commit": "ada08e1",
+    "tests": 15,
+    "failuresAndErrors": 6,
+    "issues": [
+      "Matured text lost at temporary modal/write gate",
+      "Auth reset discarded during ordinary stop teardown",
+      "Begin reopened despite auth reset during retirement"
+    ]
+  },
+  "fixCommit": "e5fc56f",
+  "review": {
+    "readOnly": true,
+    "remainingConcreteFindings": 0
+  },
+  "stagedApp": {
+    "rebuilt": true,
+    "signatureStrictValid": true,
+    "guestManifestSHA256": "fa0f1972c04f2a04853de37f4fd163b922ac38c841849c635d29f565fe6115ce",
+    "guestArtifactHashesVerified": true,
+    "previousProfilePreserved": true,
+    "candidatePromoted": false,
+    "newTrafficScreenExposed": false,
+    "launched": false,
+    "installedElsewhere": false
+  },
+  "pending": [
+    "Root/window retention and native Traffic controls",
+    "Actual elapsed debounce/poll timing and screen lifecycle",
+    "Flow binding and blob-original extension",
+    "Multi-host native/reference backend effects",
+    "Actual browser/native keyboard VoiceOver multiwindow",
+    "All original workflow kernel provider harness release gates"
+  ],
+  "hostedCI": "unverified; publication HEAD uses [skip ci]"
+}
