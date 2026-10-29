@@ -66,7 +66,8 @@ import SwiftUI
         }
     }
     private var filters: some View {
-        VStack(alignment: .leading, spacing: 10) {
+        let capturedOwner = owner
+        return VStack(alignment: .leading, spacing: 10) {
             HStack(alignment: .bottom) {
                 field(.host, .trafficUIHost)
                 VStack(alignment: .leading) {
@@ -91,7 +92,7 @@ import SwiftUI
                             }.labelsHidden().frame(width: 150)
                         }
                     }
-                    Button(s(.trafficUIResetAdvanced)) { _ = model.resetAdvanced(lease: lease) }
+                    Button(s(.trafficUIResetAdvanced)) { _ = model.resetAdvanced(lease: lease, owner: capturedOwner) }
                 }.padding(.top, 8)
             }
         }.disabled(!model.controlsAvailable)
@@ -203,6 +204,7 @@ import SwiftUI
         }.buttonStyle(.plain).accessibilityLabel(f(ascending ? .trafficUISortAscending : .trafficUISortDescending, ["field": s(label)])).disabled(!model.controlsAvailable)
     }
     private var pager: some View {
+        let capturedOwner = owner
         let page = model.store.query.page, total = model.store.catalog.value?.total ?? 0
         let pages = total > 0 ? (total - 1) / Int64(model.store.query.size) + 1 : 1
         return HStack {
@@ -211,8 +213,8 @@ import SwiftUI
             }.frame(width: 210).disabled(!model.controlsAvailable)
             Spacer()
             Text(f(.trafficUIPage, ["page": String(page + 1), "pages": String(pages)])).font(.caption).monospacedDigit()
-            Button(s(.trafficUIPrevious)) { _ = model.page(-1, lease: lease) }.disabled(!model.controlsAvailable || !model.store.hasPrevious)
-            Button(s(.trafficUINext)) { _ = model.page(1, lease: lease) }.disabled(!model.controlsAvailable || !model.store.hasNext)
+            Button(s(.trafficUIPrevious)) { _ = model.page(-1, lease: lease, owner: capturedOwner) }.disabled(!model.controlsAvailable || !model.store.hasPrevious)
+            Button(s(.trafficUINext)) { _ = model.page(1, lease: lease, owner: capturedOwner) }.disabled(!model.controlsAvailable || !model.store.hasNext)
         }.controlSize(.small)
     }
 }
@@ -266,7 +268,11 @@ import SwiftUI
                 Picker(s(.trafficUIOpen), selection: $response) { Text(s(.trafficUIRequest)).tag(false); Text(s(.trafficUIResponse)).tag(true) }.pickerStyle(.segmented).frame(width: 240)
                 Spacer()
                 Toggle(s(.trafficUIWrap), isOn: $wrap).toggleStyle(.checkbox)
-                Button(s(.trafficUICopy)) { NSPasteboard.general.clearContents(); NSPasteboard.general.setString(packet, forType: .string) }.disabled(packet.isEmpty || model.store.detail.isStale || model.store.detail.isLoading)
+                Button(s(.trafficUICopy)) {
+                    let value = packet
+                    guard !value.isEmpty, !model.store.detail.isStale, !model.store.detail.isLoading else { return }
+                    NSPasteboard.general.clearContents(); NSPasteboard.general.setString(value, forType: .string)
+                }.disabled(packet.isEmpty || model.store.detail.isStale || model.store.detail.isLoading)
                 Button(s(.trafficUIClose)) { model.closeDetail(id, lease: lease, owner: owner, revision: revision) }.keyboardShortcut(.cancelAction)
             }
             FindingReadNotice(state: model.store.detail)

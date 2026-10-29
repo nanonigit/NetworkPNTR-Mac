@@ -185,6 +185,12 @@ import Observation
         }
         return true
     }
+    @discardableResult func page(_ delta: Int, lease: UUID, owner: UUID) -> Bool {
+        guard store.owner == owner else { return false }; return page(delta, lease: lease)
+    }
+    @discardableResult func resetAdvanced(lease: UUID, owner: UUID) -> Bool {
+        guard store.owner == owner else { return false }; return resetAdvanced(lease: lease)
+    }
     func canUseRecords(lease: UUID, owner: UUID) -> Bool {
         controlsAvailable && owns(lease) && store.owner == owner && !hasPendingText
     }
@@ -248,7 +254,7 @@ import Observation
         return result
     }
     @discardableResult func acknowledge(lease: UUID, owner: UUID, revision: UUID) -> Bool {
-        guard controlsAvailable, owns(lease), store.owner == owner else { return false }
+        guard controlsAvailable, owns(lease), store.owner == owner, !hasPendingText else { return false }
         var accepted = false
         update { accepted = store.acknowledgeUnknown(owner: owner, revision: revision) }
         return accepted && owns(lease)

@@ -20,14 +20,14 @@ enum TrafficPresentation {
         return String(raw[..<first.upperBound]) + "Host: " + host + newline + String(raw[first.upperBound...])
     }
     private static func hasHost(_ raw: String) -> Bool {
-        for line in raw.unicodeScalars.split(whereSeparator: { [10, 13, 0x2028, 0x2029].contains($0.value) }) {
-            var values = line.makeIterator()
-            guard [72, 104].contains(values.next()?.value ?? 0), [79, 111].contains(values.next()?.value ?? 0),
-                  [83, 115].contains(values.next()?.value ?? 0), [84, 116].contains(values.next()?.value ?? 0) else { continue }
-            while let value = values.next() {
-                if value.value == 58 { return true }
-                if !ChatText.trim(String(value)).isEmpty { break }
-            }
+        let values = Array(raw.unicodeScalars)
+        for index in values.indices where index == 0 || [10, 13, 0x2028, 0x2029].contains(values[index - 1].value) {
+            guard index + 4 < values.count,
+                  [72, 104].contains(values[index].value), [79, 111].contains(values[index + 1].value),
+                  [83, 115].contains(values[index + 2].value), [84, 116].contains(values[index + 3].value) else { continue }
+            var cursor = index + 4
+            while cursor < values.count, ChatText.trim(String(values[cursor])).isEmpty { cursor += 1 }
+            if cursor < values.count, values[cursor].value == 58 { return true }
         }
         return false
     }
