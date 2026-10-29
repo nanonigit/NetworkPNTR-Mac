@@ -68,9 +68,15 @@ public enum TrafficMutationOutcome:Sendable {
     private var editable:Bool {canRead}
     private var freshCatalog:Bool {catalog.value?.isUnavailable==false && !catalog.isStale && !catalog.isLoading}
     private func current(_ expected:UUID) -> Bool {canRead && owner==expected}
-    private func owns(_ ticket:Write) -> Bool {
+    private func contextCurrent(_ ticket:Write) -> Bool {
         isActive && !transitioning && lifecycle == .none && !queuedStop && !queuedReset && !ticket.revoked
-        && write === ticket && owner==ticket.confirmation.owner && session==ticket.confirmation.session && activity==ticket.confirmation.activity
+        && owner==ticket.confirmation.owner && session==ticket.confirmation.session && activity==ticket.confirmation.activity
+    }
+    private func owns(_ ticket:Write)->Bool {contextCurrent(ticket) && write === ticket}
+    private func finish(_ outcome:TrafficMutationOutcome,ticket:Write)->TrafficMutationOutcome {
+        if write === ticket {update{write=nil}}
+        guard contextCurrent(ticket),!Task.isCancelled else {return .discarded}
+        return outcome
     }
     private func update(_ body:()->Void) {
         precondition(!transitioning)
@@ -215,14 +221,14 @@ public enum TrafficMutationOutcome:Sendable {
                 }
             }
             guard owns(ticket) else {return .discarded}
-            return .confirmed(receipt)
+            return finish(.confirmed(receipt),ticket:ticket)
         } catch {
             guard value.session==session else {return .discarded}
             guard ticket.handedOff else {return .notStarted}
             update{markUnknown(ticket)}
             guard owns(ticket) else {return .discarded}
             if !(error is CancellationError) {update{failure=AppErrorMessage(error)}}
-            return .unconfirmed
+            return finish(.unconfirmed,ticket:ticket)
         }
     }
     private func markUnknown(_ ticket:Write) {
