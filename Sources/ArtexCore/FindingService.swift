@@ -75,7 +75,9 @@ public struct FindingPatch: Encodable, Sendable {
     /// Global selector rows may lack a writable handle; callers display those rows read-only.
     public func bindingCandidates(search: String, page: Int64) async throws -> FindingPage {
         let query = FindingQuery(page: page, size: 20, search: search)
-        let result = try await request(FindingPage.self, path: query.path(base, maximum: 20))
+        let path = try query.path(base, maximum: 20)
+        guard path.utf8.count <= 8192 else { throw FindingInputError.query }
+        let result = try await request(FindingPage.self, path: path)
         guard result.page == page, result.pageSize == 20 else { throw BackendAPIError.invalidResponse }
         return result
     }
