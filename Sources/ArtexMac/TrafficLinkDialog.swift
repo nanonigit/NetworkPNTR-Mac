@@ -2,6 +2,9 @@ import ArtexCore
 import SwiftUI
 
 @MainActor struct TrafficLinkDialog: View {
+    static func severityLabel(_ raw: String, language: AppLanguage) -> String {
+        DashboardLabels.text(raw, domain: .severity, language: language)
+    }
     let model: TrafficScreenModel
     let lease: UUID
     let id: UUID
@@ -79,7 +82,7 @@ import SwiftUI
                                     if !row.canMutate { Text(s(.trafficUILinkReadOnly)).font(.caption) }
                                 }
                                 Spacer()
-                                Text(row.severity).font(.caption)
+                                Text(Self.severityLabel(row.severity, language: language)).font(.caption)
                             }.frame(maxWidth: .infinity, alignment: .leading).padding(10)
                         }.buttonStyle(.plain).disabled(!row.canMutate || !workspace.editable || workspace.isLoading || !workspace.pageIsCurrent)
                     }
