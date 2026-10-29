@@ -10,7 +10,7 @@ import XCTest
     var pendingWrites:[CheckedContinuation<BackendHTTPResponse,any Error>]=[]
     var rowIDs=["é","e\u{301}"]
     var hostNames=["é","e\u{301}"]
-    var onSend:(@MainActor(String)->Void)?
+    var onSend:(@MainActor (String)->Void)?
     func response(_ object:Any,status:Int=200) throws -> BackendHTTPResponse {.init(status:status,body:try JSONSerialization.data(withJSONObject:object))}
     func page(_ number:Int64=0) throws -> BackendHTTPResponse {
         try response(["enabled":false,"count":70,"total":70,"page":number,"size":50,"exchanges":rowIDs.map{["id":$0,"ts":"fixed","host":"fixture","method":"GET","url":"http://fixture.invalid/","content_type":"text/plain","status":200,"resp_len":0] as [String:Any]}])
@@ -109,6 +109,32 @@ import XCTest
         XCTAssertEqual(store.settings.value?.trafficCapture,true);XCTAssertTrue(store.catalog.isStale);await store.refresh()
         var query=store.query;query.page=1;query.host="é";XCTAssertTrue(store.configure(query,owner:store.owner));await store.refresh();XCTAssertTrue(store.prepare(.matchingHost,owner:store.owner));let deletion=try XCTUnwrap(store.confirmation);_ = await store.confirm(id:deletion.id,owner:deletion.owner)
         XCTAssertEqual(store.query.page,0);XCTAssertEqual(store.selectedFlowIDs.count,1);XCTAssertEqual(store.selectedHosts.count,1);XCTAssertNil(store.selectedExchange)
+    }
+    func testBatchSelectionKeepsByteIdentitiesAndCrossPageSelectionsWithRevisions() async throws {
+        let api=TrafficStateAPI(),store=await loaded(api)
+        XCTAssertTrue(store.selectVisibleFlows(true,owner:store.owner));XCTAssertTrue(store.selectAllHosts(true,owner:store.owner));XCTAssertEqual(store.selectedFlowIDs.count,2);XCTAssertEqual(store.selectedHosts.count,2)
+        let revision=store.flowRevision;XCTAssertTrue(store.toggleFlow(id:"é",selected:true,owner:store.owner));XCTAssertEqual(store.flowRevision,revision)
+        var query=store.query;query.page=1;api.rowIDs=["third"];XCTAssertTrue(store.configure(query,owner:store.owner));await store.refresh()
+        XCTAssertTrue(store.selectVisibleFlows(true,owner:store.owner));XCTAssertEqual(store.selectedFlowIDs.count,3);XCTAssertNotEqual(store.flowRevision,revision)
+        XCTAssertTrue(store.selectVisibleFlows(false,owner:store.owner));XCTAssertEqual(store.selectedFlowIDs.count,2)
+        XCTAssertTrue(store.clearFlowSelection(owner:store.owner));XCTAssertTrue(store.selectAllHosts(false,owner:store.owner));XCTAssertTrue(store.selectedFlowIDs.isEmpty);XCTAssertTrue(store.selectedHosts.isEmpty)
+    }
+    func testOldScopedTeardownCannotStopNewOwnerAndPublicationStopCannotResurrectSelection() async throws {
+        let api=TrafficStateAPI(),store=await loaded(api),old=store.owner;var query=store.query;query.host="changed"
+        XCTAssertTrue(store.configure(query,owner:old));await store.refresh();XCTAssertFalse(store.stop(ifOwnedBy:old));XCTAssertTrue(store.isActive)
+        withObservationTracking{_ = store.selectedFlowIDs}onChange:{MainActor.assumeIsolated{store.stop();store.resume()}}
+        XCTAssertFalse(store.toggleFlow(id:"é",selected:true,owner:store.owner));XCTAssertFalse(store.isActive);XCTAssertTrue(store.selectedFlowIDs.isEmpty)
+    }
+    func testResetDuringBusyAndStopDuringReceiptStayScopedAndDoNotReplay() async throws {
+        for reset in [true,false] {
+            let api=TrafficStateAPI(),store=await loaded(api);XCTAssertTrue(store.prepare(.purgeAll,owner:store.owner));let confirmation=try XCTUnwrap(store.confirmation);let calls=api.calls.count
+            if reset {withObservationTracking{_ = store.isMutating}onChange:{MainActor.assumeIsolated{store.resetSession();store.resume()}}}
+            else {withObservationTracking{_ = store.lastReceipt}onChange:{MainActor.assumeIsolated{store.stop();store.resume()}}}
+            let result=await store.confirm(id:confirmation.id,owner:confirmation.owner)
+            if reset {guard case .notStarted=result else {return XCTFail("Reset before dispatch")};XCTAssertEqual(api.calls.count,calls);XCTAssertFalse(store.hasUnknownOutcome)}
+            else {guard case .discarded=result else {return XCTFail("Departed receipt")};XCTAssertEqual(api.calls.count,calls+1);XCTAssertTrue(store.hasUnknownOutcome)}
+            XCTAssertFalse(store.isActive);XCTAssertFalse(store.isMutating);XCTAssertNil(store.lastReceipt);XCTAssertNil(store.catalog.value)
+        }
     }
     func testSynchronousStopDuringBusyAndReadPublicationRevokesDispatch() async throws {
         for write in [false,true] {
