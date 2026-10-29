@@ -195,6 +195,16 @@ import XCTest
         XCTAssertTrue(store.hasUnknownOutcome);XCTAssertNil(store.failure);XCTAssertNil(store.lastReceipt);XCTAssertFalse(store.isMutating);XCTAssertEqual(api.calls.count,calls+1)
         await store.refresh();XCTAssertTrue(store.hasUnknownOutcome);XCTAssertTrue(store.acknowledgeUnknown(owner:store.owner,revision:store.unknownRevision))
     }
+    func testLateDetailCannotReplaceNewSelectionOrReappearAfterExplicitClose() async throws {
+        let api=TrafficStateAPI(),store=await loaded(api)
+        XCTAssertTrue(store.selectExchange(id:"é",owner:store.owner));api.holdRead=true
+        let old=Task{await store.refreshDetail()};try await wait{api.pendingReads.count==1}
+        XCTAssertTrue(store.selectExchange(id:"e\u{301}",owner:store.owner));api.holdRead=false;await store.refreshDetail()
+        XCTAssertEqual(store.detail.value?.response,"response")
+        api.pendingReads.removeFirst().resume(returning:try api.response(["req":"old","resp":"must-not-replace"]));await old.value
+        XCTAssertEqual(store.detail.value?.response,"response");XCTAssertEqual(Data(try XCTUnwrap(store.selectedExchange?.id).utf8),Data("e\u{301}".utf8))
+        let calls=api.calls.count;XCTAssertTrue(store.selectExchange(id:nil,owner:store.owner));await store.refreshDetail();XCTAssertNil(store.detail.value);XCTAssertEqual(api.calls.count,calls)
+    }
     func testSynchronousStopDuringBusyAndReadPublicationRevokesDispatch() async throws {
         for write in [false,true] {
             let api=TrafficStateAPI(),store=await loaded(api);let count=api.calls.count
