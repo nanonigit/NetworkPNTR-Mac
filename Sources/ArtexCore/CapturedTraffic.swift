@@ -56,14 +56,16 @@ public struct CapturedTrafficExchange: Decodable, Sendable {
 
 public struct CapturedTrafficPage: Decodable, Sendable {
     public let enabled: Bool
+    public let proxy: String?
     public let count, total, page: Int64?
     public let size: Int?
     public let exchanges: [CapturedTrafficExchange]
     public var isUnavailable: Bool { page == nil }
-    private enum CodingKeys: String, CodingKey { case enabled, count, total, page, size, exchanges }
+    private enum CodingKeys: String, CodingKey { case enabled, proxy, count, total, page, size, exchanges }
     public init(from decoder: any Decoder) throws {
         let c = try decoder.container(keyedBy: CodingKeys.self)
         enabled = try c.decode(Bool.self, forKey: .enabled)
+        proxy = try c.decodeIfPresent(String.self, forKey: .proxy)
         count = c.contains(.count) ? try c.decode(Int64.self, forKey: .count) : nil
         total = c.contains(.total) ? try c.decode(Int64.self, forKey: .total) : nil
         page = c.contains(.page) ? try c.decode(Int64.self, forKey: .page) : nil
