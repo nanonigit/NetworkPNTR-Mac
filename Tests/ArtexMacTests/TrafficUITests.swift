@@ -144,4 +144,31 @@ import XCTest
         }
         XCTAssertEqual(api.paths.count, count); XCTAssertTrue(api.methods.allSatisfy { $0 == "GET" })
     }
+    func testQueuedPagerAndResetRejectChangedQueryOwner() async throws {
+        let (model, _, lease) = try await fixture(); defer { model.reset() }
+        let old = model.store.owner
+        XCTAssertTrue(model.control(.method(.post), lease: lease))
+        try await reached { !model.store.isRefreshing && !model.store.catalog.isStale }
+        XCTAssertFalse(model.page(1, lease: lease, owner: old)); XCTAssertEqual(model.store.query.page, 0)
+        XCTAssertTrue(model.page(1, lease: lease, owner: model.store.owner))
+        try await reached { !model.store.isRefreshing && !model.store.catalog.isStale }
+        XCTAssertEqual(model.store.query.page, 1)
+        let retired = model.store.owner
+        XCTAssertTrue(model.control(.status(.clientError), lease: lease))
+        XCTAssertFalse(model.resetAdvanced(lease: lease, owner: retired))
+        XCTAssertEqual(TrafficPresentation.status(model.store.query.status), "4xx")
+        XCTAssertTrue(model.resetAdvanced(lease: lease, owner: model.store.owner))
+    }
+
+    func testNativeRequestDisplayMatches22PinnedBrowserFunctionCases() throws {
+        struct Oracle: Decodable { let baseline: String; let cases: [Case] }
+        struct Case: Decodable { let raw: String; let url: String; let host: String; let expected: String }
+        let root = URL(fileURLWithPath: #filePath).deletingLastPathComponent().deletingLastPathComponent().deletingLastPathComponent()
+        let oracle = try JSONDecoder().decode(Oracle.self, from: Data(contentsOf: root.appendingPathComponent("evidence/traffic/request-host-oracle.json")))
+        XCTAssertEqual(oracle.baseline, "e75ae371ad777ffd1eecdd28d2781a6519b05591"); XCTAssertEqual(oracle.cases.count, 22)
+        for item in oracle.cases {
+            XCTAssertEqual(Data(TrafficPresentation.request(item.raw, url: item.url, host: item.host).utf8), Data(item.expected.utf8), "URL: \(item.url)")
+        }
+    }
+
 }

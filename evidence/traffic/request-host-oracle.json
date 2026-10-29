@@ -1,0 +1,141 @@
+{
+  "schema": 1,
+  "baseline": "e75ae371ad777ffd1eecdd28d2781a6519b05591",
+  "method": "Pinned browser requestWithHost function, only TypeScript parameter/return annotations erased; executed in Node vm with WHATWG URL; synthetic packets only; not actual browser UI",
+  "sourceFunctionSHA256": "e99200e9e0b17674c003d2c53b01b66cc1e2d185a34634405515a9cde2080c8e",
+  "nodeVersion": "v24.22.1",
+  "cases": [
+    {
+      "raw": "",
+      "url": "https://example.invalid/path",
+      "host": "fallback",
+      "expected": ""
+    },
+    {
+      "raw": " \ufeff ",
+      "url": "https://example.invalid/path",
+      "host": "fallback",
+      "expected": " \ufeff "
+    },
+    {
+      "raw": "GET / HTTP/1.1",
+      "url": "https://example.invalid/path",
+      "host": "fallback",
+      "expected": "GET / HTTP/1.1\nHost: example.invalid"
+    },
+    {
+      "raw": "GET / HTTP/1.1\r\nX-Raw: e\u0301 \u4e2d\u6587 \ud55c\uad6d\uc5b4\r\n\r\n",
+      "url": "https://example.invalid/path",
+      "host": "fallback",
+      "expected": "GET / HTTP/1.1\r\nHost: example.invalid\r\nX-Raw: e\u0301 \u4e2d\u6587 \ud55c\uad6d\uc5b4\r\n\r\n"
+    },
+    {
+      "raw": "GET /\nHost: existing\n",
+      "url": "https://example.invalid/path",
+      "host": "fallback",
+      "expected": "GET /\nHost: existing\n"
+    },
+    {
+      "raw": "GET /\nHOST\ufeff: existing\n",
+      "url": "https://example.invalid/path",
+      "host": "fallback",
+      "expected": "GET /\nHOST\ufeff: existing\n"
+    },
+    {
+      "raw": "GET /\u2028Host: existing\n",
+      "url": "https://example.invalid/path",
+      "host": "fallback",
+      "expected": "GET /\u2028Host: existing\n"
+    },
+    {
+      "raw": "GET /\nHost\n:\n",
+      "url": "https://example.invalid/path",
+      "host": "fallback",
+      "expected": "GET /\nHost\n:\n"
+    },
+    {
+      "raw": "GET /\nHost\u0085: literal\n",
+      "url": "https://example.invalid/path",
+      "host": "fallback",
+      "expected": "GET /\nHost: example.invalid\nHost\u0085: literal\n"
+    },
+    {
+      "raw": "GET /\nho\u017ft: literal\n",
+      "url": "https://example.invalid/path",
+      "host": "fallback",
+      "expected": "GET /\nHost: example.invalid\nho\u017ft: literal\n"
+    },
+    {
+      "raw": "GET /\n Host: indented\n",
+      "url": "https://example.invalid/path",
+      "host": "fallback",
+      "expected": "GET /\nHost: example.invalid\n Host: indented\n"
+    },
+    {
+      "raw": "GET /\rX: literal\r",
+      "url": "https://example.invalid/path",
+      "host": "fallback",
+      "expected": "GET /\rX: literal\r\nHost: example.invalid"
+    },
+    {
+      "raw": "GET /\n\nHost: body-line\n",
+      "url": "https://example.invalid/path",
+      "host": "fallback",
+      "expected": "GET /\n\nHost: body-line\n"
+    },
+    {
+      "raw": "GET /\n\n",
+      "url": "/relative",
+      "host": "fallback",
+      "expected": "GET /\nHost: fallback\n\n"
+    },
+    {
+      "raw": "GET /\n\n",
+      "url": "invalid url",
+      "host": "fallback",
+      "expected": "GET /\nHost: fallback\n\n"
+    },
+    {
+      "raw": "GET /\n\n",
+      "url": "https://example.invalid:8443/",
+      "host": "fallback",
+      "expected": "GET /\nHost: example.invalid:8443\n\n"
+    },
+    {
+      "raw": "GET /\n\n",
+      "url": "http://EXAMPLE.invalid:80/",
+      "host": "fallback",
+      "expected": "GET /\nHost: example.invalid\n\n"
+    },
+    {
+      "raw": "GET /\n\n",
+      "url": "https://example.invalid:443/",
+      "host": "fallback",
+      "expected": "GET /\nHost: example.invalid\n\n"
+    },
+    {
+      "raw": "GET /\n\n",
+      "url": "https://[::1]:8443/",
+      "host": "fallback",
+      "expected": "GET /\nHost: [::1]:8443\n\n"
+    },
+    {
+      "raw": "GET /\n\n",
+      "url": "https://user:pass@example.invalid:8443/path",
+      "host": "fallback",
+      "expected": "GET /\nHost: example.invalid:8443\n\n"
+    },
+    {
+      "raw": "GET /\n\n",
+      "url": "https://\u4f8b\u3048.\u30c6\u30b9\u30c8/",
+      "host": "fallback",
+      "expected": "GET /\nHost: xn--r8jz45g.xn--zckzah\n\n"
+    },
+    {
+      "raw": "GET /\n\n",
+      "url": "https://example.invalid:999999/",
+      "host": "fallback",
+      "expected": "GET /\nHost: fallback\n\n"
+    }
+  ]
+}
