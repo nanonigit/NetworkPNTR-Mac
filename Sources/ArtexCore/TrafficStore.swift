@@ -41,6 +41,7 @@ public enum TrafficMutationOutcome:Sendable {
     }
     public var canAcknowledgeUnknown:Bool {
         editable && hasUnknownOutcome && !isRefreshing && recoveredRevision==unknownRevision && recoveredOwner==owner
+        && catalog.value?.isUnavailable==false && hosts.value != nil && settings.value != nil
         && !catalog.isStale && !hosts.isStale && !settings.isStale
         && !catalog.isLoading && !hosts.isLoading && !settings.isLoading
     }
@@ -158,7 +159,7 @@ public enum TrafficMutationOutcome:Sendable {
         guard valid() else {return}
         let settingsOK=await settings.refresh{[service] in try await service.captureSettings()}
         guard valid() else {return}
-        if pageOK && hostsOK && settingsOK && hasUnknownOutcome && unknownRevision==revision {
+        if pageOK && hostsOK && settingsOK && freshCatalog && hasUnknownOutcome && unknownRevision==revision {
             update{recoveredRevision=revision;recoveredOwner=expected}
         }
     }
@@ -251,7 +252,7 @@ public enum TrafficMutationOutcome:Sendable {
             if reset {session=UUID();unknownChange=nil}
             if let write,write.handedOff {markUnknown(write)}
             write?.revoked=true;activity=UUID();isActive=false;confirmation=nil;invalidate(clear:true)
-            selectedFlowIDs=[];selectedHosts=[];flowRevision=UUID();hostRevision=UUID();selectedExchange=nil;lastReceipt=nil;failure=nil;owner=UUID()
+            query=TrafficQuery();selectedFlowIDs=[];selectedHosts=[];flowRevision=UUID();hostRevision=UUID();selectedExchange=nil;lastReceipt=nil;failure=nil;owner=UUID()
         }
         lifecycle = .none;drain()
     }
