@@ -1,0 +1,15 @@
+# 独立Traffic finite基盤
+
+状態：TR1 finite契約を実装したが、Traffic機能はpendingで新画面は公開していない。全scopeはtraffic-workflow-design.ja.mdを維持。基準は未変更e75ae371のTrafficPage／api.ts／types.ts、serverのTraffic取得／hosts／削除scope／settings、traffic.Page。今回はpolling／host通信client／agent起動／任意URL取得／blob書込／実削除を増やさない。
+
+TrafficQueryは適用済みhost／query／body／path／method／status／応答長とwhitelist sort／order、0起点page、厳密Int64、元画面初期size50を扱う。短いbody検索や非負の逆転rangeは元serverへ渡し、UI draft trim／debounceは行わない。既存CapturedTrafficQueryは変更せず、Pageへoptional proxy表示値だけを追加。host listは元のnull-empty形とUTF8 byte identityを扱い、正規等価でも別byteのhostを保持する。
+
+TrafficServiceは固定GET、部分一致host／厳密host array／全traffic削除を区別。capture PUTはtraffic_captureだけでsettings snapshotや他keyを再送しない。host arrayの値／重複／空白はwireで維持し、Go空白規則で全空を拒否。body1MiB／応答4MiBを上限とし、purgeは非負deleted／reclaimed、capture receiptは要求状態一致を必須とする。transport前にcancel／validation、callbackは論理的なtransport呼出し境界を示し、その後の失敗は再送／rollback扱いせずthrow。socket byte送信済みの証明ではない。
+
+TDD：契約未実装でcompile RED506f52f。初期実装eddd908はcompileしたが新2caseの3assertion失敗：FoundationのURLComponents復号valueとJSONSerialization bridgeが先頭FEFFを消費した。実際のpercent／JSON encodingは正しく、production修正は不要。既存captured-service／finding note回帰と同じく、独立percent byteとtyped JSON decodeでwireを照合。3790a5eで対象18合格（新10／既存8）。有効な上限超過host arrayはtransport呼出しなし、1dispatch後の変更cancelは1callのままthrowする。
+
+全Swift849件：848合格・既存external AX1skip。対象core3ファイルのLLVM行coverageは172/172（TrafficService58／58、TrafficModels58／58、CapturedTraffic56／56）。限定した行coverageでbranch／製品全体や実backend作用の証明ではない。独立multi-host VM／参照比較、purge後bound evidence保持、blob streaming、state／不明write回復、native UI／実画面／keyboard／AXは引き続き必要。同一host29件の既存fixtureで部分一致対厳密削除を証明済みとはしない。
+
+今回はbackend／CLI契約でLazyweb UI境界外。必須read-only code reviewはproduction blockerなし。bugs/traffic-service-foundation.ja.md／traffic-workflow-design.ja.md参照。kernel信頼性／標準昇格、全21workflow、4社／harness、製品releaseは未完。hosted CI未検証・公開HEADに[skip ci]。
+
+追加境界ではFEFFだけのhostをGo空白規則で削除要求できること、誤ったpage／size echo拒否、capture未利用可と有効な空indexの区別を確認。新Traffic12＋既存captured-service8が全suiteで合格、Python179件合格。local staged appを再build／strict署名し、同じguest manifest／kernel／initramfs／system hashを保持。profile昇格・app起動・新Traffic画面・実server変更は未確認。evidence/traffic/finite-verification.json参照。

@@ -458,10 +458,12 @@ See evidence-binary-localization-design/verification and bugs/evidence-binary-lo
 
 ## Standalone Traffic workflow
 
-- [ ] TR1 full-filter/sort/query, host/proxy/null/precision contracts and fixed finite read/delete/capture-setting boundaries with adversarial tests.
+- [x] TR1 full-filter/sort/query, host/proxy/null/precision contracts and fixed finite read/delete/capture-setting boundaries with adversarial tests (finite API foundation only).
 - [ ] TR2 window-owned reads/selections/confirmation scopes, unknown-write recovery and reentry/stop/session lifecycle.
 - [ ] TR3 full EN/JA native traffic controls, raw detail, flow-to-finding binding, blob originals and page0 polling, with Lazyweb first.
 - [ ] TR4 actual multi-host VM/reference comparison, exact/substr/purge effects, bound evidence persistence, blob bytes, capture settings and restart.
 - [ ] TR5 actual browser/native UI/keyboard/VoiceOver/multiwindow and full release gates.
 
 See traffic-workflow-design in en/ja. Traffic remains pending in the feature map until real native controls exist; finite contracts do not close this workflow. Earlier Findings advanced lineage/retest/deepen/report and existing visual/kernel/provider/harness gates remain open.
+
+TR1 checkpoint:12newTraffic +8existingcaptured cases pass; full849Swift (848pass,oneexistingAXskip),179Python; affected core172/172LLVM lines. FEFF runtime oracle failures were corrected using raw percent bytes/typed JSON without production normalization. Staged app rebuilt/strict signed with previous guest hashes retained; no new screen, actual server mutation, candidate promotion or workflow acceptance. See traffic-service-verification en/ja, bugs/traffic-service-foundation en/ja and evidence/traffic/finite-verification.json.

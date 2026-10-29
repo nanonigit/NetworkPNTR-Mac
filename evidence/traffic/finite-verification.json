@@ -1,0 +1,77 @@
+{
+  "schema": 1,
+  "passed": true,
+  "fullGoalComplete": false,
+  "phase": "TR1 finite standalone Traffic API contracts only",
+  "sourceHead": "5d6d7c925482e1a7a0ec0a07edd0586c61151cef",
+  "baseline": "e75ae371ad777ffd1eecdd28d2781a6519b05591",
+  "sourceSHA256": {
+    "Sources/ArtexCore/TrafficService.swift": "fac9f35719df53bfb780c1ad3edd50b831d944e2c34d9cf44b5221d2e31b864e",
+    "Sources/ArtexCore/TrafficModels.swift": "7311b67282ef43431ce2db959362259cbdd6d834243e206af059711851645eca",
+    "Sources/ArtexCore/CapturedTraffic.swift": "68fff1b44721bd64ce23907fca5f882137d2754319ba7a12829ce2ba7afee47c"
+  },
+  "contracts": [
+    "all applied traffic filters and whitelisted sort/order",
+    "zero-based paging and optional display proxy",
+    "null host list and byte-distinct identities",
+    "exact Int64 counts/ranges/receipts",
+    "distinct substring/exact batch/purge routes",
+    "partial traffic_capture setting body only",
+    "pre/post-dispatch cancellation, no replay or rollback claim",
+    "valid request/response bounds and missing purge receipt rejection"
+  ],
+  "tests": {
+    "newTrafficCases": 12,
+    "existingCapturedTrafficCases": 8,
+    "swiftTotal": 849,
+    "swiftPassed": 848,
+    "existingExternalAXSkipped": 1,
+    "pythonPassed": 179,
+    "baselineFeatures": 21,
+    "baselinePages": 27,
+    "baselineHandlers": 243,
+    "localizationExportPassed": true
+  },
+  "coverage": {
+    "method": "LLVM lines, full Swift suite, three affected core files only; not branch/whole product or real backend effects",
+    "files": {
+      "CapturedTraffic.swift": {
+        "count": 56,
+        "covered": 56,
+        "percent": 100
+      },
+      "TrafficModels.swift": {
+        "count": 58,
+        "covered": 58,
+        "percent": 100
+      },
+      "TrafficService.swift": {
+        "count": 58,
+        "covered": 58,
+        "percent": 100
+      }
+    }
+  },
+  "stagedApp": {
+    "rebuilt": true,
+    "signatureStrictValid": true,
+    "guestManifestSHA256": "fa0f1972c04f2a04853de37f4fd163b922ac38c841849c635d29f565fe6115ce",
+    "guestArtifactsVerified": true,
+    "previousProfilePreserved": true,
+    "candidatePromoted": false,
+    "newScreenExposed": false,
+    "launched": false,
+    "installedElsewhere": false
+  },
+  "nativeWorkflowParity": "pending",
+  "actualVMReferenceMutationComparison": false,
+  "nativeUIAcceptance": false,
+  "trafficFeatureStatus": "pending",
+  "hostedCI": "unverified; skip ci policy",
+  "remaining": [
+    "TR2 window state/confirmation/unknown-write lifecycle",
+    "TR3 complete native Traffic screen and binding/blob/polling interactions",
+    "TR4 actual multi-host VM/reference filters/deletions/settings/blob/evidence persistence",
+    "TR5 visible/browser/keyboard/AX acceptance and original full-product gates"
+  ]
+}
