@@ -6,12 +6,16 @@ import XCTest
 
 @MainActor private final class TrafficUIAPI: BackendJSONTransport {
     var methods: [String] = [], paths: [String] = []
-    var failWrite = false
+    var failWrite = false, holdWrite = false
+    var heldWrites: [CheckedContinuation<BackendHTTPResponse, any Error>] = []
     let raw = "\u{FEFF}GET /e\u{301} HTTP/1.1\r\nX-Literal: 中文 한국어\r\n\r\n@blob sha256:literal"
     func send(method: String, path: String, body: Data?, bearer: String?) async throws -> BackendHTTPResponse {
         methods.append(method); paths.append(path)
         let object: Any
-        if method != "GET" { object = ["deleted": 2, "reclaimed": 4096] }
+        if method != "GET" {
+            if holdWrite { return try await withCheckedThrowingContinuation { heldWrites.append($0) } }
+            object = ["deleted": 2, "reclaimed": 4096]
+        }
         else if path == "/api/traffic/hosts" { object = ["hosts": [["host": "é", "count": 1], ["host": "e\u{301}", "count": 2]]] }
         else if path == "/api/settings" { object = ["traffic_capture": true] }
         else if path.hasPrefix("/api/traffic/exchange?") { object = ["req": raw, "resp": "HTTP/1.1 200 OK\n\n中文 한국어 e\u{301}"] }
@@ -169,6 +173,29 @@ import XCTest
         for item in oracle.cases {
             XCTAssertEqual(Data(TrafficPresentation.request(item.raw, url: item.url, host: item.host).utf8), Data(item.expected.utf8), "URL: \(item.url)")
         }
+    }
+
+    func testHeldDeletionRetainsProgressContextThenResetScrubsRetainedDialog() async throws {
+        let (model, api, lease) = try await fixture(); defer { model.reset() }
+        let owner = model.store.owner
+        XCTAssertTrue(model.toggleHost("e\u{301}", selected: true, lease: lease, owner: owner))
+        XCTAssertTrue(model.prepareDeletion(.selectedHosts, lease: lease, owner: owner))
+        let context = try XCTUnwrap(model.deletionDialog)
+        let retained = TrafficDeleteDialog(model: model, lease: lease, context: context)
+        api.holdWrite = true
+        let write = Task { await model.confirmDeletion(id: context.id, lease: lease, owner: owner) }
+        try await reached { api.heldWrites.count == 1 }
+        XCTAssertNotNil(retained.context); XCTAssertEqual(model.deletionDialog?.id, context.id)
+        XCTAssertNil(model.store.confirmation); XCTAssertTrue(model.store.isMutating)
+        XCTAssertFalse(model.cancelDeletion(id: context.id, lease: lease, owner: owner))
+        XCTAssertFalse(model.control(.size(25), lease: lease))
+        model.reset()
+        XCTAssertNil(model.deletionDialog); XCTAssertNil(retained.context)
+        XCTAssertTrue(model.store.hasUnknownOutcome); XCTAssertNil(model.store.unknownChange)
+        api.heldWrites.removeFirst().resume(returning: .init(status: 503, body: Data()))
+        guard case .discarded = await write.value else { return XCTFail("Retired writer") }
+        XCTAssertNil(model.deletionDialog); XCTAssertTrue(model.store.hasUnknownOutcome)
+        XCTAssertEqual(api.methods.filter { $0 == "DELETE" }.count, 1)
     }
 
 }
