@@ -1,5 +1,7 @@
 # Standalone Traffic finite foundation
 
+Historical TR1 checkpoint below. TR2 preserves public service contracts while adding internal immutable prepare/execute and window state; current evidence is in traffic-state-verification.md.
+
 Status: TR1 finite contracts implemented; the Traffic feature remains pending and no new screen is exposed. Full workflow scope is unchanged in traffic-workflow-design.md. The reference is the unchanged e75ae371 source: TrafficPage/api.ts/types.ts, server getTraffic/hosts/delete scopes/settings and traffic.Page. This phase adds no polling, host network client, agent start, arbitrary URL fetching, blob write or real deletion.
 
 TrafficQuery implements all applied host/query/body/path/method/status/response-size filters and whitelisted sort/order with zero-based paging, exact Int64 values and the browser's default50 size. Short body terms and inverted nonnegative size ranges are retained for the source server to interpret. It does not apply UI draft trimming/debounce. Existing CapturedTrafficQuery is unchanged; CapturedTrafficPage gains only an optional proxy display value. Host lists accept the source's null-empty shape and use UTF8 byte identity, preserving canonically equivalent but distinct host strings.

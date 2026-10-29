@@ -1,0 +1,15 @@
+# Traffic window状態の段階検証
+
+TR2状態を実装したが、新Traffic画面・実削除・polling task・agent操作は公開していない。全workflowはtraffic-workflow-design.ja.mdを維持。TrafficServiceの検証／prepareとexecuteをinternal分離し、確認ごとにmethod／path／body byteを固定した。public apply互換と既存finite試験は維持。
+
+TrafficStoreは適用query、last-good page／hosts／settings／detail、byteを区別する順序付き選択とrevision、preview、確認UUIDを所有。filter／pageでも跨ぎ選択／previewを保持し、同じ適用queryはownerを変えず、変更時だけ古い世代を無効化。stale／失敗snapshotから新row選択はできない。batch選択解除は別pageのIDとNFC／NFDを保持。確認中は置換／draft変更／新readを禁止し、部分一致はhostのみ、厳密scopeは選択host byteを捕捉、一度消費したIDを再送しない。poll可否はpage0のみだがtaskは開始しない。
+
+Dispatch後error／離脱で不明を保持し再送しない。現在owner／不明revisionの下で、利用可能なpage＋hosts＋settingsのfresh一式取得後だけ明示ackを許す。部分失敗／index利用不可／古いowner／誤revisionは解除不可。readで暗黙ackしない。reset／stopはraw適用filter・選択・preview・readを消去し、resetは公開する不明scopeも消すが、generic markerと未完writeは完了まで保持する。検証済みの処理中request byteは内部で完了まで保持する。このmarkerはstore単位で、process再起動／window間の永続journalではない。
+
+同期Observationのstop／resetは更新後に処理しdispatch前ticketを無効化。reset優先、stop反復は冪等、古いownerのteardownは新ownerを止めず、更新中resumeでdataを復活させない。古いpage／detailは新しいdataを上書きできない。停止／resetしたheld writeは旧receiptを公開しない。成功／errorはbusy解除後にもlifecycle／owner／cancelを照合し、解除中離脱はdiscarded。検証済みreceiptをcommitしてwrite解放後の離脱を、不明なserver結果として捏造しない。物理socket切断・VM作用・app全体の複数window回復は別gate。
+
+TDD証拠：最初888736cはfixture callback注釈の構文エラー、実装側も複数変数Observation macro宣言を分離した。修正後、実装を一時分離したmissing-store compile REDで契約を確認して復元（011e54b）。23eb4d0の13件は1件の試験timing不備で、receipt到着でなく初期nil消去を観測していた。stub dispatch後に監視し13合格（1f5dd1f）。15件の実negativeでquery残留4assertion＋利用不可回復4assertionを再現（cbf26a7）、57c28faで修正。4b10089でbusy解除時に旧ownerへ成功を返す1失敗を再現し、738636cでcleanup後のcontextを照合。最終state21件には部分回復失敗・古いack・reset優先・caller cancel・遅いNFC／NFD detailを含む。
+
+全Swift870件：869合格・既存external AX1skip。限定LLVM行coverageはTrafficStore357/358（99.72%）、TrafficService64/64（100%）。branch／実server作用／UI／製品全体の受入ではない。必須read-only reviewは残存blockerなし。source／証拠はevidence/traffic/state-verification.json。実multi-host native／参照削除、bound evidence／blob保持、native control／実画面／keyboard／AX、従来kernel／4社／harness／releaseは未完。hosted CI未検証・公開HEADに[skip ci]。
+
+最終local記録：Python179件、baseline21／27／243 inventory、localization export合格。local staged app buildの正常終了とstrict codesignを確認し、manifest／kernel／initramfs／system hashは従来profileと一致。build後は最後のdetail試験だけを追加しproduction sourceは未変更。app起動・別場所install・新画面・候補昇格は未実施。

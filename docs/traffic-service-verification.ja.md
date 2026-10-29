@@ -1,5 +1,7 @@
 # 独立Traffic finite基盤
 
+以下はTR1履歴。TR2はpublic service契約を維持してinternal prepare／executeとwindow状態を追加した。現証拠はtraffic-state-verification.ja.md参照。
+
 状態：TR1 finite契約を実装したが、Traffic機能はpendingで新画面は公開していない。全scopeはtraffic-workflow-design.ja.mdを維持。基準は未変更e75ae371のTrafficPage／api.ts／types.ts、serverのTraffic取得／hosts／削除scope／settings、traffic.Page。今回はpolling／host通信client／agent起動／任意URL取得／blob書込／実削除を増やさない。
 
 TrafficQueryは適用済みhost／query／body／path／method／status／応答長とwhitelist sort／order、0起点page、厳密Int64、元画面初期size50を扱う。短いbody検索や非負の逆転rangeは元serverへ渡し、UI draft trim／debounceは行わない。既存CapturedTrafficQueryは変更せず、Pageへoptional proxy表示値だけを追加。host listは元のnull-empty形とUTF8 byte identityを扱い、正規等価でも別byteのhostを保持する。

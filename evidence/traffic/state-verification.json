@@ -1,0 +1,76 @@
+{
+  "schema": 1,
+  "passed": true,
+  "fullGoalComplete": false,
+  "phase": "TR2 Traffic window state and frozen confirmations only",
+  "sourceHead": "10227cd0a4dd6408044d72e578070865041646d5",
+  "baseline": "e75ae371ad777ffd1eecdd28d2781a6519b05591",
+  "sourceSHA256": {
+    "Sources/ArtexCore/TrafficStore.swift": "f60a249974ce7d8d904060016d06e2db9e50b98f8268b2b583af77f21c8309b4",
+    "Sources/ArtexCore/TrafficService.swift": "b1f5ba6cc78ebaa5762db51566e528882d26940f5e32eece07158eb011ec8ceb"
+  },
+  "contracts": [
+    "last-good generation-owned page/hosts/settings/detail",
+    "byte identity cross-page selections and explicit selection revisions",
+    "immutable prepared request captured by confirmation UUID",
+    "distinct substring/exact/purge/capture scopes",
+    "logical pre-dispatch revocation and no replay",
+    "unknown outcomes retained until available complete fresh reads and explicit owner/revision acknowledgment",
+    "session reset scrubs public raw query/scope while retaining outstanding write/generic uncertainty",
+    "guarded reentry and reset priority",
+    "post-busy-release owner/session/activity/cancel validation",
+    "late detail/page responses do not replace newer data"
+  ],
+  "tests": {
+    "newStateCases": 21,
+    "swiftTotal": 870,
+    "swiftPassed": 869,
+    "existingExternalAXSkipped": 1,
+    "pythonPassed": 179,
+    "baselineFeatures": 21,
+    "baselinePages": 27,
+    "baselineHandlers": 243,
+    "localizationExportPassed": true
+  },
+  "coverage": {
+    "method": "LLVM source lines from full Swift suite, two affected core files only; not branch/UI/whole product or actual server effects",
+    "files": {
+      "TrafficService.swift": {
+        "count": 64,
+        "covered": 64,
+        "percent": 100
+      },
+      "TrafficStore.swift": {
+        "count": 358,
+        "covered": 357,
+        "percent": 99.72067039106145
+      }
+    }
+  },
+  "stagedApp": {
+    "rebuilt": true,
+    "signatureStrictValid": true,
+    "guestManifestSHA256": "fa0f1972c04f2a04853de37f4fd163b922ac38c841849c635d29f565fe6115ce",
+    "guestArtifactHashesVerified": true,
+    "previousProfilePreserved": true,
+    "candidatePromoted": false,
+    "newTrafficScreenExposed": false,
+    "launched": false,
+    "installedElsewhere": false
+  },
+  "knownScope": {
+    "pollingTaskStarted": false,
+    "realBackendMutationTested": false,
+    "physicalSocketLossTested": false,
+    "durableProcessOrCrossWindowUncertaintyJournal": false,
+    "nativeUIAcceptance": false,
+    "trafficFeatureStatus": "pending"
+  },
+  "hostedCI": "unverified; skip ci policy",
+  "remaining": [
+    "TR3 complete native Traffic UI/binding/blob/polling",
+    "TR4 actual multi-host native/reference mutation and persistence",
+    "TR5 visual/browser/keyboard/AX/multiwindow/save-panel acceptance",
+    "all original kernel/provider/harness/full-workflow/release gates"
+  ]
+}

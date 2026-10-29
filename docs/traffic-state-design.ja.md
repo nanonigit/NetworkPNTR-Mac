@@ -11,3 +11,5 @@ windowはquery／owner／activity／session、last-good page／hosts／settings�
 同期Observation再入をpublication guardで防ぐ。受理したstop／resetはdispatch前ticketを取り消し、現在更新後に処理し、reset優先・反復teardownは冪等。更新途中のresume／configure／選択／確認は不可。古いread／writeはsession／activity／owner照合し、不明errorをrollback／自動再送扱いしない。削除成功はpage0／preview解除、選択host／purgeはhost選択も解除し、flow選択は元browser同様保持。capture成功は既知settingのみ更新してcatalogを無効化。実multi-host fixture／UI受入は別途必要。
 
 先行試験：query／選択byte、last-good／error／page所有、固定scope、dispatch前cancel、held write、stop／resume／reset・遅い応答、明示fresh回復、read／busy／選択／receipt公開中の同期stop／reset。その後review・対象／全試験・coverage・local署名build。Traffic機能はpendingのまま、試験で実削除／agent／host通信は行わない。
+
+検証した境界補足：stopもcomponent unmountに合わせ適用queryをresetし、認証resetでは公開不明scopeも消す。検証済み処理中byteは完了まで内部保持。回復には利用可能なindexが必須でunavailable sentinelのdecode成功だけでは不可。busy解除の公開後も所有検証し、確認済みreceiptのcommit後に離脱した旧callerへはdiscardedを返し、不明結果を新たに捏造しない。gateはこのstore単位で、process／window間の永続journalは今回未実装。
