@@ -131,7 +131,7 @@ struct RootView: View {
             ProgressView().task {
                 guard !Task.isCancelled, session.phase == .authenticated else { return }
                 trafficScreen?.reset()
-                trafficScreen = TrafficScreenModel(store: TrafficStore(service: TrafficService(client: AuthenticatedBackendClient(session: session))))
+                trafficScreen = TrafficScreenModel(store: TrafficStore(service: TrafficService(client: AuthenticatedBackendClient(session: session))), preferences: .standard)
                 trafficOwner = ObjectIdentifier(session)
             }
         }

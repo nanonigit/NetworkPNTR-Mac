@@ -10,6 +10,8 @@ import Observation
     private(set) var previewRevision = UUID()
     private(set) var deletionDialog: TrafficConfirmation?
     private(set) var drafts = TrafficFilterDrafts()
+    private var pendingSort: TrafficSortPreference?
+    @ObservationIgnored private let preferences: UserDefaults?
     @ObservationIgnored private let sleep: Sleep
     @ObservationIgnored private var changing = false
     @ObservationIgnored private var tearingDown = false
@@ -24,10 +26,10 @@ import Observation
     @ObservationIgnored private var readID = UUID()
     @ObservationIgnored private var pollTask: Task<Void, Never>?
 
-    init(store: TrafficStore, sleep: @escaping Sleep = { try await Task.sleep(for: $0) }) {
-        self.store = store; self.sleep = sleep
+    init(store: TrafficStore, preferences: UserDefaults? = nil, sleep: @escaping Sleep = { try await Task.sleep(for: $0) }) {
+        self.store = store; self.preferences = preferences; self.sleep = sleep
     }
-    var controlsAvailable: Bool { baseAvailable && store.selectedExchange == nil }
+    var controlsAvailable: Bool { baseAvailable && pendingSort == nil && store.selectedExchange == nil }
     private var baseAvailable: Bool {
         presentation != nil && store.isActive && !changing && !tearingDown && !queuedStop && !queuedReset
             && !store.isMutating && store.confirmation == nil && deletionDialog == nil && !Task.isCancelled
@@ -55,7 +57,7 @@ import Observation
     }
     private func retire(reset: Bool) {
         tearingDown = true; resetting = reset
-        cancelTasks(); presentation = nil; drafts = TrafficFilterDrafts(); previewRevision = UUID(); deletionDialog = nil
+        cancelTasks(); presentation = nil; pendingSort = nil; drafts = TrafficFilterDrafts(); previewRevision = UUID(); deletionDialog = nil
         if reset { store.resetSession() } else { store.stop() }
         tearingDown = false; resetting = false
     }
@@ -64,10 +66,13 @@ import Observation
         let lease = UUID()
         update {
             retire(reset: false)
-            if !queuedReset { store.resume(); presentation = lease }
+            if !queuedReset {
+                store.resume()
+                if !queuedReset { pendingSort = preferences.map(TrafficSortPreference.read); presentation = lease }
+            }
         }
         guard owns(lease) else { return nil }
-        _ = refresh(lease: lease)
+        if restoreSort(lease: lease) { _ = refresh(lease: lease) }
         pollTask = Task { [weak self, sleep] in
             while !Task.isCancelled {
                 do { try await sleep(.seconds(5)) } catch { return }
@@ -111,8 +116,28 @@ import Observation
         }
         return true
     }
+    private func restoreSort(lease: UUID) -> Bool {
+        guard let saved = pendingSort else { return true }
+        guard baseAvailable, owns(lease), !changing else {
+            if owns(lease), !changing { observeGate(lease: lease) }
+            return false
+        }
+        let query = saved.applying(to: store.query)
+        var accepted = false
+        update {
+            accepted = store.configure(query, owner: store.owner)
+            if accepted, owns(lease) {
+                pendingSort = nil
+                if owns(lease) { TrafficSortPreference(query: query).write(preferences) }
+            }
+        }
+        return accepted && owns(lease)
+    }
     private func drainReady(lease: UUID) {
         guard owns(lease) else { return }
+        let restoring = pendingSort != nil
+        guard restoreSort(lease: lease) else { return }
+        if restoring { _ = refresh(lease: lease) }
         for field in TrafficTextField.allCases {
             guard let ticket = ready[field] else { continue }
             guard controlsAvailable else { observeGate(lease: lease); return }
@@ -153,7 +178,10 @@ import Observation
         guard controlsAvailable, owns(lease), let query = control.applying(to: store.query) else { return false }
         let previous = store.owner
         var accepted = false
-        update { accepted = store.configure(query, owner: previous) }
+        update {
+            accepted = store.configure(query, owner: previous)
+            if accepted, owns(lease), case .sort = control { TrafficSortPreference(query: query).write(preferences) }
+        }
         guard accepted, owns(lease) else { return false }
         if store.owner != previous { _ = refresh(lease: lease) }
         return true
@@ -176,7 +204,7 @@ import Observation
         _ = refresh(lease: lease); return true
     }
     @discardableResult func refresh(lease: UUID) -> Bool {
-        guard baseAvailable, owns(lease), !store.isRefreshing else { return false }
+        guard baseAvailable, owns(lease), !store.isRefreshing, restoreSort(lease: lease), owns(lease) else { return false }
         readTask?.cancel()
         let id = UUID(); readID = id
         readTask = Task { [weak self] in
