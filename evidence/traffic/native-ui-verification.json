@@ -1,0 +1,137 @@
+{
+  "schema": 1,
+  "passedSoftwareChecks": true,
+  "fullGoalComplete": false,
+  "phase": "TR3 partial native controls; actual UI/root/runtime acceptance and remaining operations pending",
+  "sourceHead": "912e5e2df14fe329f01cdeffcc22121d2c18015b",
+  "baseline": "e75ae371ad777ffd1eecdd28d2781a6519b05591",
+  "sourceSHA256": {
+    "Sources/ArtexMac/TrafficView.swift": "922e05a083d7193dd660eb094f4eadac1a8409037e7252c7c9911c4851059cf4",
+    "Sources/ArtexMac/TrafficBindings.swift": "b52c0b3de2274adc8b392bc6dd5788b582c3e299c9dfd793deca07a4fdd7c0b2",
+    "Sources/ArtexMac/TrafficPresentation.swift": "b79553da92d5e709c4ce9fd7c23ddf1635b6a83e64db15456210931eea7780b8",
+    "Sources/ArtexMac/TrafficScreenModel.swift": "0349d92381c889b1b10eaf1c173d894b2b5cd7eeb5dbf5efcf670fb14303253e",
+    "Sources/ArtexMac/RootView.swift": "72aeab3a26f8bb9f594c56e8734ad7749ef4333e76aba85063fccf83bc8f0d22"
+  },
+  "featureStatus": "in_progress",
+  "implementedControls": [
+    "header capture/proxy/global and matched counts",
+    "six text filters and method/status dropdowns",
+    "advanced reset and page-size picker",
+    "three server-sort columns and fresh adjacent pages",
+    "host selection/count sorting",
+    "lease-owned raw request/response preview and wrap/copy",
+    "substring/exact-host/purge frozen deletion confirmations",
+    "explicit unknown readback acknowledgment"
+  ],
+  "ownedUILabels": {
+    "count": 59,
+    "languages": [
+      "en",
+      "ja"
+    ],
+    "rawPacketsTranslated": false
+  },
+  "tests": {
+    "newUICases": 12,
+    "swiftTotal": 917,
+    "swiftPassed": 916,
+    "existingExternalAXSkipped": 1,
+    "pythonPassed": 179,
+    "baselineFeatures": 21,
+    "baselinePages": 27,
+    "baselineHandlers": 243,
+    "localizationExportPassed": true,
+    "offscreenLocales": [
+      "en",
+      "ja"
+    ],
+    "offscreenSchemes": [
+      "light",
+      "dark"
+    ],
+    "offscreenWidths": [
+      900,
+      1440
+    ],
+    "actualRootActivationTested": false,
+    "actualMouseKeyboardVoiceOverTested": false
+  },
+  "coverage": {
+    "method": "LLVM attributed line entries from full Swift suite; Observation/generic mappings can duplicate physical lines. Not branch, real UI, timing, root activation or backend effect acceptance.",
+    "files": {
+      "RootView.swift": {
+        "count": 337,
+        "covered": 0,
+        "percent": 0
+      },
+      "TrafficBindings.swift": {
+        "count": 89,
+        "covered": 88,
+        "percent": 98.87640449438202
+      },
+      "TrafficPresentation.swift": {
+        "count": 42,
+        "covered": 42,
+        "percent": 100
+      },
+      "TrafficScreenModel.swift": {
+        "count": 351,
+        "covered": 342,
+        "percent": 97.43589743589743
+      },
+      "TrafficView.swift": {
+        "count": 745,
+        "covered": 553,
+        "percent": 74.22818791946308
+      }
+    },
+    "fourTrafficFilesCombined": {
+      "covered": 1025,
+      "count": 1227,
+      "percent": 83.53708231458843,
+      "excludesRootView": true
+    },
+    "gaps": [
+      "TrafficView74.23 percent; user event closures and popover/disclosure paths are not fully exercised",
+      "RootView0/337; actual session/root activation is pending"
+    ]
+  },
+  "browserHostFunctionOracle": {
+    "cases": 22,
+    "receipt": "evidence/traffic/request-host-oracle.json",
+    "equalNativeUTF8": true,
+    "actualBrowserUI": false,
+    "syntheticPacketsOnly": true
+  },
+  "review": {
+    "readOnly": true,
+    "remainingConcreteBlockers": 0,
+    "verifiedRepairs": [
+      "stale pager/reset query owners",
+      "pending-input acknowledgment guard",
+      "ECMAScript multiline Host scanner",
+      "retained-dialog reset scope",
+      "preview modal interaction gate"
+    ]
+  },
+  "stagedApp": {
+    "rebuilt": true,
+    "signatureStrictValid": true,
+    "guestManifestSHA256": "fa0f1972c04f2a04853de37f4fd163b922ac38c841849c635d29f565fe6115ce",
+    "guestArtifactHashesVerified": true,
+    "previousProfilePreserved": true,
+    "candidatePromoted": false,
+    "newTrafficScreenCodeBundled": true,
+    "launched": false,
+    "installedElsewhere": false
+  },
+  "pending": [
+    "flow-to-finding binding",
+    "blob-original download extension",
+    "sort preference persistence",
+    "actual multi-host native VM/reference effects",
+    "actual root activation/browser/native visual/keyboard/VoiceOver/multiwindow",
+    "all original workflow/kernel/provider/harness/release gates"
+  ],
+  "hostedCI": "unverified; publication HEAD uses [skip ci]"
+}
