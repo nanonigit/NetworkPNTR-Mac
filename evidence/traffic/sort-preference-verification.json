@@ -1,0 +1,99 @@
+{
+  "schema": 1,
+  "passedSoftwareChecks": true,
+  "fullGoalComplete": false,
+  "phase": "TR3 nonprivate native sort preference persistence only",
+  "sourceHead": "454d398e69c6dd73fd253eb7de856b3c2b755508",
+  "baseline": "e75ae371ad777ffd1eecdd28d2781a6519b05591",
+  "sourceSHA256": {
+    "Sources/ArtexMac/RootView.swift": "a9fdefd41de6b39410b7f8d1d32099af7164bd581305302dc9952233ef33ef05",
+    "Sources/ArtexMac/TrafficScreenModel.swift": "e6bb287ff336846368dc3c312fe828583588cd04acd5afffd50c69daf7c7b733",
+    "Sources/ArtexMac/TrafficSortPreference.swift": "c4b2d3371d624a2d7f4e118b14c0a9cbbc094f113e328078142d869a15637d5f"
+  },
+  "preference": {
+    "key": "traffic.sort.preference.v1",
+    "fields": [
+      "field",
+      "direction"
+    ],
+    "maximumInputBytes": 4096,
+    "default": {
+      "field": "ts",
+      "direction": "desc"
+    },
+    "browserReference": "web/src/lib/sort-preference.ts and local-storage.client.ts at pinned baseline",
+    "nativeStorageShape": "JSON Data in app UserDefaults; separate from browser storage",
+    "privateQueryOrPacketPersisted": false,
+    "actualAppDomainModifiedByTests": false,
+    "disposableSuitesOnly": true
+  },
+  "tests": {
+    "newPreferenceCases": 9,
+    "validPairs": 6,
+    "malformedMissingLegacyOversizedInputs": 9,
+    "swiftTotal": 926,
+    "swiftPassed": 925,
+    "existingExternalAXSkipped": 1,
+    "pythonPassed": 179,
+    "baselineFeatures": 21,
+    "baselinePages": 27,
+    "baselineHandlers": 243,
+    "localizationExportPassed": true
+  },
+  "coverage": {
+    "method": "LLVM attributed line entries; not branch, root activation, actual UI or OS permission-failure acceptance",
+    "files": {
+      "RootView.swift": {
+        "count": 337,
+        "covered": 0,
+        "percent": 0
+      },
+      "TrafficScreenModel.swift": {
+        "count": 394,
+        "covered": 385,
+        "percent": 97.71573604060913
+      },
+      "TrafficSortPreference.swift": {
+        "count": 24,
+        "covered": 23,
+        "percent": 95.83333333333334
+      }
+    },
+    "preferenceAndModelCombined": {
+      "count": 418,
+      "covered": 408,
+      "percent": 97.60765550239235,
+      "excludesRootView": true
+    },
+    "rootGap": "RootView0/337 remains separately disclosed"
+  },
+  "actualBoundaryRed": {
+    "commit": "0aee4c0",
+    "tests": 9,
+    "assertionFailures": 1,
+    "issue": "begin returned retired lease after synchronous reset during restoration; state/prefs were already scrubbed"
+  },
+  "fixCommit": "454d398",
+  "review": {
+    "readOnly": true,
+    "remainingConcreteBlockers": 0
+  },
+  "stagedApp": {
+    "rebuilt": true,
+    "signatureStrictValid": true,
+    "guestManifestSHA256": "fa0f1972c04f2a04853de37f4fd163b922ac38c841849c635d29f565fe6115ce",
+    "guestArtifactHashesVerified": true,
+    "previousProfilePreserved": true,
+    "candidatePromoted": false,
+    "launched": false,
+    "installedElsewhere": false
+  },
+  "pending": [
+    "flow-to-finding binding",
+    "blob-original extension",
+    "actual app-domain persistence/root activation",
+    "real multi-host VM/reference/browser/native keyboard/VoiceOver/multiwindow",
+    "all original workflow/kernel/provider/harness/release conditions"
+  ],
+  "hostedCI": "unverified; publication HEAD uses [skip ci]"
+}
