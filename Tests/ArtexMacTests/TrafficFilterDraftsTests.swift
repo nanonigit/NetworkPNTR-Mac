@@ -2,6 +2,13 @@ import XCTest
 import ArtexCore
 @testable import ArtexMac
 
+@MainActor private final class TrafficFilterNoTransport: BackendJSONTransport {
+    var calls = 0
+    func send(method: String, path: String, body: Data?, bearer: String?) async throws -> BackendHTTPResponse {
+        calls += 1; throw CancellationError()
+    }
+}
+
 final class TrafficFilterDraftsTests: XCTestCase {
     func testIndependentTicketsApplyOnlyTheirOwnFields() throws {
         var drafts = TrafficFilterDrafts()
@@ -129,4 +136,42 @@ final class TrafficFilterDraftsTests: XCTestCase {
         query = try XCTUnwrap(TrafficFilterControl.sort(.responseLength).applying(to:query))
         XCTAssertEqual(query.sort,.responseLength); XCTAssertEqual(query.order,.descending)
     }
+    func testEveryStatusBucketPreservesSameChoiceHistory() throws {
+        for status in [TrafficStatusFilter.informational, .success, .redirect, .clientError, .serverError, .exact(201)] {
+            var query = TrafficQuery(); query.page = 9
+            query = try XCTUnwrap(TrafficFilterControl.status(status).applying(to: query))
+            XCTAssertEqual(query.page, 0); query.page = 9
+            XCTAssertEqual(TrafficFilterControl.status(status).applying(to: query)?.page, 9)
+        }
+    }
+    @MainActor func testRejectedStoreQueryDoesNotCommitDraftOrDispatch() throws {
+        let api = TrafficFilterNoTransport(), store = TrafficStore(service: TrafficService(client: api))
+        var drafts = TrafficFilterDrafts()
+        drafts.edit(.host, text: String(repeating: "é", count: 8193))
+        let ticket = drafts.ticket(.host)
+        let proposal = try XCTUnwrap(drafts.proposal(for: ticket, query: store.query))
+        let owner = store.owner
+        XCTAssertFalse(store.configure(proposal.query, owner: owner))
+        XCTAssertEqual(store.owner, owner); XCTAssertEqual(store.query.host, "")
+        XCTAssertTrue(try XCTUnwrap(drafts.proposal(for: ticket, query: store.query)).changed)
+        XCTAssertEqual(api.calls, 0)
+    }
+    @MainActor func testAcceptedStoreProposalKeepsHistoryAndPendingOtherField() throws {
+        let api = TrafficFilterNoTransport(), store = TrafficStore(service: TrafficService(client: api))
+        var drafts = TrafficFilterDrafts(); drafts.edit(.host, text: "host")
+        drafts.edit(.body, text: "pending body")
+        let body = drafts.ticket(.body)
+        let first = try XCTUnwrap(drafts.proposal(for: drafts.ticket(.host), query: store.query))
+        XCTAssertTrue(store.configure(first.query, owner: store.owner)); drafts = first.drafts
+        var history = store.query; history.page = 7
+        XCTAssertTrue(store.configure(history, owner: store.owner))
+        let same = try XCTUnwrap(drafts.proposal(for: drafts.ticket(.host), query: store.query))
+        XCTAssertTrue(store.configure(same.query, owner: store.owner)); drafts = same.drafts
+        XCTAssertEqual(store.query.page, 7); XCTAssertEqual(store.query.body, "")
+        let next = try XCTUnwrap(drafts.proposal(for: body, query: store.query))
+        XCTAssertTrue(store.configure(next.query, owner: store.owner))
+        XCTAssertEqual(store.query.page, 0); XCTAssertEqual(store.query.body, "pending body")
+        XCTAssertEqual(api.calls, 0)
+    }
+
 }
