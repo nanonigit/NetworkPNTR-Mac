@@ -5,4 +5,4 @@ COPY source/go.mod source/go.sum ./
 RUN go mod download && go mod verify
 COPY source/ ./
 COPY extension/ ./traffic/
-RUN --network=none go test -mod=readonly ./traffic -run TestManagedBlobManifest -count=1
+RUN --network=none go test -mod=readonly ./traffic -count=1 -json -coverprofile=/tmp/traffic.cover > /tmp/traffic-tests.json && cat /tmp/traffic-tests.json && go tool cover -func=/tmp/traffic.cover
