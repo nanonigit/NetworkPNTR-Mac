@@ -1,5 +1,8 @@
 # Structured blob metadata primitive verification
 
+Historical primitive checkpoint. The subsequent managed HTTP source wiring is recorded in traffic-blob-http-verification.md; VM/native save acceptance remains open.
+
+
 The separately managed backend overlay now supplies Traffic.BlobManifest and a hardened openManagedBlob helper over frozen e75ae371. It reads only structural exchange_bodies/exchanges association data for an exact literal ID and request/response side; validates lowercase64hex hash, Int64 length and actual regular-file size; and closes its descriptors. Inline marker text never creates an export manifest. Root and intermediate directory opens are descriptor-relative/no-follow; the final file is nonblocking/no-follow and must be regular. Current and documented legacy bucket layouts work.
 
 c937d64 missing-method compileRED→a4e95b9 ordinary GREEN. Independent read-only review found blocking inherited os.Open and symlink acceptance.9856893 reproduced the FIFO deadline failure after5.01s and accepted symlink; c40ec74 hardened the opener and passed the same cases. bbe7072 adds Unicode/NFD identity, legacy layout and corrupt association cases. See bugs/traffic-blob-metadata.md and Japanese counterpart for evidence/5Whys/Fishbone/Timeline. Final read-only review found no additional blocker in this primitive; the reviewer did not run tests.

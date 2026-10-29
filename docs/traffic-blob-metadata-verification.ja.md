@@ -1,5 +1,8 @@
 # 構造化blobメタデータ処理の検証
 
+この文書はメタデータ処理だけの過去チェックポイント。後続のHTTP接続はtraffic-blob-http-verification.mdへ記録し、VM／ネイティブ保存の受入は未完。
+
+
 固定e75ae371に対する独立backend overlayへTraffic.BlobManifestと安全なopenManagedBlobを追加。正確な生IDと要求／応答の側に対応するexchange_bodies／exchangesの構造化関連情報だけを読み、小文字64桁hash、Int64長、実際の通常ファイル長を検証してFDを閉じる。inline本文のmarkerから保存情報を作らない。rootと中間ディレクトリはFD基準・リンク非追跡、最終ファイルは非ブロッキング・リンク非追跡・通常ファイル限定。現在／既知の旧bucket配置を扱う。
 
 c937d64未実装RED→a4e95b9通常GREEN。独立した読み取り専用レビューで、既存os.Openのブロックとリンク受理が判明。9856893で5.01秒のFIFO期限失敗とリンク受理を再現し、c40ec74で安全化して同じ試験を通過。bbe7072でUnicode／NFD、旧配置、壊れた関連情報も追加。原因・証拠・5Whys／Fishbone／Timelineはbugs/traffic-blob-metadata.mdと日本語版。最終レビューでこの処理の阻害指摘なし。レビュアーは試験を実行していない。
