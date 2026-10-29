@@ -60,7 +60,7 @@ import Foundation
         try require(indices==Set(0..<29))
         return try page.exchanges.sorted{try CapturedProbeContract.ordinal($0.url)<CapturedProbeContract.ordinal($1.url)}
     }
-    private static func exercise(_ api: WithheldResponse,_ session: AuthenticationSession,_ traffic: CapturedTrafficService,_ rows: [CapturedTrafficExchange],_ directory: URL) async throws -> ([String:Any],FindingTraffic,Bool) {
+    private static func exercise(_ api: WithheldResponse,_ session: AuthenticationSession,_ traffic: CapturedTrafficService,_ rows: [CapturedTrafficExchange],_ directory: URL) async throws -> ([String:Any],FindingTraffic,Bool,[String:Any]) {
         progress("exercise-pages")
         let byID=Dictionary(uniqueKeysWithValues:rows.map{($0.id,$0)})
         var paged=[CapturedTrafficExchange]()
@@ -109,7 +109,10 @@ import Foundation
         try require(picker.configure(previewQuery,owner:picker.owner));await picker.refreshCatalog()
         try require(picker.selectPreview(id:rows[3].id,owner:picker.owner));await picker.refreshPreview()
         try require(picker.preview.value != nil && !picker.preview.isStale)
+        progress("exercise-standalone-traffic")
+        let standalone = try await StandaloneTrafficExercise.run(client: api, records: rows)
         let bound=try confirmed(await picker.bind(owner:picker.owner));picker.stop()
+        try require(try same(CapturedProbeContract.normalized(standalone.receipt), CapturedProbeContract.normalized(bound)))
         try require(bound.bindings.count==2 && zip(bound.bindings,[3,4]).allSatisfy{row,index in row.snapshot.sourceTrafficId==rows[index].id && row.snapshot.url==rows[index].url && row.role=="supporting" && row.note.isEmpty})
         progress("exercise-bodies")
         var bodies=[[String:Any]](),previews=[[String:Any]]()
@@ -164,7 +167,7 @@ import Foundation
         let metadata=try await findings.detail(id:"9101");try require(metadata.evidenceVersion==removed.version && metadata.trafficCount==1 && metadata.reportStale)
         var states=[String:Any]();for (key,value) in [("bound",bound),("edited",edited),("ordered",ordered),("removed",removed)] {states[key]=try CapturedProbeContract.normalized(value)}
         store.stop()
-        return (["metadata":["evidence_version":metadata.evidenceVersion,"report_evidence_version":metadata.reportEvidenceVersion,"traffic_count":metadata.trafficCount,"report_stale":metadata.reportStale],"filters":filters,"bodies":bodies,"previews":previews,"states":states],removed,true)
+        return (["metadata":["evidence_version":metadata.evidenceVersion,"report_evidence_version":metadata.reportEvidenceVersion,"traffic_count":metadata.trafficCount,"report_stale":metadata.reportStale],"filters":filters,"bodies":bodies,"previews":previews,"states":states],removed,true,standalone.report)
     }
     private static func runDebug(_ args: [String]) async {
         let artifacts=URL(fileURLWithPath:args[0]),output=URL(fileURLWithPath:args[1]),reference=URL(fileURLWithPath:args[2])
@@ -201,7 +204,9 @@ import Foundation
                     sourceHashes=fixture.sourceSHA256;let empty=try await traffic.list();try require(!empty.isUnavailable && empty.count==0 && empty.total==0 && empty.exchanges.isEmpty)
                     stage="fixture";progress(stage);_ = try await fixture.prepare();initialRows=try await records(traffic)
                     let downloads=output.appendingPathComponent("downloads");try FileManager.default.createDirectory(at:downloads,withIntermediateDirectories:false,attributes:[.posixPermissions:0o700])
-                    stage="exercise";progress(stage);(result,finalState,recovery)=try await exercise(api,session,traffic,initialRows,downloads)
+                    stage="exercise";progress(stage);let standalone: [String: Any]
+                    (result,finalState,recovery,standalone)=try await exercise(api,session,traffic,initialRows,downloads)
+                    report["standaloneTraffic"] = standalone
                     let audited=try await fixture.audit();result["counts"]=audited.counts;executedSourceHashes=audited.sourceSha256;sourceAudits+=1
                 } else {
                     stage="persisted-audit";progress(stage);try require(fixture.sourceSHA256==sourceHashes);let audited=try await fixture.audit()
