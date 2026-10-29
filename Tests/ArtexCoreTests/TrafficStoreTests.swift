@@ -6,6 +6,7 @@ import XCTest
 @MainActor private final class TrafficStateAPI: BackendJSONTransport {
     var calls:[(String,String,Data?)]=[]
     var holdRead=false,holdWrite=false,failRead=false,failWrite=false
+    var captureAvailable=true
     var pendingReads:[CheckedContinuation<BackendHTTPResponse,any Error>]=[]
     var pendingWrites:[CheckedContinuation<BackendHTTPResponse,any Error>]=[]
     var rowIDs=["é","e\u{301}"]
@@ -28,6 +29,7 @@ import XCTest
         if path=="/api/settings" {return try response(["traffic_capture":false])}
         if path=="/api/traffic/hosts" {return try response(["hosts":hostNames.map{["host":$0,"count":1] as [String:Any]}])}
         if path.hasPrefix("/api/traffic/exchange?") {return try response(["req":"\u{FEFF}raw 中文 한국어","resp":"response"])}
+        if !captureAvailable {return try response(["enabled":false,"exchanges":[]])}
         let number=Int64(URLComponents(string:path)?.queryItems?.first{$0.name=="page"}?.value ?? "0") ?? 0
         return try page(number)
     }
@@ -135,6 +137,21 @@ import XCTest
             else {guard case .discarded=result else {return XCTFail("Departed receipt")};XCTAssertEqual(api.calls.count,calls+1);XCTAssertTrue(store.hasUnknownOutcome)}
             XCTAssertFalse(store.isActive);XCTAssertFalse(store.isMutating);XCTAssertNil(store.lastReceipt);XCTAssertNil(store.catalog.value)
         }
+    }
+    func testResetScrubsAppliedQueryAndRetainsOnlyGenericUncertainty() async throws {
+        let api=TrafficStateAPI(),store=await loaded(api);var query=store.query;query.host="private-host";query.keyword="private-query";query.body="private-body";query.path="/private-path"
+        XCTAssertTrue(store.configure(query,owner:store.owner));await store.refresh();api.failWrite=true
+        XCTAssertTrue(store.prepare(.matchingHost,owner:store.owner));let confirmation=try XCTUnwrap(store.confirmation);_ = await store.confirm(id:confirmation.id,owner:confirmation.owner)
+        XCTAssertNotNil(store.unknownChange);store.resetSession()
+        XCTAssertTrue(store.hasUnknownOutcome);XCTAssertNil(store.unknownChange);XCTAssertNil(store.catalog.value);XCTAssertTrue(store.selectedHosts.isEmpty)
+        XCTAssertEqual(store.query.host,"");XCTAssertEqual(store.query.keyword,"");XCTAssertEqual(store.query.body,"");XCTAssertEqual(store.query.path,"")
+    }
+    func testUnavailableIndexCannotSatisfyFreshUnknownRecovery() async throws {
+        let api=TrafficStateAPI(),store=await loaded(api);api.failWrite=true
+        XCTAssertTrue(store.prepare(.purgeAll,owner:store.owner));let confirmation=try XCTUnwrap(store.confirmation);_ = await store.confirm(id:confirmation.id,owner:confirmation.owner)
+        api.captureAvailable=false;await store.refresh();XCTAssertEqual(store.catalog.value?.isUnavailable,true)
+        XCTAssertFalse(store.canAcknowledgeUnknown);XCTAssertFalse(store.acknowledgeUnknown(owner:store.owner,revision:store.unknownRevision));XCTAssertTrue(store.hasUnknownOutcome)
+        api.captureAvailable=true;await store.refresh();XCTAssertTrue(store.acknowledgeUnknown(owner:store.owner,revision:store.unknownRevision))
     }
     func testSynchronousStopDuringBusyAndReadPublicationRevokesDispatch() async throws {
         for write in [false,true] {
