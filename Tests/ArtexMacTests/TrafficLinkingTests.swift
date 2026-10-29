@@ -255,6 +255,14 @@ private struct LinkPost: Decodable { struct Ref: Decodable { let trafficId: Stri
         }
         XCTAssertNotEqual(TrafficLinkDialog.severityLabel("high", language: .japanese), "high")
     }
+    func testCandidateTitleKeepsFindingHandleAndFallbackLikeReference() throws {
+        let api = LinkAPI()
+        let row = try BackendJSONCoding.decode(FindingRecord.self, from: JSONSerialization.data(withJSONObject: api.row("7")))
+        XCTAssertEqual(Data(TrafficLinkDialog.candidateTitle(row).utf8), Data(("#7 · " + row.name).utf8))
+        var empty = api.row("8"); empty["name"] = ""
+        let fallback = try BackendJSONCoding.decode(FindingRecord.self, from: JSONSerialization.data(withJSONObject: empty))
+        XCTAssertEqual(TrafficLinkDialog.candidateTitle(fallback), "#8 · CWE-79")
+    }
     func testOffscreenLinkDialogBothLanguagesHasNoIOOrMutation() async throws {
         let (model, api, clock, lease) = try await fixture(); defer { model.reset(); clock.release() }
         let workspace = try await open(model, clock, lease); try await choose(workspace)
