@@ -187,6 +187,14 @@ import XCTest
         guard case .discarded=outcome else {return XCTFail("Retired owner received confirmed outcome")}
         XCTAssertFalse(store.isActive);XCTAssertFalse(store.isMutating);XCTAssertNil(store.lastReceipt);XCTAssertEqual(api.calls.count,calls+1)
     }
+    func testCallerCancellationAfterDispatchKeepsUnknownWithoutFailureOrRetry() async throws {
+        let api=TrafficStateAPI(),store=await loaded(api);XCTAssertTrue(store.prepare(.purgeAll,owner:store.owner));let confirmation=try XCTUnwrap(store.confirmation),calls=api.calls.count
+        api.onSend={method in if method != "GET" {withUnsafeCurrentTask{$0?.cancel()}}}
+        let job=Task{await store.confirm(id:confirmation.id,owner:confirmation.owner)}
+        guard case .discarded=await job.value else {return XCTFail("Cancelled caller")}
+        XCTAssertTrue(store.hasUnknownOutcome);XCTAssertNil(store.failure);XCTAssertNil(store.lastReceipt);XCTAssertFalse(store.isMutating);XCTAssertEqual(api.calls.count,calls+1)
+        await store.refresh();XCTAssertTrue(store.hasUnknownOutcome);XCTAssertTrue(store.acknowledgeUnknown(owner:store.owner,revision:store.unknownRevision))
+    }
     func testSynchronousStopDuringBusyAndReadPublicationRevokesDispatch() async throws {
         for write in [false,true] {
             let api=TrafficStateAPI(),store=await loaded(api);let count=api.calls.count
