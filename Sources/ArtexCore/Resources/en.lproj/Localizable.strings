@@ -1735,6 +1735,8 @@ Archive IDs: {archives}</string>
 	<string>Recording stopped</string>
 	<key>traffic.ui.captureOn</key>
 	<string>Recording</string>
+	<key>traffic.ui.clearFlows</key>
+	<string>Clear traffic selection</string>
 	<key>traffic.ui.clearHosts</key>
 	<string>Clear host selection</string>
 	<key>traffic.ui.close</key>
@@ -1765,6 +1767,34 @@ Archive IDs: {archives}</string>
 	<string>Select hosts</string>
 	<key>traffic.ui.length</key>
 	<string>Response bytes</string>
+	<key>traffic.ui.link</key>
+	<string>Link traffic</string>
+	<key>traffic.ui.linkAcknowledge</key>
+	<string>Acknowledge evidence</string>
+	<key>traffic.ui.linkCount</key>
+	<string>{count} traffic records selected</string>
+	<key>traffic.ui.linkDone</key>
+	<string>Linked {count} traffic records.</string>
+	<key>traffic.ui.linkEmpty</key>
+	<string>No matching findings.</string>
+	<key>traffic.ui.linkEvidence</key>
+	<string>Finding {id}: {count} linked records</string>
+	<key>traffic.ui.linkPreserved</key>
+	<string>Linking completed. Your changed traffic selection was preserved.</string>
+	<key>traffic.ui.linkReadOnly</key>
+	<string>Read-only finding</string>
+	<key>traffic.ui.linkRecovery</key>
+	<string>Review traffic linking</string>
+	<key>traffic.ui.linkReload</key>
+	<string>Reload evidence</string>
+	<key>traffic.ui.linkSearch</key>
+	<string>Search findings</string>
+	<key>traffic.ui.linkStale</key>
+	<string>Waiting for current search results.</string>
+	<key>traffic.ui.linkTarget</key>
+	<string>Selected finding: {name}</string>
+	<key>traffic.ui.linkUnknown</key>
+	<string>The linking result is unknown. Reload the evidence and acknowledge it before another change.</string>
 	<key>traffic.ui.maximum</key>
 	<string>Maximum response bytes</string>
 	<key>traffic.ui.method</key>
@@ -1811,6 +1841,10 @@ Archive IDs: {archives}</string>
 	<string>Other filters do not narrow this deletion. This action cannot be undone.</string>
 	<key>traffic.ui.selectAllHosts</key>
 	<string>Select all hosts</string>
+	<key>traffic.ui.selectFlow</key>
+	<string>Select traffic {id}</string>
+	<key>traffic.ui.selectFlows</key>
+	<string>Select visible traffic</string>
 	<key>traffic.ui.selectedHosts</key>
 	<string>{count} hosts selected</string>
 	<key>traffic.ui.sortAscending</key>

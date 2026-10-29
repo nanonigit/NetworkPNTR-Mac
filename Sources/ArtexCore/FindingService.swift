@@ -72,6 +72,13 @@ public struct FindingPatch: Encodable, Sendable {
         guard page.page == query.page, page.pageSize == query.size, page.items.allSatisfy(\.standalone) else { throw BackendAPIError.invalidResponse }
         return page
     }
+    /// Global selector rows may lack a writable handle; callers display those rows read-only.
+    public func bindingCandidates(search: String, page: Int64) async throws -> FindingPage {
+        let query = FindingQuery(page: page, size: 20, search: search)
+        let result = try await request(FindingPage.self, path: query.path(base, maximum: 20))
+        guard result.page == page, result.pageSize == 20 else { throw BackendAPIError.invalidResponse }
+        return result
+    }
     public func groups(_ query: FindingQuery = .init(size:10)) async throws -> FindingGroupsPage {
         let page = try await request(FindingGroupsPage.self,path:query.path(base+"/groups",maximum:100))
         guard page.page == query.page, page.pageSize == query.size else { throw BackendAPIError.invalidResponse }; return page

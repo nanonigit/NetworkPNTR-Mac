@@ -46,4 +46,15 @@ import SwiftUI
             if $0 == nil, let id { _ = model.cancelDeletion(id: id, lease: lease, owner: owner) }
         })
     }
+    static func flow(_ model: TrafficScreenModel, id: String, lease: UUID, owner: UUID) -> Binding<Bool> {
+        .init(get: { model.presentation == lease && model.store.owner == owner && model.store.selectedFlowIDs.contains { Data($0.utf8) == Data(id.utf8) } }, set: {
+            _ = model.toggleFlow(id, selected: $0, lease: lease, owner: owner)
+        })
+    }
+    static func link(_ model: TrafficScreenModel, lease: UUID, id: UUID?) -> Binding<TrafficLinkWorkspace?> {
+        .init(get: { model.presentation == lease && model.linkWorkspace?.id == id ? model.linkWorkspace : nil }, set: {
+            if $0 == nil, let id { _ = model.closeLink(id: id, lease: lease) }
+        })
+    }
+
 }

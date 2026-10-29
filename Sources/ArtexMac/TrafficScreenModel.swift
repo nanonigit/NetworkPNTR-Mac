@@ -6,6 +6,14 @@ import Observation
 @MainActor @Observable final class TrafficScreenModel {
     typealias Sleep = @MainActor (Duration) async throws -> Void
     let store: TrafficStore
+    let linking: TrafficBindingStore?
+    private let findings: FindingService?
+    private(set) var linkWorkspace: TrafficLinkWorkspace?
+    private(set) var linkedCount: Int?
+    private(set) var linkSelectionPreserved = false
+    var linkHasUnknown: Bool { linking?.hasUnknownOutcome == true }
+    var canOpenLink: Bool { findings != nil && linking != nil && !linkHasUnknown && !store.hasUnknownOutcome }
+
     private(set) var presentation: UUID?
     private(set) var previewRevision = UUID()
     private(set) var deletionDialog: TrafficConfirmation?
@@ -26,13 +34,13 @@ import Observation
     @ObservationIgnored private var readID = UUID()
     @ObservationIgnored private var pollTask: Task<Void, Never>?
 
-    init(store: TrafficStore, preferences: UserDefaults? = nil, sleep: @escaping Sleep = { try await Task.sleep(for: $0) }) {
-        self.store = store; self.preferences = preferences; self.sleep = sleep
+    init(store: TrafficStore, findings: FindingService? = nil, binding: FindingTrafficService? = nil, preferences: UserDefaults? = nil, sleep: @escaping Sleep = { try await Task.sleep(for: $0) }) {
+        self.store = store; self.findings = findings; self.linking = binding.map(TrafficBindingStore.init); self.preferences = preferences; self.sleep = sleep
     }
     var controlsAvailable: Bool { baseAvailable && pendingSort == nil && store.selectedExchange == nil }
     private var baseAvailable: Bool {
         presentation != nil && store.isActive && !changing && !tearingDown && !queuedStop && !queuedReset
-            && !store.isMutating && store.confirmation == nil && deletionDialog == nil && !Task.isCancelled
+            && linkWorkspace == nil && linking?.isMutating != true && !store.isMutating && store.confirmation == nil && deletionDialog == nil && !Task.isCancelled
     }
     var hasPendingText: Bool {
         TrafficTextField.allCases.contains {
@@ -57,6 +65,9 @@ import Observation
     }
     private func retire(reset: Bool) {
         tearingDown = true; resetting = reset
+        linkWorkspace?.stop(); linkWorkspace = nil
+        if reset { linking?.resetSession() } else { linking?.stop() }
+        linkedCount = nil; linkSelectionPreserved = false
         cancelTasks(); presentation = nil; pendingSort = nil; drafts = TrafficFilterDrafts(); previewRevision = UUID(); deletionDialog = nil
         if reset { store.resetSession() } else { store.stop() }
         tearingDown = false; resetting = false
@@ -152,7 +163,7 @@ import Observation
         guard gateWatch == nil else { return }
         let id = UUID(); gateWatch = id
         withObservationTracking {
-            _ = store.confirmation; _ = store.isMutating; _ = store.isActive; _ = deletionDialog; _ = store.selectedExchange
+            _ = store.confirmation; _ = store.isMutating; _ = store.isActive; _ = deletionDialog; _ = store.selectedExchange; _ = linkWorkspace; _ = linking?.isMutating
         } onChange: { [weak self] in
             Task { @MainActor [weak self] in
                 guard let self, self.gateWatch == id, self.owns(lease) else { return }
@@ -254,7 +265,7 @@ import Observation
         }
     }
     @discardableResult func prepareDeletion(_ intent: TrafficIntent, lease: UUID, owner: UUID) -> Bool {
-        guard canUseRecords(lease: lease, owner: owner) else { return false }
+        guard canUseRecords(lease: lease, owner: owner), !linkHasUnknown else { return false }
         if case .capture = intent { return false }
         var accepted = false
         update {
@@ -273,7 +284,7 @@ import Observation
         return accepted && owns(lease)
     }
     func confirmDeletion(id: UUID, lease: UUID, owner: UUID) async -> TrafficMutationOutcome {
-        guard owns(lease), !changing, !store.isMutating, store.owner == owner,
+        guard owns(lease), !changing, !store.isMutating, !linkHasUnknown, linking?.isMutating != true, linkWorkspace == nil, store.owner == owner,
               deletionDialog?.id == id, store.confirmation?.id == id else { return .notStarted }
         if case .capture = deletionDialog?.change { return .notStarted }
         let result = await store.confirm(id: id, owner: owner)
@@ -288,6 +299,73 @@ import Observation
         var accepted = false
         update { accepted = store.acknowledgeUnknown(owner: owner, revision: revision) }
         return accepted && owns(lease)
+    }
+
+    @discardableResult func toggleFlow(_ id: String, selected: Bool, lease: UUID, owner: UUID) -> Bool {
+        guard canUseRecords(lease: lease, owner: owner) else { return false }
+        var accepted = false
+        update { accepted = store.toggleFlow(id: id, selected: selected, owner: owner) }
+        return accepted && owns(lease) && store.owner == owner
+    }
+    @discardableResult func clearFlows(lease: UUID, owner: UUID, revision: UUID) -> Bool {
+        guard canUseRecords(lease: lease, owner: owner), store.flowRevision == revision else { return false }
+        var accepted = false
+        update { accepted = store.clearFlowSelection(owner: owner) }
+        return accepted && owns(lease)
+    }
+    @discardableResult func selectVisibleFlows(_ selected: Bool, lease: UUID, owner: UUID) -> Bool {
+        guard canUseRecords(lease: lease, owner: owner) else { return false }
+        var accepted = false
+        update { accepted = store.selectVisibleFlows(selected, owner: owner) }
+        return accepted && owns(lease)
+    }
+    @discardableResult func openLink(lease: UUID, owner: UUID, revision: UUID) -> Bool {
+        guard canUseRecords(lease: lease, owner: owner), canOpenLink, store.flowRevision == revision,
+              !store.selectedFlowIDs.isEmpty, let findings, let linking else { return false }
+        return presentLink(lease: lease, findings: findings, binding: linking, recoveryOnly: false)
+    }
+    @discardableResult func openLinkRecovery(lease: UUID) -> Bool {
+        guard baseAvailable, owns(lease), linkHasUnknown, let findings, let linking else { return false }
+        return presentLink(lease: lease, findings: findings, binding: linking, recoveryOnly: true)
+    }
+    private func presentLink(lease: UUID, findings: FindingService, binding: TrafficBindingStore, recoveryOnly: Bool) -> Bool {
+        var next: TrafficLinkWorkspace?
+        update {
+            binding.resume()
+            guard owns(lease), !binding.isMutating else { return }
+            let workspace = TrafficLinkWorkspace(parent: self, lease: lease, findings: findings, binding: binding,
+                sourceIDs: recoveryOnly ? [] : store.selectedFlowIDs, recoveryOnly: recoveryOnly, sleep: sleep)
+            linkWorkspace = workspace; linkedCount = nil; linkSelectionPreserved = false; next = workspace
+        }
+        guard let next, acceptsLink(id: next.id, lease: lease) else { return false }
+        next.start(); return true
+    }
+    func acceptsLink(id: UUID, lease: UUID) -> Bool {
+        owns(lease) && !changing && linkWorkspace?.id == id
+    }
+    func linkScopeMatches(id: UUID, lease: UUID, owner: UUID, revision: UUID) -> Bool {
+        acceptsLink(id: id, lease: lease) && store.owner == owner && store.flowRevision == revision
+            && !store.isMutating && deletionDialog == nil && store.selectedExchange == nil && !store.hasUnknownOutcome
+    }
+    @discardableResult func closeLink(id: UUID, lease: UUID) -> Bool {
+        guard acceptsLink(id: id, lease: lease), let workspace = linkWorkspace,
+              !workspace.isSubmitting, !workspace.binding.isMutating else { return false }
+        update { workspace.stop(); linkWorkspace = nil }
+        return owns(lease)
+    }
+    /// Called only after the binding store has verified a complete receipt.
+    func finishLink(id: UUID, lease: UUID, owner: UUID, revision: UUID, count: Int) -> Bool {
+        guard acceptsLink(id: id, lease: lease), let workspace = linkWorkspace else { return false }
+        var cleared = false
+        update {
+            if store.owner == owner, store.flowRevision == revision {
+                cleared = store.clearFlowSelection(owner: owner)
+            }
+            guard owns(lease), !queuedStop, !queuedReset else { return }
+            linkedCount = count; linkSelectionPreserved = !cleared
+            workspace.stop(); linkWorkspace = nil
+        }
+        return cleared && owns(lease)
     }
 
 }

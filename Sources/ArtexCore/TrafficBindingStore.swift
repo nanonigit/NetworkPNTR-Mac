@@ -122,7 +122,7 @@ import Observation
             update { isStale = true; if !(error is CancellationError) { failure = AppErrorMessage(error) } }
         }
     }
-    public func bind(id: UUID, owner expected: UUID) async -> FindingTrafficMutationOutcome {
+    public func bind(id: UUID, owner expected: UUID, onDispatch: @MainActor () throws -> Void = {}) async -> FindingTrafficMutationOutcome {
         guard current(expected), canBind, requestID == id, let target, let summary else { return .notStarted }
         let request: FindingTrafficWriteRequest
         do { request = try service.prepare(.bind(sourceIDs.map { .init(trafficId: $0) }), to: target, snapshot: summary) }
@@ -134,6 +134,7 @@ import Observation
         guard owns(ticket), !Task.isCancelled else { return .notStarted }
         do {
             let receipt = try await service.execute(request) {
+                try onDispatch()
                 guard self.owns(ticket), !Task.isCancelled else { throw CancellationError() }
                 ticket.sent = true
             }

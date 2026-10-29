@@ -37,6 +37,7 @@ import SwiftUI
             filters
             notices
             actions
+            flowActions
             trafficList
             pager
         }.padding(20).navigationTitle(s(.trafficUITitle))
@@ -45,6 +46,9 @@ import SwiftUI
         }
         .sheet(item: TrafficBindings.confirmation(model, lease: lease, id: model.deletionDialog?.id, owner: capturedOwner)) { context in
             TrafficDeleteDialog(model: model, lease: lease, contextID: context.id)
+        }
+        .sheet(item: TrafficBindings.link(model, lease: lease, id: model.linkWorkspace?.id)) { workspace in
+            TrafficLinkDialog(model: model, lease: lease, id: workspace.id)
         }
     }
     private var header: some View {
@@ -134,7 +138,29 @@ import SwiftUI
             Button(s(.trafficUIPurge), role: .destructive) { _ = model.prepareDeletion(.purgeAll, lease: lease, owner: capturedOwner) }.disabled(!canDelete)
         }.controlSize(.small)
     }
-    private var canDelete: Bool { recordActions && !model.store.isRefreshing && !model.store.hasUnknownOutcome && model.store.catalog.value?.isUnavailable == false }
+    private var flowActions: some View {
+        let capturedOwner = owner, revision = model.store.flowRevision
+        let visible = model.store.catalog.value?.exchanges ?? []
+        let all = !visible.isEmpty && visible.allSatisfy { row in model.store.selectedFlowIDs.contains { Data($0.utf8) == row.identity } }
+        return VStack(alignment: .leading, spacing: 6) {
+            HStack {
+                Toggle(s(.trafficUISelectFlows), isOn: .init(get: { all }, set: { _ = model.selectVisibleFlows($0, lease: lease, owner: capturedOwner) }))
+                    .toggleStyle(.checkbox).disabled(!recordActions)
+                Text(f(.trafficUILinkCount, ["count": String(model.store.selectedFlowIDs.count)])).font(.caption)
+                Spacer()
+                Button(s(.trafficUIClearFlows)) { _ = model.clearFlows(lease: lease, owner: capturedOwner, revision: revision) }.disabled(!model.controlsAvailable || model.store.selectedFlowIDs.isEmpty)
+                Button(s(.trafficUILink)) { _ = model.openLink(lease: lease, owner: capturedOwner, revision: revision) }
+                    .disabled(!model.controlsAvailable || !model.canOpenLink || model.hasPendingText || model.store.selectedFlowIDs.isEmpty)
+            }.controlSize(.small)
+            if model.linkHasUnknown {
+                Text(s(.trafficUILinkUnknown)).foregroundStyle(.orange)
+                Button(s(.trafficUILinkRecovery)) { _ = model.openLinkRecovery(lease: lease) }.disabled(!model.controlsAvailable)
+            }
+            if let count = model.linkedCount { Text(f(.trafficUILinkDone, ["count": String(count)])) }
+            if model.linkSelectionPreserved { Text(s(.trafficUILinkPreserved)).foregroundStyle(.secondary) }
+        }
+    }
+    private var canDelete: Bool { recordActions && !model.linkHasUnknown && !model.store.isRefreshing && !model.store.hasUnknownOutcome && model.store.catalog.value?.isUnavailable == false }
     private var hostsPanel: some View {
         let capturedOwner = owner
         let hosts = (model.store.hosts.value?.hosts ?? []).sorted {
@@ -171,6 +197,8 @@ import SwiftUI
                     else if model.store.catalog.value?.exchanges.isEmpty == true { Text(s(.trafficUIEmpty)).padding() }
                     ForEach(model.store.catalog.value?.exchanges ?? [], id: \.identity) { row in
                         HStack(spacing: 12) {
+                            Toggle(f(.trafficUISelectFlow, ["id": row.id]), isOn: TrafficBindings.flow(model, id: row.id, lease: lease, owner: capturedOwner))
+                                .labelsHidden().toggleStyle(.checkbox).frame(width: 24).disabled(!recordActions)
                             Text(row.ts).frame(width: 180, alignment: .leading)
                             Text(row.host).frame(width: 150, alignment: .leading)
                             Text(row.method).frame(width: 70, alignment: .leading)
@@ -183,6 +211,7 @@ import SwiftUI
                     }
                 } header: {
                     HStack(spacing: 12) {
+                        Color.clear.frame(width: 24, height: 1)
                         sort(.timestamp, .trafficUITime).frame(width: 180, alignment: .leading)
                         Text(s(.trafficUIHostColumn)).frame(width: 150, alignment: .leading)
                         Text(s(.trafficUIMethod)).frame(width: 70, alignment: .leading)

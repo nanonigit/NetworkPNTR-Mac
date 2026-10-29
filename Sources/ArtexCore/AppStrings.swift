@@ -1,6 +1,23 @@
 import Foundation
 
 public enum AppStringKey: String, CaseIterable, Sendable {
+    case trafficUILink = "traffic.ui.link"
+    case trafficUILinkRecovery = "traffic.ui.linkRecovery"
+    case trafficUILinkUnknown = "traffic.ui.linkUnknown"
+    case trafficUILinkEvidence = "traffic.ui.linkEvidence"
+    case trafficUILinkReload = "traffic.ui.linkReload"
+    case trafficUILinkAcknowledge = "traffic.ui.linkAcknowledge"
+    case trafficUILinkCount = "traffic.ui.linkCount"
+    case trafficUILinkTarget = "traffic.ui.linkTarget"
+    case trafficUILinkSearch = "traffic.ui.linkSearch"
+    case trafficUILinkStale = "traffic.ui.linkStale"
+    case trafficUILinkReadOnly = "traffic.ui.linkReadOnly"
+    case trafficUILinkEmpty = "traffic.ui.linkEmpty"
+    case trafficUISelectFlows = "traffic.ui.selectFlows"
+    case trafficUISelectFlow = "traffic.ui.selectFlow"
+    case trafficUIClearFlows = "traffic.ui.clearFlows"
+    case trafficUILinkDone = "traffic.ui.linkDone"
+    case trafficUILinkPreserved = "traffic.ui.linkPreserved"
     case trafficUITitle = "traffic.ui.title"
     case trafficUISubtitle = "traffic.ui.subtitle"
     case trafficUITotal = "traffic.ui.total"
