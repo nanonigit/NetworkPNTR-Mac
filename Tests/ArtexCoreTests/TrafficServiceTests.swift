@@ -12,12 +12,37 @@ import XCTest
     func set(_ value:Any,status:Int=200) throws {reply = .init(status:status,body:try JSONSerialization.data(withJSONObject:value))}
 }
 final class TrafficServiceTests:XCTestCase {
+    // Decode percent bytes independently; Foundation's String decoding can consume a leading UTF8 BOM.
+    private func queryBytes(_ path: String) throws -> [String: Data] {
+        let components = try XCTUnwrap(URLComponents(string: path))
+        let query = try XCTUnwrap(components.percentEncodedQuery)
+        var result: [String: Data] = [:]
+        for item in query.split(separator: "&") {
+            let pair = item.split(separator: "=", maxSplits: 1, omittingEmptySubsequences: false)
+            XCTAssertEqual(pair.count, 2)
+            let raw = Array(pair[1].utf8)
+            var decoded = Data(), cursor = 0
+            while cursor < raw.count {
+                if raw[cursor] == 37 {
+                    XCTAssertLessThan(cursor + 2, raw.count)
+                    let hex = String(decoding: raw[(cursor + 1)...(cursor + 2)], as: UTF8.self)
+                    decoded.append(try XCTUnwrap(UInt8(hex, radix: 16))); cursor += 3
+                } else {
+                    XCTAssertNotEqual(raw[cursor], 43, "A literal plus would become a space in the Go server")
+                    decoded.append(raw[cursor]); cursor += 1
+                }
+            }
+            result[String(pair[0])] = decoded
+        }
+        return result
+    }
+
     func testAllQueryFieldsEncodeAsDataAndPreserveExactIntegerBounds() throws {
         var query=TrafficQuery();query.page=2;query.size=200;query.host="\u{FEFF}e\u{301}&h+";query.keyword="a+b&x=?";query.body="中";query.path="/api?q=1";query.method = .post;query.status = .exact(404);query.responseMinimum=9007199254740993;query.responseMaximum=Int64.max;query.sort = .responseLength;query.order = .ascending
         let path=try query.pathString();XCTAssertTrue(path.hasPrefix("/api/traffic?"))
-        let items=try XCTUnwrap(URLComponents(string:path)?.queryItems);let fields=Dictionary(uniqueKeysWithValues:items.map{($0.name,$0.value ?? "")})
-        XCTAssertEqual(fields,["page":"2","size":"200","host":query.host,"q":query.keyword,"body":"中","path":"/api?q=1","method":"POST","status":"404","resp_min":"9007199254740993","resp_max":String(Int64.max),"sort":"resp_len","order":"asc"])
-        XCTAssertEqual(Data(try XCTUnwrap(fields["host"]).utf8),Data(query.host.utf8))
+        let fields=try queryBytes(path)
+        XCTAssertEqual(fields,["page":"2","size":"200","host":query.host,"q":query.keyword,"body":"中","path":"/api?q=1","method":"POST","status":"404","resp_min":"9007199254740993","resp_max":String(Int64.max),"sort":"resp_len","order":"asc"].mapValues{Data($0.utf8)})
+        XCTAssertEqual(try XCTUnwrap(fields["host"]),Data(query.host.utf8))
     }
     func testQueryDefaultsBucketsInvertedRangeAndBoundaryFailures() throws {
         let query=TrafficQuery();XCTAssertEqual(try query.pathString(),"/api/traffic?page=0&size=50&sort=ts&order=desc")
@@ -50,7 +75,10 @@ final class TrafficServiceTests:XCTestCase {
         try api.set(["deleted":9007199254740993]);let filter=try await service.apply(.deleteMatchingHost("api&x+"),onDispatch:{dispatched+=1})
         guard case .deleted(let receipt)=filter else {return XCTFail("Deletion")};XCTAssertEqual(receipt.deleted,9007199254740993)
         let names=[" api ","\u{FEFF}host","api","api",""]
-        _ = try await service.apply(.deleteHosts(names));XCTAssertEqual(try JSONSerialization.jsonObject(with:XCTUnwrap(api.calls[1].2)) as? [String:[String]],["hosts":names])
+        _ = try await service.apply(.deleteHosts(names))
+        struct SentHosts:Decodable {let hosts:[String]}
+        let sentHosts=try BackendJSONCoding.decode(SentHosts.self,from:XCTUnwrap(api.calls[1].2))
+        XCTAssertEqual(sentHosts.hosts.map{Data($0.utf8)},names.map{Data($0.utf8)})
         try api.set(["deleted":1,"reclaimed":Int64.max]);_ = try await service.apply(.purgeAll)
         try api.set(["traffic_capture":true,"workers":99]);let capture=try await service.apply(.capture(true));guard case .capture(let settings)=capture else {return XCTFail("Capture")};XCTAssertTrue(settings.trafficCapture)
         XCTAssertEqual(api.calls.map{$0.0},["DELETE","DELETE","DELETE","PUT"]);XCTAssertEqual(api.calls[1].1,"/api/traffic/hosts");XCTAssertEqual(api.calls[2].1,"/api/traffic/all");XCTAssertEqual(api.calls[3].1,"/api/settings")
@@ -72,6 +100,26 @@ final class TrafficServiceTests:XCTestCase {
         }
         try api.set(["traffic_capture":false]);do{_ = try await service.apply(.capture(true));XCTFail("Wrong capture")}catch{}
         XCTAssertEqual(api.calls.count,5)
+    }
+    @MainActor func testValidOversizedHostRequestNeverDispatchesAndPostDispatchCancelDoesNotReplay() async throws {
+        let api=TrafficAPI(),service=TrafficService(client:api)
+        let hosts=Array(repeating:String(repeating:"h",count:8192),count:129)
+        do{_ = try await service.apply(.deleteHosts(hosts),onDispatch:{XCTFail("Oversized dispatch")});XCTFail("Oversized request")}catch{}
+        XCTAssertTrue(api.calls.isEmpty)
+        try api.set(["deleted":0,"reclaimed":0]);api.cancel=true;var callbacks=0
+        let job=Task{try await service.apply(.purgeAll,onDispatch:{callbacks+=1})}
+        do{_ = try await job.value;XCTFail("Cancelled after dispatch")}catch{XCTAssertTrue(error is CancellationError)}
+        XCTAssertEqual(callbacks,1);XCTAssertEqual(api.calls.count,1)
+    }
+    func testAllTypedStatusAndSortValuesAndOptionalProxyWireShapes() throws {
+        let statuses:[TrafficStatusFilter]=[.informational,.success,.redirect,.clientError,.serverError,.exact(-1)]
+        for (value,wire) in zip(statuses,["1xx","2xx","3xx","4xx","5xx","-1"]) {
+            var query=TrafficQuery();query.status=value;XCTAssertEqual(try queryBytes(query.pathString())["status"],Data(wire.utf8))
+        }
+        for sort in TrafficSort.allCases {var query=TrafficQuery();query.sort=sort;XCTAssertEqual(try queryBytes(query.pathString())["sort"],Data(sort.rawValue.utf8))}
+        for value:Any in [["enabled":false,"exchanges":[]],["enabled":false,"proxy":NSNull(),"exchanges":[]]] {
+            let result=try BackendJSONCoding.decode(CapturedTrafficPage.self,from:JSONSerialization.data(withJSONObject:value));XCTAssertNil(result.proxy);XCTAssertTrue(result.isUnavailable)
+        }
     }
     @MainActor func testReadAndMutationStatusShapeSizeAndCancellationBounds() async throws {
         let api=TrafficAPI(),service=TrafficService(client:api)
