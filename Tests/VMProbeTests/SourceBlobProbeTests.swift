@@ -120,6 +120,20 @@ import XCTest
         managed["captureListener"] = "0.0.0.0:8788"
         XCTAssertThrowsError(try CapturedProbe.validateArtifactMetadata(managed, sourceBlobs: false))
     }
+    func testInterruptionCannotInstallOrStageAgainstStoppedVM() async throws {
+        let directory = FileManager.default.temporaryDirectory.appendingPathComponent("artex-source-stopped-interrupt-"+UUID().uuidString)
+        try FileManager.default.createDirectory(at: directory, withIntermediateDirectories: false)
+        defer { try? FileManager.default.removeItem(at: directory) }
+        let api = SourceBlobAPI(), session = AuthenticationSession(client: api, vault: SourceBlobVault(), setupToken: "fixture"), controller = VMController()
+        await session.refresh()
+        do {
+            _ = try await SourceBlobInterruption.run(session: session, api: api, row: api.records()[4], directory: directory, controller: controller)
+            XCTFail("Stopped VM cannot prove interruption")
+        } catch { }
+        XCTAssertNil(controller.trafficBlobCancellationProbe)
+        XCTAssertEqual(api.stages, 0)
+        XCTAssertTrue(try FileManager.default.contentsOfDirectory(atPath: directory.path).isEmpty)
+    }
     func testCorruptMetadataCannotCreateAnExportOrSuccessfulProof() async throws {
         let directory = FileManager.default.temporaryDirectory.appendingPathComponent("artex-source-blob-reject-"+UUID().uuidString)
         try FileManager.default.createDirectory(at: directory, withIntermediateDirectories: false); defer { try? FileManager.default.removeItem(at: directory) }
