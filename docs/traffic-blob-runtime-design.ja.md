@@ -1,0 +1,9 @@
+# 管理blobゲストとネイティブ実行検証
+
+元blob／21機能／ブラウザ／カーネル／4社／ハーネス／リリース目標を維持。Coreの保存だけでは不足。既存CPU1 source-kernel capture profileから、kernel／initramfsと既知の不変親ファイルシステムを保って使い捨て候補を作る。古い最終イメージ／tagは削除されていることがあるため、現物の親hashをinspectする。既存capture initと管理backend／入力manifestを使い、builder内で両方のhashを確認して読取専用ext4を再生成。誤ったbackend hashを故意に渡した場合はファイルシステム生成前に失敗させる。パッケージ追加、外部scan／cloud、host共有、通常profile昇格は行わない。
+
+kernel／initramfs／新disk、親／生成image、手順／引数／init／backend、管理Go source／patch／compiler／binaryを記録。通常ゲスト／アプリを維持する。ext4のUUID／時刻差を許容し、再生成バイト一致とは主張せず実出力hashを固定。ホストは信頼したDocker／VZの開発操作だけで、エージェント／ツールのスクリプトは新規Linux内だけで実行。
+
+DEBUGのcaptured-blobモードを追加し、既存capturedは維持。固定29件の実ループバック、独立した全バイト基準、固定ブラウザAPI比較データを再利用し、新proofは比較データの外へ置く。大きいresponse ordinal4の構造化情報を取得し、生ID／側／長さ／hashを独立バイナリーと照合。AuthenticationSession／BackendJSONClient／VZ／検証済み一時保存を通して実保存・再読一致を確認し、inline／blobなし／長さ不正は公開しない。正常receiptを別途一時保存し、協調VM停止後は公開拒否と清掃を確認。再投入せず再起動し、データ／証跡／source／非活動監査と保存原本を確認する。新proofと既存比較／保持／停止監査がすべて通るまで成功としない。
+
+probe変更の前にTDDとRED／GREEN、回帰、読み取り専用レビュー。途中転送中断は所有された証拠を追加しない限り別条件で、停止後の公開拒否だけでは証明しない。実root／窓／保存パネル／UI／入力と通常カーネル信頼性／昇格は未完。backend／実行条件が整うまで未動作の保存操作を出さない。backend／CLIなのでLazyweb範囲外、実UIの前には使う。

@@ -1,0 +1,10 @@
+ARG ARTEX_BLOB_PARENT=artex-managed-blob-parent:unset
+FROM ${ARTEX_BLOB_PARENT}
+COPY artex /rootfs/opt/artex/artex
+COPY backend-init /rootfs/sbin/artex-init
+ARG ARTEX_BLOB_BACKEND_SHA256
+ARG ARTEX_BLOB_INIT_SHA256
+RUN --network=none printf '%s  /rootfs/opt/artex/artex\n%s  /rootfs/sbin/artex-init\n' "$ARTEX_BLOB_BACKEND_SHA256" "$ARTEX_BLOB_INIT_SHA256" | sha256sum -c - \
+    && chmod 755 /rootfs/opt/artex/artex /rootfs/sbin/artex-init \
+    && rm /system.ext4 && truncate -s 768M /system.ext4 \
+    && mkfs.ext4 -q -F -L artex-system -O ^has_journal -d /rootfs /system.ext4
