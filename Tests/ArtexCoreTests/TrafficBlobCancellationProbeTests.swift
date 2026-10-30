@@ -76,6 +76,35 @@ final class TrafficBlobCancellationProbeTests: XCTestCase, @unchecked Sendable {
         probe.recordCancellation(operationID: id, manifest: expected, interrupted: true)
         XCTAssertNil(probe.witness)
     }
+    func testRealStagingAppendPausesOwnedWorkerAndCancellationRemovesPartialFile() async throws {
+        let directory = FileManager.default.temporaryDirectory.appendingPathComponent("artex-blob-interrupt-test-"+UUID().uuidString)
+        try FileManager.default.createDirectory(at: directory, withIntermediateDirectories: false)
+        defer { try? FileManager.default.removeItem(at: directory) }
+        let expected = try manifest(), probe = TrafficBlobCancellationProbe(expected: expected), id = UUID()
+        let (transfer, peer) = try socket(); defer { transfer.finish(); Darwin.close(peer) }
+        let wire = Data("HTTP/1.1 200 OK\r\nContent-Length: 262401\r\n\r\n".utf8) + Data(repeating: 7, count: 4096)
+        XCTAssertEqual(wire.withUnsafeBytes { Darwin.write(peer, $0.baseAddress, $0.count) }, wire.count)
+        let destination = try EvidenceExportDestination(newFileURL: directory.appendingPathComponent("never.bin"))
+        let context = TrafficBlobCancellationProbe.Transfer(probe: probe, operationID: id, manifest: expected)
+        let worker = Task.detached {
+            try TrafficBlobCancellationProbe.$current.withValue(context) {
+                try EvidenceDownloadStaging.exchange(socket: transfer, preamble: Data(), request: Data("GET /fixture HTTP/1.1\r\n\r\n".utf8), manifest: expected, destination: destination, timeout: .seconds(2))
+            }
+        }
+        var partial: TrafficBlobCancellationProbe.Partial?
+        for _ in 0..<200 {
+            if let value = probe.partial { partial = value; break }
+            try await Task.sleep(for: .milliseconds(1))
+        }
+        let observed = try EvidenceProbeTestFiles.partialLength(directory)
+        probe.recordCancellation(operationID: id, manifest: expected, interrupted: transfer.cancel())
+        do { _ = try await worker.value; XCTFail("Canceled worker returned a receipt") } catch is CancellationError { }
+        XCTAssertEqual(partial?.operationID, id)
+        XCTAssertEqual(partial?.bytes, 4096)
+        XCTAssertEqual(observed, 4096)
+        XCTAssertEqual(probe.witness?.operationID, id)
+        XCTAssertTrue(try FileManager.default.contentsOfDirectory(atPath: directory.path).isEmpty)
+    }
     func testTaskLocalScopeIsExplicitAndDoesNotLeak() async throws {
         let expected = try manifest(), probe = TrafficBlobCancellationProbe(expected: expected), id = UUID()
         XCTAssertNil(TrafficBlobCancellationProbe.current)
@@ -86,5 +115,13 @@ final class TrafficBlobCancellationProbeTests: XCTestCase, @unchecked Sendable {
             XCTAssertTrue(detachedIsEmpty)
         }
         XCTAssertNil(TrafficBlobCancellationProbe.current)
+    }
+}
+
+private enum EvidenceProbeTestFiles {
+    static func partialLength(_ root: URL) throws -> Int64? {
+        let stages = try FileManager.default.contentsOfDirectory(at: root, includingPropertiesForKeys: nil).filter { $0.lastPathComponent.hasPrefix(".artex-evidence-") }
+        guard let stage = stages.first else { return nil }
+        return (try FileManager.default.attributesOfItem(atPath: stage.appendingPathComponent("body.partial").path)[.size] as? NSNumber)?.int64Value
     }
 }
