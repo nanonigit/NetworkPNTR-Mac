@@ -1,0 +1,168 @@
+{
+  "schema": 1,
+  "date": "2026-10-30",
+  "passedSourceBlobRuntime": true,
+  "fullGoalComplete": false,
+  "nativeUIAcceptance": false,
+  "midTransferCancellationVerified": false,
+  "sourceCommit": "a42c40ad9508f7e28fdc3d96c730406084225af7",
+  "nativeProbeSHA256": "372c428d2c461d41e9caa0c458b77034e11bd640b68d9fe445338b3005f704e6",
+  "sourceSHA256": {
+    "Sources/VMProbe/CapturedProbe.swift": "06e35ca12a6d6d1aa6b06400485655fc0f1706d5b5647212f300f01b0252c117",
+    "Sources/VMProbe/SourceBlobProbe.swift": "471181017469fdfe5d63dd537070c4cb65ec19fe4daa380f2b23696cb754e392",
+    "Sources/VMProbe/VMProbe.swift": "39f281c210f9428ed757f7d1c131163ef27de75d92f4bc368c49a4e73520660d",
+    "Sources/ArtexCore/AuthenticationSession.swift": "46b42c9b48e9aaf97d9c15742c8d8ce63baaf65c3f8dda00b49b3803729d5263"
+  },
+  "candidateManifestSHA256": "83628454bcb2a7d4e66b3445ec1d1fd81c69926ac0eee17d06b99c0ba1931254",
+  "candidate": {
+    "architecture": "arm64",
+    "sourceCommit": "e75ae371ad777ffd1eecdd28d2781a6519b05591",
+    "cpuCount": 1,
+    "networkDevices": 0,
+    "hostShares": 0,
+    "kernelSHA256": "8e57308787c420cb42e4c4ea80e6def6438a52232692c010dc4609bb9bf21879",
+    "initramfsSHA256": "88de8582409a9ad861a69035f056e65953b36803fbc77b391e0a9deb77e335ba",
+    "systemDiskSHA256": "712986a5a67b301ca259bb0cc7548027c7273c0f291560f65cfba6b70cace5c3",
+    "backendSHA256": "0cbb7cb32f05843de7b733fb76ed4e22b9b2acd386878d4ce34b89d819a3750a",
+    "managedCapabilities": [
+      "traffic-blob-metadata-v1",
+      "regular-source-blob-stream-v1"
+    ],
+    "guestRuntimeRecipeSHA256": "c0b2cac340199e72c6b73444b201ceba71d26ccad05d2e4496e9b9e3d2bbd419",
+    "guestRuntimeImage": "sha256:ddb0e8199eef286ea63b89ea9d170b20ea9b85462e0467a19fe7cac8dbd7ba22",
+    "guestRuntimeParentImage": "sha256:735d063ffd4290be40a870c4c77f6a6f9ad16ae306262e2e21e3865cd9c2b91d",
+    "guestRuntimeSourceSHA256": {
+      "Dockerfile.guest": "c0b2cac340199e72c6b73444b201ceba71d26ccad05d2e4496e9b9e3d2bbd419",
+      "backend-init": "890142e11d08d7f58763a33da0e675dd70a36a6ab2e207eab0179d7c558301ac",
+      "artex": "0cbb7cb32f05843de7b733fb76ed4e22b9b2acd386878d4ce34b89d819a3750a"
+    },
+    "guestRuntimeParentProfileManifestSHA256": "953de92d36c18ce4a1dca99590b23c3b85c01be2e0d96384a3ce979da8e50add"
+  },
+  "runtime": {
+    "passed": true,
+    "boots": 2,
+    "cooperativeStops": 2,
+    "cleanAudits": 2,
+    "referenceEqual": true,
+    "persistence": true,
+    "machineStopped": true,
+    "sourceBlob": {
+      "badLengthRefused": true,
+      "bytes": 262401,
+      "fullByteEqual": true,
+      "inlineRefused": true,
+      "literalManifestBound": true,
+      "nativeUIAcceptance": false,
+      "ordinal": 4,
+      "rebootByteEqual": true,
+      "sha256": "5549252a7f275dd6b221f062c298ac588a2dea19e5145b6ca06308cc8c9dd43e",
+      "side": "response",
+      "vmStopPublicationRejected": true
+    }
+  },
+  "runtimeReportSHA256": "02bea2d5a5589274fc3388e6a8e77a732df3252208cab1f0b512035d37e622b3",
+  "referenceSHA256": "c4601040b7a0abba258a81f65183ef81bb6116d7bf5f47c743ffe1ebcac6b8e6",
+  "savedFiles": {
+    "source-original-4-response.bin": {
+      "bytes": 262401,
+      "sha256": "5549252a7f275dd6b221f062c298ac588a2dea19e5145b6ca06308cc8c9dd43e"
+    },
+    "source-original-4-response-reboot.bin": {
+      "bytes": 262401,
+      "sha256": "5549252a7f275dd6b221f062c298ac588a2dea19e5145b6ca06308cc8c9dd43e"
+    }
+  },
+  "noAgentCounts": {
+    "profiles": 0,
+    "llm_records": 0,
+    "llm_usage": 0,
+    "conversations": 0,
+    "activity": 0,
+    "unsafe_tasks": 0,
+    "traffic_bindings": 1,
+    "traffic_snapshots": 2
+  },
+  "tests": {
+    "focusedProofCases": 7,
+    "nativeBlobCases": 9,
+    "swiftExecuted": 988,
+    "swiftPassed": 987,
+    "swiftExistingAccessibilitySkip": 1,
+    "pythonPassed": 179,
+    "swiftExitCode": 0,
+    "pythonExitCode": 0
+  },
+  "combinedUnitAndActualRuntimeLineCoverage": {
+    "AuthenticationSession.swift": {
+      "count": 205,
+      "covered": 205,
+      "percent": 100
+    },
+    "BackendJSONClient.swift": {
+      "count": 54,
+      "covered": 52,
+      "percent": 96.29629629629629
+    },
+    "EvidenceDownloadStaging.swift": {
+      "count": 29,
+      "covered": 29,
+      "percent": 100
+    },
+    "TrafficBlobDownload.swift": {
+      "count": 23,
+      "covered": 23,
+      "percent": 100
+    },
+    "TrafficService.swift": {
+      "count": 71,
+      "covered": 71,
+      "percent": 100
+    },
+    "VMController.swift": {
+      "count": 483,
+      "covered": 337,
+      "percent": 69.77225672877847
+    },
+    "SourceBlobProbe.swift": {
+      "count": 92,
+      "covered": 91,
+      "percent": 98.91304347826086
+    },
+    "EvidenceExportFile.swift": {
+      "count": 176,
+      "covered": 164,
+      "percent": 93.18181818181817
+    },
+    "EvidenceExportReceipt.swift": {
+      "count": 46,
+      "covered": 46,
+      "percent": 100
+    }
+  },
+  "defaultProfilePromoted": false,
+  "hostedCI": "unverified; skip ci due to exhausted quota",
+  "pending": [
+    "native source blob save UI and panel/root/window ownership",
+    "actual mid-transfer interruption witness",
+    "all21 browser/native workflows and UI UX keyboard VoiceOver",
+    "source kernel reliability and default profile promotion",
+    "Gemini Groq CP1-CP4",
+    "investigation harness H0-H5",
+    "release gates"
+  ],
+  "stagedApp": {
+    "buildExitCode": 0,
+    "strictSignatureVerification": true,
+    "launched": false,
+    "defaultGuestManifestSHA256": "fa0f1972c04f2a04853de37f4fd163b922ac38c841849c635d29f565fe6115ce",
+    "defaultProfileHashesUnchanged": true,
+    "executableSHA256": "1715566e223b62469f440a682e12016f6b475cb4f1eecd81f3d2cbc31afa087a"
+  },
+  "releaseProbe": {
+    "buildExitCode": 0,
+    "binarySHA256": "ff65f3cdfdb50964c3e1c29c95df3fe69ee5e2a97a44a3b3b5af6fc625b6bd1a",
+    "guardWithThreePositionalArgumentsExitCode": 2,
+    "allSymbolsExcludeDiagnosticHelpers": true,
+    "diagnosticLiteralAbsent": true
+  }
+}

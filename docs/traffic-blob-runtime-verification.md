@@ -1,0 +1,23 @@
+# Native original blob staging and VM runtime verification
+
+Status: managed candidate / native Core and CLI checkpoint. Native UI acceptance and the full goal remain incomplete. The receipt is [blob-runtime-verification.json](../evidence/traffic/blob-runtime-verification.json).
+
+## Implementation and evidence
+
+Native immutable TrafficBlobDownload validates literal id, exact side, nonnegative Int64 size and canonical SHA256, requests only the authenticated fixed metadata and hash routes, and uses the existing bounded streaming/private staging/no-clobber integrity receipt. Finding exports keep their public contract. Nine new native tests cover manifest bytes and large lengths, typed authenticated staging, actual file integrity, logout, stale replies, VM ownership, cancellation and 401 behavior. Fixture corrections preserved BOM bytes using an independent percent-byte oracle; the initial NSObject.hash naming collision was corrected before valid RED. No guest filename, raw body marker or recorded URL determines a save path.
+
+A disposable CPU1/arm64/NIC0/shares0 candidate used the locally built pinned Go backend 0cbb7cb32f05843de7b733fb76ed4e22b9b2acd386878d4ce34b89d819a3750a. Candidate kernel/initramfs/system and managed binary/source recipe provenance are recorded in the receipt. A wrong backend checksum was refused in the container builder before filesystem generation. This is negative input validation, not a business-logic TDD RED. The frozen browser checkout and default profile remain unchanged; Docker was used for build/test orchestration, not app runtime.
+
+Probe source a42c40ad9508f7e28fdc3d96c730406084225af7, signed diagnostic executable SHA256 372c428d2c461d41e9caa0c458b77034e11bd640b68d9fe445338b3005f704e6. Actual run exit0; two boots, two cooperative stops, two clean audits, persisted fixture and exact fixed-browser reference projection. Reference SHA256 c4601040b7a0abba258a81f65183ef81bb6116d7bf5f47c743ffe1ebcac6b8e6; runtime report SHA256 02bea2d5a5589274fc3388e6a8e77a732df3252208cab1f0b512035d37e622b3. Both saved original/reboot files contain262401 bytes with SHA256 5549252a7f275dd6b221f062c298ac588a2dea19e5145b6ca06308cc8c9dd43e; independently reread full bytes match. Inline/no-blob metadata and wrong length refuse publication. After real stopped/no-machine state, pending publication is rejected while the exact original auth revision remains valid and task cancellation is excluded. Reboot verifies metadata and original bytes without reseeding. Auth/VM proof causality regressions and review are documented in [RCA](bugs/traffic-blob-proof.md).
+
+## Verification scope
+
+Seven focused proof tests pass; full Swift988 executed,987 passed, one pre-existing external-accessibility skip. Python179 pass. Localization export check and fixed baseline inventory21 navigation/27 routes/243 API handlers pass; native workflow parity remains pending. Unit plus real-runtime line coverage: manifest23/23, auth205/205, TrafficService71/71, staging29/29, receipt46/46, file writer164/176, BackendJSONClient52/54 and probe91/92. The broader VMController337/483 is69.77%; these checks do not establish whole-product80% coverage. Actual runtime uses no cloud profile or AI activity; final fixture has one binding/two snapshots.29 records share one loopback host and do not prove multi-host deletion.
+
+The staged app was rebuilt and strict signature verification passed. It retains the original default guest manifest fa0f1972c04f2a04853de37f4fd163b922ac38c841849c635d29f565fe6115ce and kernel/initramfs/system hashes. It was not launched or promoted to the experimental profile. Guest backend originals/UI save controls are not yet available in the default app. Hosted CI remains unverified due to quota; publication commits use [skip ci].
+
+## Remaining acceptance
+
+Actual mid-transfer cancellation needs its own owned witness. Native source-body UI/root/window/save-panel leases, multiwindow/keyboard/VoiceOver and all21 browser/native workflows remain open. The Mac unlock remains user-deferred; no offscreen check is claimed as actual UI acceptance. Default kernel reliability/promotion, four-provider CP1–CP4 including Gemini/Groq, harness H0–H5 and release gates remain active. Use Lazyweb before save UI design; this phase is backend/transport/CLI.
+
+Release VMProbe built successfully. Invoking --captured-blob with all three positional arguments exits2 with DEBUG-only usage. The full demangled symbol table excludes SourceBlobProbe, CapturedProbeContract, WithheldResponse and exportOwnershipWitness; the source-blob diagnostic literal is absent. This checks exclusion of the diagnostic helper, not production app release acceptance.
