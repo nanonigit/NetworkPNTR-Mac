@@ -120,6 +120,16 @@ import XCTest
         managed["captureListener"] = "0.0.0.0:8788"
         XCTAssertThrowsError(try CapturedProbe.validateArtifactMetadata(managed, sourceBlobs: false))
     }
+    func testProbeClaimCannotOverwriteScopeInstalledDuringMetadataAwait() throws {
+        let api = SourceBlobAPI(), row = try api.records()[4], controller = VMController()
+        let manifest = try TrafficBlobDownload(trafficID: row.id, side: .response, expectedSize: Int64(api.bytes.count), expectedSHA256: ArtifactIntegrity.sha256(api.bytes))
+        let first = TrafficBlobCancellationProbe(expected: manifest), second = TrafficBlobCancellationProbe(expected: manifest)
+        try SourceBlobInterruption.claimProbe(first, controller: controller)
+        XCTAssertTrue(controller.trafficBlobCancellationProbe === first)
+        XCTAssertThrowsError(try SourceBlobInterruption.claimProbe(second, controller: controller))
+        XCTAssertTrue(controller.trafficBlobCancellationProbe === first)
+        controller.trafficBlobCancellationProbe = nil
+    }
     func testInterruptionCannotInstallOrStageAgainstStoppedVM() async throws {
         let directory = FileManager.default.temporaryDirectory.appendingPathComponent("artex-source-stopped-interrupt-"+UUID().uuidString)
         try FileManager.default.createDirectory(at: directory, withIntermediateDirectories: false)
