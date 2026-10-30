@@ -21,6 +21,7 @@ import Virtualization
     @ObservationIgnored private var evidenceEpoch = UUID()
     #if DEBUG
     @ObservationIgnored package var evidenceCancellationProbe: EvidenceCancellationProbe?
+    @ObservationIgnored package var trafficBlobCancellationProbe: TrafficBlobCancellationProbe?
     #endif
     @ObservationIgnored private var pendingConnections: [UUID: CheckedContinuation<UUID, Error>] = [:]
     public var mayStart: Bool { state.canStart && machine == nil }
@@ -246,11 +247,21 @@ import Virtualization
         let preamble = Data(("ARTEX_VSOCK_1 " + provisioning.transportToken + "\n").utf8)
         #if DEBUG
         let cancellationProbe = evidenceCancellationProbe
+        let blobCancellationProbe = trafficBlobCancellationProbe
+        let blobTransfer = (manifest as? TrafficBlobDownload).flatMap { blob in
+            blobCancellationProbe.map { TrafficBlobCancellationProbe.Transfer(probe: $0, operationID: identifier, manifest: blob) }
+        }
         #endif
         return try await withTaskCancellationHandler {
             try Task.checkCancellation()
             let response = try await Task.detached {
+                #if DEBUG
+                try TrafficBlobCancellationProbe.$current.withValue(blobTransfer) {
+                    try EvidenceDownloadStaging.exchange(socket: socket, preamble: preamble, request: request, manifest: manifest, destination: destination)
+                }
+                #else
                 try EvidenceDownloadStaging.exchange(socket: socket, preamble: preamble, request: request, manifest: manifest, destination: destination)
+                #endif
             }.value
             do {
                 try Task.checkCancellation()
@@ -268,6 +279,8 @@ import Virtualization
             let interrupted = socket.cancel()
             if let finding = manifest as? FindingEvidenceDownload {
                 cancellationProbe?.record(operationID: identifier, manifest: finding, interrupted: interrupted)
+            } else if let blob = manifest as? TrafficBlobDownload {
+                blobCancellationProbe?.recordCancellation(operationID: identifier, manifest: blob, interrupted: interrupted)
             }
             #else
             socket.cancel()

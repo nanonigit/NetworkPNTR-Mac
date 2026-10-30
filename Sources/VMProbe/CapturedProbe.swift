@@ -181,6 +181,7 @@ import Foundation
         var stage="prepare",created=false,tokens=[String](),boots=0,stops=0,audits=0
         var sourceHashes=[String:String](),initialRows=[CapturedTrafficExchange](),finalState:FindingTraffic?
         var sourceBlob: SourceBlobProbe.Result?
+        var sourceInterruption: SourceBlobInterruption.Proof?
         var result=[String:Any](),recovery=false
         var executedSourceHashes=[String:String](),sourceAudits=0
         do {
@@ -215,6 +216,8 @@ import Foundation
                     (result,finalState,recovery,standalone)=try await exercise(api,session,traffic,initialRows,downloads)
                     report["standaloneTraffic"] = standalone
                     if sourceBlobs {
+                        progress("source-blob-controlled-interruption")
+                        sourceInterruption = try await SourceBlobInterruption.run(session: session, api: api, row: initialRows[4], directory: downloads, controller: controller)
                         progress("source-blob-export")
                         sourceBlob = try await SourceBlobProbe.exercise(session: session, api: api, records: initialRows, directory: downloads)
                     }
@@ -244,7 +247,9 @@ import Foundation
             try require(sourceAudits==2 && executedSourceHashes==sourceHashes)
             if sourceBlobs {
                 guard let sourceBlob else { throw RuntimeError.integrity("missing complete source blob proof") }
+                guard let sourceInterruption else { throw RuntimeError.integrity("missing source interruption proof") }
                 try sourceBlob.requireComplete(); report["sourceBlob"] = sourceBlob.report
+                report["sourceBlobInterruption"] = sourceInterruption.report
             }
             let equal=try same(result,expected)
             try CapturedProbeContract.Completion(boots:boots,cooperativeStops:stops,cleanAudits:audits,sourceVerified:sourceAudits==2 && executedSourceHashes==sourceHashes,referenceEqual:equal,persistence:report["persistence"] as? Bool==true,uncertaintyRecovered:recovery,machineStopped:!controller.hasMachine).validate()
