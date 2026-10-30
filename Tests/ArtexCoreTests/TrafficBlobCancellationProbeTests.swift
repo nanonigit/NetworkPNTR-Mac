@@ -105,6 +105,18 @@ final class TrafficBlobCancellationProbeTests: XCTestCase, @unchecked Sendable {
         XCTAssertEqual(probe.witness?.operationID, id)
         XCTAssertTrue(try FileManager.default.contentsOfDirectory(atPath: directory.path).isEmpty)
     }
+    @MainActor func testLateRecorderCannotBeatReaderTimeoutCheck() async throws {
+        let expected = try manifest(), start = ContinuousClock.now, id = UUID()
+        // The reader observed time before waiting; the recorder observes expiry before the reader resumes.
+        let probe = TrafficBlobCancellationProbe(expected: expected, now: {
+            Thread.isMainThread ? start.advanced(by: .seconds(11)) : start
+        })
+        let worker = Task.detached { try probe.pauseAfterAppend(operationID: id, manifest: expected, bytes: 1) }
+        _ = try await waitForPartial(probe)
+        probe.recordCancellation(operationID: id, manifest: expected, interrupted: true)
+        do { try await worker.value; XCTFail("Late recorder") } catch { XCTAssertFalse(error is CancellationError) }
+        XCTAssertNil(probe.witness)
+    }
     func testTaskLocalScopeIsExplicitAndDoesNotLeak() async throws {
         let expected = try manifest(), probe = TrafficBlobCancellationProbe(expected: expected), id = UUID()
         XCTAssertNil(TrafficBlobCancellationProbe.current)
