@@ -17,7 +17,18 @@ enum EvidenceDownloadStaging {
             let result = try BackendDownloadExchange.exchange(
                 socket: socket, preamble: preamble, request: request,
                 expectedSize: manifest.expectedSize, maximumBytes: manifest.expectedSize,
-                onBody: { try writer.append($0) }, timeout: timeout)
+                onBody: { bytes in
+                    try writer.append(bytes)
+                    #if DEBUG
+                    if let transfer = TrafficBlobCancellationProbe.current {
+                        guard let blob = manifest as? TrafficBlobDownload,
+                              blob.identity == transfer.manifest.identity, blob.side == transfer.manifest.side,
+                              blob.expectedSize == transfer.manifest.expectedSize,
+                              blob.expectedSHA256 == transfer.manifest.expectedSHA256 else { throw RuntimeError.integrity("source blob interruption scope") }
+                        try transfer.probe.pauseAfterAppend(operationID: transfer.operationID, manifest: blob, bytes: Int64(bytes.count))
+                    }
+                    #endif
+                }, timeout: timeout)
             try socket.validateCompletion()
             guard result.status == 200 else {
                 try writer.discard()

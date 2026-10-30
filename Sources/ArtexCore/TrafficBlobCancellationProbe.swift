@@ -20,10 +20,11 @@ package final class TrafficBlobCancellationProbe: @unchecked Sendable {
     private let condition = NSCondition()
     private let expected: TrafficBlobDownload
     private let timeout: TimeInterval
+    private let now: @Sendable () -> ContinuousClock.Instant
     private var phase = Phase.fresh
     private var observation: Partial?
-    package init(expected: TrafficBlobDownload, timeout: TimeInterval = 10) {
-        self.expected = expected; self.timeout = timeout
+    package init(expected: TrafficBlobDownload, timeout: TimeInterval = 10, now: @escaping @Sendable () -> ContinuousClock.Instant = { .now }) {
+        self.expected = expected; self.timeout = timeout; self.now = now
     }
     private func matches(_ manifest: TrafficBlobDownload) -> Bool {
         manifest.identity == expected.identity && manifest.side == expected.side &&
@@ -36,9 +37,9 @@ package final class TrafficBlobCancellationProbe: @unchecked Sendable {
             phase = .invalid; condition.broadcast(); throw failure()
         }
         observation = Partial(operationID: operationID, bytes: bytes); phase = .paused
-        let deadline = ContinuousClock.now.advanced(by: .seconds(timeout))
+        let deadline = now().advanced(by: .seconds(timeout))
         while phase == .paused {
-            guard ContinuousClock.now < deadline else { phase = .invalid; break }
+            guard now() < deadline else { phase = .invalid; break }
             _ = condition.wait(until: Date(timeIntervalSinceNow: min(timeout, 0.05)))
         }
         guard phase == .interrupted else { throw failure() }
