@@ -16,6 +16,7 @@ import XCTest
     func send(method: String, path: String, body: Data?, bearer: String?) async throws -> BackendHTTPResponse {
         let object: Any
         if path == "/api/auth/status" { object = ["initialized": true, "setup_token_required": false] }
+        else if path == "/api/auth/login" { object = ["token": "fixture.jwt"] }
         else if path == "/api/llm/profiles" { object = ["profiles": []] }
         else {
             let items = URLComponents(string: path)?.queryItems ?? []
@@ -70,6 +71,33 @@ import XCTest
         try result.requireComplete(); XCTAssertEqual(api.stages, 4)
         XCTAssertEqual(try FileManager.default.contentsOfDirectory(atPath: directory.path).sorted(), ["source-original-4-response-reboot.bin", "source-original-4-response.bin"])
         XCTAssertEqual(result.report["bytes"] as? Int, 262401)
+    }
+    func testAuthenticationLossCannotCountAsVMStopEvenAfterRelogin() async throws {
+        for relogin in [false, true] {
+            let directory = FileManager.default.temporaryDirectory.appendingPathComponent("artex-source-auth-"+UUID().uuidString)
+            try FileManager.default.createDirectory(at: directory, withIntermediateDirectories: false)
+            defer { try? FileManager.default.removeItem(at: directory) }
+            let api = SourceBlobAPI(), session = AuthenticationSession(client: api, vault: SourceBlobVault(), setupToken: "fixture")
+            await session.refresh()
+            let result = try await SourceBlobProbe.exercise(session: session, api: api, records: api.records(), directory: directory)
+            session.logout()
+            if relogin { await session.login(password: "fixture", agreed: true); XCTAssertEqual(session.phase, .authenticated) }
+            XCTAssertTrue(api.active)
+            XCTAssertThrowsError(try result.afterVMStop(), "Authentication cancellation is not a VM stop")
+            XCTAssertEqual(result.report["vmStopPublicationRejected"] as? Bool, false)
+            try result.discardPending()
+        }
+    }
+    func testCapturedPreflightSeparatesLegacyAndManagedBackends() throws {
+        let hash = String(repeating: "a", count: 64)
+        var managed: [String: Any] = ["architecture": "arm64", "sourceCommit": "e75ae371ad777ffd1eecdd28d2781a6519b05591", "bootMode": "rootDisk", "cpuCount": 1, "networkDevices": 0, "hostShares": 0, "captureListener": "127.0.0.1:8788", "backendSHA256": hash, "managedCapabilities": ["traffic-blob-metadata-v1", "regular-source-blob-stream-v1"], "managedBackend": ["binarySHA256": hash, "buildVersion": "artex-mac-e75ae371-blob1"]]
+        try CapturedProbe.validateArtifactMetadata(managed, sourceBlobs: true)
+        XCTAssertThrowsError(try CapturedProbe.validateArtifactMetadata(managed, sourceBlobs: false))
+        managed["backendSHA256"] = "0ebad83ddda276b03b415d64ce30af44e7a587860f3b660c12563462a0ac5e80"
+        try CapturedProbe.validateArtifactMetadata(managed, sourceBlobs: false)
+        XCTAssertThrowsError(try CapturedProbe.validateArtifactMetadata(managed, sourceBlobs: true))
+        managed["captureListener"] = "0.0.0.0:8788"
+        XCTAssertThrowsError(try CapturedProbe.validateArtifactMetadata(managed, sourceBlobs: false))
     }
     func testCorruptMetadataCannotCreateAnExportOrSuccessfulProof() async throws {
         let directory = FileManager.default.temporaryDirectory.appendingPathComponent("artex-source-blob-reject-"+UUID().uuidString)
