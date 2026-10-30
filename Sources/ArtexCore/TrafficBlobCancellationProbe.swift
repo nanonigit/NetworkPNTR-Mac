@@ -23,6 +23,7 @@ package final class TrafficBlobCancellationProbe: @unchecked Sendable {
     private let now: @Sendable () -> ContinuousClock.Instant
     private var phase = Phase.fresh
     private var observation: Partial?
+    private var deadline: ContinuousClock.Instant?
     package init(expected: TrafficBlobDownload, timeout: TimeInterval = 10, now: @escaping @Sendable () -> ContinuousClock.Instant = { .now }) {
         self.expected = expected; self.timeout = timeout; self.now = now
     }
@@ -38,6 +39,7 @@ package final class TrafficBlobCancellationProbe: @unchecked Sendable {
         }
         observation = Partial(operationID: operationID, bytes: bytes); phase = .paused
         let deadline = now().advanced(by: .seconds(timeout))
+        self.deadline = deadline
         while phase == .paused {
             guard now() < deadline else { phase = .invalid; break }
             _ = condition.wait(until: Date(timeIntervalSinceNow: min(timeout, 0.05)))
@@ -47,7 +49,7 @@ package final class TrafficBlobCancellationProbe: @unchecked Sendable {
     }
     package func recordCancellation(operationID: UUID, manifest: TrafficBlobDownload, interrupted: Bool) {
         condition.lock(); defer { condition.broadcast(); condition.unlock() }
-        guard phase == .paused, matches(manifest), observation?.operationID == operationID, interrupted else {
+        guard phase == .paused, let deadline, now() < deadline, matches(manifest), observation?.operationID == operationID, interrupted else {
             phase = .invalid; return
         }
         phase = .interrupted
