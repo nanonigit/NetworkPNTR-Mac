@@ -16,6 +16,11 @@ import Foundation
              "naturalNetworkFailureVerified": false, "nativeUIAcceptance": false]
         }
     }
+    /// Claims only the diagnostic slot; the caller checks live VM state without suspending.
+    static func claimProbe(_ probe: TrafficBlobCancellationProbe, controller: VMController) throws {
+        guard controller.trafficBlobCancellationProbe == nil else { throw failure() }
+        controller.trafficBlobCancellationProbe = probe
+    }
     static func run(session: AuthenticationSession, api: any BackendJSONTransport, row: CapturedTrafficExchange,
                     directory: URL, controller: VMController) async throws -> Proof {
         try Task.checkCancellation()
@@ -28,7 +33,8 @@ import Foundation
         let destination = directory.appendingPathComponent("source-controlled-interruption.bin")
         guard !FileManager.default.fileExists(atPath: destination.path), EvidenceProbeFile.stagingAbsent(directory) else { throw failure() }
         let probe = TrafficBlobCancellationProbe(expected: manifest)
-        controller.trafficBlobCancellationProbe = probe
+        guard controller.state == .running, controller.guestReady, controller.hasMachine else { throw failure() }
+        try claimProbe(probe, controller: controller)
         defer { if controller.trafficBlobCancellationProbe === probe { controller.trafficBlobCancellationProbe = nil } }
         var settled = false
         let pending = Task { @MainActor in
