@@ -3,16 +3,21 @@ import Darwin
 import Foundation
 
 @MainActor enum CapturedProbe {
-    static func run(_ args: [String]) async {
+    static func run(_ args: [String], sourceBlobs: Bool = false) async {
         #if DEBUG
         guard args.count==3 else {usage();exit(2)}
-        await runDebug(args)
+        await runDebug(args, sourceBlobs: sourceBlobs)
         #else
         usage();exit(2)
         #endif
     }
     private static func usage() { FileHandle.standardError.write(Data("Usage: DEBUG VMProbe --captured ARTIFACTS NEW_PRIVATE_OUTPUT REFERENCE_RECEIPT\n".utf8)) }
     #if DEBUG
+    static func validateArtifactMetadata(_ metadata: [String: Any], sourceBlobs: Bool) throws {
+        try require(metadata["cpuCount"] as? Int == 1 && metadata["captureListener"] as? String == "127.0.0.1:8788")
+        if sourceBlobs { try SourceBlobProbe.validateCandidate(metadata) }
+        else { try require(metadata["backendSHA256"] as? String == "0ebad83ddda276b03b415d64ce30af44e7a587860f3b660c12563462a0ac5e80") }
+    }
     private final class Vault: SessionVault {
         var token: String?
         func load() throws -> String? {token}
@@ -169,12 +174,13 @@ import Foundation
         store.stop()
         return (["metadata":["evidence_version":metadata.evidenceVersion,"report_evidence_version":metadata.reportEvidenceVersion,"traffic_count":metadata.trafficCount,"report_stale":metadata.reportStale],"filters":filters,"bodies":bodies,"previews":previews,"states":states],removed,true,standalone.report)
     }
-    private static func runDebug(_ args: [String]) async {
+    private static func runDebug(_ args: [String], sourceBlobs: Bool) async {
         let artifacts=URL(fileURLWithPath:args[0]),output=URL(fileURLWithPath:args[1]),reference=URL(fileURLWithPath:args[2])
         let controller=VMController(),vault=Vault()
         var report:[String:Any]=["passed":false,"nativeUIAcceptance":false,"fullGoalComplete":false]
         var stage="prepare",created=false,tokens=[String](),boots=0,stops=0,audits=0
         var sourceHashes=[String:String](),initialRows=[CapturedTrafficExchange](),finalState:FindingTraffic?
+        var sourceBlob: SourceBlobProbe.Result?
         var result=[String:Any](),recovery=false
         var executedSourceHashes=[String:String](),sourceAudits=0
         do {
@@ -185,7 +191,8 @@ import Foundation
             guard let receipt=try JSONSerialization.jsonObject(with:referenceBytes) as? [String:Any],receipt["passed"] as? Bool==true,let referenceValue=receipt["reference"] as? [String:Any],let expected=referenceValue["exercise"] as? [String:Any] else {throw RuntimeError.integrity("captured reference receipt")}
             let manifest=try GuestArtifacts.load(from:artifacts)
             guard let metadata=try JSONSerialization.jsonObject(with:Data(contentsOf:artifacts.appendingPathComponent("manifest.json"))) as? [String:Any] else {throw RuntimeError.integrity("captured artifact manifest")}
-            try require(manifest.cpuCount==1 && metadata["captureListener"] as? String=="127.0.0.1:8788" && metadata["backendSHA256"] as? String=="0ebad83ddda276b03b415d64ce30af44e7a587860f3b660c12563462a0ac5e80")
+            try require(manifest.cpuCount == 1)
+            try validateArtifactMetadata(metadata, sourceBlobs: sourceBlobs)
             report["referenceSHA256"]=ArtifactIntegrity.sha256(referenceBytes);report["artifactManifest"]=metadata
             let disk=output.appendingPathComponent("state.ext4");_ = try PersistentGuestDisk.createIfMissing(at:disk,byteCount:2*1024*1024*1024)
             let password=UUID().uuidString+"-captured-fixture";tokens.append(password)
@@ -207,6 +214,10 @@ import Foundation
                     stage="exercise";progress(stage);let standalone: [String: Any]
                     (result,finalState,recovery,standalone)=try await exercise(api,session,traffic,initialRows,downloads)
                     report["standaloneTraffic"] = standalone
+                    if sourceBlobs {
+                        progress("source-blob-export")
+                        sourceBlob = try await SourceBlobProbe.exercise(session: session, api: api, records: initialRows, directory: downloads)
+                    }
                     let audited=try await fixture.audit();result["counts"]=audited.counts;executedSourceHashes=audited.sourceSha256;sourceAudits+=1
                 } else {
                     stage="persisted-audit";progress(stage);try require(fixture.sourceSHA256==sourceHashes);let audited=try await fixture.audit()
@@ -215,18 +226,32 @@ import Foundation
                     guard let finalState else {throw RuntimeError.integrity("captured final state")}
                     let current=try await FindingTrafficService(client:api).list(findingID:"9101");try require(try same(CapturedProbeContract.normalized(finalState),CapturedProbeContract.normalized(current)))
                     let metadata=try await FindingService(client:api).detail(id:"9101");try require(metadata.trafficCount==1 && metadata.evidenceVersion==finalState.version && metadata.reportStale)
+                    if sourceBlobs {
+                        guard let sourceBlob else { throw RuntimeError.integrity("missing source blob proof") }
+                        progress("source-blob-reboot")
+                        try await sourceBlob.verifyReboot(session: session, api: api)
+                    }
                     report["persistence"]=true
                 }
                 try await controller.stop();try require(controller.state == .stopped && !controller.hasMachine);stops+=1
+                if sourceBlobs, index == 1 {
+                    guard let sourceBlob else { throw RuntimeError.integrity("missing source blob stop proof") }
+                    try sourceBlob.afterVMStop()
+                }
                 let audit=GuestBootDiagnostics.audit(logDirectory:logs,tokens:tokens)
                 try require(audit.credentialsAbsent && audit.isolationWitnessesPresent && audit.diagnostics.isEmpty && audit.formatStageObserved==(index==1));audits+=1
             }
             try require(sourceAudits==2 && executedSourceHashes==sourceHashes)
+            if sourceBlobs {
+                guard let sourceBlob else { throw RuntimeError.integrity("missing complete source blob proof") }
+                try sourceBlob.requireComplete(); report["sourceBlob"] = sourceBlob.report
+            }
             let equal=try same(result,expected)
             try CapturedProbeContract.Completion(boots:boots,cooperativeStops:stops,cleanAudits:audits,sourceVerified:sourceAudits==2 && executedSourceHashes==sourceHashes,referenceEqual:equal,persistence:report["persistence"] as? Bool==true,uncertaintyRecovered:recovery,machineStopped:!controller.hasMachine).validate()
             report.merge(["passed":true,"stage":"complete","boots":boots,"cooperativeStops":stops,"cleanAudits":audits,"sourceSHA256":sourceHashes,"exercise":result,"referenceEqual":equal,"uncertaintyRecovered":recovery,"machineStopped":true]){_,new in new}
             try write(report,output.appendingPathComponent("captured-native.json"));progress("complete")
         } catch {
+            try? sourceBlob?.discardPending()
             if controller.hasMachine {try? await controller.forceStop()}
             report["passed"]=false;report["stage"]=stage;report["errorType"]=String(reflecting:type(of:error));report["machineStopped"] = !controller.hasMachine
             if created {try? write(report,output.appendingPathComponent("captured-native.json"))}
