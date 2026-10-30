@@ -88,6 +88,27 @@ import XCTest
             try result.discardPending()
         }
     }
+    func testProofRetainsOriginalSessionUntilStopAndRejectsCanceledTask() async throws {
+        let directory = FileManager.default.temporaryDirectory.appendingPathComponent("artex-source-retention-"+UUID().uuidString)
+        try FileManager.default.createDirectory(at: directory, withIntermediateDirectories: false)
+        defer { try? FileManager.default.removeItem(at: directory) }
+        let api = SourceBlobAPI()
+        var session: AuthenticationSession? = AuthenticationSession(client: api, vault: SourceBlobVault(), setupToken: "fixture")
+        await session!.refresh()
+        weak var original = session
+        let result = try await SourceBlobProbe.exercise(session: session!, api: api, records: api.records(), directory: directory)
+        session = nil
+        XCTAssertNotNil(original)
+        api.active = false
+        let canceled = Task { @MainActor in
+            withUnsafeCurrentTask { $0?.cancel() }
+            XCTAssertThrowsError(try result.afterVMStop())
+            XCTAssertEqual(result.report["vmStopPublicationRejected"] as? Bool, false)
+        }
+        try await canceled.value
+        try result.afterVMStop()
+        XCTAssertEqual(result.report["vmStopPublicationRejected"] as? Bool, true)
+    }
     func testCapturedPreflightSeparatesLegacyAndManagedBackends() throws {
         let hash = String(repeating: "a", count: 64)
         var managed: [String: Any] = ["architecture": "arm64", "sourceCommit": "e75ae371ad777ffd1eecdd28d2781a6519b05591", "bootMode": "rootDisk", "cpuCount": 1, "networkDevices": 0, "hostShares": 0, "captureListener": "127.0.0.1:8788", "backendSHA256": hash, "managedCapabilities": ["traffic-blob-metadata-v1", "regular-source-blob-stream-v1"], "managedBackend": ["binarySHA256": hash, "buildVersion": "artex-mac-e75ae371-blob1"]]

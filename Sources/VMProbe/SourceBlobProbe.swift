@@ -25,19 +25,29 @@ import Foundation
               manifest.expectedSHA256 == ArtifactIntegrity.sha256(expected) else { throw failure() }
     }
     @MainActor final class Result {
+        private let session: AuthenticationSession
+        private let authenticationWitness: @MainActor () throws -> Void
         private let manifest: TrafficBlobDownload
         private let row: CapturedTrafficExchange
         private let directory: URL
         private let saved: URL
         private var pending: EvidenceExportReceipt?
         private var stopped = false, rebooted = false
-        fileprivate init(manifest: TrafficBlobDownload, row: CapturedTrafficExchange, directory: URL, saved: URL, pending: EvidenceExportReceipt) {
+        fileprivate init(session: AuthenticationSession, authenticationWitness: @escaping @MainActor () throws -> Void, manifest: TrafficBlobDownload, row: CapturedTrafficExchange, directory: URL, saved: URL, pending: EvidenceExportReceipt) {
+            self.session = session; self.authenticationWitness = authenticationWitness
             self.manifest = manifest; self.row = row; self.directory = directory; self.saved = saved; self.pending = pending
         }
         func discardPending() throws { let receipt = pending; pending = nil; try receipt?.discard() }
         func afterVMStop() throws {
             guard let receipt = pending else { throw failure() }
-            do { _ = try receipt.commit(); throw failure() } catch is CancellationError { }
+            defer { withExtendedLifetime(session) { } }
+            try Task.checkCancellation()
+            try authenticationWitness()
+            do { _ = try receipt.commit(); throw failure() }
+            catch is CancellationError {
+                try Task.checkCancellation()
+                try authenticationWitness()
+            }
             try discardPending()
             guard !FileManager.default.fileExists(atPath: directory.appendingPathComponent("source-must-not-publish.bin").path),
                   try FileManager.default.contentsOfDirectory(atPath: directory.path).allSatisfy({ !$0.hasPrefix(".artex-evidence-") }) else { throw failure() }
@@ -62,6 +72,7 @@ import Foundation
     static func exercise(session: AuthenticationSession, api: any BackendJSONTransport,
                          records: [CapturedTrafficExchange], directory: URL) async throws -> Result {
         guard records.count == 29 else { throw failure() }
+        let authenticationWitness = try session.exportOwnershipWitness()
         let row = records[4], service = TrafficService(client: api)
         let manifest = try await service.blobDownload(id: row.id, side: .response)
         try validateManifest(manifest, row: row)
@@ -77,7 +88,8 @@ import Foundation
         } catch BackendAPIError.invalidResponse { }
         guard !FileManager.default.fileExists(atPath: directory.appendingPathComponent("source-bad-length.bin").path) else { throw failure() }
         let pending = try await session.authenticatedTrafficBlobExport(manifest, destination: .init(newFileURL: directory.appendingPathComponent("source-must-not-publish.bin")))
-        return Result(manifest: manifest, row: row, directory: directory, saved: saved, pending: pending)
+        try authenticationWitness()
+        return Result(session: session, authenticationWitness: authenticationWitness, manifest: manifest, row: row, directory: directory, saved: saved, pending: pending)
     }
     private static func save(session: AuthenticationSession, manifest: TrafficBlobDownload, directory: URL, name: String) async throws -> URL {
         let destination = directory.appendingPathComponent(name)

@@ -19,6 +19,16 @@ public enum AuthenticationPhase: String, Sendable { case checking, needsSetup, n
     public init(client: any BackendJSONTransport, vault: any SessionVault, setupToken: String) {
         self.client = client; self.vault = vault; self.setupToken = setupToken
     }
+    #if DEBUG
+    /// Diagnostic witness of one authentication epoch; exposes no credentials.
+    package func exportOwnershipWitness() throws -> @MainActor () throws -> Void {
+        guard phase == .authenticated, token != nil else { throw CancellationError() }
+        let ticket = revision
+        return { [weak self] in
+            guard let self, self.revision == ticket, self.phase == .authenticated else { throw CancellationError() }
+        }
+    }
+    #endif
     public func refresh() async {
         guard !isBusy else { return }
         isBusy = true; failure = nil; token = nil; advanceRevision(); phase = .checking
