@@ -15,6 +15,7 @@ import XCTest
     var current = true, available = true, calls = 0, wrongID = false
     var heldMetadata: CheckedContinuation<Void, Never>?
     var holdMetadata = false
+    var onAvailability: (() -> Void)?
     var heldReceipt: CheckedContinuation<Void, Never>?
     var holdReceipt = false
     var wrongReceipt = false
@@ -22,7 +23,7 @@ import XCTest
     func clean() { try? FileManager.default.removeItem(at: directory) }
     func model() -> TrafficBodyExportModel {
         let scope = TrafficBodyExportScope(presentation: UUID(), storeOwner: UUID(), detailRevision: UUID(), trafficID: "\u{FEFF}e\u{301}")
-        return TrafficBodyExportModel(scope: scope, isCurrent: { _,_ in self.current }, available: { self.available }, metadata: { id, side in
+        return TrafficBodyExportModel(scope: scope, isCurrent: { _,_ in self.current }, available: { self.onAvailability?(); return self.available }, metadata: { id, side in
             if self.holdMetadata { await withCheckedContinuation { self.heldMetadata = $0 } }
             return try TrafficBlobDownload(trafficID: self.wrongID ? "other" : id, side: side, expectedSize: 5, expectedSHA256: ArtifactIntegrity.sha256(self.bytes))
         }, exporter: { manifest, destination in
@@ -73,6 +74,18 @@ import XCTest
             f.heldReceipt?.resume(); f.heldReceipt = nil; try await wait { !model.isExporting }
             XCTAssertNil(model.saved); XCTAssertTrue(try FileManager.default.contentsOfDirectory(atPath: f.directory.path).isEmpty)
         }
+    }
+    func testReentrantAdmissionCannotStartTwoExportsOrClaimStoppedOwner() async throws {
+        let f = try BlobSaveFixture(); defer { f.onAvailability = nil; f.clean() }
+        let model = f.model(), chooser = BlobSaveChooser(); chooser.url = f.directory.appendingPathComponent("one.bin")
+        var nested: Bool?
+        f.onAvailability = { f.onAvailability = nil; nested = model.start(.response, owner: model.id, chooser: chooser) }
+        XCTAssertTrue(model.start(.response, owner: model.id, chooser: chooser))
+        XCTAssertEqual(nested, false)
+        try await wait { !model.isExporting }
+        XCTAssertEqual(f.calls, 1)
+        let stopped = f.model(); f.onAvailability = { f.onAvailability = nil; stopped.stop() }
+        XCTAssertFalse(stopped.start(.response, owner: stopped.id, chooser: chooser))
     }
     func testOtherwiseValidReceiptForDifferentBodyCannotPublish() async throws {
         let f = try BlobSaveFixture(); defer { f.clean() }; f.wrongReceipt = true
