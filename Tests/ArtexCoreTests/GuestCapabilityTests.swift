@@ -3,6 +3,27 @@ import XCTest
 @testable import ArtexCore
 
 final class GuestCapabilityTests: XCTestCase {
+    func testRuntimeGateRequiresAllReadinessConditionsAndCurrentDeclaration() {
+        for declared in [false, true] {
+            let features = GuestRuntimeFeatures(trafficBlobExportDeclared: declared)
+            for state in [LifecycleState.idle, .starting, .running, .stopping, .stopped, .failed] {
+                for ready in [false, true] {
+                    for machine in [false, true] {
+                        XCTAssertEqual(features.allowsTrafficBlobExport(state: state, ready: ready, hasMachine: machine), declared && state == .running && ready && machine)
+                    }
+                }
+            }
+        }
+        XCTAssertFalse(GuestRuntimeFeatures().allowsTrafficBlobExport(state: .running, ready: true, hasMachine: true))
+    }
+    @MainActor func testControllerCannotExposeCapabilityBeforeBootOrAfterFailedStart() async {
+        let controller = VMController()
+        XCTAssertFalse(controller.canExportTrafficBlobs)
+        let missing = FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString)
+        do { try await controller.start(artifacts: missing, logs: missing); XCTFail("Missing profile") } catch { }
+        XCTAssertFalse(controller.canExportTrafficBlobs)
+        XCTAssertFalse(controller.hasMachine)
+    }
     private func profile(capabilities: Any? = nil, rootDisk: Bool = true) throws -> (URL, [String: Any]) {
         let root = FileManager.default.temporaryDirectory.appendingPathComponent("artex-capability-"+UUID().uuidString)
         try FileManager.default.createDirectory(at: root, withIntermediateDirectories: false)
