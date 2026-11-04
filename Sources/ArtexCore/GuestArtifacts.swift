@@ -27,6 +27,13 @@ public struct GuestArtifacts: Codable, Sendable {
     public let cpuCount: Int?
     public let systemDisk: String?
     public let systemDiskSHA256: String?
+    public let managedCapabilities: [String]?
+    /// Compatibility declaration only; callers must load verified files and bind it to a live VM.
+    public var declaresTrafficBlobExport: Bool {
+        bootMode == "rootDisk" && systemDisk != nil &&
+        managedCapabilities?.contains("traffic-blob-metadata-v1") == true &&
+        managedCapabilities?.contains("regular-source-blob-stream-v1") == true
+    }
     public static func load(from directory: URL) throws -> GuestArtifacts {
         let manifest = try JSONDecoder().decode(Self.self, from: Data(contentsOf: directory.appendingPathComponent("manifest.json")))
         if let mode = manifest.bootMode {
