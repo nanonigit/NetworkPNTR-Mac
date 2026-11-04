@@ -182,6 +182,7 @@ import Foundation
         var sourceHashes=[String:String](),initialRows=[CapturedTrafficExchange](),finalState:FindingTraffic?
         var sourceBlob: SourceBlobProbe.Result?
         var sourceInterruption: SourceBlobInterruption.Proof?
+        var previousBlobGeneration: UUID?
         var result=[String:Any](),recovery=false
         var executedSourceHashes=[String:String](),sourceAudits=0
         do {
@@ -204,6 +205,10 @@ import Foundation
                 for _ in 0..<1600 {if controller.guestReady || controller.state == .failed {break};try await Task.sleep(for:.milliseconds(100))}
                 try require(controller.guestReady && controller.configuredCPUCount==1)
                 try require(controller.canExportTrafficBlobs == sourceBlobs)
+                if sourceBlobs {
+                    guard let generation = controller.trafficBlobExportGeneration, generation != previousBlobGeneration else { throw RuntimeError.integrity("blob boot generation") }
+                    previousBlobGeneration = generation
+                } else { try require(controller.trafficBlobExportGeneration == nil) }
                 let raw=BackendJSONClient(runtime:controller,provisioning:provisioning),session=AuthenticationSession(client:BackendJSONClient(runtime:controller,provisioning:provisioning),vault:vault,setupToken:provisioning.setupToken)
                 try require(try await raw.send(method:"GET",path:"/api/traffic",body:nil,bearer:nil).status==401)
                 await session.refresh();if index==1 {await session.setup(password:password,confirmation:password)}
@@ -237,7 +242,7 @@ import Foundation
                     }
                     report["persistence"]=true
                 }
-                try await controller.stop();try require(controller.state == .stopped && !controller.hasMachine && !controller.canExportTrafficBlobs);stops+=1
+                try await controller.stop();try require(controller.state == .stopped && !controller.hasMachine && !controller.canExportTrafficBlobs && controller.trafficBlobExportGeneration == nil);stops+=1
                 if sourceBlobs, index == 1 {
                     guard let sourceBlob else { throw RuntimeError.integrity("missing source blob stop proof") }
                     try sourceBlob.afterVMStop()
@@ -251,6 +256,7 @@ import Foundation
                 guard let sourceInterruption else { throw RuntimeError.integrity("missing source interruption proof") }
                 try sourceBlob.requireComplete(); report["sourceBlob"] = sourceBlob.report
                 report["sourceBlobInterruption"] = sourceInterruption.report
+                report["distinctReadyBootGenerationsVerified"] = true
             }
             let equal=try same(result,expected)
             try CapturedProbeContract.Completion(boots:boots,cooperativeStops:stops,cleanAudits:audits,sourceVerified:sourceAudits==2 && executedSourceHashes==sourceHashes,referenceEqual:equal,persistence:report["persistence"] as? Bool==true,uncertaintyRecovered:recovery,machineStopped:!controller.hasMachine).validate()

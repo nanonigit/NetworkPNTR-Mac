@@ -124,6 +124,9 @@ struct RootView: View {
         .onChange(of: runtime.trafficBlobExportGeneration) { _, _ in
             trafficScreen?.reset(); trafficOwner = nil
         }
+        .onChange(of: environment.authentication?.exportSessionGeneration) { _, _ in
+            trafficScreen?.reset(); trafficOwner = nil
+        }
         .onChange(of: environment.authentication?.phase) { _, phase in
             if phase != .authenticated { llmWorkspace.reset(); taskScreen?.reset(); findingScreen?.reset(); trafficScreen?.reset(); taskDetailID = nil }
             if phase == .needsSetup || phase == .needsLogin || phase == .unavailable { selection = "auth" }
@@ -151,10 +154,11 @@ struct RootView: View {
                 let client = AuthenticatedBackendClient(session: session)
                 let runtime = environment.controller
                 let generation = runtime.trafficBlobExportGeneration
+                let authenticationGeneration = session.exportSessionGeneration
                 let metadata = TrafficService(client: client)
                 trafficScreen = TrafficScreenModel(store: TrafficStore(service: metadata), findings: FindingService(client: client), binding: FindingTrafficService(client: client), bodyMetadata: metadata.blobDownload, bodyExporter: session.authenticatedTrafficBlobExport, bodyAvailable: { [weak runtime, weak session] in
-                    guard let runtime, let session, generation != nil else { return false }
-                    return runtime.trafficBlobExportGeneration == generation && session.phase == .authenticated
+                    guard let runtime, let session, generation != nil, authenticationGeneration != nil else { return false }
+                    return runtime.trafficBlobExportGeneration == generation && session.exportSessionGeneration == authenticationGeneration
                 }, bodyRetirement: trafficRetirements, preferences: .standard)
                 trafficOwner = ObjectIdentifier(session)
             }

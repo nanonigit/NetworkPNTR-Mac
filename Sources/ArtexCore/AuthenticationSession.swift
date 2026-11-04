@@ -5,6 +5,8 @@ public enum AuthenticationPhase: String, Sendable { case checking, needsSetup, n
 
 @MainActor @Observable public final class AuthenticationSession {
     public private(set) var phase: AuthenticationPhase = .checking
+    /// Opaque UI ownership identity only; carries no credential or authorization.
+    public var exportSessionGeneration: UUID? { phase == .authenticated ? revision : nil }
     public var error: String? { failure?.text(language: .japanese) }
     public private(set) var failure: AppErrorMessage?
     public private(set) var isBusy = false
