@@ -21,6 +21,7 @@ import XCTest
     var wrongReceipt = false
     var exportError: Error?
     var lateCleanupError = false
+    var incompleteCleanup = false
     init() throws { try FileManager.default.createDirectory(at: directory, withIntermediateDirectories: false) }
     func clean() { try? FileManager.default.removeItem(at: directory) }
     func model() -> TrafficBodyExportModel {
@@ -39,6 +40,11 @@ import XCTest
             let receipt = EvidenceExportReceipt(response: .init(result: result, file: try writer.finish(response: result)))
             if self.holdReceipt { await withCheckedContinuation { self.heldReceipt = $0 } }
             if self.lateCleanupError { try receipt.discard(); throw EvidenceExportError.cleanupRequired }
+            if self.incompleteCleanup {
+                let stage = try XCTUnwrap(FileManager.default.contentsOfDirectory(at: self.directory, includingPropertiesForKeys: nil).first { $0.lastPathComponent.hasPrefix(".artex-evidence-") })
+                try FileManager.default.moveItem(at: stage, to: self.directory.appendingPathComponent("moved-stage"))
+                try FileManager.default.createDirectory(at: stage, withIntermediateDirectories: false)
+            }
             return receipt
         })
     }
@@ -90,6 +96,18 @@ import XCTest
         XCTAssertEqual(f.calls, 1)
         let stopped = f.model(); f.onAvailability = { f.onAvailability = nil; stopped.stop() }
         XCTAssertFalse(stopped.start(.response, owner: stopped.id, chooser: chooser))
+    }
+    func testPublishedFileWithIncompleteCleanupKeepsNoticeAfterDetailCloses() async throws {
+        let f = try BlobSaveFixture(); defer { f.clean() }; f.incompleteCleanup = true
+        let model = f.model(), chooser = BlobSaveChooser(), retirement = TrafficBodyExportRetirement()
+        chooser.url = f.directory.appendingPathComponent("saved.bin")
+        XCTAssertTrue(model.start(.response, owner: model.id, chooser: chooser)); try await wait { !model.isExporting }
+        XCTAssertEqual(try Data(contentsOf: chooser.url!), f.bytes)
+        XCTAssertEqual(model.saved?.stagingCleanupComplete, false)
+        XCTAssertTrue(model.cleanupRequired); XCTAssertFalse(model.canStart(.response))
+        retirement.retain(model)
+        XCTAssertNil(model.saved); XCTAssertEqual(retirement.notices.count, 1)
+        XCTAssertEqual(try Data(contentsOf: chooser.url!), f.bytes)
     }
     func testRetirementDrainsAfterViewReleaseAndKeepsOnlyCleanupNotice() async throws {
         let f = try BlobSaveFixture(); defer { f.clean() }; f.holdReceipt = true; f.lateCleanupError = true
