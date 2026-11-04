@@ -88,7 +88,13 @@ struct TrafficBodyExportScope: Sendable, Equatable {
                         guard receipt.result.status == 200, receipt.result.byteCount == manifest.expectedSize,
                               receipt.result.sha256 == manifest.expectedSHA256 else { throw EvidenceExportError.integrity }
                         let file = try receipt.commit { try self.validate(side) }
-                        self.transition { self.saved = file }
+                        self.transition {
+                            self.saved = file
+                            if !file.stagingCleanupComplete {
+                                self.cleanupRequired = true
+                                self.failure = AppErrorMessage(key: .evidenceUICleanupFailed)
+                            }
+                        }
                     } catch { try receipt.discard(); throw error }
                 } catch {
                     if case EvidenceExportError.cleanupRequired = error {
