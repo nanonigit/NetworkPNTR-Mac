@@ -1,15 +1,15 @@
-import ArtexCore
 import Foundation
 import Observation
 
 /// App-owned retirement survives individual detail windows and session screen replacement.
-@MainActor @Observable final class TrafficBodyExportRetirement {
-    struct Notice: Identifiable { let id: UUID; let message: AppErrorMessage }
-    private(set) var notices: [Notice] = []
+@MainActor @Observable package final class TrafficBodyExportRetirement {
+    package struct Notice: Identifiable { package let id: UUID; package let message: AppErrorMessage }
+    package private(set) var notices: [Notice] = []
     private var pending: [UUID: TrafficBodyExportModel] = [:]
     @ObservationIgnored private var seen: Set<UUID> = []
-    var pendingCount: Int { pending.count }
-    func retain(_ model: TrafficBodyExportModel) {
+    package init() {}
+    package var pendingCount: Int { pending.count }
+    package func retain(_ model: TrafficBodyExportModel) {
         guard seen.insert(model.id).inserted else { return }
         pending[model.id] = model
         if model.isActive { model.stop() }
@@ -26,5 +26,5 @@ import Observation
             Task { @MainActor [weak self] in self?.watch(id) }
         }
     }
-    func dismiss(_ id: UUID) { notices.removeAll { $0.id == id } }
+    package func dismiss(_ id: UUID) { notices.removeAll { $0.id == id } }
 }

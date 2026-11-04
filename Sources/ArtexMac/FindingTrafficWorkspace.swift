@@ -2,11 +2,6 @@ import ArtexCore
 import Foundation
 import Observation
 
-@MainActor protocol EvidenceDestinationChoosing: AnyObject {
-    func choose(suggestedFilename: String) async -> URL?
-    func cancel()
-}
-
 typealias FindingEvidenceExporter = @MainActor (FindingEvidenceDownload, EvidenceExportDestination) async throws -> EvidenceExportReceipt
 
 struct EvidenceTextPreview {

@@ -1,30 +1,33 @@
-import ArtexCore
 import Foundation
 import Observation
 
-typealias TrafficBodyMetadataLoader = @MainActor (String, FindingEvidenceSide) async throws -> TrafficBlobDownload
-typealias TrafficBodyExporter = @MainActor (TrafficBlobDownload, EvidenceExportDestination) async throws -> EvidenceExportReceipt
+package typealias TrafficBodyMetadataLoader = @MainActor (String, FindingEvidenceSide) async throws -> TrafficBlobDownload
+package typealias TrafficBodyExporter = @MainActor (TrafficBlobDownload, EvidenceExportDestination) async throws -> EvidenceExportReceipt
 
-struct TrafficBodyExportScope: Sendable, Equatable {
-    let presentation: UUID
-    let storeOwner: UUID
-    let detailRevision: UUID
-    let trafficID: String
-    static func == (lhs: Self, rhs: Self) -> Bool {
+package struct TrafficBodyExportScope: Sendable, Equatable {
+    package let presentation: UUID
+    package let storeOwner: UUID
+    package let detailRevision: UUID
+    package let trafficID: String
+    package init(presentation: UUID, storeOwner: UUID, detailRevision: UUID, trafficID: String) {
+        self.presentation = presentation; self.storeOwner = storeOwner
+        self.detailRevision = detailRevision; self.trafficID = trafficID
+    }
+    package static func == (lhs: Self, rhs: Self) -> Bool {
         lhs.presentation == rhs.presentation && lhs.storeOwner == rhs.storeOwner &&
         lhs.detailRevision == rhs.detailRevision && Data(lhs.trafficID.utf8) == Data(rhs.trafficID.utf8)
     }
 }
 
 /// One detail owner retains this model until its canceled transfer has drained.
-@MainActor @Observable final class TrafficBodyExportModel {
-    let id = UUID()
-    let scope: TrafficBodyExportScope
-    private(set) var isActive = true
-    private(set) var isExporting = false
-    private(set) var saved: SavedEvidenceFile?
-    private(set) var failure: AppErrorMessage?
-    private(set) var cleanupRequired = false
+@MainActor @Observable package final class TrafficBodyExportModel {
+    package let id = UUID()
+    package let scope: TrafficBodyExportScope
+    package private(set) var isActive = true
+    package private(set) var isExporting = false
+    package private(set) var saved: SavedEvidenceFile?
+    package private(set) var failure: AppErrorMessage?
+    package private(set) var cleanupRequired = false
     @ObservationIgnored private let isCurrent: @MainActor (TrafficBodyExportScope, FindingEvidenceSide) -> Bool
     @ObservationIgnored private let available: @MainActor () -> Bool
     @ObservationIgnored private let metadata: @MainActor (String, FindingEvidenceSide) async throws -> TrafficBlobDownload
@@ -38,7 +41,7 @@ struct TrafficBodyExportScope: Sendable, Equatable {
     @ObservationIgnored private var stopping = false
     @ObservationIgnored private var cancelling = false
 
-    init(scope: TrafficBodyExportScope, isCurrent: @escaping @MainActor (TrafficBodyExportScope, FindingEvidenceSide) -> Bool,
+    package init(scope: TrafficBodyExportScope, isCurrent: @escaping @MainActor (TrafficBodyExportScope, FindingEvidenceSide) -> Bool,
          available: @escaping @MainActor () -> Bool,
          metadata: @escaping @MainActor (String, FindingEvidenceSide) async throws -> TrafficBlobDownload,
          exporter: @escaping @MainActor (TrafficBlobDownload, EvidenceExportDestination) async throws -> EvidenceExportReceipt) {
@@ -59,12 +62,12 @@ struct TrafficBodyExportScope: Sendable, Equatable {
         isActive && !cleanupRequired && !changing && !stopping && !isExporting && !Task.isCancelled && isCurrent(scope, side) && available()
             && isActive && !changing && !stopping && !isExporting && !stopRequested
     }
-    func canStart(_ side: FindingEvidenceSide) -> Bool {
+    package func canStart(_ side: FindingEvidenceSide) -> Bool {
         guard !acquiring else { return false }
         acquiring = true; defer { acquiring = false }
         return eligible(side)
     }
-    @discardableResult func start(_ side: FindingEvidenceSide, owner: UUID, chooser: any EvidenceDestinationChoosing) -> Bool {
+    @discardableResult package func start(_ side: FindingEvidenceSide, owner: UUID, chooser: any EvidenceDestinationChoosing) -> Bool {
         guard owner == id, !acquiring, isActive, !cleanupRequired, !changing, !stopping, !isExporting else { return false }
         acquiring = true; defer { acquiring = false }
         cancelled = false
@@ -107,13 +110,13 @@ struct TrafficBodyExportScope: Sendable, Equatable {
         }
         return true
     }
-    func cancel() {
+    package func cancel() {
         guard !cancelling else { return }
         cancelling = true; cancelled = true
         task?.cancel(); chooser?.cancel()
         cancelling = false
     }
-    func stop() {
+    package func stop() {
         guard !stopping else { return }
         if changing { stopRequested = true; cancel(); return }
         stopping = true
