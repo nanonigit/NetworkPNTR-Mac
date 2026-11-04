@@ -1,5 +1,7 @@
 # Original body save controls: software integration checkpoint
 
+Historical checkpoint: the production model has since passed actual VM verification; see [the newer record](traffic-body-model-vm-verification.md). Actual native panel/UI acceptance remains open.
+
 Status: root/detail/save-panel wiring implemented for compatible running guests; actual native interaction acceptance is pending. [Receipt](../evidence/traffic/body-save-ui-verification.json). Continue the complete independent native app/VM/browser21/provider/harness/kernel/release goal.
 
 ## Behavior

@@ -1,0 +1,207 @@
+{
+  "schema": 1,
+  "passedProductionModelVM": true,
+  "sourceCommit": "f56e388d882b68a6ff410d58ce31f06ac8b0ad6c",
+  "sourceSHA256": {
+    "Sources/ArtexCore/TrafficBodyExportModel.swift": "9bf949769c3d838342e08d5f7272a2343469dae236998075335cae187c61241c",
+    "Sources/ArtexCore/TrafficBodyExportRetirement.swift": "2fbc563f1702615d01b1c44daa6e7e5396358cadc8ec3056a8aad042fbee187d",
+    "Sources/ArtexCore/EvidenceDestinationChoosing.swift": "49cea407b8ffdace8e2c827d214dfe277293b5bce7d3eda8b742b8b198c41668",
+    "Sources/VMProbe/ProductionBodyModelProbe.swift": "4039ac0149e77b9bef45b13ee6711aa62bdd2eda2bf69ce00c5128e3c68e1b3a",
+    "Sources/VMProbe/CapturedProbe.swift": "0338ee706aeba3700498d29abfc6c1d6aa25bcbfe6e8def30d32e8381253b3e8"
+  },
+  "probeSHA256": "852ac4a70fe92291c8a5711acd59550b05b584f6b14d32fbe60e936b69e7b34c",
+  "candidateManifestSHA256": "83628454bcb2a7d4e66b3445ec1d1fd81c69926ac0eee17d06b99c0ba1931254",
+  "runtimeReportSHA256": "1e960ec4b3bb62de266d08425a4c20861b1e5871f93004dfeb4065ca05c1cc9b",
+  "runtimeExitCode": 0,
+  "runtime": {
+    "passed": true,
+    "boots": 2,
+    "cooperativeStops": 2,
+    "cleanAudits": 2,
+    "referenceEqual": true,
+    "persistence": true,
+    "machineStopped": true,
+    "distinctReadyBootGenerationsVerified": true,
+    "productionBodyModels": [
+      {
+        "automatedChooser": true,
+        "bytes": 262401,
+        "countsAfterModel": {
+          "activity": 0,
+          "archives": 0,
+          "assets": 3,
+          "companies": 1,
+          "conversations": 0,
+          "events": 0,
+          "explorations": 11,
+          "finding_nodes": 32,
+          "findings": 33,
+          "foreign_assets": 0,
+          "foreign_companies": 0,
+          "foreign_events": 0,
+          "foreign_explorations": 0,
+          "foreign_finding_nodes": 0,
+          "foreign_findings": 0,
+          "foreign_links": 0,
+          "foreign_nodes": 0,
+          "foreign_relations": 0,
+          "foreign_tasks": 0,
+          "intercepts": 0,
+          "llm_records": 0,
+          "llm_usage": 0,
+          "notification_channels": 0,
+          "notification_deliveries": 0,
+          "profiles": 0,
+          "relations": 1,
+          "retests": 0,
+          "task_profiles": 0,
+          "tasks": 11,
+          "traffic_bindings": 1,
+          "traffic_snapshots": 2,
+          "unsafe_tasks": 0
+        },
+        "fullByteEqual": true,
+        "generationsUnchanged": true,
+        "lateVerifiedReceiptRetired": true,
+        "nativePanelAcceptance": false,
+        "nativeUIAcceptance": false,
+        "noPublicationAfterRetirement": true,
+        "productionModelShared": true,
+        "retirementDrained": true,
+        "sha256": "5549252a7f275dd6b221f062c298ac588a2dea19e5145b6ca06308cc8c9dd43e",
+        "sourceSHA256": {
+          "captured_fixture_guest.py": "a09b77cc5baa7a8462a7ed644bb3a09d00618a8d72d91d7fd570989e4ec7827f",
+          "captured_native_guest.py": "c5a679e8352b4c0b90fd72a4cb8a141f66f733426647e1680fc002ec9a7594a0",
+          "check_network.py": "4bc167e71c655d31eda1872f11ad4b8a90b201994834a63c82194a3fa317ee2e",
+          "findings_fixture_control.py": "0ed7fbb3561758de6e8651d4ec794ded957ae32fb145f598dc794ba51a600514",
+          "findings_seed_guest.py": "ff65b9603ddd06704a6ace53398554f14479c5825ec0da573bc775f52036b70f"
+        },
+        "stagingAbsent": true
+      },
+      {
+        "automatedChooser": true,
+        "bytes": 262401,
+        "countsAfterModel": {
+          "activity": 0,
+          "archives": 0,
+          "assets": 3,
+          "companies": 1,
+          "conversations": 0,
+          "events": 0,
+          "explorations": 11,
+          "finding_nodes": 32,
+          "findings": 33,
+          "foreign_assets": 0,
+          "foreign_companies": 0,
+          "foreign_events": 0,
+          "foreign_explorations": 0,
+          "foreign_finding_nodes": 0,
+          "foreign_findings": 0,
+          "foreign_links": 0,
+          "foreign_nodes": 0,
+          "foreign_relations": 0,
+          "foreign_tasks": 0,
+          "intercepts": 0,
+          "llm_records": 0,
+          "llm_usage": 0,
+          "notification_channels": 0,
+          "notification_deliveries": 0,
+          "profiles": 0,
+          "relations": 1,
+          "retests": 0,
+          "task_profiles": 0,
+          "tasks": 11,
+          "traffic_bindings": 1,
+          "traffic_snapshots": 2,
+          "unsafe_tasks": 0
+        },
+        "fullByteEqual": true,
+        "generationsUnchanged": true,
+        "lateVerifiedReceiptRetired": true,
+        "nativePanelAcceptance": false,
+        "nativeUIAcceptance": false,
+        "noPublicationAfterRetirement": true,
+        "productionModelShared": true,
+        "retirementDrained": true,
+        "sha256": "5549252a7f275dd6b221f062c298ac588a2dea19e5145b6ca06308cc8c9dd43e",
+        "sourceSHA256": {
+          "captured_fixture_guest.py": "a09b77cc5baa7a8462a7ed644bb3a09d00618a8d72d91d7fd570989e4ec7827f",
+          "captured_native_guest.py": "c5a679e8352b4c0b90fd72a4cb8a141f66f733426647e1680fc002ec9a7594a0",
+          "check_network.py": "4bc167e71c655d31eda1872f11ad4b8a90b201994834a63c82194a3fa317ee2e",
+          "findings_fixture_control.py": "0ed7fbb3561758de6e8651d4ec794ded957ae32fb145f598dc794ba51a600514",
+          "findings_seed_guest.py": "ff65b9603ddd06704a6ace53398554f14479c5825ec0da573bc775f52036b70f"
+        },
+        "stagingAbsent": true
+      }
+    ]
+  },
+  "sharedPackageModel": true,
+  "automatedChooser": true,
+  "nativePanelAcceptance": false,
+  "nativeUIAcceptance": false,
+  "fullGoalComplete": false,
+  "defaultProfilePromoted": false,
+  "pending": [
+    "real window panel keyboard multiwindow VoiceOver browser UI comparison",
+    "all21 workflows",
+    "kernel reliability default promotion",
+    "Gemini Groq CP1-CP4",
+    "harness H0-H5",
+    "release gates"
+  ],
+  "hostedCI": "unverified; skip ci pending quota verification",
+  "swiftTests": {
+    "executed": 1020,
+    "passed": 1019,
+    "existingAXSkip": 1,
+    "exitCode": 0
+  },
+  "combinedLineCoverage": {
+    "TrafficBodyExportModel.swift": {
+      "count": 193,
+      "covered": 193,
+      "percent": 100
+    },
+    "TrafficBodyExportRetirement.swift": {
+      "count": 29,
+      "covered": 29,
+      "percent": 100
+    },
+    "VMController.swift": {
+      "count": 512,
+      "covered": 371,
+      "percent": 72.4609375
+    },
+    "RootView.swift": {
+      "count": 420,
+      "covered": 0,
+      "percent": 0
+    },
+    "ProductionBodyModelProbe.swift": {
+      "count": 115,
+      "covered": 100,
+      "percent": 86.95652173913044
+    }
+  },
+  "pythonTests": {
+    "passed": 179,
+    "exitCode": 0
+  },
+  "stagedApp": {
+    "buildExitCode": 0,
+    "strictSignatureVerified": true,
+    "sharedCoreModelSymbolVerified": true,
+    "oldAppModelCopyAbsent": true,
+    "executableSHA256": "c2208587c78f016ec4dfa8d2013165d92ad0f7dc3dbb0f9c92d8249f159a88c4",
+    "defaultManifestSHA256": "fa0f1972c04f2a04853de37f4fd163b922ac38c841849c635d29f565fe6115ce",
+    "bootFilesVerified": true,
+    "launched": false
+  },
+  "releaseProbe": {
+    "buildExitCode": 0,
+    "binarySHA256": "b0ab28e4cea5a4c273bcef3b2b74dda72f24067c4b967e13c6fe26a3aa5de985",
+    "guardWithThreePositionalArgumentsExitCode": 2,
+    "allSymbolsExcludeDebugProofHelpers": true,
+    "newDiagnosticLiteralAbsent": true
+  }
+}

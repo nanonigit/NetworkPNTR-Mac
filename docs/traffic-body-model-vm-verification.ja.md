@@ -1,0 +1,25 @@
+# 共通の製品保存model: 実VM検証
+
+状態: 自動chooserによる製品model→実VMの条件を通過。実ウィンドウ／パネル／入力／VoiceOverとアプリ全体の完了は未達。[検証記録](../evidence/traffic/production-model-vm-verification.json)、[設計](traffic-body-model-vm-design.ja.md)。
+
+## 同一実装
+
+88036d3は@testableなしでArtexCoreをimportするVMProbe側利用試験を未実装REDとして定義。8b19034でUI非依存model／scope／callback／保存先protocol／回収器だけをpackage可視性・明示初期化付きでArtexCoreへ移した。AppKit presenter、root、viewはArtexMacに残し、依存や公開資格情報APIは増やさない。既存model／親／UI試験は維持した。古い検証記録は当時のArtexMacパス、現在はArtexCoreのソースを結び付ける。ハーネスへ複製した状態機械ではなく、製品と一つの実装を共有する。
+
+7c9bb1fで実controller前提の未実装REDを定義し、f56e388でhelperと2回分の完了条件を追加した。初期compileのoptional Int64比較を修正した点は準備の修正で、業務ロジックのREDではない。移動・helperの別レビューで阻害指摘なし。失敗時は全modelを終了し、保留継続を解放、キャンセルされていないMainActor taskで回収完了を待って元エラーを返す。クラウドprofileや外部対象を使わない。
+
+## 実VMの結果
+
+署名ソースf56e388d882b68a6ff410d58ce31f06ac8b0ad6c、バイナリSHA256 852ac4a70fe92291c8a5711acd59550b05b584f6b14d32fbe60e936b69e7b34c、候補manifest SHA256 83628454bcb2a7d4e66b3445ec1d1fd81c69926ac0eee17d06b99c0ba1931254、レポートSHA256 1e960ec4b3bb62de266d08425a4c20861b1e5871f93004dfeb4065ca05c1cc9b。exit0、2回起動・2回協調停止・2回起動監査、異なる準備完了世代、永続化・ソース検査・固定ブラウザ参照一致を通過した。
+
+各起動で共通modelが実メタデータを取得し、独立した262401バイトの元データと照合、AuthenticationSession／BackendJSONClient／VZを通じて実ファイルへ保存した。両original.binを全バイト再読込し、SHA2565549252a7f275dd6b221f062c298ac588a2dea19e5145b6ca06308cc8c9dd43eとファイル・ディレクトリの検査が一致。2回目の保存操作は認証済み・検証済みの実レシートをmodelへ返す前に保留した。stageが存在して保存先が未公開の間にmodelを終了し、遅れて返しても保存先を作らずstageを削除、共通回収器は清掃通知なしで終了した。各処理中のVM・認証世代は不変。両起動のmodel処理後にもゲストを監査し、ソースhashとprofile／LLM記録・使用／会話／活動／危険taskの0を確認。最終関連付け／snapshotは1／2。
+
+これは製品modelと実VM転送の検証であり、保存先の選択は自動。NSSavePanel・実ウィンドウ・キーボード・画面操作を実施していない。ブラウザAPI参照は維持したが、全ネイティブUI互換は推定しない。既存の制御した転送途中キャンセルと、今回の転送済みレシートの終了処理は区別する。
+
+## 回帰と限界
+
+Swift全1020件中1019件成功、既存外部AX1件はスキップ。Python179件成功。単体＋実VMの行カバレッジは共通model193/193、回収器29/29、helper100/115＝86.96%。VMController全体371/512＝72.46%、RootView0/420を別に開示し、製品全体80%を主張しない。package利用試験はAppKitなしで実moduleを利用する。model／転送refactorで新しい画面設計は行わずLazyweb対象外、既存UI設計の証拠を維持する。
+
+実パネル所有権・日英表示・キーボード・複数ウィンドウ・VoiceOver・全21比較は個別検証まで未完。解除を後回しにするユーザー意向を維持し、再要求や画面外代替をしない。通常guest／profileを維持し、kernel安定性・来歴・昇格、Gemini／Groq CP1–CP4、harness H0–H5、releaseも継続。Actions利用可能量確認までCIは未検証、公開は[skip ci]。
+
+アプリ再ビルド・厳密署名を通過。全シンボルのdemangle結果にArtexCore.TrafficBodyExportModelがありArtexMacのコピーはない。通常manifest fa0f1972c04f2a04853de37f4fd163b922ac38c841849c635d29f565fe6115ceとブートハッシュを維持し、起動・昇格はしない。Release VMProbeはビルド成功、3つの位置引数付きcaptured-blobをexit2で拒否、全シンボルと新規診断文字列からDEBUG helperを除外した。製品modelの存在はアプリで検査し、未使用コードが除去されるRelease CLIには要求しない。

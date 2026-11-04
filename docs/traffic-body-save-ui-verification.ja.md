@@ -1,5 +1,7 @@
 # 元データ保存操作: ソフトウェア接続の検証
 
+履歴: 製品modelから実VMへの検証は後続で通過した。[新しい記録](traffic-body-model-vm-verification.ja.md)を参照。実パネル・UI受け入れは未完。
+
 状態: 対応する稼働ゲスト向けにroot／詳細／保存パネルを接続した。実ネイティブ操作の受け入れは未完。[検証記録](../evidence/traffic/body-save-ui-verification.json)。独立アプリ・VM・全21比較・provider／harness／kernel／releaseの目標を維持する。
 
 ## 動作
