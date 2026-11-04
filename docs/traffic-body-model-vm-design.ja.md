@@ -1,0 +1,9 @@
+# 保存modelから実ゲスト転送への接続
+
+ネイティブアプリ・隔離VM・全21比較・provider／harness／kernel／releaseの目標を維持する。次の条件は、複製した状態機械やCore直接転送ではなく、実際の製品modelを管理版ゲストへ接続すること。実ウィンドウ・保存パネル・入力・VoiceOverは別条件。
+
+UI非依存のTrafficBodyExportModel、Scope、callback別名、EvidenceDestinationChoosing、回収器だけをpackage可視性でArtexCoreへ移す。AppKit presenter、RootView、親model、viewはArtexMacに残し動作と既存試験を維持する。明示package初期化・memberでアプリとVMProbeが同じ実装を使い、実行target間リンク、modelコピー、依存追加を避ける。資格情報を持つ公開APIは追加しない。
+
+移動前にVMProbe側の利用試験をTDDする。captured-blobのDEBUG検証に、独立した元バイト照合付きの実メタデータ・認証転送・所有する一時保存先だけを返すchooserを追加し、保存バイトとhashを確認する。2回目は実際の検証済みステージングレシートを保留し、共通回収器でmodelを終了してから返し、公開なし・stageなし・清掃通知なしを要求する。失敗時も全ての保留処理を解放・終了待ちする。VMと認証世代の不変、従来参照・停止再起動・ソース／非agent監査、候補と通常ゲストの分離を維持する。自動chooserは実NSSavePanelではないことを記録する。
+
+package利用、既存model／親／Finding／パネル試験、全チェック、署名実候補の実行、ソース／バイナリ／プロファイル／レポートの対応、日英記録を要求する。ReleaseはDEBUG検証helperを除外し製品modelは保持する。GUI起動・kernel／通常ゲスト昇格を推定しない。model／転送refactorのためLazyweb対象外で、既存UI設計の証拠を維持する。
