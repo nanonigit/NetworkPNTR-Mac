@@ -43,6 +43,13 @@ import XCTest
     }
 }
 
+@MainActor private final class TrafficParentChooser: EvidenceDestinationChoosing {
+    let url: URL
+    init(_ url: URL) { self.url = url }
+    func choose(suggestedFilename: String) async -> URL? { url }
+    func cancel() { }
+}
+
 @MainActor final class TrafficScreenModelTests: XCTestCase {
     private func reached(_ predicate: () -> Bool) async throws {
         for _ in 0..<10000 { if predicate() { return }; await Task.yield() }
@@ -75,6 +82,46 @@ import XCTest
         let second = try XCTUnwrap(model.bodyExport)
         XCTAssertFalse(second === first)
         model.reset(); XCTAssertFalse(second.isActive); XCTAssertNil(model.bodyExport)
+    }
+    func testParentCloseAndResetRetainDrainingExportAndLateCleanupFailure() async throws {
+        for reset in [false, true] {
+            let api = TrafficScreenAPI(), clock = TrafficScreenClock()
+            var held: CheckedContinuation<Void, Never>?
+            let model = TrafficScreenModel(store: TrafficStore(service: .init(client: api)), bodyMetadata: { id, side in
+                try TrafficBlobDownload(trafficID: id, side: side, expectedSize: 0, expectedSHA256: ArtifactIntegrity.sha256(Data()))
+            }, bodyExporter: { _,_ in
+                await withCheckedContinuation { held = $0 }
+                throw EvidenceExportError.cleanupRequired
+            }, bodyAvailable: { true }, sleep: clock.sleep)
+            let root = FileManager.default.temporaryDirectory.appendingPathComponent("artex-parent-"+UUID().uuidString)
+            try FileManager.default.createDirectory(at: root, withIntermediateDirectories: false)
+            defer { model.reset(); clock.releaseAll(); try? FileManager.default.removeItem(at: root) }
+            let lease = try XCTUnwrap(model.begin()); try await reached { !model.store.isRefreshing && api.paths.count == 3 }
+            await model.selectDetail("flow", lease: lease, owner: model.store.owner)
+            let export = try XCTUnwrap(model.bodyExport)
+            XCTAssertTrue(export.start(.response, owner: export.id, chooser: TrafficParentChooser(root.appendingPathComponent("never.bin"))))
+            try await reached { held != nil }
+            if reset { model.reset() } else { model.closeDetail("flow", lease: lease, owner: model.store.owner, revision: model.previewRevision) }
+            XCTAssertFalse(export.isActive); XCTAssertTrue(export.isExporting)
+            XCTAssertTrue(model.retiredBodyExports.contains { $0 === export })
+            held?.resume(); held = nil; try await reached { !export.isExporting }
+            XCTAssertNotNil(export.failure)
+            XCTAssertTrue(model.retiredBodyExports.contains { $0 === export })
+            XCTAssertTrue(try FileManager.default.contentsOfDirectory(atPath: root.path).isEmpty)
+        }
+    }
+    func testReentrantStopWhilePublishingBodyOwnerCannotLeaveActiveExport() async throws {
+        let api = TrafficScreenAPI(), clock = TrafficScreenClock()
+        let model = TrafficScreenModel(store: TrafficStore(service: .init(client: api)), bodyMetadata: { id, side in
+            try TrafficBlobDownload(trafficID: id, side: side, expectedSize: 0, expectedSHA256: ArtifactIntegrity.sha256(Data()))
+        }, bodyExporter: { _,_ in throw CancellationError() }, bodyAvailable: { true }, sleep: clock.sleep)
+        let lease = try XCTUnwrap(model.begin()); defer { model.reset(); clock.releaseAll() }
+        try await reached { !model.store.isRefreshing && api.paths.count == 3 }
+        withObservationTracking { _ = model.bodyExport } onChange: {
+            MainActor.assumeIsolated { _ = model.stop(lease) }
+        }
+        await model.selectDetail("flow", lease: lease, owner: model.store.owner)
+        XCTAssertNil(model.bodyExport); XCTAssertNil(model.presentation); XCTAssertFalse(model.store.isActive)
     }
     func testIndependentDebouncesMergeCurrentQueryAcrossStoreOwnerRotation() async throws {
         let (model, api, clock, lease) = try await fixture()

@@ -5,6 +5,12 @@ import Observation
 /// A window retains this model; view bindings/tasks carry the lease returned by begin().
 @MainActor @Observable final class TrafficScreenModel {
     typealias Sleep = @MainActor (Duration) async throws -> Void
+    private(set) var bodyExport: TrafficBodyExportModel?
+    private(set) var retiredBodyExports: [TrafficBodyExportModel] = []
+    @ObservationIgnored private let bodyMetadata: TrafficBodyMetadataLoader?
+    @ObservationIgnored private let bodyExporter: TrafficBodyExporter?
+    @ObservationIgnored private let bodyAvailable: @MainActor () -> Bool
+    var bodyExportSupported: Bool { bodyExport != nil && bodyAvailable() }
     let store: TrafficStore
     let linking: TrafficBindingStore?
     private let findings: FindingService?
@@ -34,7 +40,8 @@ import Observation
     @ObservationIgnored private var readID = UUID()
     @ObservationIgnored private var pollTask: Task<Void, Never>?
 
-    init(store: TrafficStore, findings: FindingService? = nil, binding: FindingTrafficService? = nil, preferences: UserDefaults? = nil, sleep: @escaping Sleep = { try await Task.sleep(for: $0) }) {
+    init(store: TrafficStore, findings: FindingService? = nil, binding: FindingTrafficService? = nil, bodyMetadata: TrafficBodyMetadataLoader? = nil, bodyExporter: TrafficBodyExporter? = nil, bodyAvailable: @escaping @MainActor () -> Bool = { false }, preferences: UserDefaults? = nil, sleep: @escaping Sleep = { try await Task.sleep(for: $0) }) {
+        self.bodyMetadata = bodyMetadata; self.bodyExporter = bodyExporter; self.bodyAvailable = bodyAvailable
         self.store = store; self.findings = findings; self.linking = binding.map(TrafficBindingStore.init); self.preferences = preferences; self.sleep = sleep
     }
     var controlsAvailable: Bool { baseAvailable && pendingSort == nil && store.selectedExchange == nil }
@@ -63,7 +70,24 @@ import Observation
         readID = UUID(); readTask?.cancel(); readTask = nil
         pollTask?.cancel(); pollTask = nil
     }
+    private func retireBodyExport() {
+        retiredBodyExports.removeAll { !$0.isExporting && $0.failure == nil }
+        let previous = bodyExport
+        previous?.stop(); bodyExport = nil
+        if let previous, previous.isExporting || previous.failure != nil { retiredBodyExports.append(previous) }
+    }
+    private func installBodyExport(id: String, lease: UUID, owner: UUID) {
+        guard let bodyMetadata, let bodyExporter else { return }
+        let scope = TrafficBodyExportScope(presentation: lease, storeOwner: owner, detailRevision: previewRevision, trafficID: id)
+        bodyExport = TrafficBodyExportModel(scope: scope, isCurrent: { [weak self] scope, _ in
+            guard let self else { return false }
+            return self.owns(scope.presentation) && !self.changing && self.store.owner == scope.storeOwner &&
+                self.previewRevision == scope.detailRevision && self.store.selectedExchange?.identity == Data(scope.trafficID.utf8) &&
+                self.store.detail.value != nil && !self.store.detail.isLoading && !self.store.detail.isStale
+        }, available: bodyAvailable, metadata: bodyMetadata, exporter: bodyExporter)
+    }
     private func retire(reset: Bool) {
+        retireBodyExport()
         tearingDown = true; resetting = reset
         linkWorkspace?.stop(); linkWorkspace = nil
         if reset { linking?.resetSession() } else { linking?.stop() }
@@ -252,7 +276,10 @@ import Observation
         var accepted = false
         update {
             accepted = store.selectExchange(id: id, owner: owner)
-            if accepted && owns(lease) { previewRevision = UUID() }
+            if accepted && owns(lease) {
+                retireBodyExport(); previewRevision = UUID()
+                installBodyExport(id: id, lease: lease, owner: owner)
+            }
         }
         guard accepted, owns(lease), store.owner == owner else { return }
         await store.refreshDetail()
@@ -261,7 +288,7 @@ import Observation
         guard baseAvailable, owns(lease), store.owner == owner, previewRevision == revision,
               store.selectedExchange?.identity == Data(id.utf8) else { return }
         update {
-            if store.selectExchange(id: nil, owner: owner), owns(lease) { previewRevision = UUID() }
+            if store.selectExchange(id: nil, owner: owner), owns(lease) { retireBodyExport(); previewRevision = UUID() }
         }
     }
     @discardableResult func prepareDeletion(_ intent: TrafficIntent, lease: UUID, owner: UUID) -> Bool {

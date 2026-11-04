@@ -2,6 +2,9 @@ import ArtexCore
 import Foundation
 import Observation
 
+typealias TrafficBodyMetadataLoader = @MainActor (String, FindingEvidenceSide) async throws -> TrafficBlobDownload
+typealias TrafficBodyExporter = @MainActor (TrafficBlobDownload, EvidenceExportDestination) async throws -> EvidenceExportReceipt
+
 struct TrafficBodyExportScope: Sendable, Equatable {
     let presentation: UUID
     let storeOwner: UUID
