@@ -71,6 +71,16 @@ import XCTest
         let result = BackendDownloadResult(status: 200, byteCount: Int64(bytes.count), sha256: bodyHash)
         return EvidenceExportReceipt(response: .init(result: result, file: try writer.finish(response: result)), validate: validate)
     }
+    func testExportSessionGenerationChangesAcrossLogoutRelogin() async throws {
+        let session = AuthenticationSession(client: BlobAPI(), vault: BlobVault(), setupToken: "fixture")
+        XCTAssertNil(session.exportSessionGeneration)
+        await session.refresh()
+        let original = try XCTUnwrap(session.exportSessionGeneration)
+        session.logout(); XCTAssertNil(session.exportSessionGeneration)
+        await session.login(password: "fixture", agreed: true)
+        XCTAssertEqual(session.phase, .authenticated)
+        XCTAssertNotEqual(session.exportSessionGeneration, original)
+    }
     func testMetadataUsesFixedEscapedRouteAndLiteralIdentity() async throws {
         let api = BlobAPI(); api.value = ["id": id, "side": "response", "hash": bodyHash, "size": 9007199254740993 as Int64]
         let value = try await TrafficService(client: api).blobDownload(id: id, side: .response)
