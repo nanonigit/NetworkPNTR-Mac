@@ -35,6 +35,7 @@ import XCTest
             return try response(["deleted": 1, "reclaimed": 0], status: failWrite ? 500 : 200)
         }
         if path == "/api/traffic/hosts" { return try response(["hosts": [["host": "fixture", "count": 200]]]) }
+        if path.hasPrefix("/api/traffic/exchange?") { return try response(["req": "GET / HTTP/1.1\r\n\r\n", "resp": "HTTP/1.1 200 OK\r\n\r\nraw"]) }
         if path == "/api/settings" { return try response(["traffic_capture": true]) }
         if holdPage { return try await withCheckedThrowingContinuation { held.append($0) } }
         let items = URLComponents(string: path)?.queryItems ?? []
@@ -53,6 +54,27 @@ import XCTest
         let lease = try XCTUnwrap(model.begin())
         try await reached { api.paths.count == 3 && !model.store.isRefreshing && clock.waits.count == 1 }
         return (model, api, clock, lease)
+    }
+    func testBodyExportBelongsToExactDetailAndRetiresOnCloseAndReset() async throws {
+        let api = TrafficScreenAPI(), clock = TrafficScreenClock()
+        let model = TrafficScreenModel(store: TrafficStore(service: .init(client: api)), bodyMetadata: { id, side in
+            try TrafficBlobDownload(trafficID: id, side: side, expectedSize: 0, expectedSHA256: ArtifactIntegrity.sha256(Data()))
+        }, bodyExporter: { _,_ in throw CancellationError() }, bodyAvailable: { true }, sleep: clock.sleep)
+        let lease = try XCTUnwrap(model.begin()); defer { model.stop(lease); clock.releaseAll() }
+        try await reached { !model.store.isRefreshing && api.paths.count == 3 }
+        let owner = model.store.owner
+        await model.selectDetail("flow", lease: lease, owner: owner)
+        let first = try XCTUnwrap(model.bodyExport)
+        XCTAssertTrue(first.canStart(.request))
+        let revision = model.previewRevision
+        model.closeDetail("other", lease: lease, owner: owner, revision: revision)
+        XCTAssertTrue(model.bodyExport === first)
+        model.closeDetail("flow", lease: lease, owner: owner, revision: revision)
+        XCTAssertFalse(first.isActive); XCTAssertNil(model.bodyExport)
+        await model.selectDetail("flow", lease: lease, owner: model.store.owner)
+        let second = try XCTUnwrap(model.bodyExport)
+        XCTAssertFalse(second === first)
+        model.reset(); XCTAssertFalse(second.isActive); XCTAssertNil(model.bodyExport)
     }
     func testIndependentDebouncesMergeCurrentQueryAcrossStoreOwnerRotation() async throws {
         let (model, api, clock, lease) = try await fixture()
