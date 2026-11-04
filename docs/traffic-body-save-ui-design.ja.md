@@ -38,3 +38,6 @@ Python179件成功。アプリ再ビルド・厳密署名検証が通過し通�
 
 保存modelチェックポイント:e778df7でID生バイトの固定scope、開始確保、メタデータ／パネル／転送／公開の所有権検査、要求manifestとのレシート整合性、取消・終了待ち・遅延レシート清掃を追加。対象8件、Swift全1010件中1009件成功・既存AX1件スキップ、Python179件成功。LLVMのmodel／scopeファイル行カバレッジ158/163＝96.93%。別レビューで本文不一致と再入開始の阻害指摘を解消。bugs/traffic-body-export-model.ja.mdとevidence/traffic/body-export-model-verification.jsonを参照。実一時ファイルと模擬メタデータ／転送／選択器の試験で、model経由の実VM・root／ウィンドウ／パネル／UIは未完。通常アプリには保存操作をまだ表示しない。
 アプリ再ビルド・厳密署名検証が通過し、通常ゲストとブートファイルハッシュを維持。起動・ゲスト昇格・新UIの表示はせず、CIは未検証。
+
+詳細の親との接続:bd2c2ecの未実装REDから4e57ebaでGREEN。TrafficScreenModelへ型付きの取得／転送／能力依存を追加し、選択した詳細scopeごとにmodelを保持、有効な閉じる／reset／切替で終了する。弱い親参照の検査は現在の提示lease・store所有者・revision・ID生バイトと正常に読み込んだ詳細を要求する。処理中・失敗した終了modelは今後のroot回収・エラー通知のため保持する。親3件で古い閉じる、転送待機中のclose／reset、遅延清掃失敗、所有者公開中の観測再入stopを検査。関連29件、Swift全1013件中1012件成功・既存AX1件スキップ、Python179件成功。親の行カバレッジ522/547＝95.43%。別レビューで阻害指摘なし。root注入、保存ボタン／パネル、root置換をまたぐ回収、model経由の実VM・UI受け入れは未完で、表示機能の完成とはしない。evidence/traffic/body-export-parent-verification.jsonを参照。
+アプリ再ビルド・厳密署名・通常ゲストのブートハッシュ維持も通過。起動・プロファイル昇格はせず、CIは未検証。

@@ -1,0 +1,51 @@
+{
+  "schema": 1,
+  "sourceCommit": "4e57eba8e44edfca5a218448dc0adcd07e03e61d",
+  "sourceSHA256": "e414acebd79796a9ae1322b580e2c760f206968de4ab5ac3fda22349e8ff30d9",
+  "newParentCases": 3,
+  "relatedCases": 29,
+  "swiftTests": {
+    "executed": 1013,
+    "passed": 1012,
+    "existingAXSkip": 1,
+    "exitCode": 0
+  },
+  "unitLineCoverage": {
+    "TrafficScreenModel.swift": {
+      "count": 547,
+      "covered": 522,
+      "percent": 95.42961608775137
+    }
+  },
+  "exactDetailOwnership": true,
+  "staleClosePreservesCurrentOwner": true,
+  "closeResetCancelAndRetainDrainingExport": true,
+  "lateCleanupFailureRetained": true,
+  "reentrantStopDuringPublication": true,
+  "rootInjected": false,
+  "nativeSaveControlVisible": false,
+  "nativeUIAcceptance": false,
+  "actualModelVMExportVerified": false,
+  "fullGoalComplete": false,
+  "pending": [
+    "root injection and cleanup retirement collector",
+    "save controls and panel integration",
+    "actual model-to-VM export",
+    "all21 browser keyboard multiwindow VoiceOver",
+    "kernel promotion",
+    "Gemini Groq",
+    "harness",
+    "release"
+  ],
+  "pythonTests": {
+    "passed": 179,
+    "exitCode": 0
+  },
+  "stagedApp": {
+    "buildExitCode": 0,
+    "strictSignatureVerified": true,
+    "defaultManifestSHA256": "fa0f1972c04f2a04853de37f4fd163b922ac38c841849c635d29f565fe6115ce",
+    "bootFileHashesVerified": true,
+    "launched": false
+  }
+}
