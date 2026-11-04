@@ -86,13 +86,14 @@ import XCTest
     func testParentCloseAndResetRetainDrainingExportAndLateCleanupFailure() async throws {
         for reset in [false, true] {
             let api = TrafficScreenAPI(), clock = TrafficScreenClock()
+            let retirement = TrafficBodyExportRetirement()
             var held: CheckedContinuation<Void, Never>?
             let model = TrafficScreenModel(store: TrafficStore(service: .init(client: api)), bodyMetadata: { id, side in
                 try TrafficBlobDownload(trafficID: id, side: side, expectedSize: 0, expectedSHA256: ArtifactIntegrity.sha256(Data()))
             }, bodyExporter: { _,_ in
                 await withCheckedContinuation { held = $0 }
                 throw EvidenceExportError.cleanupRequired
-            }, bodyAvailable: { true }, sleep: clock.sleep)
+            }, bodyAvailable: { true }, bodyRetirement: reset ? retirement : nil, sleep: clock.sleep)
             let root = FileManager.default.temporaryDirectory.appendingPathComponent("artex-parent-"+UUID().uuidString)
             try FileManager.default.createDirectory(at: root, withIntermediateDirectories: false)
             defer { model.reset(); clock.releaseAll(); try? FileManager.default.removeItem(at: root) }
@@ -103,10 +104,12 @@ import XCTest
             try await reached { held != nil }
             if reset { model.reset() } else { model.closeDetail("flow", lease: lease, owner: model.store.owner, revision: model.previewRevision) }
             XCTAssertFalse(export.isActive); XCTAssertTrue(export.isExporting)
-            XCTAssertTrue(model.retiredBodyExports.contains { $0 === export })
+            if reset { XCTAssertEqual(retirement.pendingCount, 1) }
+            else { XCTAssertTrue(model.retiredBodyExports.contains { $0 === export }) }
             held?.resume(); held = nil; try await reached { !export.isExporting }
             XCTAssertNotNil(export.failure)
-            XCTAssertTrue(model.retiredBodyExports.contains { $0 === export })
+            if reset { try await reached { retirement.pendingCount == 0 }; XCTAssertEqual(retirement.notices.count, 1) }
+            else { XCTAssertTrue(model.retiredBodyExports.contains { $0 === export }) }
             XCTAssertTrue(try FileManager.default.contentsOfDirectory(atPath: root.path).isEmpty)
         }
     }

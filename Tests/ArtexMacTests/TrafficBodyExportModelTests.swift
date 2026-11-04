@@ -20,6 +20,7 @@ import XCTest
     var holdReceipt = false
     var wrongReceipt = false
     var exportError: Error?
+    var lateCleanupError = false
     init() throws { try FileManager.default.createDirectory(at: directory, withIntermediateDirectories: false) }
     func clean() { try? FileManager.default.removeItem(at: directory) }
     func model() -> TrafficBodyExportModel {
@@ -37,6 +38,7 @@ import XCTest
             let result = BackendDownloadResult(status: 200, byteCount: 5, sha256: ArtifactIntegrity.sha256(bytes))
             let receipt = EvidenceExportReceipt(response: .init(result: result, file: try writer.finish(response: result)))
             if self.holdReceipt { await withCheckedContinuation { self.heldReceipt = $0 } }
+            if self.lateCleanupError { try receipt.discard(); throw EvidenceExportError.cleanupRequired }
             return receipt
         })
     }
@@ -88,6 +90,35 @@ import XCTest
         XCTAssertEqual(f.calls, 1)
         let stopped = f.model(); f.onAvailability = { f.onAvailability = nil; stopped.stop() }
         XCTAssertFalse(stopped.start(.response, owner: stopped.id, chooser: chooser))
+    }
+    func testRetirementDrainsAfterViewReleaseAndKeepsOnlyCleanupNotice() async throws {
+        let f = try BlobSaveFixture(); defer { f.clean() }; f.holdReceipt = true; f.lateCleanupError = true
+        let retirements = TrafficBodyExportRetirement(), chooser = BlobSaveChooser()
+        chooser.url = f.directory.appendingPathComponent("never.bin")
+        var model: TrafficBodyExportModel? = f.model()
+        let id = try XCTUnwrap(model?.id); weak var observed = model
+        XCTAssertTrue(model!.start(.response, owner: id, chooser: chooser))
+        try await wait { f.heldReceipt != nil }
+        retirements.retain(model!); retirements.retain(model!)
+        model = nil; XCTAssertNotNil(observed); XCTAssertEqual(retirements.pendingCount, 1)
+        f.heldReceipt?.resume(); f.heldReceipt = nil
+        try await wait { retirements.pendingCount == 0 }
+        XCTAssertNil(observed); XCTAssertEqual(retirements.notices.count, 1)
+        XCTAssertEqual(retirements.notices.first?.id, id)
+        retirements.dismiss(id); XCTAssertTrue(retirements.notices.isEmpty)
+    }
+    func testNormalRetirementCreatesNoErrorAndDuplicateDoesNotResurrectNotice() async throws {
+        let f = try BlobSaveFixture(); defer { f.clean() }
+        let retirements = TrafficBodyExportRetirement(), model = f.model()
+        retirements.retain(model)
+        XCTAssertEqual(retirements.pendingCount, 0); XCTAssertTrue(retirements.notices.isEmpty)
+        let failed = f.model(), chooser = BlobSaveChooser(); chooser.url = f.directory.appendingPathComponent("never.bin")
+        f.exportError = EvidenceExportError.cleanupRequired
+        XCTAssertTrue(failed.start(.response, owner: failed.id, chooser: chooser)); try await wait { !failed.isExporting }
+        XCTAssertTrue(failed.cleanupRequired); XCTAssertFalse(failed.canStart(.response))
+        retirements.retain(failed); XCTAssertEqual(retirements.notices.count, 1)
+        retirements.dismiss(failed.id); retirements.retain(failed)
+        XCTAssertTrue(retirements.notices.isEmpty)
     }
     func testCleanupFailureRetainsSpecificFeedback() async throws {
         let f = try BlobSaveFixture(); defer { f.clean() }; f.exportError = EvidenceExportError.cleanupRequired

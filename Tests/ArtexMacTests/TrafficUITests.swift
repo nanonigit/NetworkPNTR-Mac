@@ -118,6 +118,26 @@ import XCTest
         await model.selectDetail("é", lease: lease, owner: owner); XCTAssertNil(model.store.selectedExchange)
         XCTAssertFalse(model.prepareDeletion(.purgeAll, lease: lease, owner: UUID()))
     }
+    func testBodySaveControlRequiresExactCurrentSupportedPreviewWithoutDispatch() async throws {
+        let api = TrafficUIAPI()
+        var supported = true
+        let model = TrafficScreenModel(store: TrafficStore(service: .init(client: api)), bodyMetadata: { id, side in
+            try TrafficBlobDownload(trafficID: id, side: side, expectedSize: 0, expectedSHA256: ArtifactIntegrity.sha256(Data()))
+        }, bodyExporter: { _,_ in throw CancellationError() }, bodyAvailable: { supported })
+        let lease = try XCTUnwrap(model.begin()); defer { model.reset() }
+        try await reached { !model.store.isRefreshing && api.paths.count == 3 }
+        await model.selectDetail("é", lease: lease, owner: model.store.owner)
+        let owner = model.store.owner, revision = model.previewRevision, count = api.paths.count
+        let current = TrafficRawPreview(model: model, lease: lease, owner: owner, revision: revision, id: "é")
+        XCTAssertNotNil(current.ownedExport)
+        supported = false; XCTAssertNil(current.ownedExport)
+        supported = true
+        XCTAssertNil(TrafficRawPreview(model: model, lease: UUID(), owner: owner, revision: revision, id: "é").ownedExport)
+        XCTAssertNil(TrafficRawPreview(model: model, lease: lease, owner: UUID(), revision: revision, id: "é").ownedExport)
+        XCTAssertNil(TrafficRawPreview(model: model, lease: lease, owner: owner, revision: UUID(), id: "é").ownedExport)
+        XCTAssertNil(TrafficRawPreview(model: model, lease: lease, owner: owner, revision: revision, id: "e\u{301}").ownedExport)
+        XCTAssertEqual(api.paths.count, count)
+    }
     func testOwnedTrafficLabelsHaveEnglishJapaneseTranslations() {
         let keys = AppStringKey.allCases.filter { $0.rawValue.hasPrefix("traffic.ui.") }
         XCTAssertGreaterThan(keys.count, 35)

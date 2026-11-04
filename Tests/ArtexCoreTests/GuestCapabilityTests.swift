@@ -19,9 +19,11 @@ final class GuestCapabilityTests: XCTestCase {
     @MainActor func testControllerCannotExposeCapabilityBeforeBootOrAfterFailedStart() async {
         let controller = VMController()
         XCTAssertFalse(controller.canExportTrafficBlobs)
+        XCTAssertNil(controller.trafficBlobExportGeneration)
         let missing = FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString)
         do { try await controller.start(artifacts: missing, logs: missing); XCTFail("Missing profile") } catch { }
         XCTAssertFalse(controller.canExportTrafficBlobs)
+        XCTAssertNil(controller.trafficBlobExportGeneration)
         XCTAssertFalse(controller.hasMachine)
     }
     private func profile(capabilities: Any? = nil, rootDisk: Bool = true) throws -> (URL, [String: Any]) {
