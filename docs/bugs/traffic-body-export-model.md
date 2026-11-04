@@ -1,0 +1,11 @@
+# Traffic body export model regression prevention
+
+This is an internal export-model checkpoint, not an installed save UI. 1c3b7a3 compile RED defined missing model/scope;5a03c1f passed four lifecycle/file cases.7e1b0c5 added a real otherwise-valid receipt for different bytes and reproduced three failed assertions: failure absent, success recorded and wrong file published.4123dd6 added bounded reentrant admission and stopped-owner cases; the combined run had five assertion failures. These tests use private temporary files and fake transport/chooser, no cloud or external targets.
+
+Five Whys: a valid receipt could publish the wrong original because it was not compared with the requested metadata; file verification alone validates the writer's own manifest; the UI boundary must also preserve its original identity/side/size/hash; admission could overlap because availability callbacks ran before operation ownership was claimed; the final guard must cover callback reentrancy and current owner validity as well as transport integrity.
+
+Fishbone: identity uses literal UTF8 and captured immutable detail scope; ownership is checked before/after metadata, panel and staging and again at commit. Admission is guarded before external callbacks and rechecks busy/active state afterward. Cleanup drains cancellation and discards late receipts; cleanup-required stays distinguishable even if the sheet retires. Observation-driven stop requests queue until the current synchronous state transition completes. A newer operation cannot start until the old child settles. Existing authentication/VM/file receipt validators remain in force.
+
+Retain raw identity/side, panel cancel, unsupported/foreign owner, duplicate dispatch, held metadata and held receipt scope/cancel/stop cases, wrong original bytes, reentrant admission and stopped-owner tests. Root/window integration, actual model-to-VM export and UI/keyboard/VoiceOver/browser21 acceptance remain pending independently of these unit checks.
+
+e778df7 passes eight focused cases after guarding admission before callbacks, rechecking active/busy ownership and verifying receipt status/size/SHA against the requested manifest. Review confirms both blockers resolved. Raw NFC/NFD scope differences and specific cleanup-required feedback are covered. No actual window/panel or model-to-VM acceptance is claimed.

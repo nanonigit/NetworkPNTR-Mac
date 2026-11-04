@@ -1,0 +1,48 @@
+{
+  "schema": 1,
+  "sourceCommit": "e778df7079fc61a77b3fe5e2762ce84a747521e2",
+  "sourceSHA256": "c86927b2909403b7932156efa7e9f8a7d27b8a2ba2dec2b3e8915cf80e184bd3",
+  "focusedCases": 8,
+  "swiftTests": {
+    "executed": 1010,
+    "passed": 1009,
+    "existingAXSkip": 1,
+    "exitCode": 0
+  },
+  "unitLineCoverage": {
+    "TrafficBodyExportModel.swift": {
+      "count": 163,
+      "covered": 158,
+      "percent": 96.93251533742331
+    }
+  },
+  "actualTemporaryFilePublication": true,
+  "lateMetadataAndReceiptRejection": true,
+  "reentrantAdmissionRejected": true,
+  "differentOriginalBodyReceiptRejected": true,
+  "literalUnicodeScopeEquality": true,
+  "cleanupSpecificFeedback": true,
+  "nativeUIAcceptance": false,
+  "actualModelVMExportVerified": false,
+  "fullGoalComplete": false,
+  "pending": [
+    "root/detail window integration",
+    "actual model-to-VM export",
+    "save panel keyboard multiwindow VoiceOver and browser21 acceptance",
+    "kernel promotion",
+    "Gemini Groq CP1-CP4",
+    "harness H0-H5",
+    "release gates"
+  ],
+  "pythonTests": {
+    "passed": 179,
+    "exitCode": 0
+  },
+  "stagedApp": {
+    "buildExitCode": 0,
+    "strictSignatureVerified": true,
+    "defaultManifestSHA256": "fa0f1972c04f2a04853de37f4fd163b922ac38c841849c635d29f565fe6115ce",
+    "bootFileHashesVerified": true,
+    "launched": false
+  }
+}
