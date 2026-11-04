@@ -1,5 +1,7 @@
 # 元データ保存とVM実機検証
 
+履歴チェックポイント: 制御した転送途中キャンセルは後続で検証済み。[新しい検証記録](traffic-blob-interruption-verification.ja.md)を参照。
+
 状態: 管理版候補・ネイティブCore／CLIのチェックポイント。UI受け入れと全体目標は未完。[検証記録](../evidence/traffic/blob-runtime-verification.json)を参照。
 
 ## 実装・証拠

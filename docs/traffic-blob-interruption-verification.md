@@ -1,0 +1,23 @@
+# Controlled original blob interruption verification
+
+Status: DEBUG transport/CLI checkpoint. The complete native app goal and UI acceptance remain open. [Receipt](../evidence/traffic/blob-interruption-verification.json), [design](traffic-blob-interruption-design.md), [RCA](bugs/traffic-blob-interruption.md).
+
+## Actual transport evidence
+
+The signed diagnostic source snapshot 4a9f3eee6159bdedda650595db00b379278605ab ran on2026-10-30 with exit0. Its executable SHA256 is 67b4c04221916583dd643b46f61e02cba7adf4818a29faf17ec8a5f63bde2b54; report SHA256 is 6428bdda47179751cf47a9762818bd456ab8613fc13ae67e627e44e57c4ab403. Revalidated on2026-11-04: retained snapshot/source/candidate hashes, original/reboot files, absence of interrupted destination/stage and terminal exit record. No new VM run is inferred from those retained files. The actual guest candidate remains CPU1/arm64/NIC0/shares0 with manifest SHA256 83628454bcb2a7d4e66b3445ec1d1fd81c69926ac0eee17d06b99c0ba1931254.
+
+A DEBUG-only exact-manifest/operation TaskLocal pauses the native reader immediately after the first actual staging append, with a monotonic10second limit. The real guest transfer staged7939 of262401 bytes. Caller cancellation shut down the still-owned open socket, produced the matching operation witness and CancellationError, removed private staging and never published source-controlled-interruption.bin. Auth revision remained unchanged and VM/backend remained running. Subsequent normal save verified all262401 original bytes and SHA256 5549252a7f275dd6b221f062c298ac588a2dea19e5145b6ca06308cc8c9dd43e; a cooperative stop rejected another pending receipt, then reboot reread/saved the same original without reseeding. Two boots, two cooperative stops, two clean audits, persistence and the exact frozen-browser reference projection all passed. Final fixture counts: no profiles/LLM records/usage/conversations/activity/unsafe tasks; one binding and two snapshots.
+
+This is controlled mid-transfer reader cancellation. It does not establish spontaneous network failure handling, a guest server still writing at the cancellation instant, or naturally timed cancellation. Both dedicated finding-cancellation and normal blob-export contracts remain exercised. The diagnostic scope and deadline checks never relax production ownership or file-integrity rules.
+
+## Tests, review and coverage
+
+TDD/review history is recorded in the RCA. Eight witness tests plus nine source-blob proof tests and two existing finding-cancellation cases pass. Full Swift998 executed,997 passed, one pre-existing external-accessibility skip; Python179 passed after confirming the prior process handle/log were unavailable. The repeated full run is recorded privately inside the owned build cache. Independent review identified the deadline and metadata-await claim races; both have regression coverage, and the final claim fix was reviewed with no remaining blocker.
+
+Combined unit/actual-VM line coverage: witness48/48(100%), staging47/47(100%), SourceBlobInterruption55/62(88.71%), CapturedProbe310/318(97.48%), broader VMController363/504(72.02%). The latter is disclosed separately; this checkpoint does not prove whole-product80% coverage. No dependencies were added and no host agent command, ARTEX cloud-provider request or external scan was executed. Browser reference c4601040b7a0abba258a81f65183ef81bb6116d7bf5f47c743ffe1ebcac6b8e6 remains fixed.
+
+## Remaining acceptance
+
+Implement native source-body save controls with backend-capability gating, typed manifest, root/window/dialog ownership, cancel action and EN/JA feedback. Use Lazyweb before UI design and compare behavior with the pinned browser. Actual save-panel, keyboard, multiwindow, VoiceOver and all21 workflow UI acceptance remain pending; user-deferred Mac unlock is respected. Default kernel reliability/promotion, Gemini/Groq CP1–CP4, harness H0–H5 and release gates remain active. Hosted CI stays unverified until Actions availability is checked; publication uses [skip ci].
+
+The staged app rebuild and strict signature verification passed on2026-11-04; the default guest manifest and all three boot-file hashes remain unchanged. Default manifest SHA256 fa0f1972c04f2a04853de37f4fd163b922ac38c841849c635d29f565fe6115ce. The app was not launched or switched to the experimental profile. Release VMProbe build passed; --captured-blob with all three positional arguments exits2 at its DEBUG-only guard. Full demangled symbols exclude the blob/finding diagnostic helpers, and the new pause/scope/proof literals are absent. These are software/exclusion checks, not production release acceptance.

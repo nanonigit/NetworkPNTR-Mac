@@ -1,5 +1,7 @@
 # Native original blob staging and VM runtime verification
 
+Historical checkpoint: controlled mid-transfer cancellation was subsequently verified; see [the newer verification](traffic-blob-interruption-verification.md).
+
 Status: managed candidate / native Core and CLI checkpoint. Native UI acceptance and the full goal remain incomplete. The receipt is [blob-runtime-verification.json](../evidence/traffic/blob-runtime-verification.json).
 
 ## Implementation and evidence
