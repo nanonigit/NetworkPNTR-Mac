@@ -1,0 +1,119 @@
+{
+  "schema": 1,
+  "sourceCommit": "4643050e733a06f85206f389b2488716cace5332",
+  "sourceSHA256": {
+    "Sources/ArtexCore/VMController.swift": "d5fdbc1ac0db2cdbd25564ac6edad7a1aef298448fc734600638909c6216e4c7",
+    "Sources/ArtexCore/AuthenticationSession.swift": "1eb8dea30a5ee4dee2fbed6a2ecab3ac0ca0335795189a142e27b4e8e798966e",
+    "Sources/VMProbe/CapturedProbe.swift": "5d6dce767be51165ea81442f6a2ff6bcbe70d1e937a75c128f7cbd97b9e3994c",
+    "Sources/ArtexMac/RootView.swift": "37642924957aae2a37e9d8f77dd71eb4a777fc1453f96733dace66b0bffb41b1",
+    "Sources/ArtexMac/TrafficView.swift": "b5b01ee9bd1ce7ebce7ce670a8804d96b4542299bf5f7780a35e6106aa1acf3d",
+    "Sources/ArtexMac/TrafficBodyExportRetirement.swift": "5cdfcb1a332ba044dba0f389fda3d5673def42ae860970d9d453af0e316c63f7",
+    "Sources/ArtexMac/TrafficBodyExportModel.swift": "34178157d58abb102af139dc34bdc3efbc7a60a091fb17cd1e6e935ea1da54ec"
+  },
+  "probeSHA256": "789986315e004e2dcc68bd80622e2f89b7896644035deaec314e290d86440fc8",
+  "candidateManifestSHA256": "83628454bcb2a7d4e66b3445ec1d1fd81c69926ac0eee17d06b99c0ba1931254",
+  "runtimeReportSHA256": "f5bef3ac7ae638c241cb63883b93f0e394424dd774c8d96a0d585d26767e29bc",
+  "runtimeExitCode": 0,
+  "runtimeScope": "Core guest generation and byte/save/cancel/stop/reboot regression; not native model or GUI",
+  "runtime": {
+    "passed": true,
+    "boots": 2,
+    "cooperativeStops": 2,
+    "cleanAudits": 2,
+    "referenceEqual": true,
+    "persistence": true,
+    "machineStopped": true,
+    "distinctReadyBootGenerationsVerified": true,
+    "sourceBlob": {
+      "badLengthRefused": true,
+      "bytes": 262401,
+      "fullByteEqual": true,
+      "inlineRefused": true,
+      "literalManifestBound": true,
+      "nativeUIAcceptance": false,
+      "ordinal": 4,
+      "rebootByteEqual": true,
+      "sha256": "5549252a7f275dd6b221f062c298ac588a2dea19e5145b6ca06308cc8c9dd43e",
+      "side": "response",
+      "vmStopPublicationRejected": true
+    },
+    "sourceBlobInterruption": {
+      "authenticationUnchanged": true,
+      "controlledReaderPause": true,
+      "destinationAbsent": true,
+      "expectedBytes": 262401,
+      "nativeUIAcceptance": false,
+      "naturalNetworkFailureVerified": false,
+      "openSocketInterrupted": true,
+      "operationID": "13392B1F-044A-493B-BDC6-5C137F300ACA",
+      "sha256": "5549252a7f275dd6b221f062c298ac588a2dea19e5145b6ca06308cc8c9dd43e",
+      "stagedBytes": 7939,
+      "stagingAbsent": true,
+      "trafficIdentitySHA256": "b21a2045a16564e848b2ef7cca2d718162877c56384d79563a0c4c1c4a3d5332",
+      "vmStillRunning": true
+    }
+  },
+  "tests": {
+    "focused": 59,
+    "swiftExecuted": 1018,
+    "swiftPassed": 1017,
+    "existingAXSkip": 1,
+    "swiftExitCode": 0,
+    "pythonPassed": 179,
+    "pythonExitCode": 0
+  },
+  "unitLineCoverage": {
+    "AuthenticationSession.swift": {
+      "count": 206,
+      "covered": 206,
+      "percent": 100
+    },
+    "RootView.swift": {
+      "count": 420,
+      "covered": 0,
+      "percent": 0
+    },
+    "TrafficBodyExportModel.swift": {
+      "count": 189,
+      "covered": 189,
+      "percent": 100
+    },
+    "TrafficBodyExportRetirement.swift": {
+      "count": 28,
+      "covered": 28,
+      "percent": 100
+    },
+    "TrafficView.swift": {
+      "count": 901,
+      "covered": 654,
+      "percent": 72.5860155382908
+    }
+  },
+  "rootInjectionImplemented": true,
+  "saveControlsImplemented": true,
+  "windowAnchorReused": true,
+  "appSharedRetirementImplemented": true,
+  "cleanupNoticePersistsAfterPublishedFileClosure": true,
+  "authGenerationReloginTested": true,
+  "defaultProfilePromoted": false,
+  "nativeUIAcceptance": false,
+  "actualModelVMExportVerified": false,
+  "fullGoalComplete": false,
+  "pending": [
+    "actual model-to-VM export",
+    "real save panel window keyboard multiwindow VoiceOver and browser UI comparison",
+    "kernel reliability default profile promotion",
+    "Gemini Groq CP1-CP4",
+    "harness H0-H5",
+    "release gates"
+  ],
+  "hostedCI": "unverified; skip ci pending quota verification",
+  "stagedApp": {
+    "buildExitCode": 0,
+    "strictSignatureVerified": true,
+    "defaultGuestManifestSHA256": "fa0f1972c04f2a04853de37f4fd163b922ac38c841849c635d29f565fe6115ce",
+    "bootFileHashesVerified": true,
+    "executableSHA256": "198d5c54bdb59cf3a496f44cf4721751c161d1f95c67cf494c10ba3e1ea11b7e",
+    "launched": false
+  }
+}
