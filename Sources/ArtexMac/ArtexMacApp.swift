@@ -44,9 +44,10 @@ import SwiftUI
     @NSApplicationDelegateAdaptor(AppDelegate.self) private var delegate
     @State private var environment = RuntimeFactory.make()
     @State private var language = AppLanguagePreferences()
+    @State private var trafficRetirements = TrafficBodyExportRetirement()
     var body: some Scene {
         WindowGroup("ARTEX Mac") {
-            RootView(environment: environment, language: language)
+            RootView(environment: environment, language: language, trafficRetirements: trafficRetirements)
                 .onAppear { delegate.environment = environment;delegate.updateMenuLanguage(language.language) }
                 .onChange(of: language.language) { _, value in delegate.updateMenuLanguage(value) }
                 .frame(minWidth: 980, minHeight: 680)

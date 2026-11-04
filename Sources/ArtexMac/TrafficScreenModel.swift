@@ -9,6 +9,7 @@ import Observation
     private(set) var retiredBodyExports: [TrafficBodyExportModel] = []
     @ObservationIgnored private let bodyMetadata: TrafficBodyMetadataLoader?
     @ObservationIgnored private let bodyExporter: TrafficBodyExporter?
+    @ObservationIgnored private let bodyRetirement: TrafficBodyExportRetirement?
     @ObservationIgnored private let bodyAvailable: @MainActor () -> Bool
     var bodyExportSupported: Bool { bodyExport != nil && bodyAvailable() }
     let store: TrafficStore
@@ -40,8 +41,8 @@ import Observation
     @ObservationIgnored private var readID = UUID()
     @ObservationIgnored private var pollTask: Task<Void, Never>?
 
-    init(store: TrafficStore, findings: FindingService? = nil, binding: FindingTrafficService? = nil, bodyMetadata: TrafficBodyMetadataLoader? = nil, bodyExporter: TrafficBodyExporter? = nil, bodyAvailable: @escaping @MainActor () -> Bool = { false }, preferences: UserDefaults? = nil, sleep: @escaping Sleep = { try await Task.sleep(for: $0) }) {
-        self.bodyMetadata = bodyMetadata; self.bodyExporter = bodyExporter; self.bodyAvailable = bodyAvailable
+    init(store: TrafficStore, findings: FindingService? = nil, binding: FindingTrafficService? = nil, bodyMetadata: TrafficBodyMetadataLoader? = nil, bodyExporter: TrafficBodyExporter? = nil, bodyAvailable: @escaping @MainActor () -> Bool = { false }, bodyRetirement: TrafficBodyExportRetirement? = nil, preferences: UserDefaults? = nil, sleep: @escaping Sleep = { try await Task.sleep(for: $0) }) {
+        self.bodyMetadata = bodyMetadata; self.bodyExporter = bodyExporter; self.bodyAvailable = bodyAvailable; self.bodyRetirement = bodyRetirement
         self.store = store; self.findings = findings; self.linking = binding.map(TrafficBindingStore.init); self.preferences = preferences; self.sleep = sleep
     }
     var controlsAvailable: Bool { baseAvailable && pendingSort == nil && store.selectedExchange == nil }
@@ -74,7 +75,10 @@ import Observation
         retiredBodyExports.removeAll { !$0.isExporting && $0.failure == nil }
         let previous = bodyExport
         previous?.stop(); bodyExport = nil
-        if let previous, previous.isExporting || previous.failure != nil { retiredBodyExports.append(previous) }
+        if let previous {
+            if let bodyRetirement { bodyRetirement.retain(previous) }
+            else if previous.isExporting || previous.failure != nil { retiredBodyExports.append(previous) }
+        }
     }
     private func installBodyExport(id: String, lease: UUID, owner: UUID) {
         guard let bodyMetadata, let bodyExporter else { return }

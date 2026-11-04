@@ -24,6 +24,7 @@ struct TrafficBodyExportScope: Sendable, Equatable {
     private(set) var isExporting = false
     private(set) var saved: SavedEvidenceFile?
     private(set) var failure: AppErrorMessage?
+    private(set) var cleanupRequired = false
     @ObservationIgnored private let isCurrent: @MainActor (TrafficBodyExportScope, FindingEvidenceSide) -> Bool
     @ObservationIgnored private let available: @MainActor () -> Bool
     @ObservationIgnored private let metadata: @MainActor (String, FindingEvidenceSide) async throws -> TrafficBlobDownload
@@ -55,7 +56,7 @@ struct TrafficBodyExportScope: Sendable, Equatable {
               isActive, !cancelled, !stopRequested else { throw CancellationError() }
     }
     private func eligible(_ side: FindingEvidenceSide) -> Bool {
-        isActive && !changing && !stopping && !isExporting && !Task.isCancelled && isCurrent(scope, side) && available()
+        isActive && !cleanupRequired && !changing && !stopping && !isExporting && !Task.isCancelled && isCurrent(scope, side) && available()
             && isActive && !changing && !stopping && !isExporting && !stopRequested
     }
     func canStart(_ side: FindingEvidenceSide) -> Bool {
@@ -64,7 +65,7 @@ struct TrafficBodyExportScope: Sendable, Equatable {
         return eligible(side)
     }
     @discardableResult func start(_ side: FindingEvidenceSide, owner: UUID, chooser: any EvidenceDestinationChoosing) -> Bool {
-        guard owner == id, !acquiring, isActive, !changing, !stopping, !isExporting else { return false }
+        guard owner == id, !acquiring, isActive, !cleanupRequired, !changing, !stopping, !isExporting else { return false }
         acquiring = true; defer { acquiring = false }
         cancelled = false
         guard eligible(side), !cancelled else { return false }
@@ -91,7 +92,7 @@ struct TrafficBodyExportScope: Sendable, Equatable {
                     } catch { try receipt.discard(); throw error }
                 } catch {
                     if case EvidenceExportError.cleanupRequired = error {
-                        self.transition { self.failure = AppErrorMessage(key: .evidenceUICleanupFailed) }
+                        self.transition { self.cleanupRequired = true; self.failure = AppErrorMessage(key: .evidenceUICleanupFailed) }
                     } else if self.isActive, !(error is CancellationError) {
                         self.transition { self.failure = AppErrorMessage(error, fallback: .evidenceUIExportFailed) }
                     }

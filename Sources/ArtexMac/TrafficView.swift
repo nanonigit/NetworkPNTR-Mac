@@ -291,6 +291,21 @@ import SwiftUI
     @Environment(\.locale) private var locale
     @State private var response = false
     @State private var wrap = false
+    @State private var presenter = EvidenceSavePanelPresenter()
+    var ownedExport: TrafficBodyExportModel? {
+        guard model.bodyExportSupported, let export = model.bodyExport,
+              export.scope.presentation == lease, export.scope.storeOwner == owner,
+              export.scope.detailRevision == revision, Data(export.scope.trafficID.utf8) == Data(id.utf8),
+              model.presentation == lease, model.store.owner == owner, model.previewRevision == revision else { return nil }
+        return export
+    }
+    private var side: FindingEvidenceSide { response ? .response : .request }
+    private var sideBinding: Binding<Bool> {
+        Binding(get: { response }, set: { value in
+            guard ownedExport?.isExporting != true else { return }
+            ownedExport?.cancel(); response = value
+        })
+    }
     private var language: AppLanguage { .preferred(in: [locale.identifier]) }
     private func s(_ key: AppStringKey) -> String { AppStrings.text(key, language: language) }
     private var packet: String {
@@ -301,7 +316,7 @@ import SwiftUI
     var body: some View {
         VStack(alignment: .leading, spacing: 12) {
             HStack {
-                Picker(s(.trafficUIOpen), selection: $response) { Text(s(.trafficUIRequest)).tag(false); Text(s(.trafficUIResponse)).tag(true) }.pickerStyle(.segmented).frame(width: 240)
+                Picker(s(.trafficUIOpen), selection: sideBinding) { Text(s(.trafficUIRequest)).tag(false); Text(s(.trafficUIResponse)).tag(true) }.pickerStyle(.segmented).frame(width: 240).disabled(ownedExport?.isExporting == true)
                 Spacer()
                 Toggle(s(.trafficUIWrap), isOn: $wrap).toggleStyle(.checkbox)
                 Button(s(.trafficUICopy)) {
@@ -309,12 +324,31 @@ import SwiftUI
                     guard !value.isEmpty, !model.store.detail.isStale, !model.store.detail.isLoading else { return }
                     NSPasteboard.general.clearContents(); NSPasteboard.general.setString(value, forType: .string)
                 }.disabled(packet.isEmpty || model.store.detail.isStale || model.store.detail.isLoading)
+                if let export = ownedExport {
+                    Button(s(.evidenceUIDownload), systemImage: "square.and.arrow.down") {
+                        presenter.language = language
+                        _ = export.start(side, owner: export.id, chooser: presenter)
+                    }.disabled(!export.canStart(side))
+                }
                 Button(s(.trafficUIClose)) { model.closeDetail(id, lease: lease, owner: owner, revision: revision) }.keyboardShortcut(.cancelAction)
             }
             FindingReadNotice(state: model.store.detail)
+            if let export = ownedExport {
+                if export.isExporting {
+                    HStack { ProgressView().controlSize(.small); Text(s(.evidenceUIExporting)); Button(s(.findingUICancel)) { export.cancel() } }
+                }
+                if let failure = export.failure { Text(failure.text(language: language)).foregroundStyle(.red) }
+                if let file = export.saved {
+                    Text(AppStrings.formatted(.evidenceUISaved, language: language, values: ["name": file.url.lastPathComponent, "bytes": String(file.byteCount)])).textSelection(.enabled)
+                    Text(verbatim: "SHA-256: " + file.sha256).font(.caption.monospaced()).textSelection(.enabled)
+                    if !file.stagingCleanupComplete || !file.directorySynced { Text(s(.evidenceUISavedWarning)).foregroundStyle(.orange) }
+                }
+            }
             ScrollView(wrap ? [.vertical] : [.horizontal, .vertical]) {
                 Text(packet).font(.system(.body, design: .monospaced)).textSelection(.enabled).fixedSize(horizontal: !wrap, vertical: true).frame(maxWidth: wrap ? .infinity : nil, alignment: .leading).padding(12)
             }.background(.background)
-        }.padding(20).frame(minWidth: 700, idealWidth: 1000, minHeight: 500, idealHeight: 700)
+        }.background(EvidenceWindowAnchor(presenter: presenter).frame(width: 0, height: 0))
+        .onDisappear { ownedExport?.cancel() }
+        .padding(20).frame(minWidth: 700, idealWidth: 1000, minHeight: 500, idealHeight: 700)
     }
 }

@@ -4,6 +4,7 @@ import SwiftUI
 struct RootView: View {
     let environment: DesktopRuntime
     let language: AppLanguagePreferences
+    let trafficRetirements: TrafficBodyExportRetirement
     private var runtime: VMController { environment.controller }
     @State private var selection: String? = "runtime"
     @State private var catalog: FeatureCatalog?
@@ -91,6 +92,19 @@ struct RootView: View {
                 .navigationTitle(title(feature))
             }
         }
+        .safeAreaInset(edge: .bottom) {
+            if !trafficRetirements.notices.isEmpty {
+                VStack(alignment: .leading) {
+                    ForEach(trafficRetirements.notices) { notice in
+                        HStack {
+                            Text(notice.message.text(language: language.language)).foregroundStyle(.red)
+                            Spacer()
+                            Button(s(.trafficUIClose)) { trafficRetirements.dismiss(notice.id) }
+                        }
+                    }
+                }.padding().background(.background)
+            }
+        }
         .environment(\.locale, language.language.locale)
         .toolbar {
             ToolbarItem(placement: .primaryAction) {
@@ -106,6 +120,9 @@ struct RootView: View {
             do { catalog = try FeatureCatalog.load() } catch { catalogError = error.localizedDescription }
             // Diagnostic startup belongs to its validated plan, not this UI task.
             if RuntimeFactory.diagnosticsDirectory == nil { await environment.start() }
+        }
+        .onChange(of: runtime.trafficBlobExportGeneration) { _, _ in
+            trafficScreen?.reset(); trafficOwner = nil
         }
         .onChange(of: environment.authentication?.phase) { _, phase in
             if phase != .authenticated { llmWorkspace.reset(); taskScreen?.reset(); findingScreen?.reset(); trafficScreen?.reset(); taskDetailID = nil }
@@ -132,7 +149,13 @@ struct RootView: View {
                 guard !Task.isCancelled, session.phase == .authenticated else { return }
                 trafficScreen?.reset()
                 let client = AuthenticatedBackendClient(session: session)
-                trafficScreen = TrafficScreenModel(store: TrafficStore(service: TrafficService(client: client)), findings: FindingService(client: client), binding: FindingTrafficService(client: client), preferences: .standard)
+                let runtime = environment.controller
+                let generation = runtime.trafficBlobExportGeneration
+                let metadata = TrafficService(client: client)
+                trafficScreen = TrafficScreenModel(store: TrafficStore(service: metadata), findings: FindingService(client: client), binding: FindingTrafficService(client: client), bodyMetadata: metadata.blobDownload, bodyExporter: session.authenticatedTrafficBlobExport, bodyAvailable: { [weak runtime, weak session] in
+                    guard let runtime, let session, generation != nil else { return false }
+                    return runtime.trafficBlobExportGeneration == generation && session.phase == .authenticated
+                }, bodyRetirement: trafficRetirements, preferences: .standard)
                 trafficOwner = ObjectIdentifier(session)
             }
         }

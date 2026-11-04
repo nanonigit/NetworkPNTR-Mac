@@ -7,6 +7,8 @@ import Virtualization
     public private(set) var state: LifecycleState = .idle
     public private(set) var guestReady = false
     private var runtimeFeatures = GuestRuntimeFeatures()
+    /// A ready boot lease; stop/failure invalidates it before another boot can be used.
+    public var trafficBlobExportGeneration: UUID? { canExportTrafficBlobs ? evidenceEpoch : nil }
     public var canExportTrafficBlobs: Bool {
         runtimeFeatures.allowsTrafficBlobExport(state: state, ready: guestReady, hasMachine: machine != nil)
     }
