@@ -1,0 +1,91 @@
+{
+  "schema": 1,
+  "sourceCommit": "ec586014784085129f4ba511bb9ca9c2cf7d2004",
+  "probeSHA256": "46c3a2a7e819d0c83168f2007048b90d5b733ff64d13090287541e8d6b1b0d7b",
+  "sourceSHA256": {
+    "Sources/ArtexCore/GuestRuntimeFeatures.swift": "747bb29c536ff39c440e92bffdc5598eeb89f5435a8397cae5ffc5b20d2714f4",
+    "Sources/ArtexCore/VMController.swift": "a14b13f428b27496d22155440b5a803e568c0e3a6eec596b53fd73bf46698826",
+    "Sources/VMProbe/CapturedProbe.swift": "f04650b945e7e21bdfbea4478f8c44de3402e5916554fad256d8e52769f337b1",
+    "Sources/ArtexCore/GuestArtifacts.swift": "e7a2d264744ff607a89f3f93aaa5388fc7d71e1e43f4888a691e601aa9a473e5"
+  },
+  "candidateManifestSHA256": "83628454bcb2a7d4e66b3445ec1d1fd81c69926ac0eee17d06b99c0ba1931254",
+  "runtimeReportSHA256": "9f81f61b53e8552082512c2b8c1129977eadd111ca552ae23876acb3707e586c",
+  "runtimeExitCode": 0,
+  "availabilityAssertedAfterBothReadyBoots": true,
+  "availabilityAssertedFalseAfterBothStops": true,
+  "lifecycleMatrixPassed": true,
+  "failedStartRemainsUnavailable": true,
+  "runtime": {
+    "passed": true,
+    "boots": 2,
+    "cooperativeStops": 2,
+    "cleanAudits": 2,
+    "referenceEqual": true,
+    "persistence": true,
+    "machineStopped": true,
+    "sourceBlob": {
+      "badLengthRefused": true,
+      "bytes": 262401,
+      "fullByteEqual": true,
+      "inlineRefused": true,
+      "literalManifestBound": true,
+      "nativeUIAcceptance": false,
+      "ordinal": 4,
+      "rebootByteEqual": true,
+      "sha256": "5549252a7f275dd6b221f062c298ac588a2dea19e5145b6ca06308cc8c9dd43e",
+      "side": "response",
+      "vmStopPublicationRejected": true
+    },
+    "sourceBlobInterruption": {
+      "authenticationUnchanged": true,
+      "controlledReaderPause": true,
+      "destinationAbsent": true,
+      "expectedBytes": 262401,
+      "nativeUIAcceptance": false,
+      "naturalNetworkFailureVerified": false,
+      "openSocketInterrupted": true,
+      "operationID": "277CBE34-D63A-44E8-A219-27F5E2EF7258",
+      "sha256": "5549252a7f275dd6b221f062c298ac588a2dea19e5145b6ca06308cc8c9dd43e",
+      "stagedBytes": 7939,
+      "stagingAbsent": true,
+      "trafficIdentitySHA256": "23195cafbb53eaf25736239568b1471efdc7461a8ff814879792e244fa10d097",
+      "vmStillRunning": true
+    }
+  },
+  "nativeUIAcceptance": false,
+  "fullGoalComplete": false,
+  "defaultProfilePromoted": false,
+  "pending": [
+    "retained export model and panel ownership",
+    "native save UI and browser comparison",
+    "all21 workflows keyboard VoiceOver multiwindow",
+    "kernel reliability promotion",
+    "Gemini Groq CP1-CP4",
+    "harness H0-H5",
+    "release gates"
+  ],
+  "unitLineCoverage": {
+    "GuestRuntimeFeatures.swift": {
+      "count": 7,
+      "covered": 7,
+      "percent": 100
+    }
+  },
+  "swiftTests": {
+    "executed": 1002,
+    "passed": 1001,
+    "existingAXSkip": 1,
+    "exitCode": 0
+  },
+  "pythonTests": {
+    "passed": 179,
+    "exitCode": 0
+  },
+  "stagedApp": {
+    "buildExitCode": 0,
+    "strictSignatureVerified": true,
+    "launched": false,
+    "defaultManifestSHA256": "fa0f1972c04f2a04853de37f4fd163b922ac38c841849c635d29f565fe6115ce",
+    "defaultBootFileHashesVerified": true
+  }
+}
