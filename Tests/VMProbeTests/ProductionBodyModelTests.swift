@@ -1,12 +1,17 @@
 import ArtexCore
 import Foundation
 import XCTest
+@testable import VMProbe
 
 @MainActor private final class ProductionCancelChooser: EvidenceDestinationChoosing {
     func choose(suggestedFilename: String) async -> URL? { nil }
     func cancel() { }
 }
 @MainActor final class ProductionBodyModelTests: XCTestCase {
+    func testProductionVMExerciseRequiresReadyController() async throws {
+        let controller = VMController()
+        XCTAssertThrowsError(try ProductionBodyModelProbe.requireAvailable(controller))
+    }
     func testProbeUsesSharedProductionModelAndRetirementWithoutAppKit() async throws {
         let scope = TrafficBodyExportScope(presentation: UUID(), storeOwner: UUID(), detailRevision: UUID(), trafficID: "opaque")
         let model = TrafficBodyExportModel(scope: scope, isCurrent: { _,_ in true }, available: { true }, metadata: { id, side in
