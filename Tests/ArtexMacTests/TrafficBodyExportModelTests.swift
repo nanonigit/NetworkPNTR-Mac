@@ -17,6 +17,7 @@ import XCTest
     var holdMetadata = false
     var heldReceipt: CheckedContinuation<Void, Never>?
     var holdReceipt = false
+    var wrongReceipt = false
     init() throws { try FileManager.default.createDirectory(at: directory, withIntermediateDirectories: false) }
     func clean() { try? FileManager.default.removeItem(at: directory) }
     func model() -> TrafficBodyExportModel {
@@ -26,9 +27,11 @@ import XCTest
             return try TrafficBlobDownload(trafficID: self.wrongID ? "other" : id, side: side, expectedSize: 5, expectedSHA256: ArtifactIntegrity.sha256(self.bytes))
         }, exporter: { manifest, destination in
             self.calls += 1
-            let writer = try EvidenceExportWriter(destination: destination, request: manifest)
-            try writer.append(self.bytes)
-            let result = BackendDownloadResult(status: 200, byteCount: 5, sha256: ArtifactIntegrity.sha256(self.bytes))
+            let bytes = self.wrongReceipt ? Data([9,8,7,6,5]) : self.bytes
+            let stagedManifest = try TrafficBlobDownload(trafficID: manifest.trafficID, side: manifest.side, expectedSize: 5, expectedSHA256: ArtifactIntegrity.sha256(bytes))
+            let writer = try EvidenceExportWriter(destination: destination, request: stagedManifest)
+            try writer.append(bytes)
+            let result = BackendDownloadResult(status: 200, byteCount: 5, sha256: ArtifactIntegrity.sha256(bytes))
             let receipt = EvidenceExportReceipt(response: .init(result: result, file: try writer.finish(response: result)))
             if self.holdReceipt { await withCheckedContinuation { self.heldReceipt = $0 } }
             return receipt
@@ -70,6 +73,13 @@ import XCTest
             f.heldReceipt?.resume(); f.heldReceipt = nil; try await wait { !model.isExporting }
             XCTAssertNil(model.saved); XCTAssertTrue(try FileManager.default.contentsOfDirectory(atPath: f.directory.path).isEmpty)
         }
+    }
+    func testOtherwiseValidReceiptForDifferentBodyCannotPublish() async throws {
+        let f = try BlobSaveFixture(); defer { f.clean() }; f.wrongReceipt = true
+        let model = f.model(), chooser = BlobSaveChooser(); chooser.url = f.directory.appendingPathComponent("never.bin")
+        XCTAssertTrue(model.start(.response, owner: model.id, chooser: chooser)); try await wait { !model.isExporting }
+        XCTAssertNotNil(model.failure); XCTAssertNil(model.saved)
+        XCTAssertTrue(try FileManager.default.contentsOfDirectory(atPath: f.directory.path).isEmpty)
     }
     func testWrongIdentityUnsupportedOwnerAndPanelCancelNeverPublish() async throws {
         let f = try BlobSaveFixture(); defer { f.clean() }; let model = f.model(), chooser = BlobSaveChooser()
