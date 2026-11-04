@@ -4,4 +4,3 @@ import Foundation
     func choose(suggestedFilename: String) async -> URL?
     func cancel()
 }
-

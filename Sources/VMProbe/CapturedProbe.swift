@@ -183,6 +183,7 @@ import Foundation
         var sourceBlob: SourceBlobProbe.Result?
         var sourceInterruption: SourceBlobInterruption.Proof?
         var previousBlobGeneration: UUID?
+        var productionModelReports: [[String: Any]] = []
         var result=[String:Any](),recovery=false
         var executedSourceHashes=[String:String](),sourceAudits=0
         do {
@@ -242,6 +243,15 @@ import Foundation
                     }
                     report["persistence"]=true
                 }
+                if sourceBlobs {
+                    progress("production-body-model-" + String(index))
+                    var proof = try await ProductionBodyModelProbe.exercise(session: session, api: api, row: initialRows[4], directory: output.appendingPathComponent("production-model-" + String(index)), controller: controller)
+                    let postModelAudit = try await fixture.audit()
+                    try require(postModelAudit.sourceSha256 == sourceHashes)
+                    proof["countsAfterModel"] = postModelAudit.counts
+                    proof["sourceSHA256"] = postModelAudit.sourceSha256
+                    productionModelReports.append(proof)
+                }
                 try await controller.stop();try require(controller.state == .stopped && !controller.hasMachine && !controller.canExportTrafficBlobs && controller.trafficBlobExportGeneration == nil);stops+=1
                 if sourceBlobs, index == 1 {
                     guard let sourceBlob else { throw RuntimeError.integrity("missing source blob stop proof") }
@@ -256,6 +266,8 @@ import Foundation
                 guard let sourceInterruption else { throw RuntimeError.integrity("missing source interruption proof") }
                 try sourceBlob.requireComplete(); report["sourceBlob"] = sourceBlob.report
                 report["sourceBlobInterruption"] = sourceInterruption.report
+                try require(productionModelReports.count == 2)
+                report["productionBodyModels"] = productionModelReports
                 report["distinctReadyBootGenerationsVerified"] = true
             }
             let equal=try same(result,expected)
