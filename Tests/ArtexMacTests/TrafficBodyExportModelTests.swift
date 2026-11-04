@@ -19,15 +19,17 @@ import XCTest
     var heldReceipt: CheckedContinuation<Void, Never>?
     var holdReceipt = false
     var wrongReceipt = false
+    var exportError: Error?
     init() throws { try FileManager.default.createDirectory(at: directory, withIntermediateDirectories: false) }
     func clean() { try? FileManager.default.removeItem(at: directory) }
     func model() -> TrafficBodyExportModel {
         let scope = TrafficBodyExportScope(presentation: UUID(), storeOwner: UUID(), detailRevision: UUID(), trafficID: "\u{FEFF}e\u{301}")
         return TrafficBodyExportModel(scope: scope, isCurrent: { _,_ in self.current }, available: { self.onAvailability?(); return self.available }, metadata: { id, side in
             if self.holdMetadata { await withCheckedContinuation { self.heldMetadata = $0 } }
-            return try TrafficBlobDownload(trafficID: self.wrongID ? "other" : id, side: side, expectedSize: 5, expectedSHA256: ArtifactIntegrity.sha256(self.bytes))
+            return try TrafficBlobDownload(trafficID: self.wrongID ? "\u{FEFF}é" : id, side: side, expectedSize: 5, expectedSHA256: ArtifactIntegrity.sha256(self.bytes))
         }, exporter: { manifest, destination in
             self.calls += 1
+            if let error = self.exportError { throw error }
             let bytes = self.wrongReceipt ? Data([9,8,7,6,5]) : self.bytes
             let stagedManifest = try TrafficBlobDownload(trafficID: manifest.trafficID, side: manifest.side, expectedSize: 5, expectedSHA256: ArtifactIntegrity.sha256(bytes))
             let writer = try EvidenceExportWriter(destination: destination, request: stagedManifest)
@@ -86,6 +88,22 @@ import XCTest
         XCTAssertEqual(f.calls, 1)
         let stopped = f.model(); f.onAvailability = { f.onAvailability = nil; stopped.stop() }
         XCTAssertFalse(stopped.start(.response, owner: stopped.id, chooser: chooser))
+    }
+    func testCleanupFailureRetainsSpecificFeedback() async throws {
+        let f = try BlobSaveFixture(); defer { f.clean() }; f.exportError = EvidenceExportError.cleanupRequired
+        let model = f.model(), chooser = BlobSaveChooser(); chooser.url = f.directory.appendingPathComponent("never.bin")
+        XCTAssertTrue(model.start(.response, owner: model.id, chooser: chooser)); try await wait { !model.isExporting }
+        XCTAssertEqual(model.failure?.text(language: .english), AppStrings.text(.evidenceUICleanupFailed, language: .english))
+        XCTAssertNil(model.saved)
+    }
+    func testDetailScopeComparesLiteralIdentityAndEveryOwner() {
+        let p = UUID(), o = UUID(), r = UUID()
+        let original = TrafficBodyExportScope(presentation: p, storeOwner: o, detailRevision: r, trafficID: "e\u{301}")
+        XCTAssertNotEqual(original, TrafficBodyExportScope(presentation: p, storeOwner: o, detailRevision: r, trafficID: "é"))
+        XCTAssertNotEqual(original, TrafficBodyExportScope(presentation: UUID(), storeOwner: o, detailRevision: r, trafficID: original.trafficID))
+        XCTAssertNotEqual(original, TrafficBodyExportScope(presentation: p, storeOwner: UUID(), detailRevision: r, trafficID: original.trafficID))
+        XCTAssertNotEqual(original, TrafficBodyExportScope(presentation: p, storeOwner: o, detailRevision: UUID(), trafficID: original.trafficID))
+        XCTAssertEqual(original, original)
     }
     func testOtherwiseValidReceiptForDifferentBodyCannotPublish() async throws {
         let f = try BlobSaveFixture(); defer { f.clean() }; f.wrongReceipt = true

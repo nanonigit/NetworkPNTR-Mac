@@ -29,6 +29,7 @@ struct TrafficBodyExportScope: Sendable, Equatable {
     @ObservationIgnored private var chooser: (any EvidenceDestinationChoosing)?
     @ObservationIgnored private var cancelled = false
     @ObservationIgnored private var changing = false
+    @ObservationIgnored private var acquiring = false
     @ObservationIgnored private var stopRequested = false
     @ObservationIgnored private var stopping = false
     @ObservationIgnored private var cancelling = false
@@ -50,13 +51,22 @@ struct TrafficBodyExportScope: Sendable, Equatable {
         guard isActive, !cancelled, !stopRequested, isCurrent(scope, side), available(),
               isActive, !cancelled, !stopRequested else { throw CancellationError() }
     }
-    func canStart(_ side: FindingEvidenceSide) -> Bool {
+    private func eligible(_ side: FindingEvidenceSide) -> Bool {
         isActive && !changing && !stopping && !isExporting && !Task.isCancelled && isCurrent(scope, side) && available()
+            && isActive && !changing && !stopping && !isExporting && !stopRequested
+    }
+    func canStart(_ side: FindingEvidenceSide) -> Bool {
+        guard !acquiring else { return false }
+        acquiring = true; defer { acquiring = false }
+        return eligible(side)
     }
     @discardableResult func start(_ side: FindingEvidenceSide, owner: UUID, chooser: any EvidenceDestinationChoosing) -> Bool {
-        guard owner == id, canStart(side) else { return false }
+        guard owner == id, !acquiring, isActive, !changing, !stopping, !isExporting else { return false }
+        acquiring = true; defer { acquiring = false }
+        cancelled = false
+        guard eligible(side), !cancelled else { return false }
         transition {
-            cancelled = false; self.chooser = chooser
+            self.chooser = chooser
             isExporting = true; saved = nil; failure = nil
             task = Task { [weak self] in
                 guard let self else { return }
@@ -71,6 +81,8 @@ struct TrafficBodyExportScope: Sendable, Equatable {
                     let receipt = try await self.exporter(manifest, EvidenceExportDestination(newFileURL: url))
                     do {
                         try self.validate(side)
+                        guard receipt.result.status == 200, receipt.result.byteCount == manifest.expectedSize,
+                              receipt.result.sha256 == manifest.expectedSHA256 else { throw EvidenceExportError.integrity }
                         let file = try receipt.commit { try self.validate(side) }
                         self.transition { self.saved = file }
                     } catch { try receipt.discard(); throw error }
