@@ -25,3 +25,8 @@ Reuse the window-bound destination chooser and file receipt without weakening fi
 3. Root/detail integration: retained model per detail owner, anchored save panel, explicit cancellation/status, EN/JA keys and no raw-data translation. Use Lazyweb evidence above for status/cancel placement only.
 4. Full tests/build/signature and actual managed VM export through the model. Compare fixed browser packet display/copy/wrap/finding download semantics independently of the extension. Actual window/save-panel/keyboard/multiwindow/VoiceOver acceptance remains open until the user-deferred unlock permits it. Do not ask for unlock again or count offscreen rendering as input acceptance.
 5. Promote a guest only after the separate source-kernel reliability/provenance/runtime/release gates. Gemini/Groq CP1–CP4 and harness H0–H5 remain active.
+
+Implementation checkpoint:7070fcd compile RED to91127ab focused6 GREEN (two new capability cases, four existing boundary cases). Declaration decoding only; live VM propagation, export model and UI remain next. No default guest promotion or UI acceptance.
+
+Capability verification: full Swift1000 executed,999 passed,one existing externalAX skip; Python179 pass. GuestArtifacts line coverage43/45(95.56%). Live VM capability propagation and save UI still pending; no additional actual-VM acceptance is inferred from unit fixtures.
+The staged app rebuild and strict signature verification also passed with the unchanged default guest manifest; no launch or capability-enabled guest promotion.
