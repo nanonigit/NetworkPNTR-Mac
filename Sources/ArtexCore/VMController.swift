@@ -6,6 +6,10 @@ import Virtualization
 @MainActor @Observable public final class VMController: NSObject, VZVirtualMachineDelegate {
     public private(set) var state: LifecycleState = .idle
     public private(set) var guestReady = false
+    private var runtimeFeatures = GuestRuntimeFeatures()
+    public var canExportTrafficBlobs: Bool {
+        runtimeFeatures.allowsTrafficBlobExport(state: state, ready: guestReady, hasMachine: machine != nil)
+    }
     public private(set) var lastError: String?
     public private(set) var failure: AppErrorMessage?
     public private(set) var guestLog = ""
@@ -28,11 +32,13 @@ import Virtualization
     public var hasMachine: Bool { machine != nil }
     public func start(artifacts directory: URL, logs: URL, readinessTimeout: Duration = .seconds(60), dataDisk: URL? = nil, provisioning: GuestProvisioning? = nil) async throws {
         guard mayStart else { throw RuntimeError.invalidTransition(state.rawValue, "starting") }
+        runtimeFeatures = GuestRuntimeFeatures()
         try state.transition(to: .starting)
         lastError = nil; failure = nil; guestReady = false; guestLog = ""; lastStopInterruptedTransferCount = 0
         do {
             guard VZVirtualMachine.isSupported else { throw RuntimeError.unsupported }
             let manifest = try GuestArtifacts.load(from: directory)
+            runtimeFeatures = GuestRuntimeFeatures(trafficBlobExportDeclared: manifest.declaresTrafficBlobExport)
             guard (manifest.systemDisk == nil) == (dataDisk == nil), (manifest.systemDisk == nil) == (provisioning == nil) else {
                 throw RuntimeError.integrity("backend provisioning and data disk")
             }
@@ -138,7 +144,7 @@ import Virtualization
             fail(RuntimeError.integrity(String(failure.prefix(160))))
         }
     }
-    private func fail(_ error: Error) { cancelBackendUploads(); lastError = error.localizedDescription; failure = AppErrorMessage(error, fallback: .runtimeUIUnexpected); if state != .failed { try? state.transition(to: .failed) } }
+    private func fail(_ error: Error) { runtimeFeatures = GuestRuntimeFeatures(); cancelBackendUploads(); lastError = error.localizedDescription; failure = AppErrorMessage(error, fallback: .runtimeUIUnexpected); if state != .failed { try? state.transition(to: .failed) } }
     // Completion-handler calls stay on our MainActor. Older SDK async overlays treat
     // VZVirtualMachine as a non-Sendable value crossing isolation during `await`.
     private func startMachine(_ vm: VZVirtualMachine) async throws {
@@ -323,6 +329,7 @@ import Virtualization
         }
     }
     private func releaseResources() {
+        runtimeFeatures = GuestRuntimeFeatures()
         cancelBackendUploads(); backendUploads.removeAll()
         for continuation in pendingConnections.values { continuation.resume(throwing: RuntimeError.integrity("VM connection closed")) }
         pendingConnections.removeAll()
