@@ -1,0 +1,80 @@
+{
+  "phase": "CP3 provider HTTP redirect boundary",
+  "frozen_browser_commit": "e75ae371ad777ffd1eecdd28d2781a6519b05591",
+  "frozen_archive_members_verified": true,
+  "frozen_browser_worktree_clean": true,
+  "origin_red": {
+    "log_sha256": "5efa6b051335771848772f2befd1c6660daca428822ca511a11839325fddb398",
+    "completion_cross_port_requests": 1,
+    "completion_cross_port_requests_with_bearer": 1,
+    "discovery_cross_port_requests": 1,
+    "discovery_cross_port_requests_with_bearer": 1
+  },
+  "redaction_red": {
+    "log_sha256": "29979209e5cd130677c1954a3d781e429bf195721e294510eddd9a406439f442",
+    "failures": [
+      "completion body and capture",
+      "model discovery error body",
+      "malformed Location in client error"
+    ]
+  },
+  "green": {
+    "cross_port_completion_requests": 0,
+    "cross_port_discovery_requests": 0,
+    "same_origin_307_preserves_method_body_and_bearer": true,
+    "go_packages_passed": [
+      "github.com/Autumn-27/norma/harness",
+      "github.com/Autumn-27/norma/llm",
+      "github.com/Autumn-27/artex/agent",
+      "github.com/Autumn-27/artex/traffic",
+      "github.com/Autumn-27/artex/server"
+    ],
+    "go_test_events_passed": 594,
+    "go_test_events_skipped": 116,
+    "go_test_events_failed": 0,
+    "focused_tests_passed": [
+      "TestManagedCloudRedirectDoesNotCrossPort",
+      "TestManagedCloudRedirectOmitsMalformedLocation",
+      "TestManagedCloudRedirectAllowsRelativeSameOrigin",
+      "TestManagedCloudRedirectOriginAndHopBounds",
+      "TestManagedCloudRedirectModelDiscoveryDoesNotCrossPort"
+    ],
+    "focused_statement_coverage_percent": {
+      "RoundTrip": 100.0,
+      "llmRequestOrigin": 85.7,
+      "parseLLMRedirectOrigin": 94.1,
+      "CheckLLMRedirect": 100.0
+    },
+    "python_guest_artifact_tests_passed": 183
+  },
+  "backend": {
+    "version": "artex-mac-e75ae371-cloud3",
+    "platform": "linux/arm64",
+    "cgo_enabled": false,
+    "builder_image": "sha256:6371c4d1639ba1e6cc7847d9231c87e5bed2d78d4788f371359c0a913f96d7f1",
+    "dependency_cache_image": "sha256:998d694fa51fa016012653f7cf545befc7dbe867267ae2c0f89d806364492589",
+    "offline_dockerfile_sha256": "bfed926b721b99fff48174fc923daf1e2d6ff92b7c312623230e6bb08dd9a944",
+    "build_log_sha256": "1e53e830ca26cef97dac439106986a059717d46f11dd354306f2ff339a24cc70",
+    "bytes": 29360290,
+    "sha256": "bda445a2d772123ba1a7fc6e6baa57edc5e318722b656d57bfa5427f22822d93",
+    "redirect_patch_and_sources_match_image": true,
+    "network_enabled_during_tests_or_build": false,
+    "deployed": false
+  },
+  "input_sha256": {
+    "guest/backend-extension/Dockerfile.provider-tests": "24db14e068b23fe155e5a36d7b58aba3eb90dcf64ba58d45af21c9c35b1cbffd",
+    "guest/backend-extension/provider-origin-redirect.patch": "4d3feee7e9f55ac02b856ef34ad352bbfe17769bee9d6279905c22799fdd57d8",
+    "guest/backend-extension/cloud-origin/agent/cloud_redirect.go": "94b13435015459d62138baa1281bea255bb0c1f73daf847a23c041b22ecfc8bd",
+    "guest/backend-extension/cloud-origin/agent/cloud_redirect_test.go": "5e01a62af6cfc17bc241e88fa2d21a84606a6bf3b24af090fffcb18473bd3970",
+    "guest/backend-extension/cloud-origin/server/cloud_redirect_test.go": "1a4c043e80821b583ed31d7a344c8ceb0018ada782f09a30b1eb15eff00cf21a",
+    "guest/backend-extension/managed.patch": "e6366f9f4666b6ed1a9e8d995070d1a353a75cec5810094dd3b66e079d80dfe4",
+    "guest/backend-extension/norma-tool-history.patch": "bb819a5c3d7923c440a3e23efa6f3bfbe4e6c48712915ca617edacdcecb3761a",
+    "guest/backend-extension/norma-indexed-tool-execution.patch": "9bc717dfa9b3043796c5435545f27966f4ddee2b6cfbaef4cfa008dd466178cf"
+  },
+  "remaining_cp3": [
+    "bind stored keys before initial requests",
+    "enforce VM egress",
+    "exercise four live cloud APIs"
+  ],
+  "hosted_ci_verified": false
+}

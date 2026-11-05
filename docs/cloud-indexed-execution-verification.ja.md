@@ -8,6 +8,6 @@ cloud2は固定norma v0.4.3に履歴パッチと番号付き実行パッチを�
 
 Linux/arm64のCGO無効本体はartex-mac-e75ae371-cloud2。ELFは29360290バイト、SHA-2560455fb4255796a6c1ba1dc5545cbdbb39f722492ca6e48775f8ce8ff7b16e6bf。ビルダーイメージはsha256:998d694fa51fa016012653f7cf545befc7dbe867267ae2c0f89d806364492589。適用したパッチと依存ソースの変更ファイルがイメージ内と完全一致することを確認した。Goビルド情報で管理依存の置換とプラットフォームを照合した。本体は無視対象 `.build-cache/managed-backend-cloud-v2/artex` に保持する。
 
-再現にはcloud-tool-history-verification記載の固定アーカイブとtraffic／agent／serverオーバーレイを使う。現行Dockerfile.provider-testsを使い、ビルドコンテキスト直下に `norma-indexed-tool-execution.patch`、`norma-tool-history.patch`、`managed.patch` を置く。agentオーバーレイは `cloud_chat_transcript_test.go` を含む。固定依存を検証し、両パッチを検査してから適用する。SDK試験は実アプリの依存グラフで動かす。対象試験は外部通信なしのビルダー内で `go test -p 2 -mod=readonly ./agent -run '^TestManagedCloudCompatibilityChatTranscript(Endpoint)?$' -count=1`。固定ブラウザはe75ae371。
+再現にはcloud-tool-history-verification記載の固定アーカイブとtraffic／agent／serverオーバーレイを使う。コミット `037a310` のDockerfile.provider-testsを使い、ビルドコンテキスト直下に `norma-indexed-tool-execution.patch`、`norma-tool-history.patch`、`managed.patch` を置く。agentオーバーレイは `cloud_chat_transcript_test.go` を含む。固定依存を検証し、両パッチを検査してから適用する。SDK試験は実アプリの依存グラフで動かす。対象試験は外部通信なしのビルダー内で `go test -p 2 -mod=readonly ./agent -run '^TestManagedCloudCompatibilityChatTranscript(Endpoint)?$' -count=1`。固定ブラウザはe75ae371。
 
 実行範囲は、実ChatAgent・ツール実行・履歴ファイルを使うLinuxのプロセス再起動。次の条件は通常チャットAPIと状態ディスクを通す専用VM再起動。実クラウド、Mac画面とブラウザの比較、既定ゲスト昇格、リリース検証も残る。ホストCIの利用可否は未検証で、公開は `[skip ci]` を使用する。

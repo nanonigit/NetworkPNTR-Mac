@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"net/http"
 	"net/http/httptest"
+	"strings"
 	"sync/atomic"
 	"testing"
 )
@@ -20,7 +21,7 @@ func TestManagedCloudRedirectModelDiscoveryDoesNotCrossPort(t *testing.T) {
 	}))
 	defer other.Close()
 	origin := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		http.Redirect(w, r, other.URL+"/other", http.StatusTemporaryRedirect)
+		http.Redirect(w, r, other.URL+"/other?token=synthetic-redirect-secret", http.StatusTemporaryRedirect)
 	}))
 	defer origin.Close()
 	body, err := json.Marshal(map[string]string{"provider": "openai", "base_url": origin.URL + "/v1beta/openai/", "api_key": "synthetic-discovery-key"})
@@ -35,6 +36,9 @@ func TestManagedCloudRedirectModelDiscoveryDoesNotCrossPort(t *testing.T) {
 	}
 	if err := json.Unmarshal(response.Body.Bytes(), &result); err != nil {
 		t.Fatal(err)
+	}
+	if strings.Contains(response.Body.String(), "synthetic-redirect-secret") {
+		t.Fatal("model discovery exposed rejected redirect content")
 	}
 	if result.OK || transferred.Load() != 0 {
 		t.Fatalf("discovery redirect crossed origin: ok=%v destination_requests=%d credential_requests=%d", result.OK, transferred.Load(), credentialRequests.Load())

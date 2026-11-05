@@ -1,0 +1,32 @@
+--- a/agent/provider.go
++++ b/agent/provider.go
+@@ -416,7 +416,13 @@
+ 		}
+ 		transport.Proxy = http.ProxyURL(proxyURL)
+ 	}
+-	return &http.Client{Transport: quotaAwareTransport{base: transport, sessionHeaderKey: strings.TrimSpace(sessionHeaderKey)}}, nil
++	return &http.Client{
++		Transport: quotaAwareTransport{
++			base:             LLMRedirectTransport{RoundTripper: transport},
++			sessionHeaderKey: strings.TrimSpace(sessionHeaderKey),
++		},
++		CheckRedirect: CheckLLMRedirect,
++	}, nil
+ }
+ 
+ // logTestConnection prints the raw HTTP status code(s) and response body of a
+--- a/server/server_mgmt.go
++++ b/server/server_mgmt.go
+@@ -2126,7 +2126,11 @@
+ 			transport.Proxy = http.ProxyURL(pu)
+ 		}
+ 	}
+-	client := &http.Client{Transport: transport, Timeout: 30 * time.Second}
++	client := &http.Client{
++		Transport:     agent.LLMRedirectTransport{RoundTripper: transport},
++		Timeout:       30 * time.Second,
++		CheckRedirect: agent.CheckLLMRedirect,
++	}
+ 
+ 	// Try each candidate; return the first that yields a non-empty model list.
+ 	var lastErr string
