@@ -9,14 +9,17 @@ import XCTest
             activity(1, "user", "Read the local VM history fixture"),
             activity(2, "tool_use", "Read", tool: true),
             activity(3, "tool_result", "fixture result", tool: true),
-            activity(4, "text", "VM fixture tool result accepted")
+            activity(4, "result", "VM fixture tool result accepted")
         ]
-        let resumed = first + [activity(5, "user", "Continue the saved VM history fixture"), activity(6, "text", "VM fixture saved history accepted")]
+        let resumed = first + [activity(5, "user", "Continue the saved VM history fixture"), activity(6, "result", "VM fixture saved history accepted")]
         let original = try CloudHistoryProbe.verifyHistory(page(first), resumed: false)
         let restored = try CloudHistoryProbe.verifyHistory(page(resumed), resumed: true)
         XCTAssertEqual(original.toolUseSequence, restored.toolUseSequence)
         XCTAssertEqual(original.toolResultSequence, restored.toolResultSequence)
         XCTAssertThrowsError(try CloudHistoryProbe.verifyHistory(page(first), resumed: true))
+        var interim = resumed
+        interim[5]["kind"] = "text"
+        XCTAssertThrowsError(try CloudHistoryProbe.verifyHistory(page(interim), resumed: true))
         XCTAssertThrowsError(try CloudHistoryProbe.verifyHistory(page(resumed + [activity(7, "tool_use", "Read", tool: true)]), resumed: true))
         var reordered = resumed
         reordered[2]["seq"] = 8
