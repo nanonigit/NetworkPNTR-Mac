@@ -1,0 +1,162 @@
+--- /dev/null
++++ b/harness/indexed_execution_test.go
+@@ -0,0 +1,159 @@
++package harness
++
++import (
++	"context"
++	"encoding/json"
++	"errors"
++	"iter"
++	"strings"
++	"sync/atomic"
++	"testing"
++
++	"github.com/Autumn-27/norma/llm"
++	"github.com/Autumn-27/norma/permission"
++	"github.com/Autumn-27/norma/tool"
++)
++
++func managedIndexedTool(calls *atomic.Int32) tool.CoreTool {
++	return tool.Build(tool.Spec{
++		Name:   "IndexedFixture",
++		Schema: map[string]any{"type": "object", "properties": map[string]any{"value": map[string]any{"type": "integer"}}, "required": []string{"value"}},
++		Run: func(_ context.Context, raw json.RawMessage, _ *tool.ToolContext) (tool.Result, error) {
++			calls.Add(1)
++			return tool.Text(string(raw)), nil
++		},
++	})
++}
++
++func TestManagedIndexedToolExecutionUsesCompletedHistoryBlocks(t *testing.T) {
++	zero, one := 0, 1
++	events := []llm.StreamEvent{
++		{Type: llm.SEToolUseStart, ToolID: "first", ToolName: "IndexedFixture", ToolIndex: &zero},
++		{Type: llm.SEToolUseSignature, Text: "first-opaque", ToolIndex: &zero, ToolSignatureScope: "fixture-scope"},
++		{Type: llm.SEToolInputJSON, Text: `{"value":`, ToolIndex: &zero},
++		{Type: llm.SEToolUseStart, ToolID: "second", ToolName: "IndexedFixture", ToolIndex: &one},
++		{Type: llm.SEToolInputJSON, Text: `{"value":2}`, ToolIndex: &one},
++		{Type: llm.SETextDelta, Text: "progress"},
++		{Type: llm.SEToolInputJSON, Text: `1}`, ToolIndex: &zero},
++		{Type: llm.SEMessageDelta, StopReason: "tool_use"},
++		{Type: llm.SEMessageStop},
++	}
++	model := &scriptedModel{turns: [][]llm.StreamEvent{events, textTurn("done")}}
++	var calls atomic.Int32
++	input := QueryInput{Messages: []llm.Message{llm.UserText("fixture")}, Tools: tool.NewRegistry(managedIndexedTool(&calls)), PermissionMode: permission.ModeBypass, WorkingDir: t.TempDir()}
++	var dispatched []llm.ContentBlock
++	var sawProgress bool
++	var terminal *Terminal
++	for event, err := range Query(t.Context(), input, QueryDeps{CallModel: model.call}) {
++		if err != nil {
++			t.Fatal(err)
++		}
++		switch event.Kind {
++		case KindText:
++			if event.Text == "progress" {
++				sawProgress = true
++			}
++		case KindToolUse:
++			if !sawProgress {
++				t.Error("indexed tool dispatched before the model finished its inputs")
++			}
++			dispatched = append(dispatched, *event.ToolUse)
++		case KindResult:
++			terminal = event.Terminal
++		}
++	}
++	if terminal == nil || terminal.Reason != ReasonCompleted || len(terminal.Messages) != 4 || calls.Load() != 2 || len(dispatched) != 2 {
++		t.Fatalf("unexpected completion: tool calls=%d, dispatched=%d", calls.Load(), len(dispatched))
++	}
++	saved := terminal.Messages[1].ToolUses()
++	if len(saved) != 2 {
++		t.Fatal("missing stored tool history")
++	}
++	for i, want := range []string{`{"value":1}`, `{"value":2}`} {
++		if dispatched[i].ID != saved[i].ID || string(dispatched[i].Input) != want || string(saved[i].Input) != want {
++			t.Errorf("tool %d used different arguments from history", i)
++		}
++	}
++	if dispatched[0].OpenAIThoughtSignature != "first-opaque" || saved[0].OpenAIThoughtSignatureScope != "fixture-scope" {
++		t.Fatal("signature witness lost")
++	}
++	results := terminal.Messages[2].Content
++	if len(results) != 2 || results[0].ToolUseID != "first" || results[1].ToolUseID != "second" || results[0].IsError || results[1].IsError {
++		t.Fatal("tool results lost their associations")
++	}
++}
++
++func TestManagedIndexedToolExecutionRejectsIncompleteAndCancelledStreams(t *testing.T) {
++	for _, mode := range []string{"missing finish reason", "missing terminal event", "length stop", "transport error", "cancel"} {
++		t.Run(mode, func(t *testing.T) {
++			index := 0
++			ctx, cancel := context.WithCancel(t.Context())
++			defer cancel()
++			var calls atomic.Int32
++			input := QueryInput{Messages: []llm.Message{llm.UserText("fixture")}, Tools: tool.NewRegistry(managedIndexedTool(&calls)), PermissionMode: permission.ModeBypass, WorkingDir: t.TempDir()}
++			requests := 0
++			model := func(context.Context, llm.CompletionRequest) iter.Seq2[llm.StreamEvent, error] {
++				requests++
++				return func(yield func(llm.StreamEvent, error) bool) {
++					if requests != 1 {
++						for _, event := range textTurn("unexpected second request") {
++							if !yield(event, nil) {
++								return
++							}
++						}
++						return
++					}
++					events := []llm.StreamEvent{
++						{Type: llm.SEToolUseStart, ToolID: "call", ToolName: "IndexedFixture", ToolIndex: &index},
++						{Type: llm.SEToolInputJSON, Text: `{"value":1}`, ToolIndex: &index},
++						{Type: llm.SETextDelta, Text: "progress"},
++					}
++					for _, event := range events {
++						if !yield(event, nil) {
++							return
++						}
++					}
++					if mode == "transport error" {
++						yield(llm.StreamEvent{}, errors.New("synthetic stream interruption"))
++						return
++					}
++					reason := "tool_use"
++					if mode == "missing finish reason" {
++						reason = ""
++					}
++					if mode == "length stop" {
++						reason = "max_tokens"
++					}
++					if !yield(llm.StreamEvent{Type: llm.SEMessageDelta, StopReason: reason}, nil) {
++						return
++					}
++					if mode != "missing terminal event" {
++						yield(llm.StreamEvent{Type: llm.SEMessageStop}, nil)
++					}
++				}
++			}
++			var terminal *Terminal
++			for event, err := range Query(ctx, input, QueryDeps{CallModel: model}) {
++				if err != nil {
++					t.Fatal(err)
++				}
++				if mode == "cancel" && event.Kind == KindText {
++					cancel()
++				}
++				if event.Kind == KindToolUse {
++					t.Error("interrupted tool was dispatched")
++				}
++				if event.Kind == KindResult {
++					terminal = event.Terminal
++				}
++			}
++			expected := ReasonModelError
++			if mode == "cancel" {
++				expected = ReasonAbortedStreaming
++			}
++			if requests != 1 || calls.Load() != 0 || terminal == nil || terminal.Reason != expected || terminal.Err == nil || strings.Contains(terminal.Text, "unexpected") {
++				t.Fatalf("unexpected terminal state: requests=%d, calls=%d", requests, calls.Load())
++			}
++		})
++	}
++}
