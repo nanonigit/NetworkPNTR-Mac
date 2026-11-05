@@ -195,7 +195,7 @@
 +}
 --- /dev/null
 +++ b/llm/openai_metadata_test.go
-@@ -0,0 +1,59 @@
+@@ -0,0 +1,75 @@
 +package llm
 +
 +import (
@@ -253,6 +253,22 @@
 +	}
 +	if (oaToolCall{}).thoughtSignature() != "" {
 +		t.Fatal("unsigned call acquired signature")
++	}
++}
++
++func TestManagedUnknownSignatureContextIsNotForwarded(t *testing.T) {
++	for _, base := range []string{"https://api.openai.com/v1", "https://api.groq.com/openai/v1", "https://custom.invalid/v1"} {
++		t.Run(base, func(t *testing.T) {
++			messages := []Message{{Role: RoleAssistant, Content: []ContentBlock{{Type: BlockToolUse, ID: "call", Name: "fixture", Input: json.RawMessage(`{}`), OpenAIThoughtSignature: "opaque-from-another-provider"}}}, {Role: RoleUser, Content: []ContentBlock{ToolResultText("call", "result", false)}}}
++			provider := openaiProvider{cfg: Config{Model: "fixture", BaseURL: base}}
++			body, err := provider.buildBody(CompletionRequest{Messages: messages}, false)
++			if err != nil {
++				t.Fatal(err)
++			}
++			if strings.Contains(string(body), "opaque-from-another-provider") {
++				t.Error("unbound signature forwarded to another provider")
++			}
++		})
 +	}
 +}
 --- a/llm/provider.go
