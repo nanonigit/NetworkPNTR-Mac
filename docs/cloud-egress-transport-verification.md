@@ -1,0 +1,9 @@
+# Direct cloud transport verification
+
+The Swift worker accepts only a generated provider request and an admitted numeric destination for the same hostname on port 443. The C transport pins that destination before opening a socket and checks its connected peer again before sending the header and body. It uses connect-only TLS, disables proxies and redirects, and closes its owned handles on failure, cancellation and completion. Custom sockets carry close-on-exec and no-SIGPIPE flags.
+
+The macOS loopback suite compiles the same C transport and a fixture-only trust-anchor entry. It transfers an exact POST body and streamed response, rejects the wrong hostname and an untrusted chain with zero HTTP bytes at the peer, closes a held handshake and a held response, rejects an oversized response, and observes zero connections to a configured proxy on direct failure. The Swift tests verify mismatched routing and cancellation before dialing. The [receipt](../evidence/llm/cloud-egress-transport-verification.json) records the inputs and local results.
+
+A missing-intermediate probe observed zero calls to a loopback issuer endpoint and zero provider bytes. This result is specific to that fixture. The macOS SecureTransport certificate evaluator has a separate fetch policy, and the libcurl socket callback does not control it. The broker activation gate requires explicit certificate-fetch control and a complete-chain positive control. [Apple trust documentation](https://developer.apple.com/documentation/security/sectrustsetnetworkfetchallowed%28_%3A_%3A%29)
+
+Reproduce the offline transport tests with `python3 -m unittest discover -s Tests/GuestArtifactTests -p test_cloud_egress_transport.py -v` and `swift test --filter CloudEgressTransportTests`. The VM listener, response framing, signed VM isolation and live API tests remain open. Lazyweb is outside this backend checkpoint. Hosted CI remains unverified.

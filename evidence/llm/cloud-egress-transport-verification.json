@@ -1,0 +1,36 @@
+{
+  "phase": "CP3-B1 direct TLS worker and loopback streaming verification",
+  "frozen_browser_commit": "e75ae371ad777ffd1eecdd28d2781a6519b05591",
+  "source_inputs_sha256": {
+    "Package.swift": "9280138789ffce7c434fa1054928e4f75c3edeb3772a687c56eb8b78dbb374f9",
+    "Sources/ArtexCloudTLS/ArtexCloudTLS.c": "f3d444ef741181b33471b009e096721308a4f183ff1f2788713566aea260691b",
+    "Sources/ArtexCloudTLS/include/ArtexCloudTLS.h": "03c406c095adea3d19352ec5978cabe41fa415dbaebb989718975e3090d60776",
+    "Sources/ArtexCore/CloudEgressTransport.swift": "06194b6847f158fe0de5b8c71d22ec4a7fadc73a657a0c553da0f05eef978e50",
+    "Tests/ArtexCoreTests/CloudEgressTransportTests.swift": "57dba9353d5335a37a63e87949903f7041c6787e857dfd37fa261537278b731c",
+    "Tests/GuestArtifactTests/fixtures/cloud_tls_client.c": "b5a29e30b5030d8fb77a2b08eb8d9d7ead03ee3b0caefbc83554e7887ac161a4",
+    "Tests/GuestArtifactTests/test_cloud_egress_transport.py": "c55b546adf23dfcdfde9dfe90bef5a0e21e959a5bba90d7f4a85af040ea2046e"
+  },
+  "local_checks": {
+    "swift_compile_red_sha256": "4dee1caa53fb7d52ecc24f9d2f83af4306876bb57c8b9ecc0caa1eeaf36de815",
+    "swift_tests_passed": 1034,
+    "swift_tests_skipped": 1,
+    "swift_tests_failed": 0,
+    "focused_swift_tests_passed": 2,
+    "python_tests_passed": 189,
+    "loopback_tls_tests_passed": 6,
+    "loopback_tls_log_sha256": "04eda948826c964a16acd64d53d88b23769289836d802cb203c89cfccf42b7cb",
+    "clang_analyzer_diagnostics": 0,
+    "release_built": true,
+    "release_system_library": "/usr/lib/libcurl.4.dylib",
+    "test_trust_anchor_symbol_excluded_from_production_object": true
+  },
+  "loopback_missing_intermediate": {
+    "issuer_connections": 0,
+    "provider_request_bytes": 0,
+    "fixture_log_sha256": "663033ea7e8c18051c077ca57c54743e0a68e6dd72bb2896cbe471fee76851c9",
+    "explicit_system_certificate_fetch_control_verified": false
+  },
+  "production_vm_egress_listener_enabled": false,
+  "live_api_requests_sent": 0,
+  "hosted_ci_verified": false
+}
