@@ -1,0 +1,161 @@
+{
+  "phase": "CP2 signed history replay through normal chat API across dedicated VM reboot",
+  "source_commit": "9b5a3c36b5b2db5e912a731f8a1582f62a0816a9",
+  "candidate_manifest": {
+    "architecture": "arm64",
+    "kernel": "Image",
+    "initramfs": "initramfs.cpio.gz",
+    "systemDisk": "system.ext4",
+    "sourceCommit": "e75ae371ad777ffd1eecdd28d2781a6519b05591",
+    "backendImage": "sha256:998d694fa51fa016012653f7cf545befc7dbe867267ae2c0f89d806364492589",
+    "backendSHA256": "0455fb4255796a6c1ba1dc5545cbdbb39f722492ca6e48775f8ce8ff7b16e6bf",
+    "packageLockSHA256": "619e4e6c33cc2a1e2fce48e28ac138cd2020fbfc74d5c71b6500a6eec8c9a5aa",
+    "networkDevices": 0,
+    "hostShares": 0,
+    "kernelSHA256": "8e57308787c420cb42e4c4ea80e6def6438a52232692c010dc4609bb9bf21879",
+    "initramfsSHA256": "88de8582409a9ad861a69035f056e65953b36803fbc77b391e0a9deb77e335ba",
+    "systemDiskSHA256": "f637283d6c97475e690b8621ec0635999b0fd530ee834c1174e5385c5f5b162d",
+    "bootMode": "rootDisk",
+    "cpuCount": 1,
+    "kernelPackage": {
+      "source": {
+        "url": "https://cdn.kernel.org/pub/linux/kernel/v6.x/linux-6.12.114.tar.xz",
+        "sha256": "7a8589912bd7a8adb07fed074283652cf482a35facef8954554654f0154b4af3",
+        "maximum_bytes": 268435456
+      },
+      "configuration": {
+        "url": "https://raw.githubusercontent.com/linuxkit/linuxkit/f935f6b18cad69f08c1830b432d7dab90bf67614/kernel/6.12.x/config-aarch64",
+        "sha256": "53280e08ae286156a31049c90ab8b2077db93c0366a8a9e6bb4b3fa7c02f65fe",
+        "maximum_bytes": 1048576
+      },
+      "recipeSHA256": "43bb1338577b1a68723ac9ca750abed1df5e93e1598b588f72cf6e6d5f69dcca"
+    },
+    "guestRuntimeImage": "sha256:53bc434a32db4cd331be0a9cc898505c7030fdd86bdde6ceb275ccd562845457",
+    "guestRuntimeSourceCommit": "b2482453b70a08b246cf72a3569476ab597393cf",
+    "guestRuntimeRecipeSHA256": "c0b2cac340199e72c6b73444b201ceba71d26ccad05d2e4496e9b9e3d2bbd419",
+    "guestRuntimeParentImage": "sha256:ec1876790d163c39a741ae8c4af9b3cbce3553d57c5bcfa4fa48280da897787b",
+    "guestRuntimeSourceSHA256": {
+      "Dockerfile.guest": "c0b2cac340199e72c6b73444b201ceba71d26ccad05d2e4496e9b9e3d2bbd419",
+      "backend-init": "6ac66456e6124c1f7ace0803dfb4f7c8c869cdf5a7478cd8c0374723f01e9d17",
+      "artex": "0455fb4255796a6c1ba1dc5545cbdbb39f722492ca6e48775f8ce8ff7b16e6bf",
+      "cloud_history_fixture.py": "f3342e49812e5f1b6c6cb5aa8fe5bd3b3a7f49775f3eb5be1055377f6cf8a3ae"
+    },
+    "captureListener": "127.0.0.1:8788",
+    "guestRuntimeParentProfileManifestSHA256": "990a24a4680bafd6ceeb441d48a6a189f2a6f6201cfd7241a66b5dc69ea7a7c1",
+    "guestRuntimeInheritedSourceSHA256": {
+      "backend.Dockerfile": "bc2553a80922c4893a8b0fd5a8206197aee10b4d8ebe6ca9d7afd05d5109a104",
+      "backend-init": "890142e11d08d7f58763a33da0e675dd70a36a6ab2e207eab0179d7c558301ac",
+      "vsock_relay.py": "4995c4551fac64e15d0be14f211689937edbab3d91e72abc373b81558fd1f1d2",
+      "check_blank_disk.py": "cc1776fae8120feca24d11dbf0ad94143715572f1d5e398898ca6607aa993b1d",
+      "check_network.py": "4bc167e71c655d31eda1872f11ad4b8a90b201994834a63c82194a3fa317ee2e",
+      "summarize_failure.py": "a68c74cd4a84447a9b6b5531e3ef3e31b5d372d9c6175cc6f72379af3047124d",
+      "backend-packages.lock": "619e4e6c33cc2a1e2fce48e28ac138cd2020fbfc74d5c71b6500a6eec8c9a5aa"
+    },
+    "managedBackend": {
+      "buildVersion": "artex-mac-e75ae371-cloud2",
+      "binarySHA256": "0455fb4255796a6c1ba1dc5545cbdbb39f722492ca6e48775f8ce8ff7b16e6bf",
+      "platform": "linux/arm64",
+      "deployed": false
+    },
+    "managedCapabilities": [
+      "traffic-blob-metadata-v1",
+      "regular-source-blob-stream-v1",
+      "cloud-tool-history-v1",
+      "cloud-history-reboot-fixture-v1"
+    ],
+    "cloudHistoryFixtureListener": "127.0.0.1:8791"
+  },
+  "signed_probe_sha256": "b920a6df88c7ddd508bd6a2bee026a40df23254d67d7af396433038aa04d76bf",
+  "runtime": {
+    "exit_code": 0,
+    "seconds": 20.153
+  },
+  "report": {
+    "boots": [
+      {
+        "backendVersion": "artex-mac-e75ae371-cloud2",
+        "cooperativeStop": true,
+        "credentialsAbsent": true,
+        "fixtureRequests": 2,
+        "formatted": true,
+        "generation": "AE8828B3-3146-4994-8FE0-0A558C2F4FD1",
+        "history": {
+          "firstReplySequence": 4,
+          "toolResultSequence": 3,
+          "toolUseSequence": 2
+        },
+        "isolationVerified": true,
+        "protectedStatus": 401
+      },
+      {
+        "backendVersion": "artex-mac-e75ae371-cloud2",
+        "cooperativeStop": true,
+        "credentialsAbsent": true,
+        "fixtureRequests": 1,
+        "formatted": false,
+        "generation": "10A607A8-C43E-4E16-81AB-C67F4A079DC4",
+        "history": {
+          "firstReplySequence": 4,
+          "resumedReplySequence": 6,
+          "toolResultSequence": 3,
+          "toolUseSequence": 2
+        },
+        "isolationVerified": true,
+        "protectedStatus": 401
+      }
+    ],
+    "conversationID": 1,
+    "machineStopped": true,
+    "manifestSHA256": "6e0b5a801093841923afdd42fb234383297037b6eb9af1426de1e0aad274f08e",
+    "passed": true,
+    "profileID": 1,
+    "stage": "complete"
+  },
+  "guards": {
+    "release_exit": 2,
+    "release_debug_implementation_absent": true,
+    "release_sha256": "5e09dcdcdc54195a61250a6e160876c457ea3ee93939d30f5704d75d45bfe87c",
+    "tampered_manifest_rejected": true,
+    "existing_output_preserved": true
+  },
+  "swift": {
+    "executed": 1028,
+    "passed": 1027,
+    "skipped": 1,
+    "failed": 0
+  },
+  "python_passed": 183,
+  "diagnostic_coverage": {
+    "lines_covered": 226,
+    "lines_total": 243,
+    "regions_covered": 125,
+    "regions_total": 151
+  },
+  "default_guest_manifest_sha256": "fa0f1972c04f2a04853de37f4fd163b922ac38c841849c635d29f565fe6115ce",
+  "mock_loopback_provider": true,
+  "live_cloud_verified": false,
+  "native_workflow_parity": "pending",
+  "hosted_ci": "unverified",
+  "sha256": {
+    ".build-cache/cloud-history-candidate-3a3e2e57c7ca4443b16b8285e720214c/artifacts/manifest.json": "6e0b5a801093841923afdd42fb234383297037b6eb9af1426de1e0aad274f08e",
+    ".build-cache/cloud-history-candidate-3a3e2e57c7ca4443b16b8285e720214c/build.log": "f0bcf7a94f1e6a36b21e5e3f6c9417174656cd88443b149050e2b4b6a8d9a1a1",
+    ".build-cache/cloud-history-candidate-3a3e2e57c7ca4443b16b8285e720214c/build-context/backend-init": "6ac66456e6124c1f7ace0803dfb4f7c8c869cdf5a7478cd8c0374723f01e9d17",
+    ".build-cache/cloud-history-vm-run-a3f87f819c2346f0a1dacbbf109ab30a/inputs.json": "055775f199c7f93378a518e8ee4165376fdce1198c3d147e71a7700949ce5d1b",
+    ".build-cache/cloud-history-vm-run-a3f87f819c2346f0a1dacbbf109ab30a/exit.json": "8310c564469305ff8e4fc1c2190de63623587c2b51c3a083acf3734ace6a3dfa",
+    ".build-cache/cloud-history-vm-run-a3f87f819c2346f0a1dacbbf109ab30a/guards.json": "ac5dbac2f2422ace1d8c8a1f104597059dd40a8dd12f6cf1a1428577584f983f",
+    ".build-cache/cloud-history-vm-run-a3f87f819c2346f0a1dacbbf109ab30a/coverage.txt": "ac5b1df883f4c971d7c89cf947d972f63c3e2b4bd7c6061c8e0e49da80d4ad55",
+    ".build-cache/cloud-history-vm-run-a3f87f819c2346f0a1dacbbf109ab30a/runtime.log": "9401f0abfb847ea8d01aa5df8778462b54e6fc559e1e92e83379e17cdd63d1ff",
+    ".build-cache/cloud-history-vm-run-a3f87f819c2346f0a1dacbbf109ab30a/result/cloud-history.json": "4b18c558a54a03c4ca5d6c361173f3983375773d1272ac4702469ed8a997a4e8",
+    "script/cloud_history_fixture.py": "f3342e49812e5f1b6c6cb5aa8fe5bd3b3a7f49775f3eb5be1055377f6cf8a3ae",
+    "Sources/VMProbe/CloudHistoryProbe.swift": "9b0f5f2bcfe40ed0caa48242ee17f66251c12d1eb090e6952cce19a0b9775518",
+    "Tests/VMProbeTests/CloudHistoryProbeTests.swift": "d7f568c51b264f826750548f3efcfa64e5df516b4c10740d5906b34d9d095d8e",
+    "Tests/GuestArtifactTests/test_cloud_history_fixture.py": "3bcb2ffeef2b26b4e9c77a574e5d0b41ebe34ab301d62bd32f41f4825946ab96",
+    ".build-cache/cloud-history-vm-verified-full.log": "d6f610d0fbc401e16cc1daf989a1bd5c7d03bebdab788c6fad6c65e9ec2ddba4",
+    ".build-cache/cloud-history-vm-release.log": "218803bf43575e894e56c12874cfe3ed543e7005505f2cd4a14d544f9201fa7a",
+    ".build-cache/cloud-history-vm-python.log": "bd8add9b6ebd49209158c93cd43f0cce8532d8a955ceb4bd17e2b94f522dd9fd",
+    ".build-cache/cloud-history-vm-result-red.log": "d6f82955c11c0be3c3a15cd3eb15cee816bfcc7c6333f4e6ce88a2c0a54fed5f",
+    ".build-cache/cloud-history-timeout-red.log": "bd78e440a3f6e7b5a78b880293b48d0ea4d2ed80eb1b96713d3a97344b40a53e",
+    ".build-cache/cloud-history-vm-run-a3f87f819c2346f0a1dacbbf109ab30a/result/boot-1/guest-4972BD22-501A-44FA-AFDA-EE4EA94CD950.log": "10bc215bfe11062ec3e85d622de7148b9757aa0272598828485d8d59ee279de9",
+    ".build-cache/cloud-history-vm-run-a3f87f819c2346f0a1dacbbf109ab30a/result/boot-2/guest-F69CB621-C9EB-4A39-8D67-B2349AE187AD.log": "11f7bd646ac2882da9372ef254a02437a472713c346fdea0939448812623a886"
+  }
+}
