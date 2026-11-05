@@ -22,6 +22,7 @@ final class LLMEndpointIdentityTests: XCTestCase {
 
     func testCustomEndpointsAndMismatchedFormatsAreNeverRelabeled() {
         let endpoints = [
+            "https://%61pi.groq.com/openai/v1", "https://api%2Egroq.com/openai/v1",
             "http://api.groq.com/openai/v1", "https://api.groq.com:8443/openai/v1",
             "https://api.groq.com.evil.invalid/openai/v1", "https://gateway.invalid/openai/v1",
             "https://api.groq.com/openai/v1?key=opaque", "https://api.groq.com/openai/v1#fragment",
