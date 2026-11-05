@@ -6,7 +6,7 @@
 
 全Swift試験1025件中1024件成功、既存外部AX試験1件スキップ、失敗0。Core637件、Mac345件（スキップ含む）、VMProbe43件。プリセット実装は13/13行、1/1関数を網羅。アプリ再ビルド／署名と隔離バックエンドHTTP試験結果は付属記録を参照。画面変更はなくLazywebは対象外。
 
-`Dockerfile.provider-tests` は固定ブラウザコミットを無視対象の専用作業領域へ展開し、Goの試験2ファイルだけを重ねる。固定チェックアウトは編集しない。固定Linux/arm64 Goイメージで依存取得・検証後、外部通信なしの `RUN --network=none` で試験する。実際の固定 `ConfigFrom`／`NewProvider`／`Stream` と `pgListModels` がループバックHTTPを送り、Geminiの `/v1beta/openai` とGroqの `/openai/v1` について正確なパス、合成Bearerキー、Anthropicヘッダー不在、モデル、streamフラグ、不要な既定項目の不在、応答復号を検査する。既存コードの互換性試験なので、REDを作る目的の本体変更は行わない。再現コマンドは英語版のPythonブロックを使用する。ホストは展開とDocker起動のみで、Goやアプリを直接実行しない。
+`Dockerfile.provider-tests` は固定ブラウザコミットを無視対象の専用作業領域へ展開し、Goの試験2ファイルだけを重ねる。固定チェックアウトは編集しない。固定Linux/arm64 Goイメージで依存取得・検証後、外部通信なしの `RUN --network=none` で試験する。実際の固定 `ConfigFrom`／`NewProvider`／`Stream` と `pgListModels` がループバックHTTPを送り、Geminiの `/v1beta/openai` とGroqの `/openai/v1` について正確なパス、合成Bearerキー、Anthropicヘッダー不在、モデル、streamフラグ、不要な既定項目の不在、応答復号を検査する。既存コードの互換性試験なので、REDを作る目的の本体変更は行わない。CP1bの記録は当時のもの。現行レシピは依存パッチと全関連試験も含むため、再現は[現在の検証手順](cloud-tool-history-verification.ja.md)を使用する。ホストは展開とDocker起動のみで、Goやアプリを直接実行しない。
 
 TLS、公式接続先への到達、JWT入口、実PostgreSQL保存、分割SSE、署名を保持するツール往復、実クラウド、画面の受け入れは未検証。CP1の能力／要求隔離、CP2–CP4、ブラウザ21操作、VM／カーネル／既定ゲスト昇格、調査ハーネス／リリースの条件は残る。Dockerは開発時の検証用であり、アプリ実行にDocker Desktopを要求する変更ではない。ホストCIは未検証で、公開時は `[skip ci]` を使用する。
 

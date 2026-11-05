@@ -10,6 +10,10 @@ COPY source/ ./
 RUN go mod edit -replace=github.com/Autumn-27/norma=/managed-norma
 COPY agent-extension/ ./agent/
 COPY server-extension/ ./server/
+COPY traffic-extension/ ./traffic/
+COPY managed.patch /tmp/managed.patch
+RUN git apply --check /tmp/managed.patch && git apply /tmp/managed.patch
 SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 RUN --network=none cd /managed-norma && GOMAXPROCS=2 go test -p 2 -mod=readonly ./llm -count=1 -json -coverprofile=/tmp/norma.cover | tee /tmp/norma-tests.json
-RUN --network=none GOMAXPROCS=2 go test -p 2 -mod=readonly ./agent ./server -run '^TestManagedCloudCompatibility' -count=1 -json | tee /tmp/cloud-provider-tests.json
+RUN --network=none GOMAXPROCS=2 go test -p 2 -mod=readonly ./traffic ./agent ./server -count=1 -json | tee /tmp/cloud-provider-tests.json
+RUN --network=none GOMAXPROCS=2 go build -p 2 -mod=readonly -trimpath -buildvcs=false -ldflags="-s -w -X main.version=artex-mac-e75ae371-cloud1" -o /out/artex ./cmd/artex

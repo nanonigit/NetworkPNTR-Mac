@@ -1,0 +1,70 @@
+{
+  "phase": "CP2 managed typed tool signatures and indexed inputs",
+  "checkpoints": {
+    "tool_history_red": "aa2a6bf",
+    "initial_green": "3fe4c64",
+    "cross_endpoint_red": "a7383ee",
+    "scoped_green": "cb77140"
+  },
+  "pinned_source": "e75ae371ad777ffd1eecdd28d2781a6519b05591",
+  "norma_version": "v0.4.3",
+  "norma_h1": "h1:DnmOhJPL6OZSMnCVYO5Ujh4yVINuDarEickVi9jx1hI=",
+  "original_module_cache_go_files_verified_unchanged": 24,
+  "managed_module_go_files_verified_exact": 26,
+  "docker_image_id": "sha256:d535a2ede98d928c004fb879e458f025755c0428ab64461b65ba62df460329a2",
+  "architecture_verified": "linux/arm64",
+  "backend_bytes": 29294754,
+  "backend_version_literal_verified": "artex-mac-e75ae371-cloud1",
+  "cgo_disabled_buildinfo_verified": true,
+  "managed_module_replacement_buildinfo_verified": true,
+  "go_test_and_subtest_events": {
+    "github.com/Autumn-27/norma/llm": {
+      "pass": 77
+    },
+    "github.com/Autumn-27/artex/traffic": {
+      "pass": 62
+    },
+    "github.com/Autumn-27/artex/agent": {
+      "skip": 14,
+      "pass": 74
+    },
+    "github.com/Autumn-27/artex/server": {
+      "skip": 102,
+      "pass": 314
+    }
+  },
+  "python_passed": 179,
+  "coverage": {
+    "new_metadata_helper_functions": 6,
+    "new_metadata_helper_statement_percent": 100,
+    "whole_llm_statement_percent": 74.2
+  },
+  "external_network_during_tests_or_backend_build": false,
+  "host_go_or_agent_execution": false,
+  "cloud_requests": false,
+  "tool_execution_in_new_fixtures": false,
+  "actual_database_transcript_persistence": false,
+  "actual_vm_runtime": false,
+  "native_ui_acceptance": false,
+  "CP2_complete": false,
+  "default_guest_promoted": false,
+  "default_guest_manifest_sha256": "fa0f1972c04f2a04853de37f4fd163b922ac38c841849c635d29f565fe6115ce",
+  "hosted_ci": "unverified",
+  "sha256": {
+    "guest/backend-extension/norma-tool-history.patch": "bb819a5c3d7923c440a3e23efa6f3bfbe4e6c48712915ca617edacdcecb3761a",
+    "guest/backend-extension/Dockerfile.provider-tests": "d5e399acff252850895b8610315906495921599a792f4c0e4e9934d1831e7b3c",
+    "guest/backend-extension/managed.patch": "e6366f9f4666b6ed1a9e8d995070d1a353a75cec5810094dd3b66e079d80dfe4",
+    "guest/backend-extension/agent/cloud_signature_test.go": "34a28a4a2f68a2c32acbc9d6755f13056311eaf6e7231b1c6c3a389a29bb1e68",
+    "guest/backend-extension/agent/cloud_compatibility_test.go": "5d7d32a3234ce7d86d942a76b6931801889e5014eb0a482e629565d13c87ba9b",
+    "guest/backend-extension/server/cloud_models_compatibility_test.go": "e84d828fa39f22eb42f128d03d5b2542636f91a05abe20980b0267bcc97576b5",
+    ".build-cache/cloud-signature-red.log": "75495bcbfe79884d596e55cec6bbc1d3ea3080e902735a846ec1008f3c18383b",
+    ".build-cache/cloud-signature-scope-red.log": "c97d98ca18ed9dc79a6fc92bd8ce52bb5171d553a239aa6a1dfbb53ac4fe4486",
+    ".build-cache/cloud-signature-scope-green.log": "f0534b4f77dc03622aad351729f96c844df9ac3ec6c73bb43e3737d029690a40",
+    ".build-cache/cloud-signature-full.log": "f18d14a11d417dbfdb975501172ada5cbff31fbc4bcd4b43d192929e9a548f80",
+    ".build-cache/cloud-tool-history-coverage.txt": "69a49ab99c40207be50ee4d34202536731debe44791b601ce5b163d1cc768e0d",
+    ".build-cache/cloud-tool-history-buildinfo.txt": "0abb296d621cfba6ac11388216659f50c04714b7b782b0fec3364d2e80828e78",
+    ".build-cache/cloud-tool-history-python.log": "fbf30c8d67577157bf3ad3306bf5e02ca4e182c794df1e5e875112d126fe583a",
+    ".build-cache/norma-baseline-retry.log": "6a51af60d8cfebe13b8791a738bd2c1dca6f194ac97ea9427b32c9440eb88328",
+    ".build-cache/managed-backend-cloud-v1/artex": "94ce92158f608d1b56b2e19a5e8f73e9eb596019f6fc0df96da1bd2891bedb56"
+  }
+}

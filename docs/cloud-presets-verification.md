@@ -8,23 +8,7 @@ Full Swift suite:1025 cases,1024 pass,one existing external AX skip,zero failure
 
 `Dockerfile.provider-tests` archives the pinned browser commit into an ignored private context and overlays only two Go test fixtures. The frozen checkout is not edited. The pinned Linux/arm64 Go image downloads/verifies dependencies before `RUN --network=none`; tests themselves run without external network access. The actual pinned `ConfigFrom`/`NewProvider`/`Stream` and `pgListModels` perform loopback HTTP requests for `/v1beta/openai` and `/openai/v1`, checking exact paths, synthetic bearer credentials, absent Anthropic header, opaque model, stream flag, omission of unsupported/default controls and successful response decoding. These fixtures verify existing code, so they require no artificial production change or manufactured RED.
 
-Reproduce from the repository root (host Python stages files and invokes Docker, no host Go/application execution):
-
-```python
-from pathlib import Path
-import io, shutil, subprocess, tarfile, tempfile
-root = Path.cwd()
-with tempfile.TemporaryDirectory(prefix='artex-cloud-contract-') as temp:
-    context = Path(temp)
-    (context / 'source').mkdir()
-    archive = subprocess.check_output(['git', '-C', '../artex-local/source', 'archive', 'e75ae371ad777ffd1eecdd28d2781a6519b05591'])
-    with tarfile.open(fileobj=io.BytesIO(archive)) as tree:
-        tree.extractall(context / 'source', filter='data')
-    shutil.copytree(root / 'guest/backend-extension/agent', context / 'agent-extension')
-    (context / 'server-extension').mkdir()
-    shutil.copy2(root / 'guest/backend-extension/server/cloud_models_compatibility_test.go', context / 'server-extension')
-    subprocess.run(['docker', 'build', '--progress=plain', '-f', str(root / 'guest/backend-extension/Dockerfile.provider-tests'), str(context)], check=True)
-```
+The CP1b fixture receipt is historical. The current recipe also applies the reviewed managed dependency patch and runs full package tests; follow [current reproduction instructions](cloud-tool-history-verification.md).
 
 No TLS, official-origin reachability, JWT ingress, actual PostgreSQL persistence, split-frame SSE, signature-preserving tool rounds, live cloud use or GUI acceptance is proven. CP1 capability/request-isolation contracts remain open, as do CP2–CP4, native/browser21, VM/kernel/default promotion and harness/release gates. Docker is development validation only; Docker Desktop is not added as an application runtime dependency. Hosted CI remains unverified; publication uses `[skip ci]`.
 
