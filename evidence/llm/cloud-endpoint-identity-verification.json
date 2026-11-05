@@ -1,0 +1,37 @@
+{
+  "phase": "CP1a descriptive endpoint identity foundation",
+  "production_commit": "d41623a",
+  "red_checkpoints": [
+    "be01b38",
+    "1740aad"
+  ],
+  "initial_green": "fce0f79",
+  "swift": {
+    "executed": 1023,
+    "passed": 1022,
+    "existing_ax_skipped": 1,
+    "failures": 0
+  },
+  "identity_coverage": {
+    "lines": 28,
+    "covered_lines": 27,
+    "functions": 5,
+    "covered_functions": 4
+  },
+  "strict_app_signature": true,
+  "app_launched": false,
+  "cloud_requests": false,
+  "ui_acceptance": false,
+  "CP1_complete": false,
+  "hosted_ci": "unverified",
+  "default_guest_manifest_sha256": "fa0f1972c04f2a04853de37f4fd163b922ac38c841849c635d29f565fe6115ce",
+  "sha256": {
+    "Sources/ArtexCore/LLMEndpointIdentity.swift": "16e7eb8a55f0ebd467506089ec62e3c28896aaee3e5045471b123db37af4df21",
+    "Tests/ArtexCoreTests/LLMEndpointIdentityTests.swift": "fd42f4f75849e07aa0003fb1800be5846baf3fb3ed80a7f2d47bc417b61fdbb5",
+    ".build-cache/cloud-identity-red.log": "23c975908c4c8d86b3e226b59cc6df67aab4ad46fd20867933fa5e508b125183",
+    ".build-cache/cloud-identity-green.log": "e72f995ef8aa708c969fd6ac031f8aeba5da94ecb2dcbcaf5ddf740be2f25823",
+    ".build-cache/cloud-identity-authority-red.log": "0bde2c8479c2d1b4f9169c4dc71a92538562ba19df3d900514c7428ae37a0cab",
+    ".build-cache/cloud-identity-full.log": "963584c13ea35ef4e51e2dcea306afc1999fa1c06db105cec20da4d452a6ffa4",
+    ".build-cache/cloud-identity-app.log": "2657583adf784eb96ca301edbaa78bba1ba8957e33583dda228c268064a5fe97"
+  }
+}

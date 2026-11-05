@@ -1,0 +1,11 @@
+# Cloud endpoint identity foundation (CP1a)
+
+This implements descriptive identity on existing `LLMProfile` and `LLMProfileDraft`, separating vendor identity from the persisted `LLMFormat`. It does not enable Gemini/Groq requests or finish CP1. Official compatibility base URLs were checked against [Gemini](https://ai.google.dev/gemini-api/docs/openai) and [Groq](https://console.groq.com/docs/openai). There are no fixed model promises, inferred tool capabilities or network permissions.
+
+The compile-time RED at be01b38 references the missing identity and profile/draft properties. Initial GREEN at fce0f79 passed 13 identity/model/service cases. Read-only review then identified Foundation's decoded host matching: two escaped-authority examples were wrongly classified as Groq. Checkpoint 1740aad reproduces both as runtime RED assertions. The fix rejects percent escapes in the encoded host before classification.
+
+Fixtures cover three default wire formats, official paths, whitespace, case/default port, custom gateway and suffix spoofing, incompatible format, plain HTTP, alternate port, credential/query/fragment presence, empty query/fragment, extra/escaped paths and unchanged edit/save wire fields. Derived identity is not encoded; existing API-key blank-update behavior remains. The value must never authorize egress or migrate/relabel a custom gateway. Read-only re-review found no further concrete blocker.
+
+Full Swift validation: 1023 cases, 1022 passed, one existing external AX skip, zero failures (Core635, Mac345 including the skip, VMProbe43). All three added identity cases pass. The identity file has 27/28 lines covered (96.43%) and 4/5 functions (80%). CP1 explicit selection/persistence/capability and guest request fixtures remain open; CP2 adapters/signatures, CP3 actual isolated cloud calls and CP4 UI/browser acceptance remain open. No UI was changed, so Lazyweb is out of scope. Frozen browser and default guest artifacts remain unchanged. Hosted CI remains unverified; publication uses `[skip ci]`.
+
+The app was rebuilt without launching; strict code-sign verification passed. The default guest manifest remains SHA-256 fa0f1972c04f2a04853de37f4fd163b922ac38c841849c635d29f565fe6115ce.
