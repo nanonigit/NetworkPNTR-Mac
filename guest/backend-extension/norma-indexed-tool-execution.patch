@@ -1,6 +1,6 @@
 --- /dev/null
 +++ b/harness/indexed_execution_test.go
-@@ -0,0 +1,159 @@
+@@ -0,0 +1,220 @@
 +package harness
 +
 +import (
@@ -156,6 +156,67 @@
 +			}
 +			if requests != 1 || calls.Load() != 0 || terminal == nil || terminal.Reason != expected || terminal.Err == nil || strings.Contains(terminal.Text, "unexpected") {
 +				t.Fatalf("unexpected terminal state: requests=%d, calls=%d", requests, calls.Load())
++			}
++		})
++	}
++}
++
++func TestManagedIndexedToolExecutionValidatesBatchBeforeLaunch(t *testing.T) {
++	for _, mode := range []string{"malformed later arguments", "duplicate identity", "missing identity", "cancel on tool event"} {
++		t.Run(mode, func(t *testing.T) {
++			first, second := 0, 1
++			laterID, laterInput := "later", `{}`
++			switch mode {
++			case "malformed later arguments":
++				laterInput = `{"value":`
++			case "duplicate identity":
++				laterID = "first"
++			case "missing identity":
++				laterID = ""
++			}
++			var calls, queued atomic.Int32
++			fixture := tool.Build(tool.Spec{
++				Name: "DefaultFixture", Schema: map[string]any{"type": "object"},
++				Concurrent: func(json.RawMessage) bool { queued.Add(1); return false },
++				Run: func(context.Context, json.RawMessage, *tool.ToolContext) (tool.Result, error) {
++					calls.Add(1)
++					return tool.Text("executed"), nil
++				},
++			})
++			events := []llm.StreamEvent{
++				{Type: llm.SEToolUseStart, ToolID: "first", ToolName: "DefaultFixture", ToolIndex: &first},
++				{Type: llm.SEToolInputJSON, Text: `{}`, ToolIndex: &first},
++				{Type: llm.SEToolUseStart, ToolID: laterID, ToolName: "DefaultFixture", ToolIndex: &second},
++				{Type: llm.SEToolInputJSON, Text: laterInput, ToolIndex: &second},
++				{Type: llm.SEMessageDelta, StopReason: "tool_use"},
++				{Type: llm.SEMessageStop},
++			}
++			model := &scriptedModel{turns: [][]llm.StreamEvent{events, textTurn("unexpected replay")}}
++			input := QueryInput{Messages: []llm.Message{llm.UserText("fixture")}, Tools: tool.NewRegistry(fixture), PermissionMode: permission.ModeBypass, WorkingDir: t.TempDir()}
++			ctx, cancel := context.WithCancel(t.Context())
++			defer cancel()
++			toolEvents := 0
++			var terminal *Terminal
++			for event, err := range Query(ctx, input, QueryDeps{CallModel: model.call}) {
++				if err != nil {
++					t.Fatal(err)
++				}
++				if event.Kind == KindToolUse {
++					toolEvents++
++					if mode == "cancel on tool event" {
++						cancel()
++					}
++				}
++				if event.Kind == KindResult {
++					terminal = event.Terminal
++				}
++			}
++			wantReason, wantEvents := ReasonModelError, 0
++			if mode == "cancel on tool event" {
++				wantReason, wantEvents = ReasonAbortedStreaming, 1
++			}
++			if model.calls != 1 || toolEvents != wantEvents || calls.Load() != 0 || queued.Load() != 0 || terminal == nil || terminal.Reason != wantReason {
++				t.Fatalf("batch admission changed: requests=%d tool-events=%d queued=%d runs=%d", model.calls, toolEvents, queued.Load(), calls.Load())
 +			}
 +		})
 +	}
