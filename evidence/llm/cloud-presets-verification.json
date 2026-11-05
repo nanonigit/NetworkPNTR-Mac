@@ -1,0 +1,52 @@
+{
+  "phase": "CP1b new-profile presets and pinned backend HTTP contracts",
+  "red_checkpoint": "844299b",
+  "green_checkpoint": "70a991f",
+  "swift": {
+    "executed": 1025,
+    "passed": 1024,
+    "existing_ax_skipped": 1,
+    "failures": 0
+  },
+  "python": {
+    "passed": 179
+  },
+  "preset_coverage": {
+    "lines": 13,
+    "covered_lines": 13,
+    "functions": 1,
+    "covered_functions": 1
+  },
+  "pinned_source": "e75ae371ad777ffd1eecdd28d2781a6519b05591",
+  "docker_image_id": "sha256:d5981978b4f050e005fc85ddbfc0bbabc28ce178050a6dc6aad9f9620f3f0af6",
+  "backend_contract_pass_events": [
+    "github.com/Autumn-27/artex/agent:TestManagedCloudCompatibilityTextStream/gemini",
+    "github.com/Autumn-27/artex/agent:TestManagedCloudCompatibilityTextStream/groq",
+    "github.com/Autumn-27/artex/agent:TestManagedCloudCompatibilityTextStream",
+    "github.com/Autumn-27/artex/server:TestManagedCloudCompatibilityModelDiscovery/gemini",
+    "github.com/Autumn-27/artex/server:TestManagedCloudCompatibilityModelDiscovery/groq",
+    "github.com/Autumn-27/artex/server:TestManagedCloudCompatibilityModelDiscovery"
+  ],
+  "external_network_during_go_tests": false,
+  "host_go_execution": false,
+  "actual_database_persistence": false,
+  "actual_cloud_requests": false,
+  "native_ui_acceptance": false,
+  "CP1_complete": false,
+  "strict_app_signature": true,
+  "app_launched": false,
+  "hosted_ci": "unverified",
+  "sha256": {
+    "Sources/ArtexCore/LLMCloudProvider.swift": "6e7944be79f6202d7b9217a1735afed59cb496722cd16ba45e2b5bc78605537d",
+    "Tests/ArtexCoreTests/LLMCloudPresetTests.swift": "39298e246d0455ce507e17855f4a2c342c32a311877df9efc8c5c85b30d32ff6",
+    "guest/backend-extension/agent/cloud_compatibility_test.go": "5d7d32a3234ce7d86d942a76b6931801889e5014eb0a482e629565d13c87ba9b",
+    "guest/backend-extension/server/cloud_models_compatibility_test.go": "e84d828fa39f22eb42f128d03d5b2542636f91a05abe20980b0267bcc97576b5",
+    "guest/backend-extension/Dockerfile.provider-tests": "a9a36921dc5c3e3c350fcdc1ad1632144e48d5cf77e6bee10b5f2350d9e299e0",
+    ".build-cache/cloud-presets-red.log": "1e6d5717753595c294f9c117d58ea7fe8aa52f0cfdcaa9dbb0d7801a6a0856ee",
+    ".build-cache/cloud-presets-green.log": "350e08d9a19e64bdac4d4f494ddfb0338b3a33a17fca9e0d8df78e0808b6d1bc",
+    ".build-cache/cloud-presets-full.log": "81d2689cc25c505f1b769b6d843cd9b753ad8484ceccd0124c70108146187c8e",
+    ".build-cache/cloud-presets-python.log": "4b25630a9ac173a531153ae35b098bfc2f2623e096d8562a5e41facdec507bcf",
+    ".build-cache/cloud-presets-app.log": "7a6edb50ef6c3ef16459896c5f493ccedac14846e0574cb7425fd0602f36dbd5",
+    ".build-cache/cloud-provider-http-final.log": "fbe5ed7413d86e4aa626251d7c3e002897ea0c4e143d69bfee9003c93ef4ef19"
+  }
+}

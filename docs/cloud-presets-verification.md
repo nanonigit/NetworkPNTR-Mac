@@ -1,0 +1,31 @@
+# Four-provider new-profile presets (CP1b)
+
+`LLMCloudProvider` explicitly offers OpenAI, Anthropic, Gemini and Groq. `LLMProfileDraft(provider:)` creates a new draft and assigns only the existing format and canonical base URL. It cannot inherit a profile ID, stored key, model, proxy, session header or retry override. Name/model remain required, streaming stays enabled, no model capabilities are asserted, and existing custom/profile editing is untouched. OpenAI Responses remains available through the original format control; its existing contract is not removed. A preset does not grant network access.
+
+The initial test setup attempted to reuse another file's private transport; that setup error was corrected before recording RED. Checkpoint844299b is the intended missing-provider/initializer compile RED. GREEN70a991f passes15 focused preset/identity/model/service cases. Tests exercise all four actual LLMService save and model-list encoders and reconstruct typed profiles from fixture responses with the same URL/format and a blank editor key. These are request/decoding fixtures, not actual database persistence. Read-only review found no blocker.
+
+Full Swift suite:1025 cases,1024 pass,one existing external AX skip,zero failures (Core637,Mac345 including skip,VMProbe43). Preset implementation13/13 lines,1/1 function covered. App rebuild/sign and isolated backend HTTP results are recorded in the companion receipt. No native UI changes; Lazyweb out of scope.
+
+`Dockerfile.provider-tests` archives the pinned browser commit into an ignored private context and overlays only two Go test fixtures. The frozen checkout is not edited. The pinned Linux/arm64 Go image downloads/verifies dependencies before `RUN --network=none`; tests themselves run without external network access. The actual pinned `ConfigFrom`/`NewProvider`/`Stream` and `pgListModels` perform loopback HTTP requests for `/v1beta/openai` and `/openai/v1`, checking exact paths, synthetic bearer credentials, absent Anthropic header, opaque model, stream flag, omission of unsupported/default controls and successful response decoding. These fixtures verify existing code, so they require no artificial production change or manufactured RED.
+
+Reproduce from the repository root (host Python stages files and invokes Docker, no host Go/application execution):
+
+```python
+from pathlib import Path
+import io, shutil, subprocess, tarfile, tempfile
+root = Path.cwd()
+with tempfile.TemporaryDirectory(prefix='artex-cloud-contract-') as temp:
+    context = Path(temp)
+    (context / 'source').mkdir()
+    archive = subprocess.check_output(['git', '-C', '../artex-local/source', 'archive', 'e75ae371ad777ffd1eecdd28d2781a6519b05591'])
+    with tarfile.open(fileobj=io.BytesIO(archive)) as tree:
+        tree.extractall(context / 'source', filter='data')
+    shutil.copytree(root / 'guest/backend-extension/agent', context / 'agent-extension')
+    (context / 'server-extension').mkdir()
+    shutil.copy2(root / 'guest/backend-extension/server/cloud_models_compatibility_test.go', context / 'server-extension')
+    subprocess.run(['docker', 'build', '--progress=plain', '-f', str(root / 'guest/backend-extension/Dockerfile.provider-tests'), str(context)], check=True)
+```
+
+No TLS, official-origin reachability, JWT ingress, actual PostgreSQL persistence, split-frame SSE, signature-preserving tool rounds, live cloud use or GUI acceptance is proven. CP1 capability/request-isolation contracts remain open, as do CP2–CP4, native/browser21, VM/kernel/default promotion and harness/release gates. Docker is development validation only; Docker Desktop is not added as an application runtime dependency. Hosted CI remains unverified; publication uses `[skip ci]`.
+
+Final checks: Python179 passed, app rebuilt and strict signature verified. Formatted Go sources exactly match the tested context; two parent tests and four provider subtests passed. The browser checkout remains clean at e75ae371.
