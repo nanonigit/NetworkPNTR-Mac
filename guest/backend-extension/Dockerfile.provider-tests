@@ -3,8 +3,13 @@ WORKDIR /src
 ENV GOTOOLCHAIN=local CGO_ENABLED=0
 COPY source/go.mod source/go.sum ./
 RUN go mod download && go mod verify
+COPY norma-tool-history.patch /tmp/norma-tool-history.patch
+RUN cp -a /go/pkg/mod/github.com/\!autumn-27/norma@v0.4.3 /managed-norma && chmod -R u+w /managed-norma \
+    && cd /managed-norma && git apply --check /tmp/norma-tool-history.patch && git apply /tmp/norma-tool-history.patch
 COPY source/ ./
+RUN go mod edit -replace=github.com/Autumn-27/norma=/managed-norma
 COPY agent-extension/ ./agent/
 COPY server-extension/ ./server/
 SHELL ["/bin/bash", "-o", "pipefail", "-c"]
+RUN --network=none cd /managed-norma && GOMAXPROCS=2 go test -p 2 -mod=readonly ./llm -count=1 -json -coverprofile=/tmp/norma.cover | tee /tmp/norma-tests.json
 RUN --network=none GOMAXPROCS=2 go test -p 2 -mod=readonly ./agent ./server -run '^TestManagedCloudCompatibility' -count=1 -json | tee /tmp/cloud-provider-tests.json

@@ -1,0 +1,297 @@
+--- a/llm/accumulate.go
++++ b/llm/accumulate.go
+@@ -10,13 +10,16 @@
+ // stream ends, Message returns the finished assistant turn (text, thinking, and
+ // tool_use blocks in arrival order).
+ type Accumulator struct {
+-	blocks     []ContentBlock
+-	toolInputs []*strings.Builder
+-	textBuf    *strings.Builder
+-	thinkBuf   *strings.Builder
+-	thinkSig   string // signature for the current thinking block
+-	StopReason string
+-	Usage      Usage
++	blocks                []ContentBlock
++	toolInputs            []*strings.Builder
++	toolBlockIndexes      []int
++	indexedTools          map[int]int
++	pendingToolSignatures map[int]string
++	textBuf               *strings.Builder
++	thinkBuf              *strings.Builder
++	thinkSig              string // signature for the current thinking block
++	StopReason            string
++	Usage                 Usage
+ }
+ 
+ // NewAccumulator returns an empty Accumulator.
+@@ -46,9 +49,29 @@
+ 		a.flushThinking()
+ 		a.blocks = append(a.blocks, ContentBlock{Type: BlockToolUse, ID: ev.ToolID, Name: ev.ToolName})
+ 		a.toolInputs = append(a.toolInputs, &strings.Builder{})
++		a.toolBlockIndexes = append(a.toolBlockIndexes, len(a.blocks)-1)
++		if ev.ToolIndex != nil {
++			if a.indexedTools == nil {
++				a.indexedTools = make(map[int]int)
++			}
++			a.indexedTools[*ev.ToolIndex] = len(a.toolInputs) - 1
++			if signature := a.pendingToolSignatures[*ev.ToolIndex]; signature != "" {
++				a.blocks[len(a.blocks)-1].OpenAIThoughtSignature = signature
++				delete(a.pendingToolSignatures, *ev.ToolIndex)
++			}
++		}
+ 	case SEToolInputJSON:
+-		if n := len(a.toolInputs); n > 0 {
+-			a.toolInputs[n-1].WriteString(ev.Text)
++		if position, ok := a.toolPosition(ev); ok {
++			a.toolInputs[position].WriteString(ev.Text)
++		}
++	case SEToolUseSignature:
++		if position, ok := a.toolPosition(ev); ok {
++			a.blocks[a.toolBlockIndexes[position]].OpenAIThoughtSignature = ev.Text
++		} else if ev.ToolIndex != nil {
++			if a.pendingToolSignatures == nil {
++				a.pendingToolSignatures = make(map[int]string)
++			}
++			a.pendingToolSignatures[*ev.ToolIndex] = ev.Text
+ 		}
+ 	case SEMessageDelta:
+ 		if ev.StopReason != "" {
+--- a/llm/anthropic.go
++++ b/llm/anthropic.go
+@@ -64,7 +64,7 @@
+ 	}
+ 	body := anthropicReq{
+ 		Model:         p.cfg.Model,
+-		Messages:      mergeAdjacentSameRole(filterThinkingBlocks(req.Messages, thinkingEnabled)),
++		Messages:      mergeAdjacentSameRole(filterThinkingBlocks(stripOpenAIThoughtSignatures(req.Messages), thinkingEnabled)),
+ 		MaxTokens:     maxTok,
+ 		Temperature:   req.Temperature,
+ 		StopSequences: req.Stop,
+--- a/llm/openai.go
++++ b/llm/openai.go
+@@ -21,10 +21,11 @@
+ }
+ 
+ type oaToolCall struct {
+-	ID       string `json:"id"`
+-	Type     string `json:"type"`
+-	Index    int    `json:"index,omitempty"`
+-	Function struct {
++	ExtraContent *oaExtraContent `json:"extra_content,omitempty"`
++	ID           string          `json:"id"`
++	Type         string          `json:"type"`
++	Index        int             `json:"index,omitempty"`
++	Function     struct {
+ 		Name      string `json:"name"`
+ 		Arguments string `json:"arguments"`
+ 	} `json:"function"`
+@@ -50,14 +51,14 @@
+ 	// MaxTokens and MaxCompletionTokens are mutually exclusive: buildBody fills
+ 	// exactly one of them per Config.MaxTokensField, and omitempty drops the
+ 	// other. Sending both would make OpenAI reject the request.
+-	MaxTokens           int      `json:"max_tokens,omitempty"`
+-	MaxCompletionTokens int      `json:"max_completion_tokens,omitempty"`
+-	Temperature         *float64 `json:"temperature,omitempty"`
+-	Stop            []string      `json:"stop,omitempty"`
+-	Thinking        *oaThinking   `json:"thinking,omitempty"`
+-	ReasoningEffort string        `json:"reasoning_effort,omitempty"`
+-	Stream          bool          `json:"stream"`
+-	StreamOptions   *oaStreamOpts `json:"stream_options,omitempty"`
++	MaxTokens           int           `json:"max_tokens,omitempty"`
++	MaxCompletionTokens int           `json:"max_completion_tokens,omitempty"`
++	Temperature         *float64      `json:"temperature,omitempty"`
++	Stop                []string      `json:"stop,omitempty"`
++	Thinking            *oaThinking   `json:"thinking,omitempty"`
++	ReasoningEffort     string        `json:"reasoning_effort,omitempty"`
++	Stream              bool          `json:"stream"`
++	StreamOptions       *oaStreamOpts `json:"stream_options,omitempty"`
+ }
+ 
+ type oaStreamOpts struct {
+@@ -90,6 +91,9 @@
+ 					reasoning.WriteString(b.Thinking)
+ 				case BlockToolUse:
+ 					tc := oaToolCall{ID: b.ID, Type: "function"}
++					if b.OpenAIThoughtSignature != "" {
++						tc.ExtraContent = &oaExtraContent{Google: oaGoogleContent{ThoughtSignature: b.OpenAIThoughtSignature}}
++					}
+ 					tc.Function.Name = b.Name
+ 					tc.Function.Arguments = string(b.Input)
+ 					if tc.Function.Arguments == "" {
+@@ -477,7 +481,7 @@
+ 		if strings.TrimSpace(in) == "" {
+ 			in = "{}"
+ 		}
+-		blocks = append(blocks, ContentBlock{Type: BlockToolUse, ID: tc.ID, Name: tc.Function.Name, Input: []byte(in)})
++		blocks = append(blocks, ContentBlock{Type: BlockToolUse, ID: tc.ID, Name: tc.Function.Name, Input: []byte(in), OpenAIThoughtSignature: tc.thoughtSignature()})
+ 	}
+ 	return Message{Role: RoleAssistant, Content: blocks}, mapOpenAIFinish(ch.FinishReason), usage, nil
+ }
+@@ -550,12 +554,16 @@
+ 		evs = append(evs, StreamEvent{Type: SETextDelta, Text: ch.Delta.Refusal})
+ 	}
+ 	for _, tc := range ch.Delta.ToolCalls {
++		index := tc.Index
+ 		if !started[tc.Index] && (tc.ID != "" || tc.Function.Name != "") {
+ 			started[tc.Index] = true
+-			evs = append(evs, StreamEvent{Type: SEToolUseStart, ToolID: tc.ID, ToolName: tc.Function.Name})
++			evs = append(evs, StreamEvent{Type: SEToolUseStart, ToolID: tc.ID, ToolName: tc.Function.Name, ToolIndex: &index})
++		}
++		if signature := tc.thoughtSignature(); signature != "" {
++			evs = append(evs, StreamEvent{Type: SEToolUseSignature, Text: signature, ToolIndex: &index})
+ 		}
+ 		if tc.Function.Arguments != "" {
+-			evs = append(evs, StreamEvent{Type: SEToolInputJSON, Text: tc.Function.Arguments})
++			evs = append(evs, StreamEvent{Type: SEToolInputJSON, Text: tc.Function.Arguments, ToolIndex: &index})
+ 		}
+ 	}
+ 	if ch.FinishReason != "" {
+--- /dev/null
++++ b/llm/openai_metadata.go
+@@ -0,0 +1,44 @@
++package llm
++
++// Only the documented tool signature is retained; arbitrary vendor fields are not replayed.
++type oaGoogleContent struct {
++	ThoughtSignature string `json:"thought_signature,omitempty"`
++}
++type oaExtraContent struct {
++	Google oaGoogleContent `json:"google"`
++}
++
++func (call oaToolCall) thoughtSignature() string {
++	if call.ExtraContent == nil {
++		return ""
++	}
++	return call.ExtraContent.Google.ThoughtSignature
++}
++
++func (a *Accumulator) toolPosition(ev StreamEvent) (int, bool) {
++	if ev.ToolIndex != nil {
++		position, ok := a.indexedTools[*ev.ToolIndex]
++		return position, ok
++	}
++	position := len(a.toolInputs) - 1
++	return position, position >= 0
++}
++
++// Copy recursively so changing wire adapters never mutates persisted history.
++func stripOpenAIThoughtSignatures(messages []Message) []Message {
++	out := append([]Message(nil), messages...)
++	for i := range out {
++		out[i].Content = stripOpenAIBlockSignatures(out[i].Content)
++	}
++	return out
++}
++func stripOpenAIBlockSignatures(blocks []ContentBlock) []ContentBlock {
++	out := append([]ContentBlock(nil), blocks...)
++	for i := range out {
++		out[i].OpenAIThoughtSignature = ""
++		if out[i].Content != nil {
++			out[i].Content = stripOpenAIBlockSignatures(out[i].Content)
++		}
++	}
++	return out
++}
+--- /dev/null
++++ b/llm/openai_metadata_test.go
+@@ -0,0 +1,59 @@
++package llm
++
++import (
++	"encoding/json"
++	"strings"
++	"testing"
++)
++
++func TestManagedToolIndexAndEarlySignature(t *testing.T) {
++	a := NewAccumulator()
++	zero, one := 0, 1
++	a.Add(StreamEvent{Type: SEToolUseSignature, ToolIndex: &one, Text: "opaque-second"})
++	a.Add(StreamEvent{Type: SEToolUseStart, ToolIndex: &zero, ToolID: "zero", ToolName: "fixture"})
++	a.Add(StreamEvent{Type: SEToolUseStart, ToolIndex: &one, ToolID: "one", ToolName: "fixture"})
++	a.Add(StreamEvent{Type: SEToolInputJSON, ToolIndex: &zero, Text: `{"first":`})
++	a.Add(StreamEvent{Type: SEToolInputJSON, ToolIndex: &one, Text: `{"second":2}`})
++	a.Add(StreamEvent{Type: SEToolInputJSON, ToolIndex: &zero, Text: `1}`})
++	a.Add(StreamEvent{Type: SEToolUseSignature, ToolIndex: &zero, Text: "opaque-first"})
++	calls := a.Message().ToolUses()
++	if len(calls) != 2 || string(calls[0].Input) != `{"first":1}` || string(calls[1].Input) != `{"second":2}` || calls[0].OpenAIThoughtSignature != "opaque-first" || calls[1].OpenAIThoughtSignature != "opaque-second" {
++		t.Fatal("indexed history changed")
++	}
++	// An event without a known tool must not change the most recent tool.
++	unknown := 99
++	a.Add(StreamEvent{Type: SEToolInputJSON, ToolIndex: &unknown, Text: "wrong"})
++	a.Add(StreamEvent{Type: SEToolUseSignature, ToolIndex: &unknown, Text: "wrong"})
++	if a.Message().ToolUses()[1].OpenAIThoughtSignature != "opaque-second" {
++		t.Fatal("foreign signature applied")
++	}
++}
++
++func TestManagedAnthropicDoesNotSendOpenAIMetadataOrMutateHistory(t *testing.T) {
++	messages := []Message{{Role: RoleAssistant, Content: []ContentBlock{
++		{Type: BlockThinking, Thinking: "thought", Signature: "anthropic-signature"},
++		{Type: BlockToolUse, ID: "call", Name: "fixture", Input: json.RawMessage(`{}`), OpenAIThoughtSignature: "opaque-openai"},
++	}}, {Role: RoleUser, Content: []ContentBlock{ToolResultText("call", "result", false)}}}
++	messages[1].Content[0].Content[0].OpenAIThoughtSignature = "nested-opaque"
++	before, _ := json.Marshal(messages)
++	provider := anthropicProvider{cfg: Config{Model: "fixture", ThinkingType: "enabled"}}
++	body, err := provider.buildBody(CompletionRequest{Messages: messages}, false)
++	if err != nil {
++		t.Fatal(err)
++	}
++	for _, forbidden := range []string{"openai_thought_signature", "opaque-openai", "nested-opaque"} {
++		if strings.Contains(string(body), forbidden) {
++			t.Fatal("OpenAI metadata leaked to Anthropic")
++		}
++	}
++	if !strings.Contains(string(body), "anthropic-signature") {
++		t.Fatal("Anthropic signature lost")
++	}
++	after, _ := json.Marshal(messages)
++	if string(before) != string(after) {
++		t.Fatal("input history mutated")
++	}
++	if (oaToolCall{}).thoughtSignature() != "" {
++		t.Fatal("unsigned call acquired signature")
++	}
++}
+--- a/llm/provider.go
++++ b/llm/provider.go
+@@ -22,6 +22,7 @@
+ 	SEThinkingSignature StreamEventType = "thinking_signature"
+ 	SEToolUseStart      StreamEventType = "tool_use_start"
+ 	SEToolInputJSON     StreamEventType = "tool_input_delta"
++	SEToolUseSignature  StreamEventType = "tool_thought_signature"
+ 	SEMessageDelta      StreamEventType = "message_delta" // carries stop_reason / usage
+ 	SEMessageStop       StreamEventType = "message_stop"
+ )
+@@ -32,6 +33,7 @@
+ 	Text       string // text/thinking/tool_input JSON fragment
+ 	ToolID     string // tool_use_start
+ 	ToolName   string // tool_use_start
++	ToolIndex  *int   // OpenAI tool index; nil retains legacy sequential events
+ 	StopReason string // message_delta
+ 	Usage      Usage  // message_start / message_delta
+ }
+--- a/llm/retry_config_test.go
++++ b/llm/retry_config_test.go
+@@ -71,7 +71,7 @@
+ 	defer srv.Close()
+ 	cfg := Config{
+ 		Format: FormatOpenAI, BaseURL: srv.URL, APIKey: "k", Model: "m",
+-		MaxRetries: 1, RetryInterval: time.Millisecond,
++		MaxRetries: 1, RetryInterval: time.Millisecond, HTTPClient: srv.Client(),
+ 	}
+ 	if _, err := doStream(context.Background(), cfg, srv.URL, []byte(`{}`), func(*http.Request) {}, "openai"); err == nil {
+ 		t.Fatal("want error after retries are exhausted")
+--- a/llm/types.go
++++ b/llm/types.go
+@@ -45,6 +45,8 @@
+ 	ID    string          `json:"id,omitempty"`
+ 	Name  string          `json:"name,omitempty"`
+ 	Input json.RawMessage `json:"input,omitempty"`
++	// OpenAI-compatible tool metadata retained in normalized persisted history.
++	OpenAIThoughtSignature string `json:"openai_thought_signature,omitempty"`
+ 
+ 	// ToolResult: the outcome of a tool, fed back to the model.
+ 	ToolUseID string         `json:"tool_use_id,omitempty"`
