@@ -1,4 +1,8 @@
 import copy
+import http.client
+import socket
+import threading
+from http.server import HTTPServer
 import sys
 import unittest
 from pathlib import Path
@@ -45,3 +49,35 @@ class CloudHistoryFixtureTests(unittest.TestCase):
         reminder['content'] += '\nextra'
         with self.assertRaises(ValueError):
             fixture.validate_messages([reminder, self.initial], 'first', 1, None)
+
+    def test_partial_request_releases_the_fixture_for_readiness(self):
+        accepted = threading.Event()
+
+        class WitnessServer(HTTPServer):
+            def get_request(self):
+                request = super().get_request()
+                accepted.set()
+                return request
+
+        with WitnessServer(('127.0.0.1', 0), fixture.Handler) as server:
+            server.phase = 'first'
+            server.requests = 0
+            worker = threading.Thread(target=server.serve_forever, kwargs={'poll_interval': 0.05}, daemon=True)
+            worker.start()
+            address = server.server_address
+            try:
+                with socket.create_connection(address, timeout=2) as partial:
+                    partial.sendall(b'POST /v1beta/openai/chat/completions HTTP/1.1\r\nHost: localhost\r\n'
+                                    b'Authorization: Bearer ' + fixture.KEY.encode() + b'\r\nContent-Length: 20\r\n\r\n{')
+                    self.assertTrue(accepted.wait(2))
+                    client = http.client.HTTPConnection(*address, timeout=3)
+                    try:
+                        client.request('GET', '/ready')
+                        reply = client.getresponse()
+                        self.assertEqual(reply.status, 200)
+                        self.assertEqual(reply.read(), b'fixture')
+                    finally:
+                        client.close()
+            finally:
+                server.shutdown()
+                worker.join(2)
