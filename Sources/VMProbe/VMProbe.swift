@@ -5,6 +5,7 @@ import Foundation
     @MainActor static func main() async {
         let args = CommandLine.arguments
         guard args.count >= 3 else { FileHandle.standardError.write(Data("Usage: VMProbe guest-artifacts log-directory\n".utf8)); exit(2) }
+        if args[1] == "--cloud-profiles" { await CloudProfileProbe.run(Array(args.dropFirst(2))); return }
         if args[1] == "--captured-blob" { await CapturedProbe.run(Array(args.dropFirst(2)), sourceBlobs: true); return }
         if args[1] == "--captured" { await CapturedProbe.run(Array(args.dropFirst(2))); return }
         if args[1] == "--findings" { await FindingProbe.run(Array(args.dropFirst(2))); return }
