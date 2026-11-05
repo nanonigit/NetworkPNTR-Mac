@@ -160,3 +160,93 @@
 +		})
 +	}
 +}
+--- a/harness/query.go
++++ b/harness/query.go
+@@ -799,6 +799,16 @@
+ 	var building bool
+ 	var curID, curName string
+ 	var curInput strings.Builder
++	var bufferedToolPositions []int
++	toolStarts := 0
++	streamStopped := false
++	dispatchTool := func(block llm.ContentBlock) bool {
++		if !l.emit(Event{Kind: KindToolUse, ToolUse: &block}) {
++			return false
++		}
++		exec.add(block)
++		return exec.drain()
++	}
+ 	finalizeTool := func() bool { // false = consumer stopped
+ 		if !building {
+ 			return true
+@@ -810,11 +820,7 @@
+ 			raw = "{}"
+ 		}
+ 		block := llm.ContentBlock{Type: llm.BlockToolUse, ID: curID, Name: curName, Input: []byte(raw)}
+-		if !l.emit(Event{Kind: KindToolUse, ToolUse: &block}) {
+-			return false
+-		}
+-		exec.add(block)
+-		return exec.drain()
++		return dispatchTool(block)
+ 	}
+ 
+ 	for ev, e := range l.deps.CallModel(l.ctx, req) {
+@@ -822,8 +828,23 @@
+ 			err = e
+ 			break
+ 		}
++		if ev.Type == llm.SEToolUseStart {
++			position := toolStarts
++			toolStarts++
++			if ev.ToolIndex != nil {
++				// Indexed arguments can be interleaved. The history accumulator
++				// owns their assembly until the provider completes the stream.
++				bufferedToolPositions = append(bufferedToolPositions, position)
++				acc.Add(ev)
++				continue
++			}
++		}
++		if ev.Type == llm.SEToolUseSignature {
++			acc.Add(ev)
++			continue
++		}
+ 		if ev.Type == llm.SEToolInputJSON {
+-			if building {
++			if ev.ToolIndex == nil && building {
+ 				curInput.WriteString(ev.Text)
+ 			}
+ 			acc.Add(ev)
+@@ -843,6 +864,8 @@
+ 			}
+ 		case llm.SEToolUseStart:
+ 			curID, curName, building = ev.ToolID, ev.ToolName, true
++		case llm.SEMessageStop:
++			streamStopped = true
+ 		}
+ 		acc.Add(ev)
+ 	}
+@@ -854,6 +877,23 @@
+ 	stopReason = acc.StopReason
+ 	if err != nil {
+ 		return asst, exec, stopReason, err, false, false
++	}
++	if len(bufferedToolPositions) > 0 {
++		if err := l.ctx.Err(); err != nil {
++			return asst, exec, stopReason, err, false, false
++		}
++		if !streamStopped || (stopReason != "tool_use" && stopReason != "end_turn") {
++			return asst, exec, stopReason, fmt.Errorf("indexed tool stream ended before completion"), false, false
++		}
++		completedTools := asst.ToolUses()
++		for _, position := range bufferedToolPositions {
++			if err := l.ctx.Err(); err != nil {
++				return asst, exec, stopReason, err, false, false
++			}
++			if !dispatchTool(completedTools[position]) {
++				return asst, exec, stopReason, nil, true, false
++			}
++		}
+ 	}
+ 	// Drain tools to completion (or synthesize on abort).
+ 	cs, ab := exec.finish()
