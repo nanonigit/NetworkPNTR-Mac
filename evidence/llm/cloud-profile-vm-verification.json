@@ -1,0 +1,176 @@
+{
+  "phase": "CP1b actual profile persistence on managed cloud1 candidate",
+  "source_commit": "55e77710049c0864fe441bb444b411f4e64a32aa",
+  "checkpoint_commits": [
+    "7982765",
+    "8c6d84d",
+    "0ff8e9e",
+    "55e7771"
+  ],
+  "frozen_browser_commit": "e75ae371ad777ffd1eecdd28d2781a6519b05591",
+  "browser_inventory": {
+    "features": 21,
+    "routes": 27,
+    "handlers": 243,
+    "native_workflow_parity": "pending"
+  },
+  "candidate": {
+    "architecture": "arm64",
+    "bootMode": "rootDisk",
+    "cpuCount": 1,
+    "networkDevices": 0,
+    "hostShares": 0,
+    "kernelSHA256": "8e57308787c420cb42e4c4ea80e6def6438a52232692c010dc4609bb9bf21879",
+    "initramfsSHA256": "88de8582409a9ad861a69035f056e65953b36803fbc77b391e0a9deb77e335ba",
+    "systemDiskSHA256": "69e98a7f678860ab72e79a62c99d197c46d87d56b0d2b41b04c8b6fb6cef4262",
+    "backendSHA256": "94ce92158f608d1b56b2e19a5e8f73e9eb596019f6fc0df96da1bd2891bedb56",
+    "guestRuntimeImage": "sha256:ec1876790d163c39a741ae8c4af9b3cbce3553d57c5bcfa4fa48280da897787b",
+    "guestRuntimeParentImage": "sha256:ddb0e8199eef286ea63b89ea9d170b20ea9b85462e0467a19fe7cac8dbd7ba22",
+    "guestRuntimeParentProfileManifestSHA256": "83628454bcb2a7d4e66b3445ec1d1fd81c69926ac0eee17d06b99c0ba1931254",
+    "guestRuntimeSourceSHA256": {
+      "Dockerfile.guest": "c0b2cac340199e72c6b73444b201ceba71d26ccad05d2e4496e9b9e3d2bbd419",
+      "backend-init": "890142e11d08d7f58763a33da0e675dd70a36a6ab2e207eab0179d7c558301ac",
+      "artex": "94ce92158f608d1b56b2e19a5e8f73e9eb596019f6fc0df96da1bd2891bedb56"
+    },
+    "managedBackend": {
+      "buildVersion": "artex-mac-e75ae371-cloud1",
+      "binarySHA256": "94ce92158f608d1b56b2e19a5e8f73e9eb596019f6fc0df96da1bd2891bedb56",
+      "binaryBytes": 29294754,
+      "containerImage": "sha256:d535a2ede98d928c004fb879e458f025755c0428ab64461b65ba62df460329a2",
+      "platform": "linux/arm64",
+      "deployed": false,
+      "normaPatchSHA256": "bb819a5c3d7923c440a3e23efa6f3bfbe4e6c48712915ca617edacdcecb3761a"
+    }
+  },
+  "candidate_manifest_sha256": "990a24a4680bafd6ceeb441d48a6a189f2a6f6201cfd7241a66b5dc69ea7a7c1",
+  "signed_debug_probe_sha256": "493cbc99c7d74d026250d91bb850cac4da6dd9010ac58a8b6d6615d7ce8ab8e1",
+  "strict_probe_signature_verified": true,
+  "runtime": {
+    "exit_code": 0,
+    "seconds": 18.587
+  },
+  "report": {
+    "blankKeyHintPreserved": true,
+    "boots": [
+      {
+        "backendVersion": "artex-mac-e75ae371-cloud1",
+        "conversationCount": 0,
+        "cooperativeStop": true,
+        "credentialsAbsent": true,
+        "formatted": true,
+        "freshSetup": true,
+        "generation": "94C4C5D5-057F-4629-87F0-AD8D0A71B20A",
+        "isolationVerified": true,
+        "llmRecordCount": 0,
+        "protectedStatus": 401
+      },
+      {
+        "backendVersion": "artex-mac-e75ae371-cloud1",
+        "conversationCount": 0,
+        "cooperativeStop": true,
+        "credentialsAbsent": true,
+        "formatted": false,
+        "freshSetup": false,
+        "generation": "05BD41CC-CA92-4367-9922-DA1BDFD51B18",
+        "isolationVerified": true,
+        "llmRecordCount": 0,
+        "protectedStatus": 401
+      }
+    ],
+    "machineStopped": true,
+    "manifestSHA256": "990a24a4680bafd6ceeb441d48a6a189f2a6f6201cfd7241a66b5dc69ea7a7c1",
+    "passed": true,
+    "persistedAfterRestart": true,
+    "rows": [
+      {
+        "baseURL": "https://api.openai.com/v1",
+        "format": "openai",
+        "id": 1,
+        "model": "fixture-no-cloud-request",
+        "name": "Fixture openai",
+        "provider": "openai",
+        "streaming": true
+      },
+      {
+        "baseURL": "https://api.anthropic.com",
+        "format": "anthropic",
+        "id": 2,
+        "model": "fixture-no-cloud-request",
+        "name": "Fixture anthropic",
+        "provider": "anthropic",
+        "streaming": true
+      },
+      {
+        "baseURL": "https://generativelanguage.googleapis.com/v1beta/openai/",
+        "format": "openai",
+        "id": 3,
+        "model": "fixture-no-cloud-request",
+        "name": "Fixture gemini edited",
+        "provider": "gemini",
+        "streaming": true
+      },
+      {
+        "baseURL": "https://api.groq.com/openai/v1",
+        "format": "openai",
+        "id": 4,
+        "model": "fixture-no-cloud-request",
+        "name": "Fixture groq",
+        "provider": "groq",
+        "streaming": false
+      }
+    ],
+    "stage": "complete"
+  },
+  "state_disk_bytes": 2147483648,
+  "actual_profile_database_persistence": true,
+  "credential_witness": "exact masked suffix, raw API-key response absence, boot-log credential absence",
+  "full_stored_key_bytes_verified": false,
+  "task_tool_history_persistence_verified": false,
+  "cloud_calls_exercised": false,
+  "native_ui_acceptance": false,
+  "default_guest_manifest_sha256": "fa0f1972c04f2a04853de37f4fd163b922ac38c841849c635d29f565fe6115ce",
+  "default_guest_promoted": false,
+  "swift": {
+    "executed": 1027,
+    "passed": 1026,
+    "existing_ax_skipped": 1,
+    "failures": 0
+  },
+  "python_passed": 179,
+  "diagnostic_combined_coverage": {
+    "covered_lines": 216,
+    "lines": 233,
+    "covered_regions": 115,
+    "regions": 141
+  },
+  "guards": {
+    "release_mode_rejected_exit": 2,
+    "release_debug_implementation_absent": true,
+    "changed_manifest_rejected_before_output": true,
+    "existing_output_rejected_without_changes": true,
+    "release_probe_sha256": "0ad30a4d6eb89baf2ae480437933b012428e85c7f785ea8926e43c4a93240d3a"
+  },
+  "hosted_ci": "unverified",
+  "sha256": {
+    "Sources/VMProbe/CloudProfileProbe.swift": "e047af8433e61650c45d16ee58c8a22d7af0eb8b87bc265f0a8b5cc33510cbdb",
+    "Sources/VMProbe/VMProbe.swift": "4167c56c0a154b05df21539c1fb337d6641c077d38e739672abe893f525f2626",
+    "Tests/VMProbeTests/CloudProfileProbeTests.swift": "903474be42ceafa3480a1e3edb487eda74f0647e83581dd9312db59163a27966",
+    "guest/backend-extension/Dockerfile.guest": "c0b2cac340199e72c6b73444b201ceba71d26ccad05d2e4496e9b9e3d2bbd419",
+    ".build-cache/cloud-profile-candidate-1825a317c54142a8b1b1f7ceb253ab55/artifacts/manifest.json": "990a24a4680bafd6ceeb441d48a6a189f2a6f6201cfd7241a66b5dc69ea7a7c1",
+    ".build-cache/cloud-profile-candidate-1825a317c54142a8b1b1f7ceb253ab55/build-final.log": "33cd71830be1c4bf483742af4b62224e7952efc3524f55e466173c1890b6635c",
+    ".build-cache/cloud-profile-vm-run-f0bab77a7b654ef08e0ec670275251c3/inputs.json": "da2607d9546b616db82f6afa902347195045b80f911112429783b7b32a750d41",
+    ".build-cache/cloud-profile-vm-run-f0bab77a7b654ef08e0ec670275251c3/exit.json": "4eff4a515ffa42340d441ccb55a6257354152f2b3609408cba2670672bae8b7b",
+    ".build-cache/cloud-profile-vm-run-f0bab77a7b654ef08e0ec670275251c3/result/cloud-profiles.json": "38d4ebf3570e9401da862c12db98a78631d509deb3e4cec91b66026bb5cebbbf",
+    ".build-cache/cloud-profile-vm-run-f0bab77a7b654ef08e0ec670275251c3/runtime.log": "36a1d8e83df4b85f75a9a3431d7f550e6b0f5d8634f48fee55f34429b9002098",
+    ".build-cache/cloud-profile-vm-run-f0bab77a7b654ef08e0ec670275251c3/coverage.txt": "72212ec4e98cb84dff4dd13c25f5e5225ef9e620791ee1f4b6ec35b7cf38b778",
+    ".build-cache/cloud-profile-vm-run-f0bab77a7b654ef08e0ec670275251c3/guard-checks.json": "359245017834ea0a56eadc7775861e6f729e19489cb51b2768627e5042e58948",
+    ".build-cache/cloud-profile-vm-red.log": "811f68faa3a76281a4884993eec7b38d43eb1ac9d66ada20b4c4f73e9b101f3f",
+    ".build-cache/cloud-profile-vm-binding-red.log": "cea729d427ff9b16d536bed784d246860967746b2451608e4eba716687feaa8b",
+    ".build-cache/cloud-profile-vm-binding-green.log": "e4e9e9d8edcf8fc16288f684a75679cb4e8a286ef4603a39776a0243674848f5",
+    ".build-cache/cloud-profile-vm-full.log": "3e6ef52397b728f26a8ceb0068953f57f5a0ca0a9e8fdaa3d65592c2bf06797b",
+    ".build-cache/cloud-profile-vm-release.log": "dce7ea525a73f2844b14a7ad9e40a731c74b9590de01257ed63fef62eb2c0b9c",
+    ".build-cache/cloud-profile-vm-python.log": "a2e000e26e7befa7b5698292d21ad2cf42934597b091ba5d9c4e1ba6ee7735c6",
+    ".build-cache/cloud-profile-vm-run-f0bab77a7b654ef08e0ec670275251c3/result/boot-1/guest-9C51D338-07AD-4674-85CE-F736E30BEFFD.log": "0eac62b024d1296c6886a8d148e54857a5877cfcbd48109ed18e4cc3bb49d7bd",
+    ".build-cache/cloud-profile-vm-run-f0bab77a7b654ef08e0ec670275251c3/result/boot-2/guest-CBD38194-227D-4753-A6C8-5A072ED78CEA.log": "2142f720be51c7ce9717d41ada02eb55a9862432127f3b69ff0c9d0d7753b18c"
+  }
+}
