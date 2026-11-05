@@ -1,0 +1,7 @@
+# Bind saved credentials before provider requests
+
+A saved API key may be reused only for the same wire format, base URL and configured proxy. Compare the complete target, including the base path, since custom gateways can host multiple tenants on one origin. Normalize only surrounding whitespace and trailing base URL slashes. Empty base URLs remain scoped to the stored format's default. An explicitly entered key authorizes the edited target.
+
+Model discovery and connection tests check the saved profile and target in one read before sending a request. Discovery with a saved key uses the base path and environment defaults of the completion format. The legacy parent-path fallback is available for explicit-key requests. An explicit profile ID with a missing or mismatched key never falls back to the global key. The legacy test and configuration paths may reuse the in-memory global key only for the matching target. Use the existing missing-key result for denied probes and a fixed error for rejected profile edits.
+
+For blank-key profile updates, lock the existing PostgreSQL row, compare the persisted target and key presence, and perform the update in the same transaction. An unkeyed profile may change target. Reject a keyed profile's target change without a newly supplied key. Test the stored row, actual provider HTTP handlers and zero outbound requests for rejected probes with PostgreSQL and loopback providers on an isolated network namespace.

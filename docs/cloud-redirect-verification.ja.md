@@ -6,6 +6,6 @@
 
 外部通信なしのLinux ARM64ビルドでは、SDK、traffic、agent、serverのGo試験とサブ試験が594件成功、既存116件スキップ、失敗0。うち5件が今回のリダイレクト試験。ゲスト成果物の試験は183件成功した。イメージ、本体、入力のダイジェストは[検証記録](../evidence/llm/cloud-redirect-verification.json)にまとめた。
 
-再現には[cloud2の検証](cloud-indexed-execution-verification.ja.md)と同じ固定ソースアーカイブとオーバーレイに、現行のプロバイダー試験用Dockerfileを使う。`guest/backend-extension/cloud-origin` を `origin-extension` として配置し、`provider-origin-redirect.patch` をビルドコンテキスト直下に置く。今回は検証済みcloud2ビルダーからGoのモジュールダウンロード用キャッシュだけを取り込み、`go mod download && go mod verify` で照合した。パッチ適用、試験、コンパイルを外部通信なしで実行した。固定ブラウザ版のチェックアウトが元のコミットでクリーンなことも確認した。
+再現には[cloud2の検証](cloud-indexed-execution-verification.ja.md)と同じ固定ソースアーカイブとオーバーレイに、コミット `7d44c0c` のプロバイダー試験用Dockerfileを使う。`guest/backend-extension/cloud-origin` を `origin-extension` として配置し、`provider-origin-redirect.patch` をビルドコンテキスト直下に置く。今回は検証済みcloud2ビルダーからGoのモジュールダウンロード用キャッシュだけを取り込み、`go mod download && go mod verify` で照合した。パッチ適用、試験、コンパイルを外部通信なしで実行した。固定ブラウザ版のチェックアウトが元のコミットでクリーンなことも確認した。
 
 今回の検証範囲は管理対象のHTTPクライアント。既定ゲストへの反映、VM全体の外向き通信制御、初回送信前に保存済みキーを接続先に結び付ける対策、4社の実API試験は残っている。画面変更を伴わないためLazywebは対象外。ホストCIは未検証。

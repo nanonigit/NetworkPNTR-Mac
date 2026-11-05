@@ -4,3 +4,4 @@ guest/backend-extension/managed.patch -whitespace
 guest/backend-extension/norma-tool-history.patch -whitespace
 guest/backend-extension/norma-indexed-tool-execution.patch -whitespace
 guest/backend-extension/provider-origin-redirect.patch -whitespace
+guest/backend-extension/provider-credential-target.patch -whitespace
