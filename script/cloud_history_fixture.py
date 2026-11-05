@@ -71,6 +71,8 @@ def stream_response(delta, reason):
 
 
 class Handler(BaseHTTPRequestHandler):
+    timeout = 1.0
+
     def log_message(self, *_args):
         pass
 
