@@ -1,0 +1,5 @@
+# Managed cloud redirect boundary
+
+CP3 needs separate controls at the VM egress boundary and at the credential-bearing HTTP client. Before opening VM egress, keep redirects on the original HTTP origin for both model discovery and provider completions. Origin compares scheme, hostname and effective port. Reject changes to any of those components and user information in the redirect URL. Preserve same-origin redirects and the existing ten-request redirect limit. The caller sees a rejected redirect as its original HTTP response.
+
+Test the real managed Go clients with two loopback HTTP servers. A second port on the same hostname must receive zero requests after a 307 for both discovery and completion. A same-origin relative redirect must still work with the original authentication. Include hostname, HTTPS downgrade, default port and user-info cases. Apply the patch only to the managed source archive. These checks cover credential forwarding on redirects. VM egress destination enforcement and live provider verification remain separate gates.
