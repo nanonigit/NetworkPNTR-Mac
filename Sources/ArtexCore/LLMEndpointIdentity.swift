@@ -10,7 +10,9 @@ public enum LLMEndpointIdentity: String, Equatable, Sendable {
         if value.isEmpty { return format == .anthropic ? .anthropic : .openAI }
         guard let url = URLComponents(string: value),
               url.scheme?.lowercased() == "https", url.user == nil, url.password == nil,
-              url.query == nil, url.fragment == nil, url.port == nil || url.port == 443 else {
+              url.query == nil, url.fragment == nil,
+              url.percentEncodedHost?.contains("%") == false,
+              url.port == nil || url.port == 443 else {
             return .custom
         }
         var path = url.percentEncodedPath
