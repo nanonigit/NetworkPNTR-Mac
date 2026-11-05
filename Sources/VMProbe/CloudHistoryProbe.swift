@@ -24,6 +24,7 @@ import Foundation
     private static let resumePrompt = "Continue the saved VM history fixture"
     private static let initialReply = "VM fixture tool result accepted"
     private static let resumeReply = "VM fixture saved history accepted"
+    private static let finalActivityKind = "result"
     private static let toolCallID = "call-vm-read-witness"
 
     struct History: Encodable, Equatable {
@@ -62,13 +63,13 @@ import Foundation
         guard !page.running, !page.hasMore, page.items.allSatisfy({ $0.isError != true }),
               uses.count == 1, results.count == 1, let use = uses.first, let result = results.first,
               use.tool == "Read", use.toolUseId == toolCallID, result.toolUseId == toolCallID,
-              let initial = one("user", initialPrompt), let first = one("text", initialReply),
+              let initial = one("user", initialPrompt), let first = one(finalActivityKind, initialReply),
               initial.seq < use.seq, use.seq < result.seq, result.seq < first.seq else {
             throw RuntimeError.integrity("cloud history activity")
         }
         var resumedReply: Int64?
         if resumed {
-            guard let user = one("user", resumePrompt), let reply = one("text", resumeReply),
+            guard let user = one("user", resumePrompt), let reply = one(finalActivityKind, resumeReply),
                   first.seq < user.seq, user.seq < reply.seq else { throw RuntimeError.integrity("cloud history resume activity") }
             resumedReply = reply.seq
         } else {
@@ -97,7 +98,7 @@ import Foundation
         for _ in 0..<200 {
             let page = try await chat.history(id: conversation)
             guard !page.items.contains(where: { $0.isError == true }) else { throw RuntimeError.integrity("cloud history tool or model error") }
-            if !page.running, page.items.contains(where: { $0.kind == "text" && $0.summary == expected }) {
+            if !page.running, page.items.contains(where: { $0.kind == finalActivityKind && $0.summary == expected }) {
                 return try verifyHistory(page, resumed: resumed)
             }
             try await Task.sleep(for: .milliseconds(100))
