@@ -4,8 +4,10 @@ ENV GOTOOLCHAIN=local CGO_ENABLED=0
 COPY source/go.mod source/go.sum ./
 RUN go mod download && go mod verify
 COPY norma-tool-history.patch /tmp/norma-tool-history.patch
+COPY norma-indexed-tool-execution.patch /tmp/norma-indexed-tool-execution.patch
 RUN cp -a /go/pkg/mod/github.com/\!autumn-27/norma@v0.4.3 /managed-norma && chmod -R u+w /managed-norma \
-    && cd /managed-norma && git apply --check /tmp/norma-tool-history.patch && git apply /tmp/norma-tool-history.patch
+    && cd /managed-norma && git apply --check /tmp/norma-tool-history.patch && git apply /tmp/norma-tool-history.patch \
+    && git apply --check /tmp/norma-indexed-tool-execution.patch && git apply /tmp/norma-indexed-tool-execution.patch
 COPY source/ ./
 RUN go mod edit -replace=github.com/Autumn-27/norma=/managed-norma
 COPY agent-extension/ ./agent/
@@ -14,6 +16,6 @@ COPY traffic-extension/ ./traffic/
 COPY managed.patch /tmp/managed.patch
 RUN git apply --check /tmp/managed.patch && git apply /tmp/managed.patch
 SHELL ["/bin/bash", "-o", "pipefail", "-c"]
-RUN --network=none cd /managed-norma && GOMAXPROCS=2 go test -p 2 -mod=readonly ./llm -count=1 -json -coverprofile=/tmp/norma.cover | tee /tmp/norma-tests.json
+RUN --network=none GOMAXPROCS=2 go test -p 2 -mod=readonly github.com/Autumn-27/norma/llm github.com/Autumn-27/norma/harness -count=1 -json -coverprofile=/tmp/norma.cover | tee /tmp/norma-tests.json
 RUN --network=none GOMAXPROCS=2 go test -p 2 -mod=readonly ./traffic ./agent ./server -count=1 -json | tee /tmp/cloud-provider-tests.json
-RUN --network=none GOMAXPROCS=2 go build -p 2 -mod=readonly -trimpath -buildvcs=false -ldflags="-s -w -X main.version=artex-mac-e75ae371-cloud1" -o /out/artex ./cmd/artex
+RUN --network=none GOMAXPROCS=2 go build -p 2 -mod=readonly -trimpath -buildvcs=false -ldflags="-s -w -X main.version=artex-mac-e75ae371-cloud2" -o /out/artex ./cmd/artex

@@ -1,5 +1,7 @@
 # Managed cloud tool history verification
 
+The cloud1 recipe below refers to repository checkpoint `89811d4`. The current builder advances the candidate to cloud2 and adds the indexed execution patch. Its current reproduction inputs are recorded in cloud-indexed-execution-verification.
+
 The managed norma v0.4.3 patch preserves typed tool signatures through Complete/Stream, indexed accumulation, normalized JSON reload and a second request. Decoder-stamped endpoint/model scope limits replay to its original context; unknown/different contexts are stripped on copies. Internal scope never goes upstream. Anthropic requests recursively strip both OpenAI fields without changing history or Anthropic thinking signatures. See cloud-tool-history-design and bugs/cloud-tool-history for contracts/RCA.
 
 Checkpoints: aa2a6bf runtime RED for lost signatures and interleaved inputs; 3fe4c64 GREEN. Independent review added cross-provider scope: a7383ee runtime RED, cb77140 GREEN. The unpatched SDK retry fixture also panics because it calls doStream with no HTTP client; baseline reproduction is recorded separately. Its test-only fix supplies srv.Client(), preserving production retry code. No failing test was disabled. The narrow .gitattributes exception applies only to literal unified-patch context prefixes.

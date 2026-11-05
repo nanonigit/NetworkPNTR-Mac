@@ -1,0 +1,84 @@
+{
+  "phase": "CP2 indexed tool execution and actual ChatAgent transcript process restart",
+  "checkpoints": {
+    "chat_stream_red": "0920bce",
+    "executor_red": "1db2758",
+    "initial_green": "1c2d095",
+    "batch_red": "c4209b5",
+    "batch_green": "c48ac4e",
+    "scheduler_red": "3e8aae8",
+    "final_green": "4b4c242"
+  },
+  "frozen_browser_commit": "e75ae371ad777ffd1eecdd28d2781a6519b05591",
+  "verified_source_archive_regular_files": 791,
+  "backend_version": "artex-mac-e75ae371-cloud2",
+  "builder_image": "sha256:998d694fa51fa016012653f7cf545befc7dbe867267ae2c0f89d806364492589",
+  "backend_binary_bytes": 29360290,
+  "backend_sha256": "0455fb4255796a6c1ba1dc5545cbdbb39f722492ca6e48775f8ce8ff7b16e6bf",
+  "platform": "linux/arm64",
+  "cgo_enabled": false,
+  "norma_version": "v0.4.3",
+  "go_test_and_subtest_events": {
+    "github.com/Autumn-27/norma/llm": {
+      "pass": 77
+    },
+    "github.com/Autumn-27/norma/harness": {
+      "pass": 58
+    },
+    "github.com/Autumn-27/artex/traffic": {
+      "pass": 62
+    },
+    "github.com/Autumn-27/artex/agent": {
+      "skip": 14,
+      "pass": 78
+    },
+    "github.com/Autumn-27/artex/server": {
+      "skip": 102,
+      "pass": 314
+    }
+  },
+  "python_passed": 179,
+  "combined_sdk_statement_coverage": {
+    "streamAndExecute": "88.5%",
+    "queue": "100.0%",
+    "processQueue": "100.0%",
+    "execOne": "65.8%",
+    "ToolInputsAreValid": "88.9%"
+  },
+  "combined_sdk_total_statement_coverage": "78.3%",
+  "process_restart": {
+    "actual_chat_agent": true,
+    "same_file_backed_transcript": true,
+    "streaming_and_complete": true,
+    "requests_per_scenario": 3,
+    "first_turn_read_executions": 1,
+    "witness_removed_before_resume": true,
+    "resume_tool_executions": 0,
+    "signed_call_and_saved_result_replayed": true
+  },
+  "external_network_during_tests": false,
+  "vm_reboot_history_verified": false,
+  "live_cloud_verified": false,
+  "native_ui_verified": false,
+  "CP2_complete": false,
+  "default_guest_promoted": false,
+  "default_guest_manifest_sha256": "fa0f1972c04f2a04853de37f4fd163b922ac38c841849c635d29f565fe6115ce",
+  "hosted_ci": "unverified",
+  "sha256": {
+    "guest/backend-extension/agent/cloud_chat_transcript_test.go": "ae259c6adf11277e19c3b2bdb1a99aad2bed27b7be2e4c18e2720297652062ec",
+    "guest/backend-extension/Dockerfile.provider-tests": "d37a209922ec68e6e97e3102070dda76d57376b8d3d987bee35dc2f6046af274",
+    "guest/backend-extension/norma-tool-history.patch": "bb819a5c3d7923c440a3e23efa6f3bfbe4e6c48712915ca617edacdcecb3761a",
+    "guest/backend-extension/norma-indexed-tool-execution.patch": "9bc717dfa9b3043796c5435545f27966f4ddee2b6cfbaef4cfa008dd466178cf",
+    "guest/backend-extension/managed.patch": "e6366f9f4666b6ed1a9e8d995070d1a353a75cec5810094dd3b66e079d80dfe4",
+    ".build-cache/cloud-indexed-execution-final.log": "5cde7ee212fdfa3619515fb93701cf4d5cd151c54b7b63d3b749a94cd89d92ce",
+    ".build-cache/cloud-indexed-execution-combined-coverage.txt": "9cec53c6e1318f77701e6e472f77d65bde67a74c163c921c9e6faee7c595248a",
+    ".build-cache/cloud-indexed-execution-buildinfo.txt": "0abb296d621cfba6ac11388216659f50c04714b7b782b0fec3364d2e80828e78",
+    ".build-cache/cloud-indexed-execution-python.log": "88106c669ef9fa6f3294de4effdfa58b56dd22c5ddabb57716f7a333516c7032",
+    ".build-cache/indexed-execution-test-only/red-product-graph.log": "4b652d9367f4fbb7330901570fbf97a3d893bfcb3e00f0f76ae5e03e9cf8d378",
+    ".build-cache/indexed-execution-green/batch-queue-red.log": "892eb553f76a8b4c7cbb2a3f7d61c3376ec51c4846bea257408f7274b558e52d",
+    ".build-cache/indexed-execution-green/scheduler-red.log": "6de99b724179a71ee6a32c6ede72155cefd6587edfa2126563fc5718530e2455",
+    ".build-cache/indexed-execution-green/scheduler-green-final.log": "152c63bbcaabd046f96a293633315aeec626433608cf5c8d0cd6bfa5d191a892",
+    ".build-cache/managed-backend-cloud-v2/artex": "0455fb4255796a6c1ba1dc5545cbdbb39f722492ca6e48775f8ce8ff7b16e6bf",
+    ".build-cache/cloud-chat-transcript-b5ef6fa611bc4910a2efbdee2464e671/tool-result-shape.log": "72f18298c5044d0ec5106d161b7ee5f2a71775bfbee77aa5b5f6129a8d4fff06"
+  }
+}

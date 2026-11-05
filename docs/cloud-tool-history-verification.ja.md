@@ -1,5 +1,7 @@
 # 管理対象クラウド・ツール履歴の検証
 
+以下のcloud1手順はリポジトリの `89811d4` 時点を参照する。現行ビルダーは番号付き実行パッチを加え、候補をcloud2へ進める。現在の再現入力はcloud-indexed-execution-verificationに記録する。
+
 norma v0.4.3の管理パッチで、Complete／Stream、番号別集約、JSON履歴復元、次の要求まで型付き署名を保持する。受信時に接続先／モデルと結合し、不明・不一致の署名は送信コピーで除去。内部識別子は上流へ送らない。Anthropic向けはOpenAI専用2項目を再帰的に除去し、元履歴とAnthropic思考署名は維持する。契約・原因分析はcloud-tool-history-designとbugs/cloud-tool-historyを参照。
 
 aa2a6bfは署名消失と引数混入の実行時RED、3fe4c64はGREEN。独立レビュー後、a7383eeで別接続先への再送をREDにし、cb77140でGREEN。上流試験がHTTPクライアントなしでdoStreamを呼ぶ既存panicも未修正モジュールで再現し、試験だけにsrv.Client()を指定。本体の再試行処理は変更せず、失敗試験を無効化していない。.gitattributesの限定例外は統一差分の文脈行の接頭文字用。
