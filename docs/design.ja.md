@@ -116,4 +116,4 @@ Dirsearch、Fscan、Masscan、SoftEther VPNをネイティブ操作から利用�
 
 ## クラウド接続先の追加
 
-OpenAI・Anthropic・Gemini・Groqでモデル取得、ストリーミング、ゲスト内ツール呼出しを扱う。既存カスタムURLと通信形式を維持。Gemini／Groqは計画段階で、実接続未検証。cloud-providers-design.ja.mdを参照し、既存ブラウザ／VM／リリース目標を維持する。
+OpenAI・Anthropic・Gemini・Groqでモデル取得、ストリーミング、ゲスト内ツール呼出しを扱う。既存カスタムURLと通信形式を維持。4社すべてをMacアプリから隔離Linux VM経由で利用できることを受入条件とする。GeminiとGroqは設定プリセットと模擬APIの試験まで進んでいる。実API接続と画面操作の受入試験は残っている。[4社対応の計画](cloud-providers-design.ja.md)を参照。

@@ -1,6 +1,6 @@
 # クラウド4社対応の追加目標
 
-ユーザー要望としてOpenAI・AnthropicにGemini・Groqを追加し、接続先として識別してモデル選択・ストリーミング・ローカルのツール呼出しまで扱う。状態は計画段階。Gemini／Groqの実装・実接続試験は未完。固定ブラウザ互換、既存のカスタム接続先、VM隔離、全リリース条件を維持する。今回は接続契約／通信設計であり画面配置は扱わない。画面変更前にはLazywebを使う。
+ユーザー要望としてOpenAI・AnthropicにGemini・Groqを追加し、接続先として識別してモデル選択・ストリーミング・ローカルのツール呼出しまで扱う。初期導入には両社の公式OpenAI互換APIを使う。[プリセットの検証](cloud-presets-verification.ja.md)ではモデル一覧取得とストリーミングをループバックの模擬APIで試験した。[専用VMの検証](cloud-profile-vm-verification.ja.md)では4社の設定を保存し、再起動後に復元した。[チャット履歴の検証](cloud-history-vm-verification.ja.md)では模擬APIを使い、VM再起動をまたいで署名付きツール履歴が保持されることを確認した。実API接続（CP3）とMacアプリの画面操作の受入試験（CP4）が残っている。固定ブラウザ互換、既存のカスタム接続先、VM隔離、全リリース条件を維持する。今回は接続契約／通信設計であり画面配置は扱わない。画面変更前にはLazywebを使う。
 
 現状のLLMFormatはanthropic／openai／openai-responsesという通信形式で、LLMServiceはこれをbackendのproviderへ送る。固定agent/provider.goもAnthropic／OpenAI形式の接続先を扱う。会社名と通信形式は別物なので、gemini／groqを同じenumへ足して未対応値を送るだけでは完成しない。既存プロファイルやユーザー指定URLを維持する。
 
