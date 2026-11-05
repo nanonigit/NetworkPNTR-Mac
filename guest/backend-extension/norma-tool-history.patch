@@ -15,7 +15,7 @@
 +	toolInputs            []*strings.Builder
 +	toolBlockIndexes      []int
 +	indexedTools          map[int]int
-+	pendingToolSignatures map[int]string
++	pendingToolSignatures map[int]StreamEvent
 +	textBuf               *strings.Builder
 +	thinkBuf              *strings.Builder
 +	thinkSig              string // signature for the current thinking block
@@ -24,7 +24,7 @@
  }
  
  // NewAccumulator returns an empty Accumulator.
-@@ -46,9 +49,29 @@
+@@ -46,9 +49,31 @@
  		a.flushThinking()
  		a.blocks = append(a.blocks, ContentBlock{Type: BlockToolUse, ID: ev.ToolID, Name: ev.ToolName})
  		a.toolInputs = append(a.toolInputs, &strings.Builder{})
@@ -34,8 +34,9 @@
 +				a.indexedTools = make(map[int]int)
 +			}
 +			a.indexedTools[*ev.ToolIndex] = len(a.toolInputs) - 1
-+			if signature := a.pendingToolSignatures[*ev.ToolIndex]; signature != "" {
-+				a.blocks[len(a.blocks)-1].OpenAIThoughtSignature = signature
++			if signature, ok := a.pendingToolSignatures[*ev.ToolIndex]; ok {
++				a.blocks[len(a.blocks)-1].OpenAIThoughtSignature = signature.Text
++				a.blocks[len(a.blocks)-1].OpenAIThoughtSignatureScope = signature.ToolSignatureScope
 +				delete(a.pendingToolSignatures, *ev.ToolIndex)
 +			}
 +		}
@@ -48,11 +49,12 @@
 +	case SEToolUseSignature:
 +		if position, ok := a.toolPosition(ev); ok {
 +			a.blocks[a.toolBlockIndexes[position]].OpenAIThoughtSignature = ev.Text
++			a.blocks[a.toolBlockIndexes[position]].OpenAIThoughtSignatureScope = ev.ToolSignatureScope
 +		} else if ev.ToolIndex != nil {
 +			if a.pendingToolSignatures == nil {
-+				a.pendingToolSignatures = make(map[int]string)
++				a.pendingToolSignatures = make(map[int]StreamEvent)
 +			}
-+			a.pendingToolSignatures[*ev.ToolIndex] = ev.Text
++			a.pendingToolSignatures[*ev.ToolIndex] = ev
  		}
  	case SEMessageDelta:
  		if ev.StopReason != "" {
@@ -118,7 +120,38 @@
  					tc.Function.Name = b.Name
  					tc.Function.Arguments = string(b.Input)
  					if tc.Function.Arguments == "" {
-@@ -477,7 +481,7 @@
+@@ -228,7 +232,7 @@
+ 	// same providers that then demand reasoning_content be echoed back.
+ 	thinking := thinkingType != "" || p.cfg.ReasoningEffort != ""
+ 
+-	msgs := toOpenAIMessages(joinSystem(req.System), req.Messages)
++	msgs := toOpenAIMessages(joinSystem(req.System), scopedOpenAIThoughtSignatures(req.Messages, p.cfg.signatureScope()))
+ 	msgs = sanitizeOpenAIMessages(msgs, thinking)
+ 
+ 	body := oaReq{
+@@ -336,6 +340,9 @@
+ 					usage = u
+ 				}
+ 				for _, ev := range evs {
++					if ev.Type == SEToolUseSignature {
++						ev.ToolSignatureScope = p.cfg.signatureScope()
++					}
+ 					emitted = true
+ 					if !yield(ev, nil) {
+ 						consumerStopped = true
+@@ -408,6 +415,11 @@
+ 				return Message{}, "", Usage{}, ctx.Err()
+ 			}
+ 			continue
++		}
++		for i := range msg.Content {
++			if msg.Content[i].OpenAIThoughtSignature != "" {
++				msg.Content[i].OpenAIThoughtSignatureScope = p.cfg.signatureScope()
++			}
+ 		}
+ 		return msg, stop, usage, nil
+ 	}
+@@ -477,7 +489,7 @@
  		if strings.TrimSpace(in) == "" {
  			in = "{}"
  		}
@@ -127,7 +160,7 @@
  	}
  	return Message{Role: RoleAssistant, Content: blocks}, mapOpenAIFinish(ch.FinishReason), usage, nil
  }
-@@ -550,12 +554,16 @@
+@@ -550,12 +562,16 @@
  		evs = append(evs, StreamEvent{Type: SETextDelta, Text: ch.Delta.Refusal})
  	}
  	for _, tc := range ch.Delta.ToolCalls {
@@ -148,8 +181,14 @@
  	if ch.FinishReason != "" {
 --- /dev/null
 +++ b/llm/openai_metadata.go
-@@ -0,0 +1,44 @@
+@@ -0,0 +1,72 @@
 +package llm
++
++import (
++	"crypto/sha256"
++	"encoding/hex"
++	"encoding/json"
++)
 +
 +// Only the documented tool signature is retained; arbitrary vendor fields are not replayed.
 +type oaGoogleContent struct {
@@ -187,19 +226,44 @@
 +	out := append([]ContentBlock(nil), blocks...)
 +	for i := range out {
 +		out[i].OpenAIThoughtSignature = ""
++		out[i].OpenAIThoughtSignatureScope = ""
 +		if out[i].Content != nil {
 +			out[i].Content = stripOpenAIBlockSignatures(out[i].Content)
 +		}
 +	}
 +	return out
 +}
++
++// Scope is a context identifier, not an authorization token; it contains no key.
++func (c Config) signatureScope() string {
++	encoded, _ := json.Marshal([]string{"artex-openai-tool-v1", c.BaseURL, c.Model})
++	sum := sha256.Sum256(encoded)
++	return hex.EncodeToString(sum[:])
++}
++func scopedOpenAIThoughtSignatures(messages []Message, scope string) []Message {
++	out := append([]Message(nil), messages...)
++	for i := range out {
++		out[i].Content = append([]ContentBlock(nil), out[i].Content...)
++		for j := range out[i].Content {
++			block := &out[i].Content[j]
++			if block.OpenAIThoughtSignatureScope != scope {
++				block.OpenAIThoughtSignature = ""
++				block.OpenAIThoughtSignatureScope = ""
++			}
++		}
++	}
++	return out
++}
 --- /dev/null
 +++ b/llm/openai_metadata_test.go
-@@ -0,0 +1,75 @@
+@@ -0,0 +1,123 @@
 +package llm
 +
 +import (
++	"context"
 +	"encoding/json"
++	"net/http"
++	"net/http/httptest"
 +	"strings"
 +	"testing"
 +)
@@ -271,9 +335,54 @@
 +		})
 +	}
 +}
++
++func TestManagedSignatureOriginAndModelIsolation(t *testing.T) {
++	source := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
++		_, _ = w.Write([]byte(`{"choices":[{"message":{"role":"assistant","tool_calls":[{"id":"call","type":"function","function":{"name":"fixture","arguments":"{}"},"extra_content":{"google":{"thought_signature":"opaque-bound"}}}]},"finish_reason":"tool_calls"}]}`))
++	}))
++	defer source.Close()
++	provider, err := NewProvider(Config{Format: FormatOpenAI, BaseURL: source.URL, Model: "source-model", APIKey: "synthetic", MaxRetries: -1, EmptyResponseRetries: -1})
++	if err != nil {
++		t.Fatal(err)
++	}
++	message, _, _, err := provider.Complete(context.Background(), CompletionRequest{Messages: []Message{UserText("fixture")}})
++	if err != nil {
++		t.Fatal(err)
++	}
++	raw, _ := json.Marshal(message)
++	var restored Message
++	if err := json.Unmarshal(raw, &restored); err != nil {
++		t.Fatal(err)
++	}
++	messages := []Message{restored, {Role: RoleUser, Content: []ContentBlock{ToolResultText("call", "result", false)}}}
++	for _, cfg := range []Config{
++		{BaseURL: source.URL, Model: "source-model"},
++		{BaseURL: source.URL + "/different", Model: "source-model"},
++		{BaseURL: source.URL, Model: "other-model"},
++		{BaseURL: "https://api.openai.com/v1", Model: "source-model"},
++		{BaseURL: "https://api.groq.com/openai/v1", Model: "source-model"},
++		{BaseURL: "https://custom.invalid/v1", Model: "source-model"},
++	} {
++		body, err := (&openaiProvider{cfg: cfg}).buildBody(CompletionRequest{Messages: messages}, false)
++		if err != nil {
++			t.Fatal(err)
++		}
++		want := cfg.BaseURL == source.URL && cfg.Model == "source-model"
++		if strings.Contains(string(body), "opaque-bound") != want {
++			t.Error("signature crossed endpoint/model scope")
++		}
++		if strings.Contains(string(body), "openai_thought_signature_scope") {
++			t.Error("internal scope sent upstream")
++		}
++	}
++	after, _ := json.Marshal(messages[0])
++	if string(after) != string(raw) {
++		t.Error("encoding mutated signed history")
++	}
++}
 --- a/llm/provider.go
 +++ b/llm/provider.go
-@@ -22,6 +22,7 @@
+@@ -22,18 +22,21 @@
  	SEThinkingSignature StreamEventType = "thinking_signature"
  	SEToolUseStart      StreamEventType = "tool_use_start"
  	SEToolInputJSON     StreamEventType = "tool_input_delta"
@@ -281,14 +390,26 @@
  	SEMessageDelta      StreamEventType = "message_delta" // carries stop_reason / usage
  	SEMessageStop       StreamEventType = "message_stop"
  )
-@@ -32,6 +33,7 @@
- 	Text       string // text/thinking/tool_input JSON fragment
- 	ToolID     string // tool_use_start
- 	ToolName   string // tool_use_start
-+	ToolIndex  *int   // OpenAI tool index; nil retains legacy sequential events
- 	StopReason string // message_delta
- 	Usage      Usage  // message_start / message_delta
+ 
+ // StreamEvent is one normalized model-level streaming event (FR-03.5).
+ type StreamEvent struct {
+-	Type       StreamEventType
+-	Text       string // text/thinking/tool_input JSON fragment
+-	ToolID     string // tool_use_start
+-	ToolName   string // tool_use_start
+-	StopReason string // message_delta
+-	Usage      Usage  // message_start / message_delta
++	Type               StreamEventType
++	Text               string // text/thinking/tool_input JSON fragment
++	ToolID             string // tool_use_start
++	ToolName           string // tool_use_start
++	ToolIndex          *int   // OpenAI tool index; nil retains legacy sequential events
++	ToolSignatureScope string // endpoint/model binding; never sent upstream
++	StopReason         string // message_delta
++	Usage              Usage  // message_start / message_delta
  }
+ 
+ // Format selects the wire protocol of a Provider.
 --- a/llm/retry_config_test.go
 +++ b/llm/retry_config_test.go
 @@ -71,7 +71,7 @@
@@ -302,12 +423,13 @@
  		t.Fatal("want error after retries are exhausted")
 --- a/llm/types.go
 +++ b/llm/types.go
-@@ -45,6 +45,8 @@
+@@ -45,6 +45,9 @@
  	ID    string          `json:"id,omitempty"`
  	Name  string          `json:"name,omitempty"`
  	Input json.RawMessage `json:"input,omitempty"`
 +	// OpenAI-compatible tool metadata retained in normalized persisted history.
-+	OpenAIThoughtSignature string `json:"openai_thought_signature,omitempty"`
++	OpenAIThoughtSignature      string `json:"openai_thought_signature,omitempty"`
++	OpenAIThoughtSignatureScope string `json:"openai_thought_signature_scope,omitempty"`
  
  	// ToolResult: the outcome of a tool, fed back to the model.
  	ToolUseID string         `json:"tool_use_id,omitempty"`

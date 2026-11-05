@@ -1,2 +1,4 @@
 # Unified patch context prefixes intentionally precede source tabs and blank lines.
 guest/backend-extension/managed.patch -whitespace
+
+guest/backend-extension/norma-tool-history.patch -whitespace
