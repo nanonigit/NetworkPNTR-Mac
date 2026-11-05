@@ -16,6 +16,7 @@ import Foundation
 
     #if DEBUG
     static let backendVersion = "artex-mac-e75ae371-cloud1"
+    private static let candidateManifestDigest = "990a24a4680bafd6ceeb441d48a6a189f2a6f6201cfd7241a66b5dc69ea7a7c1"
     private static let backendDigest = "94ce92158f608d1b56b2e19a5e8f73e9eb596019f6fc0df96da1bd2891bedb56"
     private static let pinnedSource = "e75ae371ad777ffd1eecdd28d2781a6519b05591"
 
@@ -50,7 +51,7 @@ import Foundation
         let manifestSHA256: String?
         let rows: [Row]
         let boots: [Boot]
-        let blankKeyUpdatePreserved: Bool
+        let blankKeyHintPreserved: Bool
         let persistedAfterRestart: Bool
         let machineStopped: Bool
     }
@@ -97,9 +98,30 @@ import Foundation
         }
     }
 
-    static func fixtureDraft(_ provider: LLMCloudProvider) -> LLMProfileDraft {
+    static func validateManifest(_ data: Data, expectedSHA256: String) throws {
+        guard data.count <= 64 * 1024, ArtifactIntegrity.sha256(data) == expectedSHA256,
+              let metadata = try JSONSerialization.jsonObject(with: data) as? [String: Any] else {
+            throw RuntimeError.integrity("cloud profile manifest digest")
+        }
+        try validateCandidate(metadata)
+    }
+
+    private static func validateArtifactManifest(_ artifacts: URL) throws {
+        let url = artifacts.appendingPathComponent("manifest.json")
+        let attributes = try url.resourceValues(forKeys: [.isRegularFileKey, .isSymbolicLinkKey])
+        guard attributes.isRegularFile == true, attributes.isSymbolicLink != true else {
+            throw RuntimeError.integrity("cloud profile manifest file")
+        }
+        let file = try FileHandle(forReadingFrom: url)
+        defer { try? file.close() }
+        let data = try file.read(upToCount: 64 * 1024 + 1) ?? Data()
+        try validateManifest(data, expectedSHA256: candidateManifestDigest)
+    }
+
+    static func fixtureDraft(_ provider: LLMCloudProvider, geminiEdited: Bool = false) -> LLMProfileDraft {
         var draft = LLMProfileDraft(provider: provider)
         draft.name = "Fixture \(provider.rawValue)"
+        if provider == .gemini, geminiEdited { draft.name += " edited" }
         draft.model = "fixture-no-cloud-request"
         draft.contextWindowK = 64
         draft.poolExclude = true
@@ -107,7 +129,8 @@ import Foundation
         return draft
     }
 
-    static func snapshot(_ profiles: [LLMProfile], ids: [LLMCloudProvider: Int64]) throws -> Snapshot {
+    static func snapshot(_ profiles: [LLMProfile], ids: [LLMCloudProvider: Int64],
+                         expectedHints: [LLMCloudProvider: String], geminiEdited: Bool = false) throws -> Snapshot {
         let providers = LLMCloudProvider.allCases
         guard profiles.count == providers.count, Set(ids.keys) == Set(providers), Set(ids.values).count == providers.count else {
             throw RuntimeError.integrity("cloud profile inventory")
@@ -116,10 +139,10 @@ import Foundation
         var hints: [String: String] = [:]
         for provider in providers {
             guard let id = ids[provider], id > 0, let profile = profiles.first(where: { $0.id == String(id) }),
-                  let hint = profile.apiKeyHint, !hint.isEmpty, !profile.isDefault else {
+                  let hint = profile.apiKeyHint, !hint.isEmpty, hint == expectedHints[provider], !profile.isDefault else {
                 throw RuntimeError.integrity("cloud profile identity")
             }
-            var expected = fixtureDraft(provider)
+            var expected = fixtureDraft(provider, geminiEdited: geminiEdited)
             expected.id = id
             guard try LLMProfileDraft(profile: profile) == expected, profile.endpointIdentity.rawValue == provider.rawValue else {
                 throw RuntimeError.integrity("cloud profile values")
@@ -138,32 +161,30 @@ import Foundation
         var manifestSHA256: String?
         var baseline: Snapshot?
         var boots: [Boot] = []
-        var blankKeyUpdatePreserved = false
+        var blankKeyHintPreserved = false
         var persistedAfterRestart = false
         func writeReport(passed: Bool) throws {
             let report = Report(passed: passed, stage: stage, manifestSHA256: manifestSHA256, rows: baseline?.rows ?? [],
-                                boots: boots, blankKeyUpdatePreserved: blankKeyUpdatePreserved,
+                                boots: boots, blankKeyHintPreserved: blankKeyHintPreserved,
                                 persistedAfterRestart: persistedAfterRestart, machineStopped: !controller.hasMachine)
             let encoder = JSONEncoder()
             encoder.outputFormatting = [.prettyPrinted, .sortedKeys]
             try encoder.encode(report).write(to: output.appendingPathComponent("cloud-profiles.json"), options: .atomic)
         }
         do {
-            let manifest = try Data(contentsOf: artifacts.appendingPathComponent("manifest.json"))
-            guard manifest.count <= 64 * 1024, let metadata = try JSONSerialization.jsonObject(with: manifest) as? [String: Any] else {
-                throw RuntimeError.integrity("cloud profile manifest")
-            }
-            try validateCandidate(metadata)
-            manifestSHA256 = ArtifactIntegrity.sha256(manifest)
+            try validateArtifactManifest(artifacts)
+            manifestSHA256 = candidateManifestDigest
             try FileManager.default.createDirectory(at: output, withIntermediateDirectories: false, attributes: [.posixPermissions: 0o700])
             created = true
             let disk = output.appendingPathComponent("state.ext4")
             _ = try PersistentGuestDisk.createIfMissing(at: disk, byteCount: 2 * 1024 * 1024 * 1024)
             let password = UUID().uuidString + "-fixture"
             let fixtureKeys = Dictionary(uniqueKeysWithValues: LLMCloudProvider.allCases.map { ($0, "fixture-" + UUID().uuidString) })
+            let expectedHints = fixtureKeys.mapValues { "…" + String($0.suffix(4)) }
             var ids: [LLMCloudProvider: Int64] = [:]
             for index in 1...2 {
                 stage = "boot-\(index)"
+                try validateArtifactManifest(artifacts)
                 let logs = output.appendingPathComponent(stage)
                 try FileManager.default.createDirectory(at: logs, withIntermediateDirectories: false, attributes: [.posixPermissions: 0o700])
                 let provisioning = try GuestProvisioning.generate()
@@ -206,19 +227,21 @@ import Foundation
                         ids[provider] = try await service.save(draft)
                     }
                     let profiles = try await service.profiles()
-                    let initial = try snapshot(profiles, ids: ids)
+                    let initial = try snapshot(profiles, ids: ids, expectedHints: expectedHints)
                     guard let gemini = profiles.first(where: { $0.endpointIdentity == .gemini }) else {
                         throw RuntimeError.integrity("cloud profile Gemini fixture")
                     }
-                    let edit = try LLMProfileDraft(profile: gemini)
-                    guard edit.apiKey.isEmpty, try await service.save(edit) == ids[.gemini],
-                          try await snapshot(service.profiles(), ids: ids) == initial else {
+                    var edit = try LLMProfileDraft(profile: gemini)
+                    edit.name = fixtureDraft(.gemini, geminiEdited: true).name
+                    guard edit.apiKey.isEmpty, try await service.save(edit) == ids[.gemini] else {
                         throw RuntimeError.integrity("cloud profile blank key update")
                     }
-                    blankKeyUpdatePreserved = true
-                    baseline = initial
+                    let updated = try await snapshot(service.profiles(), ids: ids, expectedHints: expectedHints, geminiEdited: true)
+                    guard updated.hints == initial.hints else { throw RuntimeError.integrity("cloud profile masked key update") }
+                    blankKeyHintPreserved = true
+                    baseline = updated
                 } else {
-                    guard try await snapshot(service.profiles(), ids: ids) == baseline else {
+                    guard try await snapshot(service.profiles(), ids: ids, expectedHints: expectedHints, geminiEdited: true) == baseline else {
                         throw RuntimeError.integrity("cloud profile restart persistence")
                     }
                     persistedAfterRestart = true
@@ -232,6 +255,7 @@ import Foundation
                 session.logout()
                 guard session.phase == .needsLogin, vault.token == nil else { throw RuntimeError.integrity("cloud profile logout") }
                 try await controller.stop()
+                try validateArtifactManifest(artifacts)
                 let tokens = [provisioning.transportToken, provisioning.setupToken, password, token] + Array(fixtureKeys.values)
                 let audit = GuestBootDiagnostics.audit(logDirectory: logs, tokens: tokens)
                 guard !controller.hasMachine, audit.complete, audit.credentialsAbsent, audit.isolationWitnessesPresent,
