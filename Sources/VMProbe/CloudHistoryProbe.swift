@@ -15,7 +15,7 @@ import Foundation
     }
 
     #if DEBUG
-    private static let manifestDigest = "8c61d6b0d9be816b8b29290f75ba8e084271067f1a6870b07f0c5216ae3adb19"
+    private static let manifestDigest = "6e0b5a801093841923afdd42fb234383297037b6eb9af1426de1e0aad274f08e"
     private static let version = "artex-mac-e75ae371-cloud2"
     private static let baseURL = "http://127.0.0.1:8791/v1beta/openai/"
     private static let fixtureKey = "synthetic-vm-history-key"
