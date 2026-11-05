@@ -1,6 +1,6 @@
 --- /dev/null
 +++ b/harness/indexed_execution_test.go
-@@ -0,0 +1,220 @@
+@@ -0,0 +1,265 @@
 +package harness
 +
 +import (
@@ -11,6 +11,7 @@
 +	"strings"
 +	"sync/atomic"
 +	"testing"
++	"time"
 +
 +	"github.com/Autumn-27/norma/llm"
 +	"github.com/Autumn-27/norma/permission"
@@ -31,9 +32,9 @@
 +func TestManagedIndexedToolExecutionUsesCompletedHistoryBlocks(t *testing.T) {
 +	zero, one := 0, 1
 +	events := []llm.StreamEvent{
++		{Type: llm.SEToolInputJSON, Text: `{"value":`, ToolIndex: &zero},
 +		{Type: llm.SEToolUseStart, ToolID: "first", ToolName: "IndexedFixture", ToolIndex: &zero},
 +		{Type: llm.SEToolUseSignature, Text: "first-opaque", ToolIndex: &zero, ToolSignatureScope: "fixture-scope"},
-+		{Type: llm.SEToolInputJSON, Text: `{"value":`, ToolIndex: &zero},
 +		{Type: llm.SEToolUseStart, ToolID: "second", ToolName: "IndexedFixture", ToolIndex: &one},
 +		{Type: llm.SEToolInputJSON, Text: `{"value":2}`, ToolIndex: &one},
 +		{Type: llm.SETextDelta, Text: "progress"},
@@ -162,7 +163,7 @@
 +}
 +
 +func TestManagedIndexedToolExecutionValidatesBatchBeforeLaunch(t *testing.T) {
-+	for _, mode := range []string{"malformed later arguments", "duplicate identity", "missing identity", "cancel on tool event"} {
++	for _, mode := range []string{"malformed later arguments", "unmatched arguments", "duplicate identity", "missing identity", "cancel on tool event"} {
 +		t.Run(mode, func(t *testing.T) {
 +			first, second := 0, 1
 +			laterID, laterInput := "later", `{}`
@@ -190,6 +191,10 @@
 +				{Type: llm.SEToolInputJSON, Text: laterInput, ToolIndex: &second},
 +				{Type: llm.SEMessageDelta, StopReason: "tool_use"},
 +				{Type: llm.SEMessageStop},
++			}
++			if mode == "unmatched arguments" {
++				unknown := 3
++				events[3].ToolIndex = &unknown
 +			}
 +			model := &scriptedModel{turns: [][]llm.StreamEvent{events, textTurn("unexpected replay")}}
 +			input := QueryInput{Messages: []llm.Message{llm.UserText("fixture")}, Tools: tool.NewRegistry(fixture), PermissionMode: permission.ModeBypass, WorkingDir: t.TempDir()}
@@ -219,6 +224,46 @@
 +				t.Fatalf("batch admission changed: requests=%d tool-events=%d queued=%d runs=%d", model.calls, toolEvents, queued.Load(), calls.Load())
 +			}
 +		})
++	}
++}
++
++func TestManagedIndexedSchedulerKeepsCancelledQueueIdle(t *testing.T) {
++	ctx, cancel := context.WithCancel(t.Context())
++	defer cancel()
++	var calls atomic.Int32
++	l := &loop{ctx: ctx, toolCtx: ctx, sem: make(chan struct{}, 1), in: QueryInput{Tools: tool.NewRegistry(managedIndexedTool(&calls)), PermissionMode: permission.ModeBypass, WorkingDir: t.TempDir()}}
++	exec := newStreamExec(l)
++	exec.queue([]llm.ContentBlock{{Type: llm.BlockToolUse, ID: "queued", Name: "IndexedFixture", Input: json.RawMessage(`{"value":1}`)}})
++	cancel()
++	exec.processQueue()
++	exec.mu.Lock()
++	status := exec.tools[0].status
++	exec.mu.Unlock()
++	if status != stQueued {
++		t.Fatalf("cancelled tool left queue: status=%d", status)
++	}
++}
++
++func TestManagedIndexedSemaphoreWaitRetainsOriginalCancellation(t *testing.T) {
++	ctx, cancel := context.WithCancel(t.Context())
++	defer cancel()
++	var calls atomic.Int32
++	l := &loop{ctx: t.Context(), toolCtx: ctx, sem: make(chan struct{}, 1), in: QueryInput{Tools: tool.NewRegistry(managedIndexedTool(&calls)), PermissionMode: permission.ModeBypass, WorkingDir: t.TempDir()}}
++	exec := newStreamExec(l)
++	track := &tracked{block: llm.ContentBlock{Type: llm.BlockToolUse, ID: "waiting", Name: "IndexedFixture", Input: json.RawMessage(`{"value":1}`)}, status: stExecuting}
++	l.sem <- struct{}{}
++	done := make(chan struct{})
++	go func() { exec.run(track); close(done) }()
++	cancel()
++	l.toolCtx = t.Context() // The next settlement turn receives a live context.
++	<-l.sem
++	select {
++	case <-done:
++	case <-time.After(2 * time.Second):
++		t.Fatal("cancelled tool did not settle")
++	}
++	if calls.Load() != 0 || !track.result.IsError {
++		t.Fatal("old queued tool ran in the next turn context")
 +	}
 +}
 --- a/harness/query.go
