@@ -1,0 +1,44 @@
+{
+  "phase": "CP3-A cloud egress route, address and trust policy",
+  "frozen_browser_commit": "e75ae371ad777ffd1eecdd28d2781a6519b05591",
+  "core": {
+    "fixed_routes": 9,
+    "compile_red_sha256": "793318baafec0aa79b5e0e2d3f5bd16043466365f87c2e73bd5c05125482df5d",
+    "focused_tests_passed": 5,
+    "swift_tests_passed": 1032,
+    "swift_tests_skipped": 1,
+    "swift_tests_failed": 0,
+    "swift_test_log_sha256": "f3e33d89ada0fe4407f82e470f1b1c8876db27d60374c4c1aeb9641754bc033d",
+    "release_product_built": true,
+    "guest_artifact_tests_passed": 183,
+    "certificate_fixture_cases": [
+      "trusted matching name",
+      "trusted wrong name",
+      "untrusted matching name"
+    ],
+    "inputs_sha256": {
+      "Sources/ArtexCore/CloudEgressPolicy.swift": "f972435881c88b1498e1072528aa1b70348e568b54c010a488b0d4e46ce9df3e",
+      "Tests/ArtexCoreTests/CloudEgressPolicyTests.swift": "976af97521ee8410537f5f9b299b637f7b0f83c281ed3563fd20dadf6bf7e66f",
+      "Tests/ArtexCoreTests/Fixtures/cloud-egress/openai-leaf.der": "903601c8c84822de311d86d6c29b4dd77917ddd14a425bae24095218fa7a3c20",
+      "Tests/ArtexCoreTests/Fixtures/cloud-egress/root.der": "9474105ca654d34dc878e620ea55c55170712bdff42c1f71133c2a6cb50cba41"
+    }
+  },
+  "host_connect_only_diagnostic": {
+    "macos_library": "/usr/lib/libcurl.4.dylib",
+    "numeric_peer_and_port_verified": {
+      "api.openai.com": 2,
+      "api.anthropic.com": 1,
+      "api.groq.com": 2,
+      "generativelanguage.googleapis.com": 8
+    },
+    "probe_source_sha256": "290df910630f2a6f20a87081572287a98e44cdcbc0e6ba28fc8a37a7b27d67e8",
+    "address_enumerator_sha256": "10b39d13b3a5716cd1904a4f4d40b1f5c98de2665b11f2e0c60ac3297f3ff60c",
+    "final_log_sha256": "44ae3c949cdee37debd30a3ae652a223c0c5d129dec0cdbf0dc96e0c2c865e08",
+    "forced_direct_failure_proxy_hits_with_default": 1,
+    "forced_direct_failure_proxy_hits_with_proxy_disabled": 0,
+    "http_requests_sent": 0,
+    "credentials_sent": 0
+  },
+  "vm_listener_enabled": false,
+  "hosted_ci_verified": false
+}

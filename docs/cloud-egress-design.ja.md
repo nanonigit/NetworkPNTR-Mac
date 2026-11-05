@@ -1,0 +1,13 @@
+# 専用VMからクラウドAPIへの外向き通信
+
+Linux VMはNIC、ホスト共有、汎用ホストRPCを持たない。アプリにクラウドAPI専用のゲスト発virtio socketを設ける。ゲストはプロバイダー、操作、自身のキー、JSON本文を渡し、上限付きの応答を受け取る。ホスト側は固定のHTTPS接続先と443番ポートを使って要求を組み立てる。同一IPを複数サービスが共有しても、TLS接続先とHTTPの宛先を両方固定できるように中継でTLSを終端する。キーは交換中だけ中継のメモリに置き、永続化はゲスト内で行う。
+
+OpenAI・Gemini・Groqのモデル一覧とChat Completions、OpenAI Responses、Anthropicのモデル一覧とMessagesを許可する。メソッド、パス、Host、認証方式、HTTPのフレーミングは中継が生成する。ゲストから任意のURL、Host、プロキシ、ヘッダーは受け取らず、リダイレクトは追わない。DNSは固定の絶対名を解決し、スコープ付きや特殊用途のIPが1件でも混ざれば全体を拒否する。許可した数値IPに接続し、TLSでは固定ホスト名を照合する。リスナーを有効にする前にDNS、接続、同時処理数、応答量、キャンセルを制限する。交換は受け付けたVM起動に属し、停止時にリスナーと通信を閉じる。
+
+この中継の対象は4社のAPI。一般Web閲覧、カスタム接続先、調査ツールには別のポリシーと受入試験を設ける。ライフサイクルと隔離試験が通るまでは、既定の実行環境にリスナーを設けない。
+
+Aで要求とDNSを検査し、数値IPとTLSのホスト名照合を通信なしで試験する。Bで直接接続とフレーム化したvsock、ストリーミング応答を実装し、キャンセル、上限、VMの起動停止と結び付ける。Cで署名済みの実VMを使い、直接接続不可、拒否要求の送信0、vsock経由の正常ストリーム、停止時の通信終了を確認する。Dでアプリから入力したキーを使い、4社の実APIを試験する。共通操作は固定ブラウザ版と比較し、英語と日本語の画面は別途受入試験を行う。
+
+直接接続の実装ではプロキシを明示的に無効にし、要求本文を送信する前に実ソケットのIPとポートを照合する。Network.frameworkのプロキシ優先設定は、失敗時に設定済みのプロキシへ切り替わる場合がある。macOS付属のlibcurl候補では、接続先を単一の数値IPに固定し、空のプロキシ設定を明示し、固定HTTPS URLのホスト名で証明書を照合する。リスナーをつなぐ前に、TLSの正常接続と、プロキシ設定中に直接接続が失敗する場合の両方を試験する。[Apple Technical Support](https://developer.apple.com/forums/thread/828775)・[プロキシ制御](https://curl.se/libcurl/c/CURLOPT_PROXY.html)・[アドレス固定](https://curl.se/libcurl/c/CURLOPT_RESOLVE.html)
+
+IP判定はIANAの[IPv4](https://www.iana.org/assignments/iana-ipv4-special-registry/)と[IPv6](https://www.iana.org/assignments/iana-ipv6-special-registry/)の登録を参照する。特殊用途の範囲は、登録上グローバル到達可能な例外を含めて拒否する。
