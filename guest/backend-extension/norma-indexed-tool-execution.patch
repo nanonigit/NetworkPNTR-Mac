@@ -332,10 +332,13 @@
  		}
  		acc.Add(ev)
  	}
-@@ -854,6 +877,43 @@
+@@ -854,6 +877,44 @@
  	stopReason = acc.StopReason
  	if err != nil {
  		return asst, exec, stopReason, err, false, false
++	}
++	if !acc.ToolInputsAreValid(bufferedToolPositions) {
++		return asst, exec, stopReason, fmt.Errorf("invalid or unmatched indexed tool arguments"), false, false
 +	}
 +	if len(bufferedToolPositions) > 0 {
 +		if err := l.ctx.Err(); err != nil {
@@ -348,7 +351,7 @@
 +		pending := make([]llm.ContentBlock, 0, len(bufferedToolPositions))
 +		seenIDs := make(map[string]struct{}, len(bufferedToolPositions))
 +		for _, position := range bufferedToolPositions {
-+			if position >= len(completedTools) || !acc.ToolInputIsValid(position) {
++			if position >= len(completedTools) {
 +				return asst, exec, stopReason, fmt.Errorf("invalid indexed tool arguments"), false, false
 +			}
 +			block := completedTools[position]
@@ -370,15 +373,57 @@
 +			}
 +		}
 +		exec.queue(pending)
-+		if l.toolCtx.Err() == nil {
-+			exec.processQueue()
-+		}
++		exec.processQueue()
  	}
  	// Drain tools to completion (or synthesize on abort).
  	cs, ab := exec.finish()
+--- a/harness/rawinput_test.go
++++ b/harness/rawinput_test.go
+@@ -41,7 +41,7 @@
+ 		Tools:          tool.NewRegistry(ct),
+ 		PermissionMode: permission.ModeBypass,
+ 	}}
+-	res, _ := l.execOne(llm.ContentBlock{
++	res, _ := l.execOne(l.ctx, llm.ContentBlock{
+ 		Type: llm.BlockToolUse, ID: "toolu_1", Name: ct.Name(), Input: json.RawMessage(input),
+ 	}, nil)
+ 	return res
 --- a/harness/streaming.go
 +++ b/harness/streaming.go
-@@ -51,14 +51,21 @@
+@@ -1,6 +1,7 @@
+ package harness
+ 
+ import (
++	"context"
+ 	"sync"
+ 
+ 	"github.com/Autumn-27/norma/llm"
+@@ -14,10 +15,11 @@
+ // blocks every tool queued behind it until it finishes. Results are yielded in
+ // arrival order; progress is yielded as soon as it arrives.
+ type streamExec struct {
+-	l      *loop
+-	mu     sync.Mutex
+-	tools  []*tracked
+-	notify chan struct{} // pinged when a tool completes or emits progress
++	l       *loop
++	toolCtx context.Context
++	mu      sync.Mutex
++	tools   []*tracked
++	notify  chan struct{} // pinged when a tool completes or emits progress
+ }
+ 
+ type toolStatus int
+@@ -39,7 +41,7 @@
+ }
+ 
+ func newStreamExec(l *loop) *streamExec {
+-	return &streamExec{l: l, notify: make(chan struct{}, 1)}
++	return &streamExec{l: l, toolCtx: l.toolCtx, notify: make(chan struct{}, 1)}
+ }
+ 
+ func (e *streamExec) ping() {
+@@ -51,14 +53,21 @@
  
  // add registers a completed tool_use block and tries to start it.
  func (e *streamExec) add(block llm.ContentBlock) {
@@ -407,20 +452,178 @@
  }
  
  // canStartLocked reports whether a tool with the given safety may start now.
+@@ -75,6 +84,10 @@
+ // tool that cannot start blocks the tools behind it.
+ func (e *streamExec) processQueue() {
+ 	e.mu.Lock()
++	if e.toolCtx.Err() != nil {
++		e.mu.Unlock()
++		return
++	}
+ 	var start []*tracked
+ 	for _, t := range e.tools {
+ 		if t.status != stQueued {
+@@ -94,21 +107,37 @@
+ }
+ 
+ func (e *streamExec) run(t *tracked) {
+-	e.l.sem <- struct{}{} // bound concurrent tool execution
+-	defer func() { <-e.l.sem }()
+-	res, extra := e.l.execOne(t.block, func(p tool.ProgressInfo) {
+-		e.mu.Lock()
+-		t.prog = append(t.prog, p.Message)
+-		e.mu.Unlock()
+-		e.ping()
+-	})
+-	e.mu.Lock()
+-	t.result = res
+-	t.extra = extra
+-	t.status = stCompleted
++	select {
++	case <-e.toolCtx.Done():
++	case e.l.sem <- struct{}{}:
++		defer func() { <-e.l.sem }()
++		if e.toolCtx.Err() == nil {
++			result, extra := e.l.execOne(e.toolCtx, t.block, func(p tool.ProgressInfo) {
++				e.mu.Lock()
++				if t.status == stExecuting {
++					t.prog = append(t.prog, p.Message)
++				}
++				e.mu.Unlock()
++				e.ping()
++			})
++			e.complete(t, result, extra)
++			return
++		}
++	}
++	e.complete(t, llm.ToolResultText(t.block.ID, "tool execution interrupted", true), nil)
++}
++
++func (e *streamExec) complete(t *tracked, result llm.ContentBlock, extra []llm.Message) {
++	e.mu.Lock()
++	// The drain may already have emitted an interrupted result.
++	if t.status == stExecuting {
++		t.result = result
++		t.extra = extra
++		t.status = stCompleted
++	}
+ 	e.mu.Unlock()
+ 	e.ping()
+-	e.processQueue() // a slot freed
++	e.processQueue()
+ }
+ 
+ // drain yields all ready progress and completed results in FIFO order. Stops at
+@@ -167,7 +196,7 @@
+ 		// run's own MaxDuration deadline firing on an in-flight tool. Either way we
+ 		// synthesize interrupted results and report aborted; the turn loop then decides
+ 		// (parent-cancel → abort, budget-only → wrap-up) via ctx vs toolCtx.
+-		if e.l.toolCtx.Err() != nil {
++		if e.toolCtx.Err() != nil {
+ 			return !e.drainSynthetic("tool execution interrupted"), true
+ 		}
+ 		if !e.pending() {
+@@ -178,7 +207,7 @@
+ 		}
+ 		select {
+ 		case <-e.notify:
+-		case <-e.l.toolCtx.Done():
++		case <-e.toolCtx.Done():
+ 		}
+ 	}
+ }
+--- a/harness/tools.go
++++ b/harness/tools.go
+@@ -1,6 +1,7 @@
+ package harness
+ 
+ import (
++	"context"
+ 	"encoding/json"
+ 	"fmt"
+ 
+@@ -25,7 +26,7 @@
+ // failures become error results. It is safe to call from the streaming
+ // executor's goroutines (read-only access to loop config; permission/hook
+ // callbacks are the host's responsibility to make safe).
+-func (l *loop) execOne(use llm.ContentBlock, emitProgress func(tool.ProgressInfo)) (llm.ContentBlock, []llm.Message) {
++func (l *loop) execOne(toolCtx context.Context, use llm.ContentBlock, emitProgress func(tool.ProgressInfo)) (llm.ContentBlock, []llm.Message) {
+ 	t, ok := l.in.Tools.Get(use.Name)
+ 	if !ok {
+ 		return llm.ToolResultText(use.ID, fmt.Sprintf("Error: unknown tool %q", use.Name), true), nil
+@@ -95,7 +96,10 @@
+ 	// toolCtx carries the run's MaxDuration deadline, so a tool that overruns the
+ 	// wall-clock budget is interrupted here (the turn loop then enters wrap-up). During
+ 	// the wrap-up phase toolCtx is the live parent ctx, so settlement tools run freely.
+-	res, err := t.Call(l.toolCtx, input, tc)
++	if toolCtx.Err() != nil {
++		return llm.ToolResultText(use.ID, "tool execution interrupted", true), nil
++	}
++	res, err := t.Call(toolCtx, input, tc)
+ 	if err != nil {
+ 		res = tool.Errorf("Error: " + err.Error())
+ 	}
 --- a/llm/accumulate.go
 +++ b/llm/accumulate.go
-@@ -109,6 +109,16 @@
+@@ -15,6 +15,7 @@
+ 	toolBlockIndexes      []int
+ 	indexedTools          map[int]int
+ 	pendingToolSignatures map[int]StreamEvent
++	pendingToolInputs     map[int]*strings.Builder
+ 	textBuf               *strings.Builder
+ 	thinkBuf              *strings.Builder
+ 	thinkSig              string // signature for the current thinking block
+@@ -54,7 +55,12 @@
+ 			if a.indexedTools == nil {
+ 				a.indexedTools = make(map[int]int)
+ 			}
+-			a.indexedTools[*ev.ToolIndex] = len(a.toolInputs) - 1
++			position := len(a.toolInputs) - 1
++			a.indexedTools[*ev.ToolIndex] = position
++			if pending := a.pendingToolInputs[*ev.ToolIndex]; pending != nil {
++				a.toolInputs[position] = pending
++				delete(a.pendingToolInputs, *ev.ToolIndex)
++			}
+ 			if signature, ok := a.pendingToolSignatures[*ev.ToolIndex]; ok {
+ 				a.blocks[len(a.blocks)-1].OpenAIThoughtSignature = signature.Text
+ 				a.blocks[len(a.blocks)-1].OpenAIThoughtSignatureScope = signature.ToolSignatureScope
+@@ -64,6 +70,16 @@
+ 	case SEToolInputJSON:
+ 		if position, ok := a.toolPosition(ev); ok {
+ 			a.toolInputs[position].WriteString(ev.Text)
++		} else if ev.ToolIndex != nil && ev.Text != "" {
++			if a.pendingToolInputs == nil {
++				a.pendingToolInputs = make(map[int]*strings.Builder)
++			}
++			pending := a.pendingToolInputs[*ev.ToolIndex]
++			if pending == nil {
++				pending = &strings.Builder{}
++				a.pendingToolInputs[*ev.ToolIndex] = pending
++			}
++			pending.WriteString(ev.Text)
+ 		}
+ 	case SEToolUseSignature:
+ 		if position, ok := a.toolPosition(ev); ok {
+@@ -109,6 +125,24 @@
  	}
  }
  
-+// ToolInputIsValid checks the original tool arguments by tool-start ordinal.
-+// Empty arguments retain the legacy empty-object default. Malformed JSON does not.
-+func (a *Accumulator) ToolInputIsValid(position int) bool {
-+	if position < 0 || position >= len(a.toolInputs) {
++// ToolInputsAreValid validates raw indexed arguments before Message can apply
++// legacy empty-object defaults. Every nonempty fragment must have a tool start.
++func (a *Accumulator) ToolInputsAreValid(positions []int) bool {
++	if len(a.pendingToolInputs) != 0 {
 +		return false
 +	}
-+	raw := strings.TrimSpace(a.toolInputs[position].String())
-+	return raw == "" || json.Valid([]byte(raw))
++	for _, position := range positions {
++		if position < 0 || position >= len(a.toolInputs) {
++			return false
++		}
++		raw := strings.TrimSpace(a.toolInputs[position].String())
++		if raw != "" && !json.Valid([]byte(raw)) {
++			return false
++		}
++	}
++	return true
 +}
 +
  // Message finalizes and returns the assembled assistant message. Partial tool
