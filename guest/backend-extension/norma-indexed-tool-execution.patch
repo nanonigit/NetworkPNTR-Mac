@@ -287,7 +287,7 @@
  		}
  		acc.Add(ev)
  	}
-@@ -854,6 +877,23 @@
+@@ -854,6 +877,43 @@
  	stopReason = acc.StopReason
  	if err != nil {
  		return asst, exec, stopReason, err, false, false
@@ -300,14 +300,84 @@
 +			return asst, exec, stopReason, fmt.Errorf("indexed tool stream ended before completion"), false, false
 +		}
 +		completedTools := asst.ToolUses()
++		pending := make([]llm.ContentBlock, 0, len(bufferedToolPositions))
++		seenIDs := make(map[string]struct{}, len(bufferedToolPositions))
 +		for _, position := range bufferedToolPositions {
++			if position >= len(completedTools) || !acc.ToolInputIsValid(position) {
++				return asst, exec, stopReason, fmt.Errorf("invalid indexed tool arguments"), false, false
++			}
++			block := completedTools[position]
++			_, duplicate := seenIDs[block.ID]
++			if duplicate || strings.TrimSpace(block.ID) == "" || strings.TrimSpace(block.Name) == "" {
++				return asst, exec, stopReason, fmt.Errorf("invalid indexed tool identity"), false, false
++			}
++			seenIDs[block.ID] = struct{}{}
++			pending = append(pending, block)
++		}
++		// The consumer can cancel synchronously from a tool-use event. Keep the
++		// whole batch outside the executor until every event is accepted.
++		for _, block := range pending {
++			if !l.emit(Event{Kind: KindToolUse, ToolUse: &block}) {
++				return asst, exec, stopReason, nil, true, false
++			}
 +			if err := l.ctx.Err(); err != nil {
 +				return asst, exec, stopReason, err, false, false
 +			}
-+			if !dispatchTool(completedTools[position]) {
-+				return asst, exec, stopReason, nil, true, false
-+			}
++		}
++		exec.queue(pending)
++		if l.toolCtx.Err() == nil {
++			exec.processQueue()
 +		}
  	}
  	// Drain tools to completion (or synthesize on abort).
  	cs, ab := exec.finish()
+--- a/harness/streaming.go
++++ b/harness/streaming.go
+@@ -51,14 +51,21 @@
+ 
+ // add registers a completed tool_use block and tries to start it.
+ func (e *streamExec) add(block llm.ContentBlock) {
+-	e.mu.Lock()
+-	safe := false
+-	if t, ok := e.l.in.Tools.Get(block.Name); ok {
+-		safe = t.IsConcurrencySafe(block.Input)
+-	}
+-	e.tools = append(e.tools, &tracked{block: block, safe: safe})
+-	e.mu.Unlock()
++	e.queue([]llm.ContentBlock{block})
+ 	e.processQueue()
++}
++
++// queue registers a completed batch before the scheduler is allowed to run it.
++func (e *streamExec) queue(blocks []llm.ContentBlock) {
++	e.mu.Lock()
++	defer e.mu.Unlock()
++	for _, block := range blocks {
++		safe := false
++		if t, ok := e.l.in.Tools.Get(block.Name); ok {
++			safe = t.IsConcurrencySafe(block.Input)
++		}
++		e.tools = append(e.tools, &tracked{block: block, safe: safe})
++	}
+ }
+ 
+ // canStartLocked reports whether a tool with the given safety may start now.
+--- a/llm/accumulate.go
++++ b/llm/accumulate.go
+@@ -109,6 +109,16 @@
+ 	}
+ }
+ 
++// ToolInputIsValid checks the original tool arguments by tool-start ordinal.
++// Empty arguments retain the legacy empty-object default. Malformed JSON does not.
++func (a *Accumulator) ToolInputIsValid(position int) bool {
++	if position < 0 || position >= len(a.toolInputs) {
++		return false
++	}
++	raw := strings.TrimSpace(a.toolInputs[position].String())
++	return raw == "" || json.Valid([]byte(raw))
++}
++
+ // Message finalizes and returns the assembled assistant message. Partial tool
+ // inputs are validated; malformed JSON falls back to "{}".
+ func (a *Accumulator) Message() Message {
