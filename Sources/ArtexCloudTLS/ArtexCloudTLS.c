@@ -298,6 +298,8 @@ static artx_cloud_result tls_exchange(
     if (result == ARTX_CLOUD_OK) result = connect_socket(&exchange, &expected, length);
     if (result == ARTX_CLOUD_OK) result = connect_tls(&exchange, options->hostname, fixture_anchor);
     if (result == ARTX_CLOUD_OK && !active_peer_matches(exchange.socket, &expected)) result = ARTX_CLOUD_CONNECT_FAILED;
+    // This is the last point at which another address can be tried safely.
+    if (result == ARTX_CLOUD_TIMED_OUT) result = ARTX_CLOUD_CONNECT_FAILED;
     exchange.deadline = started + options->total_timeout_ms;
     if (result == ARTX_CLOUD_OK) result = send_bytes(&exchange, header, header_size);
     if (result == ARTX_CLOUD_OK) result = send_bytes(&exchange, body, body_size);

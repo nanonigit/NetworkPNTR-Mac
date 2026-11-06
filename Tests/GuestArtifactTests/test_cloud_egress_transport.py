@@ -224,6 +224,18 @@ class CloudEgressTransportTests(unittest.TestCase):
             with self.assertRaises(TimeoutError):
                 sentinel.accept()
 
+    def test_held_tls_handshake_timeout_is_pre_dispatch_failure(self):
+        def hold(connection):
+            received = bytearray()
+            while data := connection.recv(4096):
+                received.extend(data)
+            return bytes(received)
+
+        result, encrypted_handshake = self.exchange(hold, tls=False, timeout=600)
+        self.assertTrue(encrypted_handshake)
+        self.assertEqual(result.returncode, 2, result.stderr)
+        self.assertEqual(result.stdout, b"")
+
     def test_held_tls_handshake_is_cancelled(self):
         def hold(connection):
             while connection.recv(4096):
@@ -273,7 +285,7 @@ class CloudEgressTransportTests(unittest.TestCase):
             env = os.environ | {key: url for key in ("HTTPS_PROXY", "https_proxy", "ALL_PROXY", "all_proxy")}
             env["NO_PROXY"] = env["no_proxy"] = ""
             result = self.client(target.getsockname()[1], timeout=600, env=env)
-            self.assertIn(result.returncode, (2, 5), result.stderr)
+            self.assertEqual(result.returncode, 2, result.stderr)
             self.assertEqual(result.stdout, b"")
             with self.assertRaises(TimeoutError):
                 proxy.accept()

@@ -598,3 +598,12 @@ responses before TLS closure resolved the observed Gemini read abort.
 A final repeat yielded no confirmed upstream statuses. Connection
 stability, valid-key calls, native controls and browser acceptance remain
 open. See the bilingual live-models verification. Publication uses [skip ci].
+
+CP3-D connection timeout follow-up. Signed diagnostics reproduced timeouts
+before TLS and HTTP at the Mac TCP stage. The broker can now try another
+vetted address after a pre-dispatch deadline, with a four-second per-address
+budget. Loopback reproduces the former timeout classification and verifies
+both sides of the dispatch boundary. The signed synthetic VM regression
+passed. Two production-route repeats yielded no confirmed status, so live
+stability remains open. See bugs/cloud-egress-connect-timeout in English and
+Japanese. Publication uses [skip ci].

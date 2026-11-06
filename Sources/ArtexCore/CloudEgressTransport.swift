@@ -102,7 +102,7 @@ enum CloudEgressTransport {
             numericIP.withCString { address in
                 var options = artx_cloud_options(
                     hostname: hostname, numeric_ip: address, port: 443,
-                    connect_timeout_ms: min(10_000, timeoutMilliseconds), total_timeout_ms: timeoutMilliseconds,
+                    connect_timeout_ms: min(4_000, timeoutMilliseconds), total_timeout_ms: timeoutMilliseconds,
                     maximum_response_bytes: 16 * 1024 * 1024
                 )
                 return request.header.withUnsafeBytes { header in

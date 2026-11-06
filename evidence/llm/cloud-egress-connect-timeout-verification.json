@@ -1,0 +1,142 @@
+{
+  "pinnedManifestSHA256": "ac33d360a1f24ee89e10fc07ea218079280c5ed8812a1651fdeceeace00909c5",
+  "observedPreDispatchTcpAttempts": [
+    [
+      {
+        "host": "api.openai.com",
+        "result": 5,
+        "milliseconds": 10002
+      },
+      {
+        "host": "api.anthropic.com",
+        "result": 5,
+        "milliseconds": 10002
+      },
+      {
+        "host": "generativelanguage.googleapis.com",
+        "result": 5,
+        "milliseconds": 10002
+      },
+      {
+        "host": "api.groq.com",
+        "result": 5,
+        "milliseconds": 10001
+      }
+    ],
+    [
+      {
+        "host": "api.openai.com",
+        "result": 2,
+        "milliseconds": 2
+      },
+      {
+        "host": "api.openai.com",
+        "result": 2,
+        "milliseconds": 1
+      },
+      {
+        "host": "api.anthropic.com",
+        "result": 2,
+        "milliseconds": 0
+      },
+      {
+        "host": "generativelanguage.googleapis.com",
+        "result": 5,
+        "milliseconds": 10002
+      },
+      {
+        "host": "api.groq.com",
+        "result": 5,
+        "milliseconds": 10003
+      }
+    ]
+  ],
+  "fixedLiveModelChecks": [
+    [
+      {
+        "appRejected": true,
+        "authenticationRejected": false,
+        "provider": "openai"
+      },
+      {
+        "appRejected": true,
+        "authenticationRejected": false,
+        "provider": "anthropic"
+      },
+      {
+        "appRejected": true,
+        "authenticationRejected": false,
+        "provider": "gemini"
+      },
+      {
+        "appRejected": true,
+        "authenticationRejected": false,
+        "provider": "groq"
+      }
+    ],
+    [
+      {
+        "appRejected": true,
+        "authenticationRejected": false,
+        "provider": "openai"
+      },
+      {
+        "appRejected": true,
+        "authenticationRejected": false,
+        "provider": "anthropic"
+      },
+      {
+        "appRejected": true,
+        "authenticationRejected": false,
+        "provider": "gemini"
+      },
+      {
+        "appRejected": true,
+        "authenticationRejected": false,
+        "provider": "groq"
+      }
+    ]
+  ],
+  "fixedSyntheticRegression": {
+    "fixture": {
+      "cancelled": 1,
+      "completed": [
+        "openai.chat",
+        "anthropic.messages",
+        "gemini.chat",
+        "groq.chat"
+      ],
+      "denied": 0,
+      "held": 1,
+      "models": [
+        "openai.models",
+        "anthropic.models",
+        "gemini.models",
+        "groq.models"
+      ]
+    },
+    "machineStopped": true,
+    "manifestSHA256": "ac33d360a1f24ee89e10fc07ea218079280c5ed8812a1651fdeceeace00909c5",
+    "passed": true,
+    "stage": "complete"
+  },
+  "hostTcpOnlyChecks": {
+    "openai": "connected",
+    "anthropic": "connected",
+    "gemini": "connected",
+    "groq": "connected"
+  },
+  "perAddressConnectTimeoutMs": 4000,
+  "maximumCandidateAddresses": 4,
+  "signedPreviewExecutableSHA256": "e6c11fed66c76ecea201f098ebb4f8dd8bf2d6e5a3c9dea1f833c95e8e7759ed",
+  "checks": {
+    "swiftPassed": 1049,
+    "swiftSkipped": 1,
+    "pythonPassed": 195,
+    "loopbackTLSCases": 12,
+    "postDispatchTimeoutStillNotRetried": true,
+    "releaseStrictSignature": true,
+    "liveStabilityVerified": false,
+    "hostedCI": "unverified"
+  }
+}
