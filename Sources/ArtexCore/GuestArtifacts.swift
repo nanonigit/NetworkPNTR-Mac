@@ -35,7 +35,25 @@ public struct GuestArtifacts: Codable, Sendable {
         managedCapabilities?.contains("regular-source-blob-stream-v1") == true
     }
     public static func load(from directory: URL) throws -> GuestArtifacts {
-        let manifest = try JSONDecoder().decode(Self.self, from: Data(contentsOf: directory.appendingPathComponent("manifest.json")))
+        try load(from: directory, cloudEgress: false)
+    }
+
+    static func load(from directory: URL, cloudEgress: Bool) throws -> GuestArtifacts {
+        let url = directory.appendingPathComponent("manifest.json")
+        let data: Data
+        if cloudEgress {
+            let values = try url.resourceValues(forKeys: [.isRegularFileKey, .isSymbolicLinkKey])
+            guard values.isRegularFile == true, values.isSymbolicLink != true else {
+                throw RuntimeError.integrity("cloud egress manifest file")
+            }
+            let file = try FileHandle(forReadingFrom: url)
+            defer { try? file.close() }
+            data = try file.read(upToCount: 64 * 1024 + 1) ?? Data()
+            try requireCloudEgressManifest(data)
+        } else {
+            data = try Data(contentsOf: url)
+        }
+        let manifest = try JSONDecoder().decode(Self.self, from: data)
         if let mode = manifest.bootMode {
             guard ["initramfs", "rootDisk"].contains(mode), mode != "rootDisk" || manifest.systemDisk != nil else { throw RuntimeError.integrity("guest boot profile") }
         }
@@ -50,5 +68,13 @@ public struct GuestArtifacts: Codable, Sendable {
             _ = try ArtifactIntegrity.verify(name: name, expected: hash, directory: directory, maximumBytes: 1024 * 1024 * 1024)
         }
         return manifest
+    }
+
+    package static let cloudEgressManifestSHA256 = "ac33d360a1f24ee89e10fc07ea218079280c5ed8812a1651fdeceeace00909c5"
+
+    static func requireCloudEgressManifest(_ data: Data) throws {
+        guard data.count <= 64 * 1024, ArtifactIntegrity.sha256(data) == cloudEgressManifestSHA256 else {
+            throw RuntimeError.integrity("cloud egress manifest digest")
+        }
     }
 }

@@ -10,8 +10,21 @@ import Foundation
         return nil
     }
     static func make() -> DesktopRuntime {
-        let paths = diagnosticsDirectory.map { ManagedRuntimePaths(root: $0.appendingPathComponent("State", isDirectory: true)) } ?? .applicationDefault
-        let account = diagnosticsDirectory == nil ? "dedicated-guest-session" : "native-diagnostics-" + UUID().uuidString
-        return DesktopRuntime(artifacts: Bundle.main.resourceURL!.appendingPathComponent("Guest"), paths: paths, vault: KeychainSessionVault(account: account))
+        let diagnostics = diagnosticsDirectory
+        let cloudEgress = diagnostics == nil && CommandLine.arguments.contains("--cloud-egress")
+        let paths: ManagedRuntimePaths
+        let account: String
+        if let diagnostics {
+            paths = ManagedRuntimePaths(root: diagnostics.appendingPathComponent("State", isDirectory: true))
+            account = "native-diagnostics-" + UUID().uuidString
+        } else if cloudEgress {
+            paths = ManagedRuntimePaths(root: ManagedRuntimePaths.applicationDefault.root.appendingPathExtension("cloud-preview"))
+            account = "cloud-preview-guest-session"
+        } else {
+            paths = .applicationDefault
+            account = "dedicated-guest-session"
+        }
+        return DesktopRuntime(artifacts: Bundle.main.resourceURL!.appendingPathComponent("Guest"),
+                              paths: paths, vault: KeychainSessionVault(account: account), cloudEgress: cloudEgress)
     }
 }

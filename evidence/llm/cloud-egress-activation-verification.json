@@ -1,0 +1,44 @@
+{
+  "manifestSHA256": "ac33d360a1f24ee89e10fc07ea218079280c5ed8812a1651fdeceeace00909c5",
+  "signedProbeSHA256": "73fbfb82e6b207c7f8f2317a381b8bab847d8b257dd8c58a3a428f385f52cade",
+  "signedPreviewExecutableSHA256": "83c6c3064b7f17c5c61b8df84bea035d2a0dcc853e3e4c9ef5231e438736f578",
+  "desktopRuntime": [
+    "PASS desktop_cloud_egress=disabled auth_ready=true stopped=true nic=0 shares=0",
+    "PASS desktop_cloud_egress=enabled auth_ready=true stopped=true nic=0 shares=0",
+    "PASS cloud_preview_tampered_manifest_rejected_before_boot=true"
+  ],
+  "syntheticFourProviderRegression": {
+    "fixture": {
+      "cancelled": 1,
+      "completed": [
+        "openai.chat",
+        "anthropic.messages",
+        "gemini.chat",
+        "groq.chat"
+      ],
+      "denied": 0,
+      "held": 1,
+      "models": [
+        "openai.models",
+        "anthropic.models",
+        "gemini.models",
+        "groq.models"
+      ]
+    },
+    "machineStopped": true,
+    "manifestSHA256": "ac33d360a1f24ee89e10fc07ea218079280c5ed8812a1651fdeceeace00909c5",
+    "passed": true,
+    "stage": "complete"
+  },
+  "checks": {
+    "swiftPassed": 1047,
+    "swiftSkipped": 1,
+    "pythonPassed": 193,
+    "releaseArm64BundleStrictSignature": true,
+    "releaseDiagnosticRefused": true,
+    "localizationExportCheck": true,
+    "liveProviderRequests": 0,
+    "guiLaunchVerified": false,
+    "hostedCI": "unverified"
+  }
+}

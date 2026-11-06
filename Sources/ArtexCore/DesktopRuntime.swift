@@ -32,10 +32,11 @@ public struct ManagedRuntimePaths: Sendable {
     public private(set) var failure: AppErrorMessage?
     public let paths: ManagedRuntimePaths
     @ObservationIgnored private let artifacts: URL
+    @ObservationIgnored private let cloudEgress: Bool
     @ObservationIgnored private let vault: any SessionVault
     @ObservationIgnored private var generation = UUID()
-    public init(artifacts: URL, paths: ManagedRuntimePaths = .applicationDefault, vault: any SessionVault) {
-        self.artifacts = artifacts; self.paths = paths; self.vault = vault
+    public init(artifacts: URL, paths: ManagedRuntimePaths = .applicationDefault, vault: any SessionVault, cloudEgress: Bool = false) {
+        self.artifacts = artifacts; self.paths = paths; self.vault = vault; self.cloudEgress = cloudEgress
     }
     public func start() async {
         guard !isStarting, controller.mayStart else { return }
@@ -46,7 +47,7 @@ public struct ManagedRuntimePaths: Sendable {
             try paths.prepareDirectories()
             _ = try PersistentGuestDisk.createIfMissing(at: paths.disk, byteCount: 2 * 1024 * 1024 * 1024)
             let provisioning = try GuestProvisioning.generate()
-            try await controller.start(artifacts: artifacts, logs: paths.logs, readinessTimeout: .seconds(120), dataDisk: paths.disk, provisioning: provisioning)
+            try await controller.start(artifacts: artifacts, logs: paths.logs, readinessTimeout: .seconds(120), dataDisk: paths.disk, provisioning: provisioning, cloudEgress: cloudEgress)
             for _ in 0..<1300 {
                 guard generation == operation, !Task.isCancelled else { return }
                 if controller.guestReady || controller.state == .failed || controller.state == .stopped { break }
@@ -54,6 +55,7 @@ public struct ManagedRuntimePaths: Sendable {
             }
             guard generation == operation else { return }
             guard controller.guestReady else { throw RuntimeError.timeout(controller.lastError ?? "ARTEX backend startup") }
+            if cloudEgress { try controller.enableCloudEgress() }
             let session = AuthenticationSession(client: BackendJSONClient(runtime: controller, provisioning: provisioning), vault: vault, setupToken: provisioning.setupToken)
             authentication = session
             await session.refresh()

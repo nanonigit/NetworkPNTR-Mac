@@ -24,6 +24,7 @@ import Virtualization
     @ObservationIgnored private var logURL: URL?
     @ObservationIgnored private var backendConnections: [UUID: VZVirtioSocketConnection] = [:]
     @ObservationIgnored private var backendUploads: [UUID: BackendUploadSocket] = [:]
+    @ObservationIgnored private var cloudEgressAuthorized = false
     @ObservationIgnored private var cloudEgressListener: CloudEgressVMListener?
     private var forceStopping = false
     private var cooperativeStopping = false
@@ -35,7 +36,9 @@ import Virtualization
     @ObservationIgnored private var pendingConnections: [UUID: CheckedContinuation<UUID, Error>] = [:]
     public var mayStart: Bool { state.canStart && machine == nil && !forceStopping && !cooperativeStopping }
     public var hasMachine: Bool { machine != nil }
+    package var cloudEgressActive: Bool { cloudEgressListener != nil }
     package func enableCloudEgress() throws {
+        guard cloudEgressAuthorized else { throw RuntimeError.integrity("cloud egress boot authorization") }
         try enableCloudEgress(upstream: CloudEgressTransport.exchangeFromBroker)
     }
 
@@ -62,15 +65,17 @@ import Virtualization
     private func disableCloudEgress() {
         cloudEgressListener?.stop()
         cloudEgressListener = nil
+        cloudEgressAuthorized = false
     }
-    public func start(artifacts directory: URL, logs: URL, readinessTimeout: Duration = .seconds(60), dataDisk: URL? = nil, provisioning: GuestProvisioning? = nil) async throws {
+    public func start(artifacts directory: URL, logs: URL, readinessTimeout: Duration = .seconds(60), dataDisk: URL? = nil, provisioning: GuestProvisioning? = nil, cloudEgress: Bool = false) async throws {
         guard mayStart else { throw RuntimeError.invalidTransition(state.rawValue, "starting") }
         runtimeFeatures = GuestRuntimeFeatures()
         try state.transition(to: .starting)
         lastError = nil; failure = nil; guestReady = false; guestLog = ""; lastStopInterruptedTransferCount = 0
         do {
             guard VZVirtualMachine.isSupported else { throw RuntimeError.unsupported }
-            let manifest = try GuestArtifacts.load(from: directory)
+            let manifest = try GuestArtifacts.load(from: directory, cloudEgress: cloudEgress)
+            cloudEgressAuthorized = cloudEgress
             runtimeFeatures = GuestRuntimeFeatures(trafficBlobExportDeclared: manifest.declaresTrafficBlobExport)
             guard (manifest.systemDisk == nil) == (dataDisk == nil), (manifest.systemDisk == nil) == (provisioning == nil) else {
                 throw RuntimeError.integrity("backend provisioning and data disk")

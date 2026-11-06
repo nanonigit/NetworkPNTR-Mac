@@ -15,7 +15,7 @@ import Foundation
     }
 
     #if DEBUG
-    private static let manifestDigest = "ac33d360a1f24ee89e10fc07ea218079280c5ed8812a1651fdeceeace00909c5"
+    private static let manifestDigest = GuestArtifacts.cloudEgressManifestSHA256
     private static let version = "artex-mac-e75ae371-cloud5"
     private static let providers = LLMCloudProvider.allCases
 

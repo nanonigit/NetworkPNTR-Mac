@@ -573,3 +573,12 @@ and version headers and its native Messages events. The same isolated
 guest passed the held-stream cancellation and stopped-log audits. Live API
 acceptance, normal app activation and native/browser comparison remain open.
 Publication uses [skip ci].
+
+CP3-C preview startup checkpoint. The regular DesktopRuntime enables the
+production listener only for an explicit launch opt-in and the exact
+verified manifest. The app preview uses a separate state and Keychain
+account. Signed VM probes pass enabled and disabled boots, tamper refusal,
+cooperative stop and the four-provider synthetic regression. The ARM64
+Release preview was bundled and strictly signature-verified. GUI, real
+provider calls and frozen-browser parity remain open. Publication uses
+[skip ci].
