@@ -1,4 +1,5 @@
 import concurrent.futures
+import hashlib
 import os
 from pathlib import Path
 import shutil
@@ -24,11 +25,11 @@ class CloudEgressTransportTests(unittest.TestCase):
         cls.work = Path(temp.name)
         cls.binary = cls.work / "tls-fixture"
         subprocess.run([
-            "xcrun", "clang", "-Wall", "-Wextra", "-Werror", "-DARTEX_CLOUD_TLS_FIXTURE",
+            "xcrun", "clang", "-Wall", "-Wextra", "-Werror", "-Wno-deprecated-declarations", "-DARTEX_CLOUD_TLS_FIXTURE",
             "-I", str(ROOT / "Sources/ArtexCloudTLS/include"),
             str(ROOT / "Sources/ArtexCloudTLS/ArtexCloudTLS.c"),
             str(ROOT / "Tests/GuestArtifactTests/fixtures/cloud_tls_client.c"),
-            "-lcurl", "-o", str(cls.binary),
+            "-framework", "Security", "-framework", "CoreFoundation", "-o", str(cls.binary),
         ], check=True, capture_output=True, timeout=20)
         commands = [
             ["req", "-x509", "-newkey", "rsa:2048", "-nodes", "-days", "2",
@@ -43,17 +44,19 @@ class CloudEgressTransportTests(unittest.TestCase):
         )
         for command in commands:
             subprocess.run(["openssl", *command], cwd=cls.work, check=True, capture_output=True, timeout=10)
+        subprocess.run(["openssl", "x509", "-in", "ca.pem", "-outform", "der", "-out", "ca.der"],
+                       cwd=cls.work, check=True, capture_output=True, timeout=10)
         cls.context = ssl.SSLContext(ssl.PROTOCOL_TLS_SERVER)
         cls.context.load_cert_chain(cls.work / "server.pem", cls.work / "server.key")
 
     def client(self, port, host="egress.test", trusted=True, timeout=2000, limit=4096, mode="normal", env=None):
-        anchor = str(self.work / "ca.pem") if trusted else "-"
+        anchor = str(self.work / "ca.der") if trusted else "-"
         return subprocess.run(
             [str(self.binary), host, str(port), anchor, str(timeout), str(limit), mode],
             env=env, capture_output=True, timeout=5,
         )
 
-    def exchange(self, serve, *, tls=True, **client_options):
+    def exchange(self, serve, *, tls=True, tls_context=None, **client_options):
         with socket.socket() as listener, concurrent.futures.ThreadPoolExecutor(max_workers=1) as executor:
             listener.bind(("127.0.0.1", 0))
             listener.listen(1)
@@ -65,7 +68,7 @@ class CloudEgressTransportTests(unittest.TestCase):
                     connection.settimeout(3)
                     if tls:
                         try:
-                            stream = self.context.wrap_socket(connection, server_side=True)
+                            stream = (tls_context or self.context).wrap_socket(connection, server_side=True)
                         except ssl.SSLError:
                             return b""
                         with stream:
@@ -109,6 +112,42 @@ class CloudEgressTransportTests(unittest.TestCase):
         self.assertIn(b"Host: egress.test\r\n", request)
         self.assertEqual(request.partition(b"\r\n\r\n")[2], b'{"model":"fixture"}')
 
+    def test_large_post_flushes_under_socket_backpressure(self):
+        expected_size = 8 * 1024 * 1024
+
+        def serve(stream):
+            time.sleep(0.08)
+            body = self.request(stream).partition(b"\r\n\r\n")[2]
+            digest = hashlib.sha256(body)
+            received = len(body)
+            while received < expected_size:
+                chunk = stream.recv(65536)
+                if not chunk:
+                    break
+                received += len(chunk)
+                digest.update(chunk)
+            stream.sendall(HEAD + b"first-second")
+            try:
+                stream.unwrap()
+            except OSError:
+                pass
+            return received, digest.digest()
+
+        result, received = self.exchange(serve, mode="large-post", timeout=3000)
+        self.assertEqual(result.returncode, 0, result.stderr)
+        self.assertEqual(received, (expected_size, hashlib.sha256(b"q" * expected_size).digest()))
+        self.assertEqual(result.stdout, HEAD + b"first-second")
+
+    def test_tls_close_without_notify_reports_failure(self):
+        def truncate(stream):
+            request = self.request(stream)
+            stream.sendall(HEAD + b"first-")
+            return request
+
+        result, request = self.exchange(truncate)
+        self.assertTrue(request)
+        self.assertEqual(result.returncode, 3, result.stderr)
+
     def test_wrong_name_and_untrusted_chain_send_no_request(self):
         for options in ({"host": "wrong.test"}, {"trusted": False}):
             with self.subTest(options=options):
@@ -116,6 +155,62 @@ class CloudEgressTransportTests(unittest.TestCase):
                 self.assertEqual(result.returncode, 2, result.stderr)
                 self.assertEqual(request, b"")
                 self.assertEqual(result.stdout, b"")
+
+    def test_transport_owns_the_no_network_trust_policy(self):
+        symbols = subprocess.run(["nm", "-u", str(self.binary)], check=True, capture_output=True, timeout=5).stdout
+        self.assertIn(b"_SecTrustSetNetworkFetchAllowed", symbols)
+        self.assertIn(b"_SecPolicyCreateRevocation", symbols)
+
+    def test_missing_intermediate_does_not_fetch_and_complete_chain_works(self):
+        def openssl(*args):
+            subprocess.run(["openssl", *args], cwd=self.work, check=True, capture_output=True, timeout=10)
+
+        with socket.socket() as sentinel:
+            sentinel.bind(("127.0.0.1", 0))
+            sentinel.listen(1)
+            sentinel.settimeout(0.25)
+            url = f"http://127.0.0.1:{sentinel.getsockname()[1]}"
+            (self.work / "intermediate.ext").write_text(
+                "basicConstraints=critical,CA:TRUE,pathlen:0\nkeyUsage=critical,keyCertSign,cRLSign\n", encoding="ascii",
+            )
+            (self.work / "network-hints.ext").write_text(
+                "subjectAltName=DNS:egress.test\nextendedKeyUsage=serverAuth\nbasicConstraints=CA:FALSE\n"
+                f"authorityInfoAccess=caIssuers;URI:{url}/issuer,OCSP;URI:{url}/status\n"
+                f"crlDistributionPoints=URI:{url}/revocation\n", encoding="ascii",
+            )
+            openssl("req", "-newkey", "rsa:2048", "-nodes", "-subj", "/CN=ARTEX Fixture Intermediate",
+                    "-keyout", "intermediate.key", "-out", "intermediate.csr")
+            openssl("x509", "-req", "-in", "intermediate.csr", "-CA", "ca.pem", "-CAkey", "ca.key",
+                    "-CAcreateserial", "-days", "1", "-extfile", "intermediate.ext", "-out", "intermediate.pem")
+            openssl("x509", "-req", "-in", "server.csr", "-CA", "intermediate.pem", "-CAkey", "intermediate.key",
+                    "-CAcreateserial", "-days", "1", "-extfile", "network-hints.ext", "-out", "network-leaf.pem")
+            chain = self.work / "network-chain.pem"
+            chain.write_bytes((self.work / "network-leaf.pem").read_bytes() + (self.work / "intermediate.pem").read_bytes())
+
+            missing = ssl.SSLContext(ssl.PROTOCOL_TLS_SERVER)
+            missing.load_cert_chain(self.work / "network-leaf.pem", self.work / "server.key")
+            result, request = self.exchange(self.request, tls_context=missing)
+            self.assertEqual(result.returncode, 2, result.stderr)
+            self.assertEqual(request, b"")
+            self.assertEqual(result.stdout, b"")
+
+            def answer(stream):
+                request = self.request(stream)
+                stream.sendall(HEAD + b"first-second")
+                try:
+                    stream.unwrap()
+                except OSError:
+                    pass
+                return request
+
+            complete = ssl.SSLContext(ssl.PROTOCOL_TLS_SERVER)
+            complete.load_cert_chain(chain, self.work / "server.key")
+            result, request = self.exchange(answer, tls_context=complete)
+            self.assertEqual(result.returncode, 0, result.stderr)
+            self.assertTrue(request.startswith(b"GET /v1/models "))
+            self.assertEqual(result.stdout, HEAD + b"first-second")
+            with self.assertRaises(TimeoutError):
+                sentinel.accept()
 
     def test_held_tls_handshake_is_cancelled(self):
         def hold(connection):

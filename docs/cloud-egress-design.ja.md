@@ -8,6 +8,6 @@ OpenAI・Gemini・Groqのモデル一覧とChat Completions、OpenAI Responses�
 
 Aで要求とDNSを検査し、数値IPとTLSのホスト名照合を通信なしで試験する。Bで直接接続とフレーム化したvsock、ストリーミング応答を実装し、キャンセル、上限、VMの起動停止と結び付ける。Cで署名済みの実VMを使い、直接接続不可、拒否要求の送信0、vsock経由の正常ストリーム、停止時の通信終了を確認する。Dでアプリから入力したキーを使い、4社の実APIを試験する。共通操作は固定ブラウザ版と比較し、英語と日本語の画面は別途受入試験を行う。
 
-直接接続の実装ではプロキシを明示的に無効にし、要求本文を送信する前に実ソケットのIPとポートを照合する。Network.frameworkのプロキシ優先設定は、失敗時に設定済みのプロキシへ切り替わる場合がある。macOS付属のlibcurl候補では、接続先を単一の数値IPに固定し、空のプロキシ設定を明示し、固定HTTPS URLのホスト名で証明書を照合する。リスナーをつなぐ前に、TLSの正常接続と、プロキシ設定中に直接接続が失敗する場合の両方を試験する。[Apple Technical Support](https://developer.apple.com/forums/thread/828775)・[プロキシ制御](https://curl.se/libcurl/c/CURLOPT_PROXY.html)・[アドレス固定](https://curl.se/libcurl/c/CURLOPT_RESOLVE.html)
+直接接続ではプロキシ選択を経由せず、要求を送信する前に実ソケットのIPとポートを照合する。Network.frameworkのプロキシ優先設定は、失敗時に設定済みのプロキシへ切り替わる場合がある。初期のlibcurl診断で直接TLS接続を確認した。[現在の通信設計](cloud-egress-transport-design.ja.md)は、ワーカーが所有するTCPソケットと明示的なオフライン証明書検証を使う。[Apple Technical Support](https://developer.apple.com/forums/thread/828775)
 
 IP判定はIANAの[IPv4](https://www.iana.org/assignments/iana-ipv4-special-registry/)と[IPv6](https://www.iana.org/assignments/iana-ipv6-special-registry/)の登録を参照する。特殊用途の範囲は、登録上グローバル到達可能な例外を含めて拒否する。

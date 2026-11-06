@@ -43,13 +43,24 @@ int main(int argc, char **argv) {
     if (strcmp(argv[6], "cancel-dial") == 0) state.cancel_at = now_ms() + 500;
     const char *header = "GET /v1/models HTTP/1.1\r\nHost: egress.test\r\nConnection: close\r\n\r\n";
     const char *body = "";
+    size_t body_size = 0;
+    char *allocated = NULL;
     if (strcmp(argv[6], "post") == 0) {
         header = "POST /v1/chat/completions HTTP/1.1\r\nHost: egress.test\r\nContent-Length: 19\r\nConnection: close\r\n\r\n";
         body = "{\"model\":\"fixture\"}";
+        body_size = strlen(body);
+    } else if (strcmp(argv[6], "large-post") == 0) {
+        header = "POST /v1/chat/completions HTTP/1.1\r\nHost: egress.test\r\nContent-Length: 8388608\r\nConnection: close\r\n\r\n";
+        body_size = 8 * 1024 * 1024;
+        allocated = malloc(body_size);
+        if (!allocated) return 65;
+        memset(allocated, 'q', body_size);
+        body = allocated;
     }
     artx_cloud_result result = artx_cloud_tls_fixture(
         &options, strcmp(argv[3], "-") == 0 ? NULL : argv[3],
-        (const uint8_t *)header, strlen(header), (const uint8_t *)body, strlen(body), cancelled, receive, &state);
+        (const uint8_t *)header, strlen(header), (const uint8_t *)body, body_size, cancelled, receive, &state);
+    free(allocated);
     fprintf(stderr, "result=%d chunks=%u\n", result, state.chunks);
     return result;
 }

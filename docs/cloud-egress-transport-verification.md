@@ -1,5 +1,7 @@
 # Direct cloud transport verification
 
+This records the initial libcurl worker at `58b37f2`. See [offline trust verification](cloud-egress-offline-trust-verification.md) for the current backend.
+
 The Swift worker accepts only a generated provider request and an admitted numeric destination for the same hostname on port 443. The C transport pins that destination before opening a socket and checks its connected peer again before sending the header and body. It uses connect-only TLS, disables proxies and redirects, and closes its owned handles on failure, cancellation and completion. Custom sockets carry close-on-exec and no-SIGPIPE flags.
 
 The macOS loopback suite compiles the same C transport and a fixture-only trust-anchor entry. It transfers an exact POST body and streamed response, rejects the wrong hostname and an untrusted chain with zero HTTP bytes at the peer, closes a held handshake and a held response, rejects an oversized response, and observes zero connections to a configured proxy on direct failure. The Swift tests verify mismatched routing and cancellation before dialing. The [receipt](../evidence/llm/cloud-egress-transport-verification.json) records the inputs and local results.
