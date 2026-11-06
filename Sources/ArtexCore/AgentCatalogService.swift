@@ -61,16 +61,33 @@ public struct AgentCatalogEntry: Decodable, Identifiable, Sendable {
     public init(client: any BackendJSONTransport) { self.client = client }
 
     public func list() async throws -> [AgentCatalogEntry] {
-        try Task.checkCancellation()
-        let response = try await client.send(method: "GET", path: "/api/agents", body: nil, bearer: nil)
-        try Task.checkCancellation()
-        guard response.status == 200 else { throw BackendAPIError.status(response.status) }
-
-        let agents = try BackendJSONCoding.decode(Envelope.self, from: response.body).agents
+        let agents = try await fetch(Envelope.self, path: "/api/agents").agents
         guard agents.allSatisfy({ !$0.key.isEmpty }),
               Set(agents.map(\.key)).count == agents.count else {
             throw BackendAPIError.invalidResponse
         }
         return agents
+    }
+
+    public func promptDetails(key: String) async throws -> AgentPromptDetails {
+        guard let first = key.utf8.first, (97...122).contains(first),
+              key.utf8.dropFirst().allSatisfy({ (97...122).contains($0) || (48...57).contains($0) || $0 == 95 }) else {
+            throw BackendAPIError.invalidResponse
+        }
+        let detail = try await fetch(AgentPromptDetails.self, path: "/api/agents/\(key)")
+        guard detail.key == key,
+              detail.versions.allSatisfy({ $0.version > 0 }),
+              Set(detail.versions.map(\.version)).count == detail.versions.count else {
+            throw BackendAPIError.invalidResponse
+        }
+        return detail
+    }
+
+    private func fetch<T: Decodable>(_ type: T.Type, path: String) async throws -> T {
+        try Task.checkCancellation()
+        let response = try await client.send(method: "GET", path: path, body: nil, bearer: nil)
+        try Task.checkCancellation()
+        guard response.status == 200 else { throw BackendAPIError.status(response.status) }
+        return try BackendJSONCoding.decode(type, from: response.body)
     }
 }

@@ -1,6 +1,465 @@
 {
   "sourceLanguage": "en",
   "strings": {
+    "agent.detail.example": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Example: {example}"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "例: {example}"
+          }
+        }
+      }
+    },
+    "agent.variable.global.Now": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Current server time, updated each time the prompt is rendered."
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "プロンプトの展開時に更新される現在のサーバー時刻です。"
+          }
+        }
+      }
+    },
+    "agent.variable.global.DataDir": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Root directory for task and conversation artifacts on the server."
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "サーバー上のタスクと会話の成果物を格納するルートディレクトリです。"
+          }
+        }
+      }
+    },
+    "agent.variable.goals.EngagementDescription": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Engagement description (target / background)"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "案件の説明(テスト対象/背景)"
+          }
+        }
+      }
+    },
+    "agent.variable.planner.Goal": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Overall task goal"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "案件全体の目標"
+          }
+        }
+      }
+    },
+    "agent.variable.planner.AssetSummary": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Asset count / type-distribution summary (optional)"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "資産数/タイプ分布の要約(任意)"
+          }
+        }
+      }
+    },
+    "agent.variable.mainagent.Goal": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Current task goal"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "現在の案件の目標"
+          }
+        }
+      }
+    },
+    "agent.variable.mainagent.AssetSummary": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Opening-situation summary (optional)"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "初期状況の要約(任意)"
+          }
+        }
+      }
+    },
+    "agent.variable.mainagent.FindingsSummary": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Confirmed-findings summary (optional)"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "確認済み脆弱性の要約(任意)"
+          }
+        }
+      }
+    },
+    "agent.variable.worker.ProxyAddr": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Recording proxy address (drives the if-branch wording)"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "記録プロキシのアドレス(if 分岐の文言を決定)"
+          }
+        }
+      }
+    },
+    "agent.variable.worker.WorkerName": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Worker self-identifier (optional)"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "worker の自己識別子(任意)"
+          }
+        }
+      }
+    },
+    "agent.detail.readOnly": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "View saved prompts and versions. Editing is planned for a later phase."
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "保存済みのプロンプトと履歴を確認できます。編集は今後の段階で対応します。"
+          }
+        }
+      }
+    },
+    "agent.detail.section": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Detail section"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "詳細の項目"
+          }
+        }
+      }
+    },
+    "agent.detail.prompt": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Prompt"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "プロンプト"
+          }
+        }
+      }
+    },
+    "agent.detail.failed": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Unable to load agent details"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "エージェントの詳細を読み込めませんでした"
+          }
+        }
+      }
+    },
+    "agent.detail.loading": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Loading agent details…"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "エージェントの詳細を読み込み中…"
+          }
+        }
+      }
+    },
+    "agent.detail.variables": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Variables"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "変数"
+          }
+        }
+      }
+    },
+    "agent.detail.rounds": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Effective round limit"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "適用される最大ラウンド数"
+          }
+        }
+      }
+    },
+    "agent.detail.wrapUp": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Wrap-up prompt"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "締めくくりプロンプト"
+          }
+        }
+      }
+    },
+    "agent.detail.taskTimeout": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Task timeout wrap-up prompt body"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "タスクのタイムアウト時の締めくくりプロンプト本文"
+          }
+        }
+      }
+    },
+    "agent.detail.versions": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Version history"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "バージョン履歴"
+          }
+        }
+      }
+    },
+    "agent.detail.noVersions": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "(no saved versions yet; using the built-in default)"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "（保存されたバージョンはまだなく、組み込みの既定値を使用しています）"
+          }
+        }
+      }
+    },
+    "agent.detail.current": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Current"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "現在"
+          }
+        }
+      }
+    },
+    "agent.detail.empty": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "(empty)"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "（空）"
+          }
+        }
+      }
+    },
+    "agent.detail.usesDefault": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Use built-in default"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "組み込みの既定値を使用"
+          }
+        }
+      }
+    },
+    "agent.detail.builtIn": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Built-in default (read-only, for reference)"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "組み込みの既定値（読み取り専用、参考用）"
+          }
+        }
+      }
+    },
+    "agent.detail.noVariables": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "(no variables)"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "（変数なし）"
+          }
+        }
+      }
+    },
     "agent.seed.reporter.name": {
       "extractionState": "manual",
       "localizations": {
@@ -177,13 +636,13 @@
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "View agents and their binding counts. Editing is planned for a later phase."
+            "value": "View agents, their binding counts, and saved prompts."
           }
         },
         "ja": {
           "stringUnit": {
             "state": "translated",
-            "value": "エージェントと紐付け件数を確認できます。編集は今後の段階で対応します。"
+            "value": "エージェント、紐付け件数、保存済みプロンプトを確認できます。"
           }
         }
       }

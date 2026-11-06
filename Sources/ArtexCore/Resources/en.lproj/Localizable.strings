@@ -23,13 +23,47 @@
 	<key>agent.catalog.noDescription</key>
 	<string>(no description)</string>
 	<key>agent.catalog.readOnly</key>
-	<string>View agents and their binding counts. Editing is planned for a later phase.</string>
+	<string>View agents, their binding counts, and saved prompts.</string>
 	<key>agent.catalog.refresh</key>
 	<string>Reload agents</string>
 	<key>agent.catalog.skill</key>
 	<string>Skill</string>
 	<key>agent.catalog.tools</key>
 	<string>Tools</string>
+	<key>agent.detail.builtIn</key>
+	<string>Built-in default (read-only, for reference)</string>
+	<key>agent.detail.current</key>
+	<string>Current</string>
+	<key>agent.detail.empty</key>
+	<string>(empty)</string>
+	<key>agent.detail.example</key>
+	<string>Example: {example}</string>
+	<key>agent.detail.failed</key>
+	<string>Unable to load agent details</string>
+	<key>agent.detail.loading</key>
+	<string>Loading agent details…</string>
+	<key>agent.detail.noVariables</key>
+	<string>(no variables)</string>
+	<key>agent.detail.noVersions</key>
+	<string>(no saved versions yet; using the built-in default)</string>
+	<key>agent.detail.prompt</key>
+	<string>Prompt</string>
+	<key>agent.detail.readOnly</key>
+	<string>View saved prompts and versions. Editing is planned for a later phase.</string>
+	<key>agent.detail.rounds</key>
+	<string>Effective round limit</string>
+	<key>agent.detail.section</key>
+	<string>Detail section</string>
+	<key>agent.detail.taskTimeout</key>
+	<string>Task timeout wrap-up prompt body</string>
+	<key>agent.detail.usesDefault</key>
+	<string>Use built-in default</string>
+	<key>agent.detail.variables</key>
+	<string>Variables</string>
+	<key>agent.detail.versions</key>
+	<string>Version history</string>
+	<key>agent.detail.wrapUp</key>
+	<string>Wrap-up prompt</string>
 	<key>agent.seed.auto.description</key>
 	<string>Platform operations assistant: uses tools to manage tasks (create / view / pause / hint) and assets, and can create or modify skills, custom tools, and MCP.</string>
 	<key>agent.seed.auto.name</key>
@@ -62,6 +96,26 @@
 	<string>Picks up a single intent and executes it, writing discovered facts / vulnerabilities back to the knowledge graph before stopping.</string>
 	<key>agent.seed.worker.name</key>
 	<string>Execution</string>
+	<key>agent.variable.global.DataDir</key>
+	<string>Root directory for task and conversation artifacts on the server.</string>
+	<key>agent.variable.global.Now</key>
+	<string>Current server time, updated each time the prompt is rendered.</string>
+	<key>agent.variable.goals.EngagementDescription</key>
+	<string>Engagement description (target / background)</string>
+	<key>agent.variable.mainagent.AssetSummary</key>
+	<string>Opening-situation summary (optional)</string>
+	<key>agent.variable.mainagent.FindingsSummary</key>
+	<string>Confirmed-findings summary (optional)</string>
+	<key>agent.variable.mainagent.Goal</key>
+	<string>Current task goal</string>
+	<key>agent.variable.planner.AssetSummary</key>
+	<string>Asset count / type-distribution summary (optional)</string>
+	<key>agent.variable.planner.Goal</key>
+	<string>Overall task goal</string>
+	<key>agent.variable.worker.ProxyAddr</key>
+	<string>Recording proxy address (drives the if-branch wording)</string>
+	<key>agent.variable.worker.WorkerName</key>
+	<string>Worker self-identifier (optional)</string>
 	<key>auth.acceptTerms</key>
 	<string>Agree</string>
 	<key>auth.agree</key>

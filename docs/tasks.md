@@ -631,3 +631,11 @@ The signed-in Agents screen must list every guest agent in the same order as the
 Use the authenticated guest `GET /api/agents` and an adaptive card grid. The pinned browser supplies the field and localization contract. Lazyweb's Superhuman Agents desktop result supplied a secondary reference for grouping names, descriptions and metadata inside cards. Display load failure separately from an empty catalog and keep mutations and prompt editing outside this checkpoint.
 
 Test the wire shape, order, optional fields, invalid responses, cancellation and language behavior first. Then build the native screen and compare it against the frozen browser source. Record actual paired GUI and editor acceptance separately.
+
+### P4 Agent prompt details
+
+A signed-in user must be able to open an agent card and inspect the current prompt, its variables and version history, plus the normal and supported task-timeout wrap-up prompts and round budgets. Display stored prompt bytes as text, including user-authored language and spacing.
+
+Use an authenticated detail GET, require the response to name the requested agent, and cancel obsolete loads on dismissal. The frozen editor drawer supplies the tab order and content. Lazyweb's audit-history references support separating the version list from the selected version text. Use a native sheet with Prompt and Wrap-up tabs, and a disclosure row for each saved version. Write, restore, diff, configuration and binding controls remain separate tasks.
+
+Verify route validation, response identity, preservation of literals, version ordering and defaults, server status, cancellation, native navigation and the disposable pinned backend.

@@ -12,6 +12,7 @@ import SwiftUI
     @Environment(\.locale) private var locale
     @State private var state: LoadState = .loading
     @State private var reload = 0
+    @State private var selectedAgent: AgentCatalogEntry?
 
     private var language: AppLanguage { AppLanguage.preferred(in: [locale.identifier]) }
 
@@ -42,6 +43,12 @@ import SwiftUI
         .padding()
         .navigationTitle(s(.agents))
         .task(id: reload) { await load() }
+        .sheet(item: $selectedAgent) { agent in
+            AgentPromptDetailsView(agent: agent, service: AgentCatalogService(
+                client: AuthenticatedBackendClient(session: session)
+            ))
+            .environment(\.locale, locale)
+        }
     }
 
     private func catalog(_ agents: [AgentCatalogEntry]) -> some View {
@@ -55,7 +62,11 @@ import SwiftUI
             } else {
                 ScrollView {
                     LazyVGrid(columns: [GridItem(.adaptive(minimum: 250), alignment: .top)], spacing: 12) {
-                        ForEach(agents) { agent in card(agent) }
+                        ForEach(agents) { agent in
+                            Button { selectedAgent = agent } label: { card(agent) }
+                                .buttonStyle(.plain)
+                                .accessibilityIdentifier("agent-card-\(agent.key)")
+                        }
                     }
                 }
             }
@@ -86,8 +97,7 @@ import SwiftUI
         .frame(maxWidth: .infinity, alignment: .leading)
         .background(Color.primary.opacity(0.03), in: .rect(cornerRadius: 8))
         .overlay { RoundedRectangle(cornerRadius: 8).strokeBorder(.quaternary) }
-        .accessibilityElement(children: .contain)
-        .accessibilityIdentifier("agent-card-\(agent.key)")
+        .contentShape(Rectangle())
     }
 
     @ViewBuilder private func counts(_ agent: AgentCatalogEntry) -> some View {

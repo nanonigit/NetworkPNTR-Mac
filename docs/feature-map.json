@@ -170,10 +170,11 @@
       ],
       "evidence": [
         "Tests/ArtexCoreTests/AgentCatalogTests.swift",
-        "docs/agents-catalog-verification.md"
+        "docs/agents-catalog-verification.md",
+        "docs/agent-prompt-details-verification.md"
       ],
       "remainingGates": [
-        "Agent details and editor including prompts, variables, settings and bindings",
+        "Agent editing, version diff and restore, settings and bindings",
         "Creation, deletion, persistence and error recovery",
         "Paired native/browser catalog and editor UI acceptance"
       ]
