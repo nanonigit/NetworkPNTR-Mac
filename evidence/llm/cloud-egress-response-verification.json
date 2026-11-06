@@ -1,0 +1,29 @@
+{
+  "phase": "CP3-B3 cloud HTTP response framing",
+  "frozen_browser_commit": "e75ae371ad777ffd1eecdd28d2781a6519b05591",
+  "input_sha256": {
+    "Sources/ArtexCore/CloudEgressTransport.swift": "4f251f95c28df5ee05b0d07a762a9b8637ec2b6d6430eee318598f0562de1920",
+    "Sources/ArtexCore/CloudEgressResponse.swift": "8572e061aeb82b1b61bc515979c66db8f16f1b0389b2b7a5b1705a8ff4551565",
+    "Tests/ArtexCoreTests/CloudEgressResponseTests.swift": "38d6b89cf5e32c3ebd694d0b851a85281737e8cccbfcc8569066576043df1f4e"
+  },
+  "missing_parser_red_log_sha256": "bc444bb5cca063a55410c891c0dbfdd7615b79b8eafd83ee0f6d2228cb4d0a4a",
+  "unicode_coding_red_log_sha256": "ab79580c9eb49823224832ed9f47baa6e6c8e7f189e2ad4e3459f1b9dd5140f3",
+  "focused_log_sha256": "2623bb50f66e8c57bc77ea67240dbbb84d821e3e296bb242e8d35d002fdf774c",
+  "focused_tests_passed": 6,
+  "partition_checks": [
+    "all single split points",
+    "one byte per input",
+    "all incomplete prefixes"
+  ],
+  "terminal_event_requires_clean_tls_and_valid_http": true,
+  "transport_failure_after_complete_http_emits_no_end": true,
+  "cumulative_decoded_body_cap_bytes": 16777216,
+  "swift_pass": 1040,
+  "swift_skip": 1,
+  "swift_fail": 0,
+  "guest_artifact_python_pass": 193,
+  "release_built": true,
+  "vm_listener_enabled": false,
+  "live_api_requests_sent": 0,
+  "hosted_ci_verified": false
+}

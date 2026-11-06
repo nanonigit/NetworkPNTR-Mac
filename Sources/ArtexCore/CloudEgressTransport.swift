@@ -34,6 +34,18 @@ enum CloudEgressTransport {
         _ request: CloudEgressRequest,
         at destination: CloudEgressDestination,
         cancellation: CloudEgressCancellation,
+        receive: @escaping (CloudEgressResponseEvent) throws -> Void
+    ) throws {
+        try frameResponse(receive: receive) { consume in
+            try exchangeRaw(request, at: destination, cancellation: cancellation, receive: consume)
+            guard !cancellation.isCancelled else { throw CancellationError() }
+        }
+    }
+
+    private static func exchangeRaw(
+        _ request: CloudEgressRequest,
+        at destination: CloudEgressDestination,
+        cancellation: CloudEgressCancellation,
         receive: @escaping (Data) throws -> Void
     ) throws {
         guard !cancellation.isCancelled else { throw CancellationError() }
