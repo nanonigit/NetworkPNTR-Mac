@@ -37,7 +37,7 @@ enum CloudEgressTransport {
         timeout: Duration = .seconds(120),
         receive: @escaping (CloudEgressResponseEvent) throws -> Void
     ) throws {
-        try frameResponse(receive: receive) { consume in
+        try frameResponse(receive: receive, stopAtBoundary: true) { consume in
             try exchangeRaw(request, at: destination, cancellation: cancellation, timeout: timeout, receive: consume)
             guard !cancellation.isCancelled else { throw CancellationError() }
         }
@@ -118,6 +118,8 @@ enum CloudEgressTransport {
                                 do {
                                     try callback.receive(Data(bytes: bytes!, count: count))
                                     return 0
+                                } catch is CloudEgressResponseBoundary {
+                                    return 2
                                 } catch {
                                     callback.failure = error
                                     return 1

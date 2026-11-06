@@ -25,6 +25,8 @@ typedef struct {
 } artx_cloud_options;
 
 typedef int (*artx_cloud_cancelled)(void *context);
+// Return 0 to keep reading, 1 to abort, or 2 when the HTTP parser has
+// accepted the complete response in this buffer.
 typedef int (*artx_cloud_receive)(void *context, const uint8_t *bytes, size_t count);
 
 // Synchronous. Callbacks run on the calling worker. The Swift policy owns

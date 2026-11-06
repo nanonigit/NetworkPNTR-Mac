@@ -33,6 +33,36 @@ final class CloudEgressResponseTests: XCTestCase {
         XCTAssertTrue(events.contains(.body(Data("abc".utf8))))
     }
 
+    func testExplicitBoundaryStopsBeforeTransportClosure() throws {
+        let fixed = Data("HTTP/1.1 400 Bad Request\r\nContent-Length: 3\r\n\r\nabc".utf8)
+        let bodyless = Data("HTTP/1.1 204 No Content\r\n\r\n".utf8)
+        for complete in [fixed, chunked, bodyless] {
+            var events: [CloudEgressResponseEvent] = []
+            try CloudEgressTransport.frameResponse(receive: { events.append($0) }, stopAtBoundary: true) { consume in
+                try consume(complete)
+                XCTFail("The parser should stop waiting after the full explicit boundary")
+                throw CloudEgressTransportError.transferFailed
+            }
+            XCTAssertEqual(events.last, .end)
+            for invalid in [complete.dropLast(), complete + Data([0x20])] {
+                events.removeAll()
+                XCTAssertThrowsError(try CloudEgressTransport.frameResponse(receive: { events.append($0) }, stopAtBoundary: true) { consume in
+                    try consume(invalid)
+                    throw CloudEgressTransportError.transferFailed
+                })
+                XCTAssertFalse(events.contains(.end))
+            }
+        }
+
+        let closeDelimited = Data("HTTP/1.1 200 OK\r\n\r\nabc".utf8)
+        var events: [CloudEgressResponseEvent] = []
+        XCTAssertThrowsError(try CloudEgressTransport.frameResponse(receive: { events.append($0) }, stopAtBoundary: true) { consume in
+            try consume(closeDelimited)
+            throw CloudEgressTransportError.transferFailed
+        })
+        XCTAssertFalse(events.contains(.end))
+    }
+
     func testLengthCloseAndBodylessResponses() throws {
         let cases: [(String, [CloudEgressResponseEvent])] = [
             ("HTTP/1.1 429 Limited\r\nContent-Length: 3\r\nContent-Type: application/json\r\n\r\nabc",

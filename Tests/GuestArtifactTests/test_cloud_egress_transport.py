@@ -138,6 +138,18 @@ class CloudEgressTransportTests(unittest.TestCase):
         self.assertEqual(received, (expected_size, hashlib.sha256(b"q" * expected_size).digest()))
         self.assertEqual(result.stdout, HEAD + b"first-second")
 
+    def test_complete_response_does_not_wait_for_peer_close(self):
+        def hold_open(stream):
+            request = self.request(stream)
+            stream.sendall(HEAD + b"first-second")
+            return request, stream.recv(1)
+
+        result, (request, terminal) = self.exchange(hold_open, mode="finish-at-boundary")
+        self.assertTrue(request)
+        self.assertEqual(terminal, b"")
+        self.assertEqual(result.returncode, 0, result.stderr)
+        self.assertEqual(result.stdout, HEAD + b"first-second")
+
     def test_tls_close_without_notify_reports_failure(self):
         def truncate(stream):
             request = self.request(stream)

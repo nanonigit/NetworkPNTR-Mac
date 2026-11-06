@@ -17,16 +17,26 @@ enum CloudEgressResponseError: Error, Equatable {
     case redirect
 }
 
+struct CloudEgressResponseBoundary: Error {}
+
 extension CloudEgressTransport {
-    // Returning from read is an authenticated TLS completion. No end event is
-    // emitted when the transport or downstream writer fails.
+    // A close-delimited response requires authenticated TLS closure. For a
+    // single-use connection, explicit framing can end the TLS read earlier.
     static func frameResponse(
         receive: @escaping (CloudEgressResponseEvent) throws -> Void,
+        stopAtBoundary: Bool = false,
         read: (_ consume: @escaping (Data) throws -> Void) throws -> Void
     ) throws {
         let parser = CloudEgressResponseFramer(receive: receive)
         defer { parser.invalidate() }
-        try read(parser.consume)
+        do {
+            try read { bytes in
+                try parser.consume(bytes)
+                if stopAtBoundary, parser.hasExplicitBoundary { throw CloudEgressResponseBoundary() }
+            }
+        } catch is CloudEgressResponseBoundary {
+            // Fixture reads use the same signal to stop supplying bytes.
+        }
         try parser.finish()
     }
 }
@@ -120,6 +130,11 @@ private final class CloudEgressResponseFramer {
         case .done, .terminal:
             throw CloudEgressResponseError.invalidFraming
         }
+    }
+
+    var hasExplicitBoundary: Bool {
+        if case .done = phase { return true }
+        return false
     }
 
     func finish() throws {

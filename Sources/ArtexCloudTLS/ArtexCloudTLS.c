@@ -256,7 +256,11 @@ static artx_cloud_result receive_response(artx_exchange *exchange, size_t remain
         if (status != noErr && status != errSSLWouldBlock && status != errSSLClosedGraceful) return ARTX_CLOUD_IO_FAILED;
         if (status == noErr && !count) return ARTX_CLOUD_IO_FAILED;
         if (count > remaining || count > sizeof(buffer)) return ARTX_CLOUD_RESPONSE_LIMIT;
-        if (count && receive(exchange->context, buffer, count)) return ARTX_CLOUD_SINK_ABORTED;
+        if (count) {
+            const int action = receive(exchange->context, buffer, count);
+            if (action == 2) return guard_exchange(exchange);
+            if (action != 0) return ARTX_CLOUD_SINK_ABORTED;
+        }
         remaining -= count;
         if (status == errSSLClosedGraceful) return ARTX_CLOUD_OK;
         if (status == errSSLWouldBlock) {
@@ -299,7 +303,10 @@ static artx_cloud_result tls_exchange(
     if (result == ARTX_CLOUD_OK) result = send_bytes(&exchange, body, body_size);
     if (result == ARTX_CLOUD_OK) result = receive_response(&exchange, options->maximum_response_bytes, receive);
 
-    if (exchange.tls) CFRelease(exchange.tls);
+    if (exchange.tls) {
+        if (result == ARTX_CLOUD_OK) (void)SSLClose(exchange.tls);
+        CFRelease(exchange.tls);
+    }
     if (exchange.socket >= 0) close(exchange.socket);
     return result;
 }

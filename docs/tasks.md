@@ -590,3 +590,11 @@ in both languages. See the bilingual provider-menu design and verification
 for the comparison against the frozen browser. Live interaction, keyboard,
 VoiceOver, real APIs and full browser parity remain open. Publication uses
 [skip ci].
+
+CP3-D live model endpoint checkpoint. The signed VM reached all four fixed
+provider routes with deliberately invalid values and received 401 for
+OpenAI, Anthropic and Groq and 400 for Gemini. Finishing explicitly framed
+responses before TLS closure resolved the observed Gemini read abort.
+A final repeat yielded no confirmed upstream statuses. Connection
+stability, valid-key calls, native controls and browser acceptance remain
+open. See the bilingual live-models verification. Publication uses [skip ci].
