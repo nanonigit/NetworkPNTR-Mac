@@ -23,7 +23,16 @@ import SwiftUI
                 }
                 Spacer()
                 Button(s(.llmUIRotation), systemImage: "bolt") { rotationOpen = true }
-                Button(s(.llmUINew), systemImage: "plus") { editor = LLMEditorContext(draft: LLMProfileDraft(), keyHint: "") }
+                Menu {
+                    ForEach(LLMCloudProvider.allCases, id: \.self) { provider in
+                        Button(providerName(provider)) { editor = .newProfile(provider: provider) }
+                    }
+                    Divider()
+                    Button(s(.llmUICustomConfiguration)) { editor = .newProfile() }
+                } label: {
+                    Label(s(.llmUINew), systemImage: "plus")
+                }
+                .accessibilityIdentifier("llm-new-profile-menu")
                 Button { Task { await store.load() } } label: { Image(systemName: "arrow.clockwise") }.help(s(.llmUIReload))
             }.disabled(busy)
             if let error = (localError ?? store.failure)?.text(language: language) {
@@ -63,6 +72,15 @@ import SwiftUI
             Button(s(.llmUICancel), role: .cancel) { deleteCandidate = nil }
         } message: { Text(s(.llmUIDeleteHelp)) }
     }
+    private func providerName(_ provider: LLMCloudProvider) -> String {
+        switch provider {
+        case .openAI: "OpenAI"
+        case .anthropic: "Anthropic"
+        case .gemini: "Gemini"
+        case .groq: "Groq"
+        }
+    }
+
     private func profileCard(_ profile: LLMProfile) -> some View {
         let member = store.pool?.chain.first(where: { $0.profileId == profile.id })
         return GroupBox {
@@ -98,4 +116,9 @@ struct LLMEditorContext: Identifiable {
     let id = UUID()
     let draft: LLMProfileDraft
     let keyHint: String
+
+    static func newProfile(provider: LLMCloudProvider? = nil) -> Self {
+        let draft = provider.map { LLMProfileDraft(provider: $0) } ?? LLMProfileDraft()
+        return Self(draft: draft, keyHint: "")
+    }
 }

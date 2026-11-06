@@ -582,3 +582,11 @@ cooperative stop and the four-provider synthetic regression. The ARM64
 Release preview was bundled and strictly signature-verified. GUI, real
 provider calls and frozen-browser parity remain open. Publication uses
 [skip ci].
+
+CP4 new-profile menu checkpoint. The Mac LLM settings offer four provider
+presets and a manual configuration. Existing editor actions and saved
+profile editing use the same contracts. Five fresh drafts render offscreen
+in both languages. See the bilingual provider-menu design and verification
+for the comparison against the frozen browser. Live interaction, keyboard,
+VoiceOver, real APIs and full browser parity remain open. Publication uses
+[skip ci].

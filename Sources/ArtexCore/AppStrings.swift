@@ -658,6 +658,7 @@ public enum AppStringKey: String, CaseIterable, Sendable {
     case llmUIDescription = "llm.ui.description"
     case llmUIRotation = "llm.ui.rotation"
     case llmUINew = "llm.ui.new"
+    case llmUICustomConfiguration = "llm.ui.customConfiguration"
     case llmUIReload = "llm.ui.reload"
     case llmUIStale = "llm.ui.stale"
     case llmUISaving = "llm.ui.saving"

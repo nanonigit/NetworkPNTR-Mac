@@ -6,7 +6,7 @@ final class LLMUILocalizationTests: XCTestCase {
     func testAllLLMUIStringsMatchReviewedBilingualMatrix() throws {
         let url = try XCTUnwrap(Bundle.module.url(forResource:"llm-ui-localization",withExtension:"json",subdirectory:"Fixtures"))
         let fixture = try JSONDecoder().decode(Fixture.self,from:Data(contentsOf:url))
-        XCTAssertEqual(fixture.entries.count,112)
+        XCTAssertEqual(fixture.entries.count,113)
         for entry in fixture.entries {
             let key = try XCTUnwrap(AppStringKey(rawValue:entry.key))
             XCTAssertEqual(AppStrings.text(key,language:.english),entry.en)

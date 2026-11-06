@@ -39,6 +39,42 @@ final class LLMEditorRenderingTests: XCTestCase {
         }
         XCTAssertEqual(api.calls, 0); XCTAssertFalse(store.isMutating); XCTAssertNil(store.unknownRevision)
     }
+    @MainActor func testNewProfileChoicesRenderFreshDraftsInBothLanguages() {
+        let api = LLMEditorRenderingBackend()
+        let store = LLMStore(service: LLMService(client: api))
+        let providers: [LLMCloudProvider?] = LLMCloudProvider.allCases.map(Optional.some) + [nil]
+        var ids = Set<UUID>()
+        for provider in providers {
+            let context = LLMEditorContext.newProfile(provider: provider)
+            XCTAssertTrue(ids.insert(context.id).inserted)
+            XCTAssertNil(context.draft.id)
+            XCTAssertTrue(context.keyHint.isEmpty)
+            XCTAssertTrue(context.draft.apiKey.isEmpty)
+            XCTAssertTrue(context.draft.model.isEmpty)
+            XCTAssertTrue(context.draft.name.isEmpty)
+            if let provider {
+                XCTAssertEqual(context.draft.endpointIdentity.rawValue, provider.rawValue)
+            } else {
+                XCTAssertEqual(context.draft.baseUrl, "")
+                XCTAssertEqual(context.draft.format, LLMProfileDraft().format)
+            }
+            let model = LLMEditorModel(store: store, draft: context.draft)
+            for language in [AppLanguage.english, .japanese] {
+                let host = NSHostingView(rootView: LLMProfileEditor(model: model, keyHint: context.keyHint)
+                    .environment(\.locale, language.locale))
+                host.frame = NSRect(x: 0, y: 0, width: 680, height: 780)
+                host.layoutSubtreeIfNeeded()
+                XCTAssertNil(host.window)
+                XCTAssertEqual(model.draft.baseUrl, context.draft.baseUrl)
+                XCTAssertEqual(model.draft.format, context.draft.format)
+            }
+            model.draft.apiKey = "synthetic-only"
+            model.close()
+            XCTAssertTrue(model.draft.apiKey.isEmpty)
+        }
+        XCTAssertEqual(api.calls, 0)
+    }
+
     @MainActor func testRenderingCandidatesProbeAndFailureStatesDoesNotRepeatExplicitActions() async throws {
         let api = LLMEditorRenderingBackend(); let store = LLMStore(service: LLMService(client: api))
         for state in 0..<3 {

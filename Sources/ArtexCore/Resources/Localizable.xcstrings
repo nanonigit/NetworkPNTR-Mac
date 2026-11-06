@@ -3025,6 +3025,23 @@
         }
       }
     },
+    "llm.ui.customConfiguration": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Custom Configuration"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "カスタム設定"
+          }
+        }
+      }
+    },
     "llm.ui.new": {
       "localizations": {
         "en": {

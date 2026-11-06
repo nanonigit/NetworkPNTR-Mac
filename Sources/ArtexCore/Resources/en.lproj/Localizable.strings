@@ -816,6 +816,8 @@
 	<string>Create a configuration, then activate the one you want to use.</string>
 	<key>llm.ui.createTitle</key>
 	<string>Create model configuration</string>
+	<key>llm.ui.customConfiguration</key>
+	<string>Custom Configuration</string>
 	<key>llm.ui.defaultMaxTokens</key>
 	<string>max_tokens (default)</string>
 	<key>llm.ui.delete</key>

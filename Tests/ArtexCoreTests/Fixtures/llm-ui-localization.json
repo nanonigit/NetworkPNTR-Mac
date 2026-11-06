@@ -19,6 +19,12 @@
       "ja": "新規"
     },
     {
+      "key": "llm.ui.customConfiguration",
+      "case": "llmUICustomConfiguration",
+      "en": "Custom Configuration",
+      "ja": "カスタム設定"
+    },
+    {
       "key": "llm.ui.reload",
       "case": "llmUIReload",
       "en": "Reload",
