@@ -655,3 +655,9 @@ Render the current draft with the guest's sample variables and show the result w
 Use the existing authenticated transport for preview and a local line comparison with a bounded matrix. When a comparison exceeds the bound, offer both originals without computing a diff. Keep preview output and diff lines selectable as literal text. Lazyweb's v0 reference informed separation of editing from inspection. The frozen browser controls the behavior and labels.
 
 Verify the request, parser diagnostics, unchanged version history, exact whitespace and line-ending behavior, repeated-line ordering, and large comparisons before trying the native sheet and pinned backend.
+
+### P4 Restore a built-in agent prompt
+
+Match the pinned guest reset endpoint. Restore the guest's current built-in template as a new saved version and keep the previous prompt in history. Offer the action on built-in agents and confirm before replacing the editor draft. If acknowledgement or history verification is interrupted, use the existing mutation recovery flow and keep unsaved input available.
+
+Use the frozen browser editor's action label. The Productboard restoration dialog returned by Lazyweb informed showing a cancel action and the consequence before committing the restore. Verify the request, history, custom-agent rejection, and stale or uncertain responses. Compare the disposable native and pinned browser fixtures without running an agent.

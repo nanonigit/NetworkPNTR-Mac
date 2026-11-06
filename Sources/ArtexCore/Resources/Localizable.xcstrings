@@ -1,6 +1,108 @@
 {
   "sourceLanguage": "en",
   "strings": {
+    "agent.detail.restore": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Restore default"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "既定値に戻す"
+          }
+        }
+      }
+    },
+    "agent.detail.restored": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Restored to built-in default (v{version})"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "組み込みの既定値に戻しました (v{version})"
+          }
+        }
+      }
+    },
+    "agent.detail.restoreQuestion": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Restore the built-in prompt?"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "組み込みのプロンプトに戻しますか？"
+          }
+        }
+      }
+    },
+    "agent.detail.restoreHistory": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "This saves the built-in prompt as a new version. The previous prompt stays in history."
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "組み込みの本文を新しい版として保存します。直前の本文は履歴に残ります。"
+          }
+        }
+      }
+    },
+    "agent.detail.restoreDraft": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "This replaces the unsaved draft and saves the built-in prompt as a new version. The previous saved version stays in history."
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "未保存の下書きを置き換え、組み込みの本文を新しい版として保存します。直前の保存済み本文は履歴に残ります。"
+          }
+        }
+      }
+    },
+    "agent.detail.noDefault": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "This agent has no built-in prompt to restore."
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "このエージェントには復元できる組み込みのプロンプトがありません。"
+          }
+        }
+      }
+    },
     "agent.inspect.preview": {
       "extractionState": "manual",
       "localizations": {

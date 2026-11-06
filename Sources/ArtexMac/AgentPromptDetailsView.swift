@@ -12,6 +12,7 @@ import SwiftUI
     @State private var editor: AgentPromptEditor
     @State private var inspection: AgentPromptInspectionView.Inspection?
     @State private var confirmDiscard = false
+    @State private var confirmRestore = false
     @State private var replacementDraft: String?
 
     init(agent: AgentCatalogEntry, service: AgentCatalogService) {
@@ -76,6 +77,14 @@ import SwiftUI
             AgentPromptInspectionView(inspection: selection, editor: editor)
                 .environment(\.locale, locale)
         }
+        .alert(s(.agentDetailsRestoreQuestion), isPresented: $confirmRestore) {
+            Button(s(.agentDetailsRestore), role: .destructive) {
+                Task { await editor.restoreDefault() }
+            }
+            Button(s(.chatCancel), role: .cancel) {}
+        } message: {
+            Text(s(editor.hasUnsavedChanges ? .agentDetailsRestoreDraft : .agentDetailsRestoreHistory))
+        }
         .confirmationDialog(s(.agentDetailsDiscardQuestion), isPresented: $confirmDiscard, titleVisibility: .visible) {
             Button(s(.agentDetailsDiscard), role: .destructive) {
                 if let replacementDraft { editor.edit(replacementDraft) } else { dismiss() }
@@ -121,6 +130,11 @@ import SwiftUI
             }
             .disabled(!editor.canSave)
             .accessibilityIdentifier("agent-prompt-save")
+            if agent.builtin {
+                Button(s(.agentDetailsRestore), systemImage: "arrow.counterclockwise") { confirmRestore = true }
+                    .disabled(!editor.canEdit)
+                    .accessibilityIdentifier("agent-prompt-restore")
+            }
         }
         Divider()
         Text(s(.agentDetailsVersions)).font(.headline)
@@ -186,7 +200,8 @@ import SwiftUI
 
     @ViewBuilder private var saveStatus: some View {
         if let version = editor.savedVersion {
-            Text(AppStrings.formatted(.agentDetailsSaved, language: language,
+            Text(AppStrings.formatted(editor.restoredDefault ? .agentDetailsRestored : .agentDetailsSaved,
+                                      language: language,
                                       values: ["version": String(version)]))
                 .foregroundStyle(.secondary)
         }

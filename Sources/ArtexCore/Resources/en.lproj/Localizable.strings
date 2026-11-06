@@ -50,6 +50,8 @@
 	<string>Load into editor</string>
 	<key>agent.detail.loading</key>
 	<string>Loading agent details…</string>
+	<key>agent.detail.noDefault</key>
+	<string>This agent has no built-in prompt to restore.</string>
 	<key>agent.detail.noVariables</key>
 	<string>(no variables)</string>
 	<key>agent.detail.noVersions</key>
@@ -58,6 +60,16 @@
 	<string>Prompt</string>
 	<key>agent.detail.refreshHistory</key>
 	<string>Reload version history</string>
+	<key>agent.detail.restore</key>
+	<string>Restore default</string>
+	<key>agent.detail.restoreDraft</key>
+	<string>This replaces the unsaved draft and saves the built-in prompt as a new version. The previous saved version stays in history.</string>
+	<key>agent.detail.restoreHistory</key>
+	<string>This saves the built-in prompt as a new version. The previous prompt stays in history.</string>
+	<key>agent.detail.restoreQuestion</key>
+	<string>Restore the built-in prompt?</string>
+	<key>agent.detail.restored</key>
+	<string>Restored to built-in default (v{version})</string>
 	<key>agent.detail.rounds</key>
 	<string>Effective round limit</string>
 	<key>agent.detail.save</key>

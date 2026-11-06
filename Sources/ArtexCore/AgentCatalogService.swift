@@ -87,12 +87,21 @@ public struct AgentPromptPreview: Decodable, Sendable {
     }
 
     public func savePrompt(key: String, template: String) async throws -> Int {
-        struct Acknowledgement: Decodable { let version: Int }
         let path = try agentPath(key) + "/prompt"
         let body = try BackendJSONCoding.encode(PromptPayload(template: template, note: ""))
         guard body.count <= 4 * 1024 * 1024 else { throw BackendAPIError.status(413) }
+        return try await submitPromptVersion(method: "PUT", path: path, body: body)
+    }
+
+    public func restorePromptDefault(key: String) async throws -> Int {
+        let path = try agentPath(key) + "/prompt/reset"
+        return try await submitPromptVersion(method: "POST", path: path, body: Data("{}".utf8))
+    }
+
+    private func submitPromptVersion(method: String, path: String, body: Data) async throws -> Int {
+        struct Acknowledgement: Decodable { let version: Int }
         try Task.checkCancellation()
-        let response = try await client.send(method: "PUT", path: path, body: body, bearer: nil)
+        let response = try await client.send(method: method, path: path, body: body, bearer: nil)
         guard response.status == 200 else { throw BackendAPIError.status(response.status) }
         let acknowledgement = try BackendJSONCoding.decode(Acknowledgement.self, from: response.body)
         guard acknowledgement.version > 0 else { throw BackendAPIError.invalidResponse }

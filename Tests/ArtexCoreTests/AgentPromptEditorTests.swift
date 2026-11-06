@@ -117,9 +117,69 @@ final class AgentPromptEditorTests: XCTestCase {
         XCTAssertEqual(editor.savedVersion, 2)
     }
 
-    private func detail(_ text: String, version: Int) -> [String: Any] {
+    @MainActor func testRestoreUsesGuestTemplateAndKeepsPriorVersion() async throws {
+        let api = ChatTestTransport()
+        let editor = AgentPromptEditor(key: "worker", service: AgentCatalogService(client: api))
+        try api.enqueue(detail("edited", version: 2, key: "worker"))
+        await editor.refresh()
+        editor.edit("unsaved")
+
+        try api.enqueue(["version": 3])
+        try api.enqueue([
+            "agent": ["key": "worker"], "prompt": "guest default",
+            "versions": [["version": 3, "template_text": "guest default"],
+                         ["version": 2, "template_text": "edited"]]
+        ])
+        await editor.restoreDefault()
+
+        XCTAssertEqual(api.calls.map(\.method), ["GET", "POST", "GET"])
+        XCTAssertEqual(api.calls[1].path, "/api/agents/worker/prompt/reset")
+        XCTAssertEqual(api.calls[1].body, Data("{}".utf8))
+        XCTAssertEqual(editor.savedVersion, 3)
+        XCTAssertTrue(editor.restoredDefault)
+        XCTAssertEqual(editor.draft, "guest default")
+        XCTAssertEqual(editor.details?.versions.map(\.templateText), ["guest default", "edited"])
+        XCTAssertFalse(editor.hasUnsavedChanges)
+    }
+
+    @MainActor func testRestoreWithStaleHistoryRetainsDraftUntilAcknowledgedVersionArrives() async throws {
+        let api = ChatTestTransport()
+        let editor = AgentPromptEditor(key: "worker", service: AgentCatalogService(client: api))
+        try api.enqueue(detail("edited", version: 2, key: "worker"))
+        await editor.refresh()
+        editor.edit("unsaved")
+        try api.enqueue(["version": 3])
+        try api.enqueue(detail("edited", version: 2, key: "worker"))
+        await editor.restoreDefault()
+        XCTAssertTrue(editor.requiresRefresh)
+        XCTAssertEqual(editor.draft, "unsaved")
+
+        await editor.restoreDefault()
+        try api.enqueue(detail("guest default", version: 3, key: "worker"))
+        await editor.refresh()
+        XCTAssertEqual(api.calls.map(\.method), ["GET", "POST", "GET", "GET"])
+        XCTAssertFalse(editor.requiresRefresh)
+        XCTAssertEqual(editor.draft, "guest default")
+    }
+
+    @MainActor func testRejectedRestoreLeavesCustomDraftEditable() async throws {
+        let api = ChatTestTransport()
+        let editor = AgentPromptEditor(key: "reporter", service: AgentCatalogService(client: api))
+        try api.enqueue(detail("stored", version: 1))
+        await editor.refresh()
+        editor.edit("unsaved")
+        try api.enqueue(["error": "no built-in"], status: 400)
+        await editor.restoreDefault()
+        XCTAssertEqual(api.calls.map(\.method), ["GET", "POST"])
+        XCTAssertTrue(editor.canSave)
+        XCTAssertFalse(editor.requiresRefresh)
+        XCTAssertEqual(editor.draft, "unsaved")
+        XCTAssertNil(editor.savedVersion)
+    }
+
+    private func detail(_ text: String, version: Int, key: String = "reporter") -> [String: Any] {
         [
-            "agent": ["key": "reporter"],
+            "agent": ["key": key],
             "prompt": text,
             "versions": [["version": version, "template_text": text]]
         ]
