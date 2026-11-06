@@ -1,0 +1,74 @@
+{
+  "frozenBrowserCommit": "e75ae371ad777ffd1eecdd28d2781a6519b05591",
+  "guest": {
+    "guestRuntimeSourceCommit": "37b8f53f42976f9a412ec266e85e184ae7a49318",
+    "guestRuntimeSourceSHA256": {
+      "Dockerfile.guest": "c0b2cac340199e72c6b73444b201ceba71d26ccad05d2e4496e9b9e3d2bbd419",
+      "backend-init": "dc6a66b15e0ecc67de52e3e03b1282420d6ecdebe60b55a3ff6e3fce85dd4d25",
+      "artex": "3c0e6f02e379245a043935c537afc152c393510d0a191e4646d39b275564f8f2"
+    },
+    "guestRuntimeImage": "sha256:a0bcc00a55bb886c6c2911a50e9a7f2efeac8cb5ec09846055a83d6ac6ed2587",
+    "guestRuntimeParentImage": "sha256:ec1876790d163c39a741ae8c4af9b3cbce3553d57c5bcfa4fa48280da897787b",
+    "guestRuntimeParentProfileManifestSHA256": "990a24a4680bafd6ceeb441d48a6a189f2a6f6201cfd7241a66b5dc69ea7a7c1",
+    "backendImage": "sha256:b854ff8c985869fc648ab8042849ecea710f017758ec0bb743d0fa500da91e49",
+    "managedBackend": {
+      "buildVersion": "artex-mac-e75ae371-cloud5",
+      "binarySHA256": "3c0e6f02e379245a043935c537afc152c393510d0a191e4646d39b275564f8f2",
+      "platform": "linux/arm64",
+      "deployed": false
+    },
+    "kernelSHA256": "8e57308787c420cb42e4c4ea80e6def6438a52232692c010dc4609bb9bf21879",
+    "initramfsSHA256": "88de8582409a9ad861a69035f056e65953b36803fbc77b391e0a9deb77e335ba",
+    "systemDiskSHA256": "322435d387aacce6eb30dfa62f151bc1d131eb2d35cefc39613b9b6a97bfceb5",
+    "cpuCount": 1
+  },
+  "signedProbeSHA256": "d035266dc2651f63af2439ade55dd4be55da22ec9c4c0e1dac0f7fdbdd5a77a7",
+  "signedVM": {
+    "fixture": {
+      "cancelled": 1,
+      "completed": [
+        "openai.chat",
+        "gemini.chat",
+        "groq.chat"
+      ],
+      "denied": 0,
+      "held": 1,
+      "models": [
+        "openai.models",
+        "gemini.models",
+        "groq.models"
+      ]
+    },
+    "machineStopped": true,
+    "manifestSHA256": "ac33d360a1f24ee89e10fc07ea218079280c5ed8812a1651fdeceeace00909c5",
+    "passed": true,
+    "stage": "complete"
+  },
+  "audited": {
+    "backendVersion": "artex-mac-e75ae371-cloud5",
+    "unauthenticatedStatus": 401,
+    "stateDiskBytes": 2147483648,
+    "freshFormat": true,
+    "vmNetworkDevices": 0,
+    "sharedMounts": 0,
+    "credentialMarkersInLog": 0,
+    "providerHTTPRequests": 0,
+    "dockerRuntimeUsed": false
+  },
+  "checks": {
+    "swiftPassed": 1047,
+    "swiftSkipped": 1,
+    "pythonPassed": 193,
+    "releaseBuild": true,
+    "releaseFixtureRefusal": true,
+    "alteredManifestRejected": true,
+    "existingOutputPreserved": true,
+    "hostedCI": "unverified"
+  },
+  "remaining": [
+    "Anthropic signed VM route exercise",
+    "Live authenticated provider APIs",
+    "Normal app cloud egress activation",
+    "Native and pinned browser workflow comparison"
+  ]
+}

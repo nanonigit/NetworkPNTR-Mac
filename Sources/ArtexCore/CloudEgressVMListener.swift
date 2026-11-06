@@ -8,12 +8,14 @@ final class CloudEgressVMListener: NSObject, @preconcurrency VZVirtioSocketListe
     static let port: UInt32 = 8790
     private static let admission = CloudEgressAdmission()
 
+    private let upstream: CloudEgressSocketSession.Upstream
     private let device: VZVirtioSocketDevice
     private let listener = VZVirtioSocketListener()
     private var running = false
     private var active: [UUID: (VZVirtioSocketConnection, CloudEgressSocketSession)] = [:]
 
-    init(device: VZVirtioSocketDevice) {
+    init(device: VZVirtioSocketDevice, upstream: @escaping CloudEgressSocketSession.Upstream) {
+        self.upstream = upstream
         self.device = device
         super.init()
     }
@@ -49,7 +51,7 @@ final class CloudEgressVMListener: NSObject, @preconcurrency VZVirtioSocketListe
         let fd = fcntl(connection.fileDescriptor, F_DUPFD_CLOEXEC, 0)
         guard fd >= 0 else { admission.release(); return false }
         let id = UUID()
-        let session = CloudEgressSocketSession(owning: fd)
+        let session = CloudEgressSocketSession(owning: fd, upstream: upstream)
         active[id] = (connection, session)
         DispatchQueue.global(qos: .utility).async { [weak self] in
             session.run()

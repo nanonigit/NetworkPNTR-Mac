@@ -36,12 +36,25 @@ import Virtualization
     public var mayStart: Bool { state.canStart && machine == nil && !forceStopping && !cooperativeStopping }
     public var hasMachine: Bool { machine != nil }
     package func enableCloudEgress() throws {
-        guard state == .running, guestReady, !forceStopping,
+        try enableCloudEgress(upstream: CloudEgressTransport.exchangeFromBroker)
+    }
+
+    #if DEBUG
+    package func enableCloudEgress(fixture: CloudEgressVMFixture) throws {
+        guard cloudEgressListener == nil else {
+            throw RuntimeError.integrity("cloud egress fixture requires an unused listener")
+        }
+        try enableCloudEgress(upstream: fixture.exchange)
+    }
+    #endif
+
+    private func enableCloudEgress(upstream: @escaping CloudEgressSocketSession.Upstream) throws {
+        guard state == .running, guestReady, !forceStopping, !cooperativeStopping,
               let device = machine?.socketDevices.first as? VZVirtioSocketDevice else {
             throw RuntimeError.integrity("cloud egress requires a ready guest")
         }
         guard cloudEgressListener == nil else { return }
-        let listener = CloudEgressVMListener(device: device)
+        let listener = CloudEgressVMListener(device: device, upstream: upstream)
         cloudEgressListener = listener
         listener.start()
     }

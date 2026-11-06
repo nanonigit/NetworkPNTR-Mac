@@ -557,3 +557,12 @@ CP3-B3 response framing checkpoint. The TLS worker emits bounded status/body/end
 CP3-B4 host vsock checkpoint. Port 8790 is a ready-VM opt-in with finite single requests, bounded response frames, peer disconnect cancellation and four process slots held through descriptor closure. Stop guards prevent listener reactivation during suspension and replacement boot until both stop calls return. Seven focused real UNIX socket tests, 12 repeated runs, Swift 1047 pass with one existing AX skip, Python 193 pass and ARM64 release build. Signed DEBUG cloud-history regression passes two actual isolated boots and cooperative stops with the listener disabled. See cloud-egress-vsock-verification en/ja and receipt. Linux client, actual virtio streaming and cancellation, activation, live APIs and browser comparison remain open. Publication uses [skip ci].
 
 CP3-B5 Linux client checkpoint. Cloud5 includes opt-in AF_VSOCK CID2 port8790 routing with fixed operations, body limits, context cancellation and no direct fallback. SDK and task layers require the broker terminal, including OpenAI DONE, Anthropic and Responses error events, non-200 and captured quota responses. Unconfirmed POSTs do not replay. Offline Go 613 pass/117 skip events, 19 focused events included, PostgreSQL 14 pass, Python 193 pass and verified CGO-disabled Linux ARM64 ELF. See cloud-egress-guest-verification en/ja and receipt. Signed VM delivery, guest init activation, real providers and browser parity remain open. Publication uses [skip ci].
+
+CP3-B6 signed VM checkpoint. A cloud5 candidate with the opt-in guest init
+passed authenticated model discovery and streaming chat for OpenAI, Gemini
+and Groq through actual Linux AF_VSOCK and the host listener. The DEBUG
+fixture stopped an in-flight stream on cooperative shutdown. Fresh disk,
+401 authentication gate, NIC0, shares0 and credential log checks passed.
+See cloud-egress-vm-verification in English and Japanese and the receipt.
+Anthropic VM delivery, live provider requests, normal app activation and
+native/browser comparison remain open. Publication uses [skip ci].
