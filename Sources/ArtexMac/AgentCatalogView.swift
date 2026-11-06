@@ -13,6 +13,7 @@ import SwiftUI
     @State private var state: LoadState = .loading
     @State private var reload = 0
     @State private var selectedAgent: AgentCatalogEntry?
+    @State private var refreshAfterClose = false
 
     private var language: AppLanguage { AppLanguage.preferred(in: [locale.identifier]) }
 
@@ -43,10 +44,17 @@ import SwiftUI
         .padding()
         .navigationTitle(s(.agents))
         .task(id: reload) { await load() }
-        .sheet(item: $selectedAgent) { agent in
+        .sheet(item: $selectedAgent, onDismiss: {
+            if refreshAfterClose {
+                refreshAfterClose = false
+                reload += 1
+            }
+        }) { agent in
             AgentPromptDetailsView(agent: agent, service: AgentCatalogService(
                 client: AuthenticatedBackendClient(session: session)
-            ))
+            )) {
+                refreshAfterClose = true
+            }
             .environment(\.locale, locale)
         }
     }

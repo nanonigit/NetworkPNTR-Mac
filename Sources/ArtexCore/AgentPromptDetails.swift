@@ -42,6 +42,7 @@ public struct AgentPromptDetails: Decodable, Sendable {
     }
 
     public let key: String
+    public let backendID: String?
     public let prompt: String
     public let variables: [Variable]
     public let versions: [Version]
@@ -54,6 +55,7 @@ public struct AgentPromptDetails: Decodable, Sendable {
 
     private struct Identity: Decodable {
         let key: String
+        let id: String?
         let llmProfileId: Int64?
         let maxTurns: Int?
         let runSeconds: Int?
@@ -71,6 +73,7 @@ public struct AgentPromptDetails: Decodable, Sendable {
         let fields = try decoder.container(keyedBy: CodingKeys.self)
         let agent = try fields.decode(Identity.self, forKey: .agent)
         key = agent.key
+        backendID = agent.id
         execution = AgentExecutionDraft(profileID: agent.llmProfileId, maxTurns: String(agent.maxTurns ?? 0),
                                         runSeconds: String(agent.runSeconds ?? 600),
                                         webSearch: agent.webSearch ?? false, interactiveShell: agent.interactiveShell ?? false)

@@ -679,3 +679,9 @@ Group the model selection and numeric limits with the prompt settings. The froze
 Show the frozen editor's per-agent preferences where supported. Read the guest-wide Web search switch and keep the per-agent control unavailable until that switch is confirmed on. Check it again before saving a changed Web search preference. Keep shell and other settings independently editable, with no guest-wide writes from this form.
 
 Use the existing changed-field patch and authenticated readback. Preserve existing flags when hidden, unavailable, or untouched. Place the status explanation by the control, informed by the Square and Workflowy settings results from Lazyweb. Test the gate, request shape, and a gate change during editing. Compare with the pinned fixture without launching tools or agents.
+
+### P4 Agent MCP and skill visibility
+
+Display the guest MCP servers and skills in the agent editor. Read the selected agent's current assignments. Save each checkbox through the frozen guest's resource-specific endpoint, so changing one assignment preserves concurrent changes to other assignments. Read back the saved membership and refresh the card counts.
+
+Use the current detail's numeric agent identity and the resource catalog's IDs. Keep failed or uncertain requests separate from an empty catalog and require a fresh read before retrying an unverified change. The frozen editor and Lazyweb permissions references inform the two checkbox lists. Test the payloads, readback, and failed writes, then compare with disposable native and browser fixtures.

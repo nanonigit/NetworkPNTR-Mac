@@ -194,6 +194,14 @@
 	<string>記録プロキシのアドレス(if 分岐の文言を決定)</string>
 	<key>agent.variable.worker.WorkerName</key>
 	<string>worker の自己識別子(任意)</string>
+	<key>agent.visibility.mcp</key>
+	<string>このエージェントに表示する MCP サーバーを選択してください。</string>
+	<key>agent.visibility.noMCP</key>
+	<string>（MCP なし）</string>
+	<key>agent.visibility.noSkills</key>
+	<string>（スキルなし）</string>
+	<key>agent.visibility.skills</key>
+	<string>このエージェントに表示するスキルを選択してください。</string>
 	<key>agent.wrapUp.invalidRounds</key>
 	<string>0 から 2,147,483,647 までの整数を入力してください。</string>
 	<key>agent.wrapUp.mismatch</key>

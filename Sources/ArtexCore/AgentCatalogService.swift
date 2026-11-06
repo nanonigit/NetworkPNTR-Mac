@@ -130,13 +130,59 @@ public struct AgentPromptPreview: Decodable, Sendable {
     }
 
     private func submitSettings(key: String, method: String, suffix: String, body: Data) async throws {
-        struct Acknowledgement: Decodable { let ok: Bool }
         let path = try agentPath(key) + suffix
+        try await submitAcknowledged(method: method, path: path, body: body)
+    }
+
+    private func submitAcknowledged(method: String, path: String, body: Data) async throws {
+        struct Acknowledgement: Decodable { let ok: Bool }
         try Task.checkCancellation()
         let response = try await client.send(method: method, path: path, body: body, bearer: nil)
         guard response.status == 200 else { throw BackendAPIError.status(response.status) }
         let acknowledgement = try BackendJSONCoding.decode(Acknowledgement.self, from: response.body)
         guard acknowledgement.ok else { throw BackendAPIError.invalidResponse }
+    }
+
+    func visibilityResources(_ kind: AgentVisibilityKind) async throws -> [AgentVisibilityResource] {
+        struct MCP: Decodable { let id: Int64; let name: String; let transport: String }
+        struct Skill: Decodable { let name: String; let description: String? }
+        struct Servers: Decodable { let servers: [MCP] }
+        struct Skills: Decodable { let skills: [Skill] }
+
+        let result: [AgentVisibilityResource]
+        switch kind {
+        case .mcp:
+            let servers = try await fetch(Servers.self, path: "/api/mcp").servers
+            guard servers.allSatisfy({ $0.id > 0 }) else { throw BackendAPIError.invalidResponse }
+            result = servers.map { AgentVisibilityResource(id: .mcp($0.id), name: $0.name, detail: $0.transport) }
+        case .skill:
+            let skills = try await fetch(Skills.self, path: "/api/skills").skills
+            guard skills.allSatisfy({ !$0.name.isEmpty }) else { throw BackendAPIError.invalidResponse }
+            result = skills.map { AgentVisibilityResource(id: .skill($0.name), name: $0.name, detail: $0.description) }
+        }
+        guard Set(result.map(\.id)).count == result.count else { throw BackendAPIError.invalidResponse }
+        return result
+    }
+
+    func visibility(key: String) async throws -> AgentVisibilitySnapshot {
+        try await fetch(AgentVisibilitySnapshot.self, path: agentPath(key) + "/visibility")
+    }
+
+    func setVisibility(_ target: AgentVisibilityTarget, visible: Bool, agentID: String) async throws {
+        struct MCP: Encodable { let agentId: String; let kind = "mcp"; let resourceId: Int64; let visible: Bool }
+        struct Skill: Encodable { let agentId: String; let skillName: String; let visible: Bool }
+        _ = try BackendJSONCoding.numericID(agentID)
+        let path: String
+        let body: Data
+        switch target {
+        case let .mcp(id):
+            path = "/api/visibility/toggle"
+            body = try BackendJSONCoding.encode(MCP(agentId: agentID, resourceId: id, visible: visible))
+        case let .skill(name):
+            path = "/api/visibility/skill/toggle"
+            body = try BackendJSONCoding.encode(Skill(agentId: agentID, skillName: name, visible: visible))
+        }
+        try await submitAcknowledged(method: "POST", path: path, body: body)
     }
 
     public func previewPrompt(key: String, template: String) async throws -> AgentPromptPreview {

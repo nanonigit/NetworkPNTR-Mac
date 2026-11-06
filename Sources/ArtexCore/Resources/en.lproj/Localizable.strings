@@ -194,6 +194,14 @@
 	<string>Recording proxy address (drives the if-branch wording)</string>
 	<key>agent.variable.worker.WorkerName</key>
 	<string>Worker self-identifier (optional)</string>
+	<key>agent.visibility.mcp</key>
+	<string>Select the MCP servers to show for this agent.</string>
+	<key>agent.visibility.noMCP</key>
+	<string>(no MCP)</string>
+	<key>agent.visibility.noSkills</key>
+	<string>(no Skills)</string>
+	<key>agent.visibility.skills</key>
+	<string>Select the Skills to show for this agent.</string>
 	<key>agent.wrapUp.invalidRounds</key>
 	<string>Enter a whole number from 0 to 2,147,483,647.</string>
 	<key>agent.wrapUp.mismatch</key>

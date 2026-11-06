@@ -1,6 +1,74 @@
 {
   "sourceLanguage": "en",
   "strings": {
+    "agent.visibility.mcp": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Select the MCP servers to show for this agent."
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "このエージェントに表示する MCP サーバーを選択してください。"
+          }
+        }
+      }
+    },
+    "agent.visibility.noMCP": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "(no MCP)"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "（MCP なし）"
+          }
+        }
+      }
+    },
+    "agent.visibility.skills": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Select the Skills to show for this agent."
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "このエージェントに表示するスキルを選択してください。"
+          }
+        }
+      }
+    },
+    "agent.visibility.noSkills": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "(no Skills)"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "（スキルなし）"
+          }
+        }
+      }
+    },
     "agent.execution.webSearch": {
       "extractionState": "manual",
       "localizations": {

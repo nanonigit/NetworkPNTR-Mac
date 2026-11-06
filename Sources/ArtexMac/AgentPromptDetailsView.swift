@@ -2,22 +2,36 @@ import ArtexCore
 import SwiftUI
 
 @MainActor struct AgentPromptDetailsView: View {
-    private enum Panel: Hashable { case prompt, wrapUp }
+    private enum Panel: Hashable {
+        case prompt, wrapUp, mcp, skill
+
+        var visibilityKind: AgentVisibilityKind? {
+            switch self {
+            case .mcp: .mcp
+            case .skill: .skill
+            case .prompt, .wrapUp: nil
+            }
+        }
+    }
 
     let agent: AgentCatalogEntry
+    let onVisibilityChange: () -> Void
 
     @Environment(\.dismiss) private var dismiss
     @Environment(\.locale) private var locale
     @State private var panel = Panel.prompt
     @State private var editor: AgentPromptEditor
+    @State private var visibility: AgentVisibilityEditor
     @State private var inspection: AgentPromptInspectionView.Inspection?
     @State private var confirmDiscard = false
     @State private var confirmRestore = false
     @State private var restoreSection: AgentWrapUpSection?
     @State private var replacementDraft: String?
 
-    init(agent: AgentCatalogEntry, service: AgentCatalogService) {
+    init(agent: AgentCatalogEntry, service: AgentCatalogService, onVisibilityChange: @escaping () -> Void) {
         self.agent = agent
+        self.onVisibilityChange = onVisibilityChange
+        _visibility = State(initialValue: AgentVisibilityEditor(key: agent.key, service: service))
         _editor = State(initialValue: AgentPromptEditor(key: agent.key, service: service))
     }
 
@@ -33,20 +47,25 @@ import SwiftUI
                 Spacer()
                 Button(s(.close), action: close)
                     .keyboardShortcut(.cancelAction)
-                    .disabled(editor.isBusy && editor.details != nil)
+                    .disabled((editor.isBusy && editor.details != nil) || visibility.isBusy)
             }
             if let details = editor.details {
                 saveStatus
                 Picker(s(.agentDetailsSection), selection: $panel) {
                     Text(s(.agentDetailsPrompt)).tag(Panel.prompt)
                     Text(s(.agentDetailsWrapUp)).tag(Panel.wrapUp)
+                    Text(verbatim: "MCP").tag(Panel.mcp)
+                    Text(s(.agentCatalogSkill)).tag(Panel.skill)
                 }
                 .pickerStyle(.segmented)
+                .disabled(editor.isBusy || visibility.isBusy)
                 .accessibilityIdentifier("agent-detail-section")
                 ScrollView {
                     VStack(alignment: .leading, spacing: 16) {
                         switch panel {
                         case .prompt: promptPanel(details)
+                        case .mcp: visibilityPanel(.mcp, agentID: details.backendID)
+                        case .skill: visibilityPanel(.skill, agentID: details.backendID)
                         case .wrapUp:
                             wrapUpPanel(details.wrapUp, section: .normal, title: .agentDetailsWrapUp)
                             if let task = details.taskTimeout {
@@ -76,7 +95,10 @@ import SwiftUI
             await editor.refresh()
             await editor.loadWebSearchAvailability()
         }
-        .interactiveDismissDisabled(editor.isBusy || editor.hasUnsavedChanges)
+        .task(id: panel) {
+            if let kind = panel.visibilityKind { await visibility.load(kind) }
+        }
+        .interactiveDismissDisabled(editor.isBusy || editor.hasUnsavedChanges || visibility.isBusy)
         .sheet(item: $inspection) { selection in
             AgentPromptInspectionView(inspection: selection, editor: editor)
                 .environment(\.locale, locale)
@@ -184,6 +206,44 @@ import SwiftUI
                 }
             }
             .accessibilityIdentifier("agent-prompt-version-\(version.id)")
+        }
+    }
+
+    @ViewBuilder private func visibilityPanel(_ kind: AgentVisibilityKind, agentID: String?) -> some View {
+        Text(s(kind == .mcp ? .agentVisibilityMCP : .agentVisibilitySkills))
+            .foregroundStyle(.secondary)
+        if let failure = visibility.failure {
+            Text(failure.text(language: language)).foregroundStyle(.red)
+            Button(s(.authRetry)) { Task { await visibility.load(kind) } }
+        }
+        if visibility.isBusy { ProgressView().controlSize(.small) }
+        if visibility.kind == kind {
+            if visibility.canEdit && visibility.resources.isEmpty {
+                Text(s(kind == .mcp ? .agentVisibilityNoMCP : .agentVisibilityNoSkills))
+                    .foregroundStyle(.secondary)
+            }
+            ForEach(visibility.resources) { resource in
+                Toggle(isOn: Binding(
+                    get: { visibility.contains(resource.id) },
+                    set: { value in
+                        guard let agentID else { return }
+                        Task {
+                            await visibility.set(resource.id, visible: value, agentID: agentID)
+                            onVisibilityChange()
+                        }
+                    }
+                )) {
+                    HStack(alignment: .firstTextBaseline) {
+                        Text(verbatim: resource.name)
+                        Spacer()
+                        if let detail = resource.detail, !detail.isEmpty {
+                            Text(verbatim: detail).font(.caption).foregroundStyle(.secondary)
+                        }
+                    }
+                }
+                .toggleStyle(.checkbox)
+                .disabled(!visibility.canEdit || agentID == nil)
+            }
         }
     }
 
