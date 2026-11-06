@@ -1,0 +1,9 @@
+# クラウド中継用vsockリスナーの検証
+
+ホスト側にポート8790のvirtio socketリスナーを実装した。準備完了のVMは、コントローラーから明示的に有効化できる。停止に入る前に新規受付を閉じ、強制停止でVirtualizationの完了を待っている間も受付を閉じる。正常停止と強制停止の処理が戻るまで次の起動を待つ。アプリ全体で最大4件を処理し、ワーカー、切断監視用ソケット、Virtualizationの接続が閉じたあとに処理枠を返す。停止通知は対象VMを照合してから処理する。[Virtualizationのソケットリスナー](https://developer.apple.com/documentation/virtualization/vzvirtiosocketlistenerdelegate)
+
+実際のUNIXストリームソケットと模擬上流で試験した。Geminiへの経路選択、要求と応答の正確なバイト列、不正要求の上流送信前の拒否、上流エラー時に完了フレームが出ないことを確認した。停止、ゲスト切断、余分な入力で処理を取り消し、書き込み待ちも中断できる。準備完了のVMがない状態では、コントローラーからの有効化を拒否する。この試験範囲はホスト側ワーカーとキャンセル経路まで。
+
+署名済みDEBUGのクラウド履歴診断をApple Virtualizationで実行し、既存の検証用VMを2回起動・正常停止した。新規の状態ディスクで同じ合成会話を再起動後に再開し、隔離の記録も確認した。この回帰試験は新しい停止処理を実機で通す。クラウド中継は無効で、ポート8790の疎通は別途検証する。
+
+`swift test --filter CloudEgressSocketTests` で再現できる。試験と入力の記録は[検証記録](../evidence/llm/cloud-egress-vsock-verification.json)を参照。署名済みVMでのvirtio通信、VM停止時の切断、NICと共有の不在を実測する。Linux側クライアント、実行環境での有効化、実API、ブラウザ版との操作比較は後続の受入条件。ホストCIは未検証。

@@ -1,0 +1,34 @@
+{
+  "phase": "CP3-B4 dedicated host vsock listener and cancellation",
+  "frozen_browser_commit": "e75ae371ad777ffd1eecdd28d2781a6519b05591",
+  "inputs_sha256": {
+    "Sources/ArtexCore/CloudEgressSocketSession.swift": "2a64a26722aea7aa1e88d655ca1dd9b6d04b80256e0b513a8f288c26cdbf3d5e",
+    "Sources/ArtexCore/CloudEgressVMListener.swift": "338d0e3d8e383c0e6942d10dd0e9e30a0f3578a626e68eaae3527470a1630ca5",
+    "Sources/ArtexCore/CloudEgressTransport.swift": "dbe690e87def8055cf455c20b065c2ace778b591ceb81571200db378f43cb509",
+    "Sources/ArtexCore/VMController.swift": "a0bf893d745d0e0720d09f204746f8ae62799cf8c9fffbe7277e718d396aef53",
+    "Tests/ArtexCoreTests/CloudEgressSocketTests.swift": "a259d3ae255fe81f0cc5eb27b6335f5aafa29241f66ae9418d4c434d5db2a31f"
+  },
+  "listen_port": 8790,
+  "process_admission_limit": 4,
+  "missing_session_red_log_sha256": "507a0e227cd844975d444e65ea0af7d189ed288ca493c8032e7e59117a394610",
+  "focused_tests": 7,
+  "focused_repeat_count": 12,
+  "focused_repeat_log_sha256": "e61ff50d0ac2747ad4180854eead3c405e0661a47fdb62b4d29328f858c23517",
+  "swift_pass": 1047,
+  "swift_skip": 1,
+  "swift_fail": 0,
+  "guest_artifact_python_pass": 193,
+  "release_built": true,
+  "signed_vm_lifecycle_regression": {
+    "manifest_sha256": "6e0b5a801093841923afdd42fb234383297037b6eb9af1426de1e0aad274f08e",
+    "probe_sha256": "047272c43e9bbe7b2caebf754f85787271d9c33f015ee1dadca1832ae15702e6",
+    "report_sha256": "aef80f015824fccee0733a27ad4ad3cc629142da69d18dd6dcdb19f79097278e",
+    "two_actual_boots": true,
+    "cooperative_stops": 2,
+    "isolation_verified": true,
+    "cloud_listener_enabled": false
+  },
+  "actual_guest_port_8790_delivery_verified": false,
+  "default_vm_listener_enabled": false,
+  "hosted_ci_verified": false
+}

@@ -24,14 +24,32 @@ import Virtualization
     @ObservationIgnored private var logURL: URL?
     @ObservationIgnored private var backendConnections: [UUID: VZVirtioSocketConnection] = [:]
     @ObservationIgnored private var backendUploads: [UUID: BackendUploadSocket] = [:]
+    @ObservationIgnored private var cloudEgressListener: CloudEgressVMListener?
+    private var forceStopping = false
+    private var cooperativeStopping = false
     @ObservationIgnored private var evidenceEpoch = UUID()
     #if DEBUG
     @ObservationIgnored package var evidenceCancellationProbe: EvidenceCancellationProbe?
     @ObservationIgnored package var trafficBlobCancellationProbe: TrafficBlobCancellationProbe?
     #endif
     @ObservationIgnored private var pendingConnections: [UUID: CheckedContinuation<UUID, Error>] = [:]
-    public var mayStart: Bool { state.canStart && machine == nil }
+    public var mayStart: Bool { state.canStart && machine == nil && !forceStopping && !cooperativeStopping }
     public var hasMachine: Bool { machine != nil }
+    package func enableCloudEgress() throws {
+        guard state == .running, guestReady, !forceStopping,
+              let device = machine?.socketDevices.first as? VZVirtioSocketDevice else {
+            throw RuntimeError.integrity("cloud egress requires a ready guest")
+        }
+        guard cloudEgressListener == nil else { return }
+        let listener = CloudEgressVMListener(device: device)
+        cloudEgressListener = listener
+        listener.start()
+    }
+
+    private func disableCloudEgress() {
+        cloudEgressListener?.stop()
+        cloudEgressListener = nil
+    }
     public func start(artifacts directory: URL, logs: URL, readinessTimeout: Duration = .seconds(60), dataDisk: URL? = nil, provisioning: GuestProvisioning? = nil) async throws {
         guard mayStart else { throw RuntimeError.invalidTransition(state.rawValue, "starting") }
         runtimeFeatures = GuestRuntimeFeatures()
@@ -86,8 +104,13 @@ import Virtualization
         }
     }
     public func stop() async throws {
-        guard state.canStop, let input else { throw RuntimeError.invalidTransition(state.rawValue, "stopping") }
+        guard state.canStop, !forceStopping, !cooperativeStopping, let input else {
+            throw RuntimeError.invalidTransition(state.rawValue, "stopping")
+        }
+        cooperativeStopping = true
+        defer { cooperativeStopping = false }
         try state.transition(to: .stopping)
+        disableCloudEgress()
         lastStopInterruptedTransferCount = cancelBackendUploads()
         do {
             // Bootstrap must complete before the guest can interpret management tokens.
@@ -110,7 +133,11 @@ import Virtualization
         } catch { fail(error); throw error }
     }
     public func forceStop() async throws {
-        guard let vm = machine else { return }
+        guard let vm = machine, !forceStopping else { return }
+        forceStopping = true
+        defer { forceStopping = false }
+        if state == .running { try state.transition(to: .stopping) }
+        disableCloudEgress()
         lastStopInterruptedTransferCount = cancelBackendUploads()
         do {
             try await stopMachine(vm)
@@ -120,7 +147,11 @@ import Virtualization
         } catch { fail(error); throw error }
     }
     nonisolated public func guestDidStop(_ virtualMachine: VZVirtualMachine) {
-        Task { @MainActor [weak self] in self?.completeStop() }
+        let stopped = ObjectIdentifier(virtualMachine)
+        Task { @MainActor [weak self] in
+            guard let self, self.machine.map(ObjectIdentifier.init) == stopped else { return }
+            self.completeStop()
+        }
     }
     private func completeStop() {
         refreshLog(); releaseResources()
@@ -128,8 +159,9 @@ import Virtualization
         guestReady = false
     }
     nonisolated public func virtualMachine(_ virtualMachine: VZVirtualMachine, didStopWithError error: Error) {
+        let stopped = ObjectIdentifier(virtualMachine)
         Task { @MainActor [weak self] in
-            guard let self else { return }
+            guard let self, self.machine.map(ObjectIdentifier.init) == stopped else { return }
             self.refreshLog(); self.releaseResources(); self.fail(error)
         }
     }
@@ -146,7 +178,7 @@ import Virtualization
             fail(RuntimeError.integrity(String(failure.prefix(160))))
         }
     }
-    private func fail(_ error: Error) { runtimeFeatures = GuestRuntimeFeatures(); cancelBackendUploads(); lastError = error.localizedDescription; failure = AppErrorMessage(error, fallback: .runtimeUIUnexpected); if state != .failed { try? state.transition(to: .failed) } }
+    private func fail(_ error: Error) { runtimeFeatures = GuestRuntimeFeatures(); disableCloudEgress(); cancelBackendUploads(); lastError = error.localizedDescription; failure = AppErrorMessage(error, fallback: .runtimeUIUnexpected); if state != .failed { try? state.transition(to: .failed) } }
     // Completion-handler calls stay on our MainActor. Older SDK async overlays treat
     // VZVirtualMachine as a non-Sendable value crossing isolation during `await`.
     private func startMachine(_ vm: VZVirtualMachine) async throws {
@@ -331,6 +363,7 @@ import Virtualization
         }
     }
     private func releaseResources() {
+        disableCloudEgress()
         runtimeFeatures = GuestRuntimeFeatures()
         cancelBackendUploads(); backendUploads.removeAll()
         for continuation in pendingConnections.values { continuation.resume(throwing: RuntimeError.integrity("VM connection closed")) }

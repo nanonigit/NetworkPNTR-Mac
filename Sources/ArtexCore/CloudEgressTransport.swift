@@ -34,21 +34,53 @@ enum CloudEgressTransport {
         _ request: CloudEgressRequest,
         at destination: CloudEgressDestination,
         cancellation: CloudEgressCancellation,
+        timeout: Duration = .seconds(120),
         receive: @escaping (CloudEgressResponseEvent) throws -> Void
     ) throws {
         try frameResponse(receive: receive) { consume in
-            try exchangeRaw(request, at: destination, cancellation: cancellation, receive: consume)
+            try exchangeRaw(request, at: destination, cancellation: cancellation, timeout: timeout, receive: consume)
             guard !cancellation.isCancelled else { throw CancellationError() }
         }
+    }
+
+    static func exchangeFromBroker(
+        _ request: CloudEgressRequest,
+        _ cancellation: CloudEgressCancellation,
+        _ deadline: ContinuousClock.Instant,
+        _ receive: @escaping (CloudEgressResponseEvent) throws -> Void
+    ) throws {
+        guard !cancellation.isCancelled else { throw CancellationError() }
+        guard ContinuousClock.now < deadline else { throw CloudEgressTransportError.timedOut }
+        let destinations = try request.route.destinations()
+        let (ipv4, other) = destinations.reduce(into: ([CloudEgressDestination](), [CloudEgressDestination]())) {
+            if case .hostPort(host: .ipv4, port: _) = $1.endpoint { $0.0.append($1) }
+            else { $0.1.append($1) }
+        }
+        for destination in (ipv4 + other).prefix(4) {
+            var startedResponse = false
+            do {
+                try exchange(request, at: destination, cancellation: cancellation, timeout: deadline - .now) { event in
+                    startedResponse = true
+                    try receive(event)
+                }
+                return
+            } catch CloudEgressTransportError.connectionFailed where !startedResponse {
+                // This result is issued only before the worker sends HTTP bytes.
+                continue
+            }
+        }
+        throw CloudEgressTransportError.connectionFailed
     }
 
     private static func exchangeRaw(
         _ request: CloudEgressRequest,
         at destination: CloudEgressDestination,
         cancellation: CloudEgressCancellation,
+        timeout: Duration,
         receive: @escaping (Data) throws -> Void
     ) throws {
         guard !cancellation.isCancelled else { throw CancellationError() }
+        guard timeout > .zero else { throw CloudEgressTransportError.timedOut }
         guard request.route.hostname == destination.hostname,
               case .hostPort(let host, .https) = destination.endpoint else {
             throw CloudEgressTransportError.mismatchedTarget
@@ -64,11 +96,13 @@ enum CloudEgressTransport {
         let owner = Unmanaged.passRetained(callbacks)
         defer { owner.release() }
         let context = owner.toOpaque()
+        let budget = min(timeout, .seconds(120)).components
+        let timeoutMilliseconds = UInt32(max(1, budget.seconds * 1_000 + budget.attoseconds / 1_000_000_000_000_000))
         let result = destination.hostname.withCString { hostname in
             numericIP.withCString { address in
                 var options = artx_cloud_options(
                     hostname: hostname, numeric_ip: address, port: 443,
-                    connect_timeout_ms: 10_000, total_timeout_ms: 120_000,
+                    connect_timeout_ms: min(10_000, timeoutMilliseconds), total_timeout_ms: timeoutMilliseconds,
                     maximum_response_bytes: 16 * 1024 * 1024
                 )
                 return request.header.withUnsafeBytes { header in
