@@ -106,10 +106,24 @@
 	<string>実行設定を保存しました（即時適用）</string>
 	<key>agent.execution.seconds</key>
 	<string>実行時間 (秒、0=無制限)</string>
+	<key>agent.execution.shell</key>
+	<string>対話型 Shell</string>
+	<key>agent.execution.shellHint</key>
+	<string>保存すると、このエージェントが Linux ゲスト内の対話型セッションを使えるようになります。</string>
 	<key>agent.execution.title</key>
 	<string>モデルと実行上限</string>
 	<key>agent.execution.turns</key>
 	<string>最大反復回数 (0=無制限)</string>
+	<key>agent.execution.webGateChanged</key>
+	<string>Web 検索を利用できないため、この項目を保存済みの値に戻しました。ほかの変更を確認して保存してください。</string>
+	<key>agent.execution.webOff</key>
+	<string>先に「システム設定」で Web 検索を有効にしてバックエンドを設定すると、ここで有効にできます</string>
+	<key>agent.execution.webOn</key>
+	<string>保存すると、このエージェントが Web 検索を使えるようになります。</string>
+	<key>agent.execution.webSearch</key>
+	<string>Web 検索</string>
+	<key>agent.execution.webUnavailable</key>
+	<string>全体の Web 検索設定を確認できません。</string>
 	<key>agent.inspect.added</key>
 	<string>追加</string>
 	<key>agent.inspect.compare</key>

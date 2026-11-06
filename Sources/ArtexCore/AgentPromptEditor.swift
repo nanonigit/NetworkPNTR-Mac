@@ -33,6 +33,7 @@ import Observation
     public private(set) var restoredDefault = false
     public private(set) var wrapUpSaved = false
     public private(set) var executionSaved = false
+    public private(set) var webSearchEnabled: Bool?
 
     public init(key: String, service: AgentCatalogService) {
         self.key = key
@@ -92,6 +93,10 @@ import Observation
                 if draft.profileID == previous.profileID { draft.profileID = latest.execution.profileID }
                 if Int32(draft.maxTurns) == Int32(previous.maxTurns) { draft.maxTurns = latest.execution.maxTurns }
                 if Int32(draft.runSeconds) == Int32(previous.runSeconds) { draft.runSeconds = latest.execution.runSeconds }
+                if draft.webSearch == previous.webSearch { draft.webSearch = latest.execution.webSearch }
+                if draft.interactiveShell == previous.interactiveShell {
+                    draft.interactiveShell = latest.execution.interactiveShell
+                }
                 executionEdit = executionMatches(draft, latest) ? nil : draft
             }
             wrapUpEdits = wrapUpEdits.filter { section, draft in
@@ -152,8 +157,18 @@ import Observation
     public var executionDraft: AgentExecutionDraft? { executionEdit ?? details?.execution }
     public var canSaveExecution: Bool { canEdit && executionPatch != nil }
 
-    public func editExecution(_ draft: AgentExecutionDraft) {
+    public func loadWebSearchAvailability() async {
+        guard key != "goals" else { return }
+        let enabled = try? await service.webSearchEnabled()
+        guard !Task.isCancelled else { return }
+        webSearchEnabled = enabled
+    }
+
+    public func editExecution(_ value: AgentExecutionDraft) {
         guard canEdit, let details else { return }
+        var draft = value
+        if !details.showsExecutionTools || webSearchEnabled != true { draft.webSearch = details.execution.webSearch }
+        if !details.showsExecutionTools { draft.interactiveShell = details.execution.interactiveShell }
         executionEdit = executionMatches(draft, details) ? nil : draft
         executionSaved = false
     }
@@ -174,11 +189,26 @@ import Observation
         draft.profileID == saved.execution.profileID && (!saved.showsExecutionLimits
             || (Int32(draft.maxTurns) == Int32(saved.execution.maxTurns)
                 && Int32(draft.runSeconds) == Int32(saved.execution.runSeconds)))
+            && (!saved.showsExecutionTools || (draft.webSearch == saved.execution.webSearch
+                && draft.interactiveShell == saved.execution.interactiveShell))
     }
 
     private func commitSettings(_ receipt: SettingsReceipt, write: () async throws -> Void) async {
         guard !Task.isCancelled else { return }
         beginMutation()
+        if case let .execution(patch) = receipt, patch.webSearch != nil {
+            await loadWebSearchAvailability()
+            guard !Task.isCancelled else {
+                phase = .ready
+                return
+            }
+            guard webSearchEnabled == true else {
+                phase = .ready
+                if let draft = executionEdit { editExecution(draft) }
+                failure = AppErrorMessage(key: .agentExecutionWebGateChanged)
+                return
+            }
+        }
         do {
             try await write()
             pendingSettings = receipt

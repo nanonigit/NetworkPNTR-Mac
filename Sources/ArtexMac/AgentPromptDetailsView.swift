@@ -72,7 +72,10 @@ import SwiftUI
         }
         .padding(20)
         .frame(minWidth: 540, idealWidth: 670, minHeight: 460, idealHeight: 640)
-        .task { await editor.refresh() }
+        .task {
+            await editor.refresh()
+            await editor.loadWebSearchAvailability()
+        }
         .interactiveDismissDisabled(editor.isBusy || editor.hasUnsavedChanges)
         .sheet(item: $inspection) { selection in
             AgentPromptInspectionView(inspection: selection, editor: editor)
@@ -215,6 +218,20 @@ import SwiftUI
                             Text(s(.agentWrapUpInvalidRounds)).foregroundStyle(.red)
                         }
                     }
+                    if details.showsExecutionTools {
+                        Divider()
+                        Toggle(s(.agentExecutionWebSearch),
+                               isOn: executionBinding(\.webSearch, fallback: draft.webSearch))
+                            .toggleStyle(.switch)
+                            .disabled(editor.webSearchEnabled != true)
+                            .accessibilityIdentifier("agent-execution-web-search")
+                        Text(s(webSearchHint)).font(.caption).foregroundStyle(.secondary)
+                        Toggle(s(.agentExecutionShell),
+                               isOn: executionBinding(\.interactiveShell, fallback: draft.interactiveShell))
+                            .toggleStyle(.switch)
+                            .accessibilityIdentifier("agent-execution-shell")
+                        Text(s(.agentExecutionShellHint)).font(.caption).foregroundStyle(.secondary)
+                    }
                     Button(s(.agentExecutionSave), systemImage: "square.and.arrow.down") {
                         Task { await editor.saveExecution() }
                     }
@@ -224,6 +241,14 @@ import SwiftUI
                 .padding(.vertical, 4)
                 .disabled(!editor.canEdit)
             }
+        }
+    }
+
+    private var webSearchHint: AppStringKey {
+        switch editor.webSearchEnabled {
+        case .some(true): .agentExecutionWebOn
+        case .some(false): .agentExecutionWebOff
+        case nil: .agentExecutionWebUnavailable
         }
     }
 

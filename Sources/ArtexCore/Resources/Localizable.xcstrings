@@ -1,6 +1,125 @@
 {
   "sourceLanguage": "en",
   "strings": {
+    "agent.execution.webSearch": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Web search"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Web 検索"
+          }
+        }
+      }
+    },
+    "agent.execution.webOn": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Allow this agent to use web search after saving."
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "保存すると、このエージェントが Web 検索を使えるようになります。"
+          }
+        }
+      }
+    },
+    "agent.execution.webOff": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "You must first enable web search and configure the backend in \"System settings\" before you can enable it here"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "先に「システム設定」で Web 検索を有効にしてバックエンドを設定すると、ここで有効にできます"
+          }
+        }
+      }
+    },
+    "agent.execution.webUnavailable": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The global Web search setting is unavailable."
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "全体の Web 検索設定を確認できません。"
+          }
+        }
+      }
+    },
+    "agent.execution.webGateChanged": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Web search is unavailable. Its draft was reset to the saved value. Review and save other edits separately."
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Web 検索を利用できないため、この項目を保存済みの値に戻しました。ほかの変更を確認して保存してください。"
+          }
+        }
+      }
+    },
+    "agent.execution.shell": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Interactive shell"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "対話型 Shell"
+          }
+        }
+      }
+    },
+    "agent.execution.shellHint": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Allow this agent to use persistent interactive sessions inside the Linux guest after saving."
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "保存すると、このエージェントが Linux ゲスト内の対話型セッションを使えるようになります。"
+          }
+        }
+      }
+    },
     "agent.execution.title": {
       "extractionState": "manual",
       "localizations": {

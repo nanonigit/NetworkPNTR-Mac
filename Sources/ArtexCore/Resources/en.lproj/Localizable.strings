@@ -106,10 +106,24 @@
 	<string>Run settings saved (applied immediately)</string>
 	<key>agent.execution.seconds</key>
 	<string>Run time (seconds, 0 = unlimited)</string>
+	<key>agent.execution.shell</key>
+	<string>Interactive shell</string>
+	<key>agent.execution.shellHint</key>
+	<string>Allow this agent to use persistent interactive sessions inside the Linux guest after saving.</string>
 	<key>agent.execution.title</key>
 	<string>Model and execution limits</string>
 	<key>agent.execution.turns</key>
 	<string>Max turns (0 = unlimited)</string>
+	<key>agent.execution.webGateChanged</key>
+	<string>Web search is unavailable. Its draft was reset to the saved value. Review and save other edits separately.</string>
+	<key>agent.execution.webOff</key>
+	<string>You must first enable web search and configure the backend in "System settings" before you can enable it here</string>
+	<key>agent.execution.webOn</key>
+	<string>Allow this agent to use web search after saving.</string>
+	<key>agent.execution.webSearch</key>
+	<string>Web search</string>
+	<key>agent.execution.webUnavailable</key>
+	<string>The global Web search setting is unavailable.</string>
 	<key>agent.inspect.added</key>
 	<string>Added</string>
 	<key>agent.inspect.compare</key>

@@ -673,3 +673,9 @@ Use the authenticated editor and the existing mutation gate. Keep the saved defa
 Read the model profile choices and agent limits from the authenticated detail endpoint. Allow an explicit model binding or inheritance, with limit controls on the same agents as the frozen browser. Send only changed, visible fields. Confirm the affected fields by reading them back, preserving drafts in other sections and after a partial write.
 
 Group the model selection and numeric limits with the prompt settings. The frozen editor defines their visibility and the Cursor settings result from Lazyweb informed the model picker layout. Verify numeric bounds, omitted versus null fields, unsupported limits, missing profiles, and readback before comparing with the pinned reference.
+
+### P4 Agent Web search and interactive shell preferences
+
+Show the frozen editor's per-agent preferences where supported. Read the guest-wide Web search switch and keep the per-agent control unavailable until that switch is confirmed on. Check it again before saving a changed Web search preference. Keep shell and other settings independently editable, with no guest-wide writes from this form.
+
+Use the existing changed-field patch and authenticated readback. Preserve existing flags when hidden, unavailable, or untouched. Place the status explanation by the control, informed by the Square and Workflowy settings results from Lazyweb. Test the gate, request shape, and a gate change during editing. Compare with the pinned fixture without launching tools or agents.

@@ -119,6 +119,11 @@ public struct AgentPromptPreview: Decodable, Sendable {
         try await submitSettings(key: key, method: "POST", suffix: section.routeSuffix + "/reset", body: Data("{}".utf8))
     }
 
+    func webSearchEnabled() async throws -> Bool {
+        struct Settings: Decodable { let webSearchEnabled: Bool }
+        return try await fetch(Settings.self, path: "/api/settings").webSearchEnabled
+    }
+
     func saveExecution(key: String, patch: AgentExecutionPatch) async throws {
         let body = try JSONEncoder().encode(patch)
         try await submitSettings(key: key, method: "PUT", suffix: "/config", body: body)

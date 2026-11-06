@@ -50,12 +50,15 @@ public struct AgentPromptDetails: Decodable, Sendable {
     public let execution: AgentExecutionDraft
     public let modelOptions: [AgentModelOption]
     public var showsExecutionLimits: Bool { key != "goals" && key != "mainagent" }
+    public var showsExecutionTools: Bool { key != "goals" }
 
     private struct Identity: Decodable {
         let key: String
         let llmProfileId: Int64?
         let maxTurns: Int?
         let runSeconds: Int?
+        let webSearch: Bool?
+        let interactiveShell: Bool?
     }
     private enum CodingKeys: String, CodingKey {
         case agent, prompt, variables, versions, llmProfiles
@@ -69,7 +72,8 @@ public struct AgentPromptDetails: Decodable, Sendable {
         let agent = try fields.decode(Identity.self, forKey: .agent)
         key = agent.key
         execution = AgentExecutionDraft(profileID: agent.llmProfileId, maxTurns: String(agent.maxTurns ?? 0),
-                                        runSeconds: String(agent.runSeconds ?? 600))
+                                        runSeconds: String(agent.runSeconds ?? 600),
+                                        webSearch: agent.webSearch ?? false, interactiveShell: agent.interactiveShell ?? false)
         modelOptions = try fields.decodeIfPresent([AgentModelOption].self, forKey: .llmProfiles) ?? []
         prompt = try fields.decodeIfPresent(String.self, forKey: .prompt) ?? ""
         variables = try fields.decodeIfPresent([Variable].self, forKey: .variables) ?? []
