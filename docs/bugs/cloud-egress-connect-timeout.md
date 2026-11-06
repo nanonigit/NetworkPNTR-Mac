@@ -72,3 +72,14 @@ production socket checks and host filter configuration were preserved.
 [Little Snitch pending connections](https://help.obdev.at/littlesnitch6/lsm-managing-rules)
 
 [Paired TCP verification receipt](../../evidence/llm/cloud-egress-tcp-pair-verification.json)
+
+## Retest after the user's firewall change
+
+The same signed diagnostic used two new guest state disks. Both runs
+received HTTP 401 from Anthropic and Groq. OpenAI and Gemini had no
+confirmed upstream status in either run. Little Snitch's Active Rules
+view showed both outgoing allows and provider-domain denies for the
+ChatGPT / VMProbe process pair. The presence of overlapping entries
+does not establish which rule governed a specific attempt. The
+ARTEX Mac Release executable's decision was outside this probe.
+[Retest receipt](../../evidence/llm/cloud-egress-firewall-retest.json)

@@ -1,0 +1,62 @@
+{
+  "sourceCommit": "d6070d699aa81668338c88cf0eb25158cd0f6c65",
+  "signedProbeReused": true,
+  "modelDiscoveryWithIntentionallyInvalidValue": [
+    [
+      {
+        "appRejected": true,
+        "authenticationRejected": false,
+        "provider": "openai"
+      },
+      {
+        "appRejected": true,
+        "authenticationRejected": true,
+        "provider": "anthropic",
+        "upstreamStatus": 401
+      },
+      {
+        "appRejected": true,
+        "authenticationRejected": false,
+        "provider": "gemini"
+      },
+      {
+        "appRejected": true,
+        "authenticationRejected": true,
+        "provider": "groq",
+        "upstreamStatus": 401
+      }
+    ],
+    [
+      {
+        "appRejected": true,
+        "authenticationRejected": false,
+        "provider": "openai"
+      },
+      {
+        "appRejected": true,
+        "authenticationRejected": true,
+        "provider": "anthropic",
+        "upstreamStatus": 401
+      },
+      {
+        "appRejected": true,
+        "authenticationRejected": false,
+        "provider": "gemini"
+      },
+      {
+        "appRejected": true,
+        "authenticationRejected": true,
+        "provider": "groq",
+        "upstreamStatus": 401
+      }
+    ]
+  ],
+  "activeRulesObservedReadOnly": {
+    "processPair": "ChatGPT via VMProbe",
+    "allowAndDomainDenyEntriesPresent": true
+  },
+  "filterConfigurationChangedByProbe": false,
+  "releaseAppPolicyVerified": false,
+  "validCredentialUsed": false,
+  "inferenceRequests": 0
+}

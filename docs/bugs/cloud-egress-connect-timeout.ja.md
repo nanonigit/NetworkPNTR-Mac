@@ -57,3 +57,12 @@ VM 作成前のタイムアウト1件で、カーネルの TCP は接続済み�
 [Little Snitch の判定待ち接続](https://help.obdev.at/littlesnitch6/lsm-managing-rules)
 
 [同時 TCP 試験の記録](../../evidence/llm/cloud-egress-tcp-pair-verification.json)
+
+## 利用者による許可後の再試験
+
+同じ署名済み診断を新規のゲストディスクで2回実行した。Anthropic と Groq は
+両方で HTTP 401 が返り、OpenAI と Gemini はどちらも外部応答が確定しなかった。
+Little Snitch の有効ルール一覧では ChatGPT 経由の VMProbe に対して外向きの許可と
+接続先ドメインの拒否が表示された。個々の要求に適用されたルールと
+ARTEX Mac Release 本体の判定は未確認。
+[再試験記録](../../evidence/llm/cloud-egress-firewall-retest.json)
