@@ -4,6 +4,6 @@
 
 修正後は、同一ターゲットでは保存済みキーを再利用し、別ターゲットへの要求は明示的に入力したキーで認証する。実際の行ロック待ちをPostgreSQLで観測した並行試験では、新しいキーとURLの組が先にコミットされたあと、古いターゲットに戻す空キー更新が拒否された。保存済みキーでのモデル一覧は、チャットと同じベースパスと既定値を使う。追加試験では、親パスへのフォールバック、他の通信形式のサフィックス除去、環境変数で指定した末尾スラッシュを検証した。
 
-実行には固定ブラウザソース、管理用パッチ、モジュールキャッシュを検証したLinux ARM64ビルダーを使用した。PostgreSQLと試験はループバックしか持たない使い捨てネットワーク名前空間を共有し、DBデータはtmpfsに置いた。手元で再現する場合は、[リダイレクト検証](cloud-redirect-verification.ja.md)のビルド手順に `provider-credential-target.patch` と現行の `origin-extension` を追加する。専用PostgreSQLで `ARTEX_CREDENTIAL_TEST_DSN` を設定し、`go test ./server -run '^TestManagedCloudCredentialTarget$'` を実行する。件数、イメージ、パッチと本体のハッシュは[検証記録](../evidence/llm/cloud-credential-target-verification.json)を参照。
+実行には固定ブラウザソース、管理用パッチ、モジュールキャッシュを検証したLinux ARM64ビルダーを使用した。PostgreSQLと試験はループバックしか持たない使い捨てネットワーク名前空間を共有し、DBデータはtmpfsに置いた。手元で再現する場合は、[リダイレクト検証](cloud-redirect-verification.ja.md)のビルド手順に `provider-credential-target.patch` とコミット `f01c76a` の `origin-extension` を追加する。専用PostgreSQLで `ARTEX_CREDENTIAL_TEST_DSN` を設定し、`go test ./server -run '^TestManagedCloudCredentialTarget$'` を実行する。件数、イメージ、パッチと本体のハッシュは[検証記録](../evidence/llm/cloud-credential-target-verification.json)を参照。
 
 今回の成果物は管理対象バックエンド候補。既定ゲストへの反映、VM全体の外向き通信制御、4社の実API、Macアプリとブラウザ版の操作比較は後続の検証条件。画面変更を伴わないためLazywebは対象外。ホストCIは未検証。

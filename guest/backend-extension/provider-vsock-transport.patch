@@ -1,0 +1,120 @@
+--- a/agent/provider.go
++++ b/agent/provider.go
+@@ -20,6 +20,7 @@
+ 	"strings"
+ 	"time"
+ 
++	"github.com/Autumn-27/artex/cloudegress"
+ 	"github.com/Autumn-27/artex/llmrec"
+ 	"github.com/Autumn-27/norma/agentcore"
+ 	"github.com/Autumn-27/norma/compaction"
+@@ -359,7 +360,8 @@
+ 	// Tee rather than read: a 200 is an SSE stream that must keep streaming. The
+ 	// 429 branch below reads through this wrapper, so its body lands in the
+ 	// capture before being replaced.
+-	resp.Body = capt.TeeResponse(resp.StatusCode, resp.Body)
++	framed := cloudegress.RequiresTransportEnd(resp.Body)
++	resp.Body = cloudegress.PreserveTransportEnd(resp.Body, capt.TeeResponse(resp.StatusCode, resp.Body))
+ 
+ 	if resp.StatusCode != http.StatusTooManyRequests {
+ 		return resp, nil
+@@ -369,6 +371,9 @@
+ 	resp.Body = io.NopCloser(bytes.NewReader(body))
+ 	resp.ContentLength = int64(len(body))
+ 	if readErr != nil {
++		if framed {
++			return nil, cloudegress.NoReplay(readErr)
++		}
+ 		return resp, nil
+ 	}
+ 	if IsQuotaExhaustedMessage(string(body)) {
+@@ -400,6 +405,13 @@
+ func quotaAwareHTTPClient(proxy, sessionHeaderKey string) (*http.Client, error) {
+ 	transport := http.DefaultTransport.(*http.Transport).Clone()
+ 	proxy = strings.TrimSpace(proxy)
++	selected := cloudegress.ProviderTransport(transport, proxy != "" || strings.TrimSpace(sessionHeaderKey) != "")
++	if selected != transport {
++		return &http.Client{
++			Transport:     quotaAwareTransport{base: LLMRedirectTransport{RoundTripper: selected}},
++			CheckRedirect: CheckLLMRedirect,
++		}, nil
++	}
+ 	if proxy == "" {
+ 		transport.Proxy = nil // 留空=直连,不回退 HTTP_PROXY/HTTPS_PROXY 环境变量
+ 	} else {
+--- a/server/server_mgmt.go
++++ b/server/server_mgmt.go
+@@ -24,6 +24,7 @@
+ 	"unicode/utf8"
+ 
+ 	"github.com/Autumn-27/artex/agent"
++	"github.com/Autumn-27/artex/cloudegress"
+ 	"github.com/Autumn-27/artex/db"
+ 	"github.com/Autumn-27/norma/llm"
+ 	"github.com/Autumn-27/norma/skill"
+@@ -2142,7 +2143,7 @@
+ 		}
+ 	}
+ 	client := &http.Client{
+-		Transport:     agent.LLMRedirectTransport{RoundTripper: transport},
++		Transport:     agent.LLMRedirectTransport{RoundTripper: cloudegress.ProviderTransport(transport, strings.TrimSpace(req.Proxy) != "")},
+ 		Timeout:       30 * time.Second,
+ 		CheckRedirect: agent.CheckLLMRedirect,
+ 	}
+@@ -2162,8 +2163,17 @@
+ 			lastErr = errMgmtReqFail + err.Error()
+ 			continue
+ 		}
+-		body, _ := io.ReadAll(io.LimitReader(resp.Body, 4<<20))
++		const maxModelList = 4 << 20
++		body, readErr := io.ReadAll(io.LimitReader(resp.Body, maxModelList+1))
+ 		resp.Body.Close()
++		if readErr != nil {
++			lastErr = errMgmtReqFail + readErr.Error()
++			continue
++		}
++		if len(body) > maxModelList {
++			lastErr = errMgmtReqFail + "model list exceeds the response limit"
++			continue
++		}
+ 		if resp.StatusCode != http.StatusOK {
+ 			lastErr = fmt.Sprintf(errMgmtAPIReturned, resp.StatusCode, string(body[:min(len(body), 512)]))
+ 			continue
+--- a/server/task_llm.go
++++ b/server/task_llm.go
+@@ -13,6 +13,7 @@
+ 	"time"
+ 
+ 	"github.com/Autumn-27/artex/agent"
++	"github.com/Autumn-27/artex/cloudegress"
+ 	"github.com/Autumn-27/artex/db"
+ 	"github.com/Autumn-27/artex/llmrec"
+ 	"github.com/Autumn-27/norma/llm"
+@@ -429,7 +430,7 @@
+ //   - 上下文过长:相同请求重放也没用,交给 harness 的 reactive 压缩兜底
+ //   - 4xx 确定性拒绝(400/401/403/404/422):到哪个 provider 都一样会失败
+ func isRetryableStreamError(err error) bool {
+-	if err == nil {
++	if err == nil || cloudegress.ReplayUnsafe(err) {
+ 		return false
+ 	}
+ 	if isQuotaExhaustedError(err) {
+--- a/server/engine.go
++++ b/server/engine.go
+@@ -12,6 +12,7 @@
+ 	"time"
+ 
+ 	"github.com/Autumn-27/artex/agent"
++	"github.com/Autumn-27/artex/cloudegress"
+ 	"github.com/Autumn-27/artex/db"
+ 	"github.com/Autumn-27/artex/intercept"
+ 	"github.com/Autumn-27/norma/harness"
+@@ -96,7 +97,7 @@
+ // In particular, a quota error after partial streaming advances the task cursor
+ // for the next LLM call but must not replay this whole intent on the backup.
+ func retryableWorkerModelError(reason harness.TerminalReason, err error) bool {
+-	return reason == harness.ReasonModelError && !isTaskLLMRuntimeError(err)
++	return reason == harness.ReasonModelError && !isTaskLLMRuntimeError(err) && !cloudegress.ReplayUnsafe(err)
+ }
+ 
+ // Engine drives the event-driven exploration loop with real LLM agents

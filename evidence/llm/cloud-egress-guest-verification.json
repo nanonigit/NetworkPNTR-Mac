@@ -1,0 +1,69 @@
+{
+  "phase": "CP3-B5 Linux vsock provider client and broker completion enforcement",
+  "frozen_browser_commit": "e75ae371ad777ffd1eecdd28d2781a6519b05591",
+  "frozen_archive_members_verified": true,
+  "input_sha256": {
+    "guest/backend-extension/Dockerfile.provider-tests": "d5d65f527310130c1da635dad2fa6373ff167fc3496aa6668e8f0875b86eddde",
+    "guest/backend-extension/provider-vsock-transport.patch": "704b0ee15638fc91d635351a5f072ec3faae5dcbc475251029cb91ed997ca2fc",
+    "guest/backend-extension/norma-provider-vsock-terminal.patch": "1892c5580697eea98580ed43efa3087fe867c734d86e5a762e3d5d8453ca9d65",
+    "guest/backend-extension/cloud-origin/cloudegress/transport.go": "5e7ec45a7531ee2707d03f3f144bb8c8e9af60d140b6454bb1e8186e572221c9",
+    "guest/backend-extension/cloud-origin/cloudegress/transport_test.go": "385596d30d6b10a68570019acecd8238084712a2ab16707ca709421e2f14be93",
+    "guest/backend-extension/cloud-origin/cloudegress/vsock_linux.go": "9d4287459f2c2b63265295e87f7c29514764d5cd08631495f425f42059f20438",
+    "guest/backend-extension/cloud-origin/agent/cloud_vsock_transport_test.go": "9545039bdbb761cca040e035cf0ada1f738a53dbfc4747a6f679fca44ff68142",
+    "guest/backend-extension/cloud-origin/server/cloud_vsock_transport_test.go": "7fee0eaa3a97b9f5b675571c0401571a400e5b19a00848bf8ee811b180d5688c"
+  },
+  "red": {
+    "missing_broker_end_log_sha256": "05887ab6f84476ed7401c0fb919fd1fdd95de0ad0c665f308df4cd4f1ad9d237",
+    "unconfirmed_post_replay_log_sha256": "0b7886d3fda4c3db45cf7a04768441a405f866da75159b1001b16f46edd317f8",
+    "observed_unconfirmed_post_dial_attempts": 4
+  },
+  "verified": {
+    "offline_go_test_events": {
+      "pass": 613,
+      "skip": 117,
+      "fail": 0
+    },
+    "focused_go_events": [
+      "TestManagedCloudGuestCompletionCannotFallBackToDirect",
+      "TestManagedCloudGuestRejectsCustomCompletionRouting",
+      "TestManagedCloudGuestCapturePreservesTerminalAndRejectsTruncatedQuota",
+      "TestManagedCloudGuestWireAndStream",
+      "TestManagedCloudGuestRejectsBeforeDial",
+      "TestManagedCloudGuestMalformedResponseAndCancellation",
+      "TestManagedCloudGuestOpenAISDKRequiresBrokerEndAfterDone",
+      "TestManagedCloudGuestExplicitModes",
+      "TestManagedCloudGuestDoesNotReplayUnconfirmedPOST/missing_head",
+      "TestManagedCloudGuestDoesNotReplayUnconfirmedPOST/malformed_head",
+      "TestManagedCloudGuestDoesNotReplayUnconfirmedPOST/429_without_end",
+      "TestManagedCloudGuestDoesNotReplayUnconfirmedPOST/503_without_end",
+      "TestManagedCloudGuestDoesNotReplayUnconfirmedPOST/401_without_end",
+      "TestManagedCloudGuestDoesNotReplayUnconfirmedPOST",
+      "TestManagedCloudGuestSSEProviderErrorNeedsBrokerTerminal/anthropic",
+      "TestManagedCloudGuestSSEProviderErrorNeedsBrokerTerminal/openai-responses",
+      "TestManagedCloudGuestSSEProviderErrorNeedsBrokerTerminal",
+      "TestManagedCloudGuestDiscoveryRejectsPartialAndNoFallback",
+      "TestManagedCloudGuestTaskAndWorkerDoNotRetryUnconfirmedExchange"
+    ],
+    "postgresql_loopback_test_events": {
+      "pass": 14,
+      "skip": 0,
+      "fail": 0
+    },
+    "guest_artifact_python_pass": 193,
+    "direct_fallback_requests_in_vsock_mode": 0
+  },
+  "backend": {
+    "version": "artex-mac-e75ae371-cloud5",
+    "platform": "linux/arm64",
+    "cgo_enabled": false,
+    "builder_image": "sha256:b854ff8c985869fc648ab8042849ecea710f017758ec0bb743d0fa500da91e49",
+    "offline_dockerfile_sha256": "7a69f37240f97c88b6dc06b68f63b1398b952483f369393c06c11f031a782531",
+    "build_log_sha256": "1c1ca2eca46743913f56954cf4ffac264dfce486ab3b922bb49b0cdae8722c90",
+    "bytes": 29425826,
+    "sha256": "3c0e6f02e379245a043935c537afc152c393510d0a191e4646d39b275564f8f2",
+    "client_overlay_and_patches_match_image": true
+  },
+  "actual_af_vsock_delivery_verified": false,
+  "default_guest_activated": false,
+  "hosted_ci_verified": false
+}

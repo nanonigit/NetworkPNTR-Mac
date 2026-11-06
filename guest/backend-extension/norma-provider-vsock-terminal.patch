@@ -1,0 +1,110 @@
+--- a/llm/openai.go
++++ b/llm/openai.go
+@@ -330,6 +330,7 @@
+ 					continue
+ 				}
+ 				if data == "[DONE]" {
++					streamErr = scan.requireTransportEnd(resp.Body)
+ 					break
+ 				}
+ 				evs, sr, u, ok := parseOpenAIFrame(data, started)
+--- a/llm/anthropic.go
++++ b/llm/anthropic.go
+@@ -138,6 +138,9 @@
+ 			}
+ 			ev, ok, perr := parseAnthropicFrame(data)
+ 			if perr != nil {
++				if endErr := scan.requireTransportEnd(resp.Body); endErr != nil {
++					perr = endErr
++				}
+ 				yield(StreamEvent{}, perr)
+ 				return
+ 			}
+--- a/llm/openai_responses.go
++++ b/llm/openai_responses.go
+@@ -161,6 +161,9 @@
+ 			}
+ 			ev, ok, perr := parseResponsesFrame(event, data)
+ 			if perr != nil {
++				if endErr := scan.requireTransportEnd(resp.Body); endErr != nil {
++					perr = endErr
++				}
+ 				yield(StreamEvent{}, perr)
+ 				return
+ 			}
+--- a/llm/sse.go
++++ b/llm/sse.go
+@@ -16,6 +16,16 @@
+ 
+ func newSSEScanner(body io.Reader) *sseScanner {
+ 	return &sseScanner{r: bufio.NewReaderSize(body, 64*1024)}
++}
++
++// requireTransportEnd checks the broker terminal after a provider-level end or error.
++func (s *sseScanner) requireTransportEnd(body io.Reader) error {
++	terminal, ok := body.(interface{ RequiresTransportEnd() bool })
++	if !ok || !terminal.RequiresTransportEnd() {
++		return nil
++	}
++	_, err := io.Copy(io.Discard, s.r)
++	return err
+ }
+ 
+ // next returns the next event's (type, data). event is "" for bare-data streams.
+--- a/llm/retry.go
++++ b/llm/retry.go
+@@ -3,6 +3,7 @@
+ import (
+ 	"bytes"
+ 	"context"
++	"errors"
+ 	"fmt"
+ 	"io"
+ 	"net/http"
+@@ -37,10 +38,27 @@
+ 			return resp, nil
+ 		}
+ 
++		// A broker error status is actionable only after its transport terminal.
++		var framedData []byte
++		framed := false
++		if err == nil {
++			terminal, ok := resp.Body.(interface{ RequiresTransportEnd() bool })
++			framed = ok && terminal.RequiresTransportEnd()
++			if framed {
++				var readErr error
++				framedData, readErr = io.ReadAll(resp.Body)
++				resp.Body.Close()
++				if readErr != nil {
++					return nil, readErr
++				}
++			}
++		}
++
+ 		retryable := false
+ 		switch {
+ 		case err != nil:
+-			retryable = ctx.Err() == nil // transient network error (not cancellation)
++			var uncertain interface{ NoProviderRetry() bool }
++			retryable = ctx.Err() == nil && (!errors.As(err, &uncertain) || !uncertain.NoProviderRetry())
+ 		case isRetryableStatus(resp.StatusCode):
+ 			retryable = true
+ 		}
+@@ -48,11 +66,14 @@
+ 			if err != nil {
+ 				return nil, err
+ 			}
+-			data, _ := io.ReadAll(resp.Body)
+-			resp.Body.Close()
++			data := framedData
++			if !framed {
++				data, _ = io.ReadAll(resp.Body)
++				resp.Body.Close()
++			}
+ 			return nil, fmt.Errorf("%s: status %d: %s", errPrefix, resp.StatusCode, strings.TrimSpace(string(data)))
+ 		}
+-		if resp != nil {
++		if resp != nil && !framed {
+ 			resp.Body.Close()
+ 		}
+ 		if !backoffSleep(ctx, cfg.retryDelay(attempt)) {
