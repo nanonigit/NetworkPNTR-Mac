@@ -1,0 +1,578 @@
+{
+  "mode": "tcp-only",
+  "tlsStarted": false,
+  "httpRequests": 0,
+  "pairing": "same numeric address and port, independent local processes",
+  "activeKernelContentFilters": 1,
+  "activeNetworkExtension": "Little Snitch 6.5",
+  "probePendingVerdictWitnesses": 1,
+  "releaseAppFilterVerdictVerified": false,
+  "hostFilterConfigurationChanged": false,
+  "productionSourceChanged": false,
+  "liveStabilityVerified": false,
+  "trials": {
+    "paired-tcp": [
+      {
+        "host": "api.openai.com",
+        "hostResult": "connected",
+        "hostMilliseconds": 47,
+        "brokerResult": 5,
+        "brokerMilliseconds": 4002,
+        "addressFamily": 4
+      },
+      {
+        "host": "api.openai.com",
+        "hostResult": "connected",
+        "hostMilliseconds": 70,
+        "brokerResult": 5,
+        "brokerMilliseconds": 4000,
+        "addressFamily": 4
+      },
+      {
+        "host": "api.anthropic.com",
+        "hostResult": "connected",
+        "hostMilliseconds": 53,
+        "brokerResult": 5,
+        "brokerMilliseconds": 4001,
+        "addressFamily": 4
+      },
+      {
+        "host": "generativelanguage.googleapis.com",
+        "hostResult": "connected",
+        "hostMilliseconds": 40,
+        "brokerResult": 0,
+        "brokerMilliseconds": 3097,
+        "addressFamily": 4
+      },
+      {
+        "host": "api.groq.com",
+        "hostResult": "connected",
+        "hostMilliseconds": 48,
+        "brokerResult": 0,
+        "brokerMilliseconds": 47,
+        "addressFamily": 4
+      }
+    ],
+    "paired-select": [
+      {
+        "host": "api.openai.com",
+        "hostResult": "connected",
+        "hostMilliseconds": 107,
+        "brokerResult": 5,
+        "brokerMilliseconds": 4058,
+        "addressFamily": 4
+      },
+      {
+        "host": "api.openai.com",
+        "hostResult": "connected",
+        "hostMilliseconds": 37,
+        "brokerResult": 5,
+        "brokerMilliseconds": 4000,
+        "addressFamily": 4
+      },
+      {
+        "host": "api.anthropic.com",
+        "hostResult": "connected",
+        "hostMilliseconds": 231,
+        "brokerResult": 0,
+        "brokerMilliseconds": 523,
+        "addressFamily": 4
+      },
+      {
+        "host": "generativelanguage.googleapis.com",
+        "hostResult": "connected",
+        "hostMilliseconds": 225,
+        "brokerResult": 0,
+        "brokerMilliseconds": 223,
+        "addressFamily": 4
+      },
+      {
+        "host": "api.groq.com",
+        "hostResult": "connected",
+        "hostMilliseconds": 48,
+        "brokerResult": 0,
+        "brokerMilliseconds": 48,
+        "addressFamily": 4
+      }
+    ],
+    "paired-state": [
+      {
+        "host": "api.openai.com",
+        "hostResult": "connected",
+        "hostMilliseconds": 35,
+        "phase": "before-virtualization",
+        "brokerResult": 5,
+        "brokerMilliseconds": 4002,
+        "kernelTCPState": 4,
+        "selectReadyAtExit": 0,
+        "addressFamily": 4
+      },
+      {
+        "host": "api.openai.com",
+        "hostResult": "connected",
+        "hostMilliseconds": 49,
+        "phase": "before-virtualization",
+        "brokerResult": 0,
+        "brokerMilliseconds": 453,
+        "kernelTCPState": 4,
+        "selectReadyAtExit": 1,
+        "addressFamily": 4
+      },
+      {
+        "host": "api.anthropic.com",
+        "hostResult": "connected",
+        "hostMilliseconds": 45,
+        "phase": "before-virtualization",
+        "brokerResult": 0,
+        "brokerMilliseconds": 43,
+        "kernelTCPState": 4,
+        "selectReadyAtExit": 1,
+        "addressFamily": 4
+      },
+      {
+        "host": "generativelanguage.googleapis.com",
+        "hostResult": "connected",
+        "hostMilliseconds": 47,
+        "phase": "before-virtualization",
+        "brokerResult": 0,
+        "brokerMilliseconds": 37,
+        "kernelTCPState": 4,
+        "selectReadyAtExit": 1,
+        "addressFamily": 4
+      },
+      {
+        "host": "api.groq.com",
+        "hostResult": "connected",
+        "hostMilliseconds": 55,
+        "phase": "before-virtualization",
+        "brokerResult": 0,
+        "brokerMilliseconds": 56,
+        "kernelTCPState": 4,
+        "selectReadyAtExit": 1,
+        "addressFamily": 4
+      },
+      {
+        "host": "api.openai.com",
+        "hostResult": "connected",
+        "hostMilliseconds": 51,
+        "phase": "vm-broker",
+        "brokerResult": 0,
+        "brokerMilliseconds": 51,
+        "kernelTCPState": 4,
+        "selectReadyAtExit": 1,
+        "addressFamily": 4
+      },
+      {
+        "host": "api.anthropic.com",
+        "hostResult": "connected",
+        "hostMilliseconds": 36,
+        "phase": "vm-broker",
+        "brokerResult": 0,
+        "brokerMilliseconds": 62,
+        "kernelTCPState": 4,
+        "selectReadyAtExit": 1,
+        "addressFamily": 4
+      },
+      {
+        "host": "generativelanguage.googleapis.com",
+        "hostResult": "connected",
+        "hostMilliseconds": 39,
+        "phase": "vm-broker",
+        "brokerResult": 0,
+        "brokerMilliseconds": 49,
+        "kernelTCPState": 4,
+        "selectReadyAtExit": 1,
+        "addressFamily": 4
+      },
+      {
+        "host": "api.groq.com",
+        "hostResult": "connected",
+        "hostMilliseconds": 48,
+        "phase": "vm-broker",
+        "brokerResult": 0,
+        "brokerMilliseconds": 48,
+        "kernelTCPState": 4,
+        "selectReadyAtExit": 1,
+        "addressFamily": 4
+      }
+    ],
+    "paired-peer": [
+      {
+        "host": "api.openai.com",
+        "hostResult": "connected",
+        "hostMilliseconds": 39,
+        "phase": "before-virtualization",
+        "brokerResult": 5,
+        "brokerMilliseconds": 4000,
+        "kernelTCPState": 4,
+        "selectReadyAtExit": 0,
+        "expectedPeerVisible": false,
+        "pendingSocketError": 0,
+        "addressFamily": 4
+      },
+      {
+        "host": "api.openai.com",
+        "hostResult": "connected",
+        "hostMilliseconds": 63,
+        "phase": "before-virtualization",
+        "brokerResult": 5,
+        "brokerMilliseconds": 4001,
+        "kernelTCPState": 4,
+        "selectReadyAtExit": 0,
+        "expectedPeerVisible": false,
+        "pendingSocketError": 0,
+        "addressFamily": 4
+      },
+      {
+        "host": "api.anthropic.com",
+        "hostResult": "connected",
+        "hostMilliseconds": 38,
+        "phase": "before-virtualization",
+        "brokerResult": 5,
+        "brokerMilliseconds": 4000,
+        "kernelTCPState": 4,
+        "selectReadyAtExit": 0,
+        "expectedPeerVisible": false,
+        "pendingSocketError": 0,
+        "addressFamily": 4
+      },
+      {
+        "host": "generativelanguage.googleapis.com",
+        "hostResult": "connected",
+        "hostMilliseconds": 37,
+        "phase": "before-virtualization",
+        "brokerResult": 5,
+        "brokerMilliseconds": 4001,
+        "kernelTCPState": 4,
+        "selectReadyAtExit": 0,
+        "expectedPeerVisible": false,
+        "pendingSocketError": 0,
+        "addressFamily": 4
+      },
+      {
+        "host": "generativelanguage.googleapis.com",
+        "hostResult": "connected",
+        "hostMilliseconds": 50,
+        "phase": "before-virtualization",
+        "brokerResult": 5,
+        "brokerMilliseconds": 4000,
+        "kernelTCPState": 4,
+        "selectReadyAtExit": 0,
+        "expectedPeerVisible": false,
+        "pendingSocketError": 0,
+        "addressFamily": 4
+      },
+      {
+        "host": "generativelanguage.googleapis.com",
+        "hostResult": "connected",
+        "hostMilliseconds": 43,
+        "phase": "before-virtualization",
+        "brokerResult": 5,
+        "brokerMilliseconds": 4001,
+        "kernelTCPState": 4,
+        "selectReadyAtExit": 0,
+        "expectedPeerVisible": false,
+        "pendingSocketError": 0,
+        "addressFamily": 4
+      },
+      {
+        "host": "generativelanguage.googleapis.com",
+        "hostResult": "connected",
+        "hostMilliseconds": 51,
+        "phase": "before-virtualization",
+        "brokerResult": 5,
+        "brokerMilliseconds": 2987,
+        "kernelTCPState": 4,
+        "selectReadyAtExit": 0,
+        "expectedPeerVisible": false,
+        "pendingSocketError": 0,
+        "addressFamily": 4
+      },
+      {
+        "host": "api.groq.com",
+        "hostResult": "connected",
+        "hostMilliseconds": 52,
+        "phase": "before-virtualization",
+        "brokerResult": 5,
+        "brokerMilliseconds": 4001,
+        "kernelTCPState": 4,
+        "selectReadyAtExit": 0,
+        "expectedPeerVisible": false,
+        "pendingSocketError": 0,
+        "addressFamily": 4
+      },
+      {
+        "host": "api.groq.com",
+        "hostResult": "connected",
+        "hostMilliseconds": 125,
+        "phase": "before-virtualization",
+        "brokerResult": 5,
+        "brokerMilliseconds": 4000,
+        "kernelTCPState": 4,
+        "selectReadyAtExit": 0,
+        "expectedPeerVisible": false,
+        "pendingSocketError": 0,
+        "addressFamily": 4
+      },
+      {
+        "host": "api.openai.com",
+        "hostResult": "connected",
+        "hostMilliseconds": 116,
+        "phase": "vm-broker",
+        "brokerResult": 2,
+        "brokerMilliseconds": 1,
+        "kernelTCPState": 0,
+        "selectReadyAtExit": 1,
+        "expectedPeerVisible": false,
+        "pendingSocketError": 0,
+        "addressFamily": 4
+      },
+      {
+        "host": "api.openai.com",
+        "hostResult": "connected",
+        "hostMilliseconds": 116,
+        "phase": "vm-broker",
+        "brokerResult": 2,
+        "brokerMilliseconds": 0,
+        "kernelTCPState": 0,
+        "selectReadyAtExit": 1,
+        "expectedPeerVisible": false,
+        "pendingSocketError": 0,
+        "addressFamily": 4
+      },
+      {
+        "host": "api.anthropic.com",
+        "hostResult": "connected",
+        "hostMilliseconds": 114,
+        "phase": "vm-broker",
+        "brokerResult": 2,
+        "brokerMilliseconds": 1,
+        "kernelTCPState": 0,
+        "selectReadyAtExit": 1,
+        "expectedPeerVisible": false,
+        "pendingSocketError": 0,
+        "addressFamily": 4
+      },
+      {
+        "host": "generativelanguage.googleapis.com",
+        "hostResult": "connected",
+        "hostMilliseconds": 109,
+        "phase": "vm-broker",
+        "brokerResult": 2,
+        "brokerMilliseconds": 1,
+        "kernelTCPState": 0,
+        "selectReadyAtExit": 1,
+        "expectedPeerVisible": false,
+        "pendingSocketError": 0,
+        "addressFamily": 4
+      },
+      {
+        "host": "generativelanguage.googleapis.com",
+        "hostResult": "connected",
+        "hostMilliseconds": 51,
+        "phase": "vm-broker",
+        "brokerResult": 2,
+        "brokerMilliseconds": 0,
+        "kernelTCPState": 0,
+        "selectReadyAtExit": 1,
+        "expectedPeerVisible": false,
+        "pendingSocketError": 0,
+        "addressFamily": 4
+      },
+      {
+        "host": "generativelanguage.googleapis.com",
+        "hostResult": "connected",
+        "hostMilliseconds": 38,
+        "phase": "vm-broker",
+        "brokerResult": 2,
+        "brokerMilliseconds": 1,
+        "kernelTCPState": 0,
+        "selectReadyAtExit": 1,
+        "expectedPeerVisible": false,
+        "pendingSocketError": 0,
+        "addressFamily": 4
+      },
+      {
+        "host": "generativelanguage.googleapis.com",
+        "hostResult": "connected",
+        "hostMilliseconds": 42,
+        "phase": "vm-broker",
+        "brokerResult": 2,
+        "brokerMilliseconds": 0,
+        "kernelTCPState": 0,
+        "selectReadyAtExit": 1,
+        "expectedPeerVisible": false,
+        "pendingSocketError": 0,
+        "addressFamily": 4
+      },
+      {
+        "host": "api.groq.com",
+        "hostResult": "connected",
+        "hostMilliseconds": 41,
+        "phase": "vm-broker",
+        "brokerResult": 2,
+        "brokerMilliseconds": 997,
+        "kernelTCPState": 6,
+        "selectReadyAtExit": 1,
+        "expectedPeerVisible": false,
+        "pendingSocketError": 0,
+        "addressFamily": 4
+      },
+      {
+        "host": "api.groq.com",
+        "hostResult": "connected",
+        "hostMilliseconds": 50,
+        "phase": "vm-broker",
+        "brokerResult": 2,
+        "brokerMilliseconds": 9,
+        "kernelTCPState": 0,
+        "selectReadyAtExit": 1,
+        "expectedPeerVisible": false,
+        "pendingSocketError": 0,
+        "addressFamily": 4
+      }
+    ],
+    "paired-filter": [
+      {
+        "host": "api.openai.com",
+        "hostResult": "connected",
+        "hostMilliseconds": 49,
+        "phase": "before-virtualization",
+        "brokerResult": 5,
+        "brokerMilliseconds": 4001,
+        "kernelTCPState": 4,
+        "selectReadyAtExit": 0,
+        "expectedPeerVisible": false,
+        "pendingSocketError": 0,
+        "matchingFilterRecords": [
+          {
+            "length": 1416,
+            "tcpConnectedFlag": true,
+            "initialVerdictFlag": false,
+            "dropFlag": false
+          }
+        ],
+        "addressFamily": 4
+      },
+      {
+        "host": "api.openai.com",
+        "hostResult": "connected",
+        "hostMilliseconds": 50,
+        "phase": "before-virtualization",
+        "brokerResult": 0,
+        "brokerMilliseconds": 2354,
+        "kernelTCPState": 4,
+        "selectReadyAtExit": 1,
+        "expectedPeerVisible": true,
+        "pendingSocketError": 0,
+        "matchingFilterRecords": [
+          {
+            "length": 1416,
+            "tcpConnectedFlag": true,
+            "initialVerdictFlag": false,
+            "dropFlag": false
+          }
+        ],
+        "addressFamily": 4
+      },
+      {
+        "host": "api.anthropic.com",
+        "hostResult": "connected",
+        "hostMilliseconds": 40,
+        "phase": "before-virtualization",
+        "brokerResult": 0,
+        "brokerMilliseconds": 39,
+        "kernelTCPState": 4,
+        "selectReadyAtExit": 1,
+        "expectedPeerVisible": true,
+        "pendingSocketError": 0,
+        "matchingFilterRecords": [],
+        "addressFamily": 4
+      },
+      {
+        "host": "generativelanguage.googleapis.com",
+        "hostResult": "connected",
+        "hostMilliseconds": 120,
+        "phase": "before-virtualization",
+        "brokerResult": 0,
+        "brokerMilliseconds": 121,
+        "kernelTCPState": 4,
+        "selectReadyAtExit": 1,
+        "expectedPeerVisible": true,
+        "pendingSocketError": 0,
+        "matchingFilterRecords": [],
+        "addressFamily": 4
+      },
+      {
+        "host": "api.groq.com",
+        "hostResult": "connected",
+        "hostMilliseconds": 35,
+        "phase": "before-virtualization",
+        "brokerResult": 0,
+        "brokerMilliseconds": 37,
+        "kernelTCPState": 4,
+        "selectReadyAtExit": 1,
+        "expectedPeerVisible": true,
+        "pendingSocketError": 0,
+        "matchingFilterRecords": [],
+        "addressFamily": 4
+      },
+      {
+        "host": "api.openai.com",
+        "hostResult": "connected",
+        "hostMilliseconds": 38,
+        "phase": "vm-broker",
+        "brokerResult": 0,
+        "brokerMilliseconds": 50,
+        "kernelTCPState": 4,
+        "selectReadyAtExit": 1,
+        "expectedPeerVisible": true,
+        "pendingSocketError": 0,
+        "matchingFilterRecords": [],
+        "addressFamily": 4
+      },
+      {
+        "host": "api.anthropic.com",
+        "hostResult": "connected",
+        "hostMilliseconds": 37,
+        "phase": "vm-broker",
+        "brokerResult": 0,
+        "brokerMilliseconds": 37,
+        "kernelTCPState": 4,
+        "selectReadyAtExit": 1,
+        "expectedPeerVisible": true,
+        "pendingSocketError": 0,
+        "matchingFilterRecords": [],
+        "addressFamily": 4
+      },
+      {
+        "host": "generativelanguage.googleapis.com",
+        "hostResult": "connected",
+        "hostMilliseconds": 38,
+        "phase": "vm-broker",
+        "brokerResult": 0,
+        "brokerMilliseconds": 52,
+        "kernelTCPState": 4,
+        "selectReadyAtExit": 1,
+        "expectedPeerVisible": true,
+        "pendingSocketError": 0,
+        "matchingFilterRecords": [],
+        "addressFamily": 4
+      },
+      {
+        "host": "api.groq.com",
+        "hostResult": "connected",
+        "hostMilliseconds": 99,
+        "phase": "vm-broker",
+        "brokerResult": 0,
+        "brokerMilliseconds": 117,
+        "kernelTCPState": 4,
+        "selectReadyAtExit": 1,
+        "expectedPeerVisible": true,
+        "pendingSocketError": 0,
+        "matchingFilterRecords": [],
+        "addressFamily": 4
+      }
+    ]
+  }
+}

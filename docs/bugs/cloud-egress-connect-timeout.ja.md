@@ -33,3 +33,27 @@ TCP 接続が成立しており、プロバイダー全体が到達不能だっ�
 実接続の安定性は引き続き未確認とする。
 
 [検証記録](../../evidence/llm/cloud-egress-connect-timeout-verification.json)
+
+## 同じアドレスでの追加試験
+
+署名済みプローブは TCP までで停止し、TLS や HTTP を送らなかった。同じ時刻に
+別のホストプロセスから同じ数値アドレスへ接続すると、署名済みプローブが
+タイムアウトした試行でも接続できた。待機を `select` に変えても差が再現し、
+同じ署名済みプロセスの VM 作成前にも失敗した。
+
+VM 作成前のタイムアウト1件で、カーネルの TCP は接続済みだったが、
+`select` の書き込み可通知と期待する接続先を確認できず、`SO_ERROR` は0だった。
+同じ試行中に macOS のコンテンツフィルタのソケット一覧を読み取り、
+プロセス ID とアドレス種別が一致する TCP レコードを1件確認した。接続済みフラグは
+立っていたが、初回判定とドロップのフラグは立っていなかった。この試行はフィルタの
+判定待ちだった。この Mac の有効なネットワーク拡張は Little Snitch 6.5。
+適用ルールと Release アプリに対する判定は別途確認する必要がある。
+
+同じ診断のその後の VM 起動では、4社すべてに TCP 接続できた。今回の接続試験では
+プロバイダーの API 応答を要求していない。実 API と安定性の検証は継続する。
+本番の接続先検証とホストのフィルタ設定は維持した。
+[Apple XNU のソケット接続処理](https://raw.githubusercontent.com/apple-oss-distributions/xnu/main/bsd/kern/uipc_socket2.c) ·
+[Apple XNU のフィルタ状態](https://raw.githubusercontent.com/apple-oss-distributions/xnu/main/bsd/net/content_filter.c) ·
+[Little Snitch の判定待ち接続](https://help.obdev.at/littlesnitch6/lsm-managing-rules)
+
+[同時 TCP 試験の記録](../../evidence/llm/cloud-egress-tcp-pair-verification.json)

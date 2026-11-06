@@ -44,3 +44,31 @@ established that the provider sites were generally unreachable. Keep the
 live stability gate open.
 
 [Verification receipt](../../evidence/llm/cloud-egress-connect-timeout-verification.json)
+
+## Same-address follow-up
+
+TCP-only signed probes stopped before TLS and sent no HTTP. A separate
+host process attempted TCP to the exact numeric address at the same time.
+It connected on the samples where the signed probe timed out. Substituting
+`select` for the connection wait reproduced the difference. The same
+signed process also reproduced the failure before creating a VM.
+
+At one pre-VM timeout, the kernel TCP state was established while
+`select` reported no writability, the expected peer was unavailable,
+and `SO_ERROR` was zero. A read-only sample of the macOS content-filter
+socket table during that attempt matched one TCP record by process ID
+and address family. It had the connected flag set, initial verdict
+unset and drop unset. This establishes a pending filter decision for
+that observed probe attempt. The active network extension was Little
+Snitch 6.5. Its rule and the Release app's network identity still need
+to be checked separately.
+
+A later boot in that same diagnostic run connected at TCP for all four
+providers. No provider response was requested in these TCP-only probes.
+Keep the live authenticated API and repeatability gates open. The
+production socket checks and host filter configuration were preserved.
+[Apple XNU socket connection handling](https://raw.githubusercontent.com/apple-oss-distributions/xnu/main/bsd/kern/uipc_socket2.c) ·
+[Apple XNU content-filter state](https://raw.githubusercontent.com/apple-oss-distributions/xnu/main/bsd/net/content_filter.c) ·
+[Little Snitch pending connections](https://help.obdev.at/littlesnitch6/lsm-managing-rules)
+
+[Paired TCP verification receipt](../../evidence/llm/cloud-egress-tcp-pair-verification.json)

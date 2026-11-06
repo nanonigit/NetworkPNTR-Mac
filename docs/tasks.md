@@ -607,3 +607,11 @@ both sides of the dispatch boundary. The signed synthetic VM regression
 passed. Two production-route repeats yielded no confirmed status, so live
 stability remains open. See bugs/cloud-egress-connect-timeout in English and
 Japanese. Publication uses [skip ci].
+
+CP3-D paired TCP follow-up. Same-address controls reproduce a pending
+connection before VM creation, including with select. A PID-matched
+macOS filter record confirms an initial verdict was pending on one
+timed-out signed probe socket. Little Snitch is the active extension.
+No TLS or HTTP was dispatched by these probes. Release app policy
+and authenticated live stability remain open. See the bilingual
+connection-timeout investigation and paired TCP receipt.
