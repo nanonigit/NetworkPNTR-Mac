@@ -1,3 +1,4 @@
+import Observation
 import XCTest
 import ArtexCore
 @testable import ArtexMac
@@ -11,6 +12,24 @@ import ArtexCore
 }
 
 final class LLMWorkspaceTests: XCTestCase {
+    @MainActor func testFirstAttachmentInvalidatesTheLoadingView() {
+        let workspace = LLMWorkspace()
+        let owner = NSObject()
+        let changed = expectation(description: "The loading view observes first attachment")
+        let initiallyAttached = withObservationTracking {
+            workspace.belongs(to: owner)
+        } onChange: {
+            changed.fulfill()
+        }
+        XCTAssertFalse(initiallyAttached)
+
+        workspace.attach(owner: owner) {
+            LLMStore(service: LLMService(client: LLMWorkspaceBackend()))
+        }
+        wait(for: [changed], timeout: 0.05)
+        XCTAssertTrue(workspace.belongs(to: owner))
+    }
+
     @MainActor func testSameOwnerNavigationRetainsUncertainStoreAndDoesNotRecreateIt() async throws {
         let workspace = LLMWorkspace(); let owner = NSObject(); let api = LLMWorkspaceBackend()
         let store = LLMStore(service: LLMService(client: api))

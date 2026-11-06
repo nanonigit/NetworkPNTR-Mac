@@ -63,8 +63,14 @@ import SwiftUI
         .navigationTitle("LLM")
         .task { store.resume(); await store.load() }
         .onDisappear { store.stop() }
-        .sheet(item: $editor) { context in LLMProfileEditor(store: store, context: context) }
-        .sheet(isPresented: $rotationOpen) { LLMRotationView(store: store) }
+        .sheet(item: $editor) { context in
+            LLMProfileEditor(store: store, context: context)
+                .environment(\.locale, locale)
+        }
+        .sheet(isPresented: $rotationOpen) {
+            LLMRotationView(store: store)
+                .environment(\.locale, locale)
+        }
         .confirmationDialog(s(.llmUIDeleteConfirm), isPresented: Binding(get: { deleteCandidate != nil }, set: { if !$0 { deleteCandidate = nil } }), titleVisibility: .visible) {
             if let candidate = deleteCandidate {
                 Button(s(.llmUIDelete), role: .destructive) { Task { await store.delete(candidate); deleteCandidate = nil } }

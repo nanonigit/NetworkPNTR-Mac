@@ -6,7 +6,10 @@ import Observation
 @MainActor @Observable final class LLMWorkspace {
     private(set) var store: LLMStore?
     @ObservationIgnored private var owner: AnyObject?
-    func belongs(to owner: AnyObject) -> Bool { self.owner === owner && store != nil }
+    func belongs(to owner: AnyObject) -> Bool {
+        // Track first attachment even when the private owner has not been set.
+        store != nil && self.owner === owner
+    }
     func attach(owner: AnyObject, make: () -> LLMStore) {
         guard !belongs(to: owner) else { return }
         store?.stop()

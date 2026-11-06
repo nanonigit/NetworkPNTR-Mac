@@ -615,3 +615,11 @@ timed-out signed probe socket. Little Snitch is the active extension.
 No TLS or HTTP was dispatched by these probes. Release app policy
 and authenticated live stability remain open. See the bilingual
 connection-timeout investigation and paired TCP receipt.
+
+CP4 signed native LLM navigation follow-up. The actual first visit
+exposed a missing workspace observation. The regression and real
+signed retest verify first-click display. The editor and rotation
+sheets now inherit the chosen language explicitly. All five Japanese
+choices, keyboard selection and dismissal, English Groq and Rotation,
+and switching back to Japanese Custom were observed. Current browser
+authentication, VoiceOver and live API acceptance remain open.
