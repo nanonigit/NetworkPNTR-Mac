@@ -174,10 +174,11 @@
         "docs/agent-prompt-details-verification.md",
         "docs/agent-prompt-save-verification.md",
         "docs/agent-prompt-inspection-verification.md",
-        "docs/agent-prompt-restore-verification.md"
+        "docs/agent-prompt-restore-verification.md",
+        "docs/agent-wrapup-edit-verification.md"
       ],
       "remainingGates": [
-        "Markdown preview presentation, agent settings and bindings",
+        "Markdown preview presentation, model settings, bindings and triggers",
         "Creation, deletion, persistence and error recovery",
         "Paired native/browser catalog and editor UI acceptance"
       ]

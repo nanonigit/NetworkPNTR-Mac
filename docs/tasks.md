@@ -661,3 +661,9 @@ Verify the request, parser diagnostics, unchanged version history, exact whitesp
 Match the pinned guest reset endpoint. Restore the guest's current built-in template as a new saved version and keep the previous prompt in history. Offer the action on built-in agents and confirm before replacing the editor draft. If acknowledgement or history verification is interrupted, use the existing mutation recovery flow and keep unsaved input available.
 
 Use the frozen browser editor's action label. The Productboard restoration dialog returned by Lazyweb informed showing a cancel action and the consequence before committing the restore. Verify the request, history, custom-agent rejection, and stale or uncertain responses. Compare the disposable native and pinned browser fixtures without running an agent.
+
+### P4 Edit agent wrap-up settings
+
+Match the pinned normal and supported task-timeout wrap-up save and reset endpoints. Preserve literal prompt overrides and interpret empty text and zero rounds using the guest defaults. Keep drafts for both sections independently and verify the persisted pair of fields before displaying success.
+
+Use the authenticated editor and the existing mutation gate. Keep the saved default available as a disclosure and confirm reset. The pinned browser defines the two sections. Lazyweb settings references informed keeping the field labels and actions in each section. Test exact writes, validation, partial failure, and isolation between drafts before comparing native and pinned fixtures.

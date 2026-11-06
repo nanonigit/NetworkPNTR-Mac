@@ -37,7 +37,7 @@
 	<key>agent.detail.discard</key>
 	<string>Discard changes</string>
 	<key>agent.detail.discardQuestion</key>
-	<string>Discard unsaved prompt changes?</string>
+	<string>Discard unsaved agent changes?</string>
 	<key>agent.detail.empty</key>
 	<string>(empty)</string>
 	<key>agent.detail.example</key>
@@ -160,6 +160,22 @@
 	<string>Recording proxy address (drives the if-branch wording)</string>
 	<key>agent.variable.worker.WorkerName</key>
 	<string>Worker self-identifier (optional)</string>
+	<key>agent.wrapUp.invalidRounds</key>
+	<string>Enter a whole number from 0 to 2,147,483,647.</string>
+	<key>agent.wrapUp.mismatch</key>
+	<string>The guest returned different wrap-up settings. Check the saved values before retrying.</string>
+	<key>agent.wrapUp.restoreNormal</key>
+	<string>The normal wrap-up prompt and round limit will use their defaults.</string>
+	<key>agent.wrapUp.restoreQuestion</key>
+	<string>Restore wrap-up defaults?</string>
+	<key>agent.wrapUp.restoreTimeout</key>
+	<string>The task timeout wrap-up prompt and round limit will use their defaults.</string>
+	<key>agent.wrapUp.rounds</key>
+	<string>Round limit (0 uses the default of {count})</string>
+	<key>agent.wrapUp.save</key>
+	<string>Save wrap-up settings</string>
+	<key>agent.wrapUp.saved</key>
+	<string>Wrap-up settings saved.</string>
 	<key>auth.acceptTerms</key>
 	<string>Agree</string>
 	<key>auth.agree</key>

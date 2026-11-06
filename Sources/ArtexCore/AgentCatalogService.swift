@@ -108,6 +108,27 @@ public struct AgentPromptPreview: Decodable, Sendable {
         return acknowledgement.version
     }
 
+    func saveWrapUp(key: String, section: AgentWrapUpSection, prompt: String, rounds: Int) async throws {
+        struct Payload: Encodable { let prompt: String; let maxTurns: Int }
+        let body = try BackendJSONCoding.encode(Payload(prompt: prompt, maxTurns: rounds))
+        guard body.count <= 4 * 1024 * 1024 else { throw BackendAPIError.status(413) }
+        try await submitWrapUp(key: key, method: "PUT", suffix: section.routeSuffix, body: body)
+    }
+
+    func restoreWrapUp(key: String, section: AgentWrapUpSection) async throws {
+        try await submitWrapUp(key: key, method: "POST", suffix: section.routeSuffix + "/reset", body: Data("{}".utf8))
+    }
+
+    private func submitWrapUp(key: String, method: String, suffix: String, body: Data) async throws {
+        struct Acknowledgement: Decodable { let ok: Bool }
+        let path = try agentPath(key) + suffix
+        try Task.checkCancellation()
+        let response = try await client.send(method: method, path: path, body: body, bearer: nil)
+        guard response.status == 200 else { throw BackendAPIError.status(response.status) }
+        let acknowledgement = try BackendJSONCoding.decode(Acknowledgement.self, from: response.body)
+        guard acknowledgement.ok else { throw BackendAPIError.invalidResponse }
+    }
+
     public func previewPrompt(key: String, template: String) async throws -> AgentPromptPreview {
         let path = try agentPath(key) + "/prompt/preview"
         let body = try BackendJSONCoding.encode(PromptPayload(template: template, note: nil))

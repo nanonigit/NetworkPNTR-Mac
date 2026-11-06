@@ -13,6 +13,7 @@ import SwiftUI
     @State private var inspection: AgentPromptInspectionView.Inspection?
     @State private var confirmDiscard = false
     @State private var confirmRestore = false
+    @State private var restoreSection: AgentWrapUpSection?
     @State private var replacementDraft: String?
 
     init(agent: AgentCatalogEntry, service: AgentCatalogService) {
@@ -47,10 +48,10 @@ import SwiftUI
                         switch panel {
                         case .prompt: promptPanel(details)
                         case .wrapUp:
-                            wrapUpPanel(details.wrapUp, title: .agentDetailsWrapUp)
+                            wrapUpPanel(details.wrapUp, section: .normal, title: .agentDetailsWrapUp)
                             if let task = details.taskTimeout {
                                 Divider()
-                                wrapUpPanel(task, title: .agentDetailsTaskTimeout)
+                                wrapUpPanel(task, section: .taskTimeout, title: .agentDetailsTaskTimeout)
                             }
                         }
                     }
@@ -77,13 +78,21 @@ import SwiftUI
             AgentPromptInspectionView(inspection: selection, editor: editor)
                 .environment(\.locale, locale)
         }
-        .alert(s(.agentDetailsRestoreQuestion), isPresented: $confirmRestore) {
+        .alert(s(restoreSection == nil ? .agentDetailsRestoreQuestion : .agentWrapUpRestoreQuestion), isPresented: $confirmRestore) {
             Button(s(.agentDetailsRestore), role: .destructive) {
-                Task { await editor.restoreDefault() }
+                let section = restoreSection
+                Task {
+                    if let section { await editor.restoreWrapUp(section) }
+                    else { await editor.restoreDefault() }
+                }
             }
             Button(s(.chatCancel), role: .cancel) {}
         } message: {
-            Text(s(editor.hasUnsavedChanges ? .agentDetailsRestoreDraft : .agentDetailsRestoreHistory))
+            if let restoreSection {
+                Text(s(restoreSection == .normal ? .agentWrapUpRestoreNormal : .agentWrapUpRestoreTimeout))
+            } else {
+                Text(s(editor.hasUnsavedPrompt ? .agentDetailsRestoreDraft : .agentDetailsRestoreHistory))
+            }
         }
         .confirmationDialog(s(.agentDetailsDiscardQuestion), isPresented: $confirmDiscard, titleVisibility: .visible) {
             Button(s(.agentDetailsDiscard), role: .destructive) {
@@ -131,7 +140,10 @@ import SwiftUI
             .disabled(!editor.canSave)
             .accessibilityIdentifier("agent-prompt-save")
             if agent.builtin {
-                Button(s(.agentDetailsRestore), systemImage: "arrow.counterclockwise") { confirmRestore = true }
+                Button(s(.agentDetailsRestore), systemImage: "arrow.counterclockwise") {
+                    restoreSection = nil
+                    confirmRestore = true
+                }
                     .disabled(!editor.canEdit)
                     .accessibilityIdentifier("agent-prompt-restore")
             }
@@ -171,14 +183,56 @@ import SwiftUI
         }
     }
 
-    @ViewBuilder private func wrapUpPanel(_ wrap: AgentPromptDetails.WrapUp, title: AppStringKey) -> some View {
+    @ViewBuilder private func wrapUpPanel(_ wrap: AgentPromptDetails.WrapUp,
+                                         section: AgentWrapUpSection, title: AppStringKey) -> some View {
         Text(s(title)).font(.headline)
-        if wrap.usesDefault {
-            Text(s(.agentDetailsUsesDefault)).foregroundStyle(.secondary)
+        if let draft = editor.wrapUpDraft(section) {
+            TextEditor(text: Binding(
+                get: { editor.wrapUpDraft(section)?.prompt ?? draft.prompt },
+                set: { value in
+                    guard var latest = editor.wrapUpDraft(section) else { return }
+                    latest.prompt = value
+                    editor.editWrapUp(section, draft: latest)
+                }
+            ))
+            .font(.callout.monospaced())
+            .frame(minHeight: 140)
+            .disabled(!editor.canEdit)
+            .accessibilityLabel(s(title))
+            .accessibilityIdentifier("agent-wrapup-prompt-\(section.rawValue)")
+
+            let roundsLabel = AppStrings.formatted(.agentWrapUpRounds, language: language,
+                                                   values: ["count": wrap.defaultRounds.formatted(.number.locale(locale))])
+            Text(roundsLabel).font(.callout)
+            TextField(roundsLabel, text: Binding(
+                get: { editor.wrapUpDraft(section)?.rounds ?? draft.rounds },
+                set: { value in
+                    guard var latest = editor.wrapUpDraft(section) else { return }
+                    latest.rounds = value
+                    editor.editWrapUp(section, draft: latest)
+                }
+            ))
+            .disabled(!editor.canEdit)
+            .accessibilityIdentifier("agent-wrapup-rounds-\(section.rawValue)")
+            if draft.validRounds == nil {
+                Text(s(.agentWrapUpInvalidRounds)).foregroundStyle(.red)
+            }
+            HStack {
+                Button(s(.agentWrapUpSave), systemImage: "square.and.arrow.down") {
+                    Task { await editor.saveWrapUp(section) }
+                }
+                .disabled(!editor.canSaveWrapUp(section))
+                .accessibilityIdentifier("agent-wrapup-save-\(section.rawValue)")
+                Button(s(.agentDetailsRestore), systemImage: "arrow.counterclockwise") {
+                    restoreSection = section
+                    confirmRestore = true
+                }
+                .disabled(!editor.canEdit)
+                .accessibilityIdentifier("agent-wrapup-restore-\(section.rawValue)")
+            }
         }
-        literal(wrap.effectivePrompt)
         LabeledContent(s(.agentDetailsRounds), value: wrap.effectiveRounds.formatted(.number.locale(locale)))
-        if !wrap.usesDefault, !wrap.builtIn.isEmpty {
+        if !wrap.builtIn.isEmpty {
             DisclosureGroup(s(.agentDetailsBuiltIn)) { literal(wrap.builtIn) }
         }
     }
@@ -199,6 +253,9 @@ import SwiftUI
     }
 
     @ViewBuilder private var saveStatus: some View {
+        if editor.wrapUpSaved {
+            Text(s(.agentWrapUpSaved)).foregroundStyle(.secondary)
+        }
         if let version = editor.savedVersion {
             Text(AppStrings.formatted(editor.restoredDefault ? .agentDetailsRestored : .agentDetailsSaved,
                                       language: language,
@@ -218,7 +275,7 @@ import SwiftUI
     }
 
     private func useAsDraft(_ text: String) {
-        if editor.hasUnsavedChanges && !editor.draft.utf8.elementsEqual(text.utf8) {
+        if editor.hasUnsavedPrompt && !editor.draft.utf8.elementsEqual(text.utf8) {
             replacementDraft = text
             confirmDiscard = true
         } else {

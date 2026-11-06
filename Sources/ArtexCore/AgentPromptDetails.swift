@@ -80,3 +80,42 @@ public struct AgentPromptDetails: Decodable, Sendable {
         }
     }
 }
+
+public enum AgentWrapUpSection: String, Sendable, Hashable {
+    case normal, taskTimeout
+
+    var routeSuffix: String {
+        switch self {
+        case .normal: "/wrapup"
+        case .taskTimeout: "/wrapup/task-timeout"
+        }
+    }
+}
+
+public struct AgentWrapUpDraft: Sendable {
+    public var prompt: String
+    public var rounds: String
+
+    public init(prompt: String, rounds: String) {
+        self.prompt = prompt
+        self.rounds = rounds
+    }
+
+    public var validRounds: Int? {
+        guard let value = Int32(rounds), value >= 0 else { return nil }
+        return Int(value)
+    }
+
+    func matches(_ saved: AgentPromptDetails.WrapUp) -> Bool {
+        validRounds == saved.savedRounds && prompt.utf8.elementsEqual(saved.prompt.utf8)
+    }
+}
+
+extension AgentPromptDetails {
+    func wrapUp(_ section: AgentWrapUpSection) -> WrapUp? {
+        switch section {
+        case .normal: wrapUp
+        case .taskTimeout: taskTimeout
+        }
+    }
+}

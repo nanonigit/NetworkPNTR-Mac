@@ -1,6 +1,142 @@
 {
   "sourceLanguage": "en",
   "strings": {
+    "agent.wrapUp.rounds": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Round limit (0 uses the default of {count})"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ラウンド上限（0 は既定値の {count} を使用）"
+          }
+        }
+      }
+    },
+    "agent.wrapUp.invalidRounds": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Enter a whole number from 0 to 2,147,483,647."
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "0 から 2,147,483,647 までの整数を入力してください。"
+          }
+        }
+      }
+    },
+    "agent.wrapUp.save": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Save wrap-up settings"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "終了処理の設定を保存"
+          }
+        }
+      }
+    },
+    "agent.wrapUp.saved": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Wrap-up settings saved."
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "終了処理の設定を保存しました。"
+          }
+        }
+      }
+    },
+    "agent.wrapUp.mismatch": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The guest returned different wrap-up settings. Check the saved values before retrying."
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ゲストから異なる終了処理の設定が返りました。再試行する前に保存済みの値を確認してください。"
+          }
+        }
+      }
+    },
+    "agent.wrapUp.restoreQuestion": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Restore wrap-up defaults?"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "終了処理を既定値に戻しますか？"
+          }
+        }
+      }
+    },
+    "agent.wrapUp.restoreNormal": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The normal wrap-up prompt and round limit will use their defaults."
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "通常終了時のプロンプトとラウンド上限に既定値を適用します。"
+          }
+        }
+      }
+    },
+    "agent.wrapUp.restoreTimeout": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The task timeout wrap-up prompt and round limit will use their defaults."
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "案件タイムアウト時のプロンプトとラウンド上限に既定値を適用します。"
+          }
+        }
+      }
+    },
     "agent.detail.restore": {
       "extractionState": "manual",
       "localizations": {
@@ -364,13 +500,13 @@
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "Discard unsaved prompt changes?"
+            "value": "Discard unsaved agent changes?"
           }
         },
         "ja": {
           "stringUnit": {
             "state": "translated",
-            "value": "未保存のプロンプト変更を破棄しますか？"
+            "value": "エージェントの未保存の変更を破棄しますか？"
           }
         }
       }
