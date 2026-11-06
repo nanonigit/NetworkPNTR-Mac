@@ -90,6 +90,26 @@
 	<string>バージョン履歴</string>
 	<key>agent.detail.wrapUp</key>
 	<string>締めくくりプロンプト</string>
+	<key>agent.execution.defaultSuffix</key>
+	<string> · 既定</string>
+	<key>agent.execution.inherit</key>
+	<string>タスク / グローバルで有効な設定に従う</string>
+	<key>agent.execution.mismatch</key>
+	<string>ゲストから異なる実行設定が返りました。下書きを確認して再試行してください。</string>
+	<key>agent.execution.missing</key>
+	<string>利用できないモデル設定 #{id}</string>
+	<key>agent.execution.model</key>
+	<string>既定のモデル（LLM 設定）</string>
+	<key>agent.execution.save</key>
+	<string>設定を保存</string>
+	<key>agent.execution.saved</key>
+	<string>実行設定を保存しました（即時適用）</string>
+	<key>agent.execution.seconds</key>
+	<string>実行時間 (秒、0=無制限)</string>
+	<key>agent.execution.title</key>
+	<string>モデルと実行上限</string>
+	<key>agent.execution.turns</key>
+	<string>最大反復回数 (0=無制限)</string>
 	<key>agent.inspect.added</key>
 	<string>追加</string>
 	<key>agent.inspect.compare</key>

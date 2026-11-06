@@ -47,10 +47,18 @@ public struct AgentPromptDetails: Decodable, Sendable {
     public let versions: [Version]
     public let wrapUp: WrapUp
     public let taskTimeout: WrapUp?
+    public let execution: AgentExecutionDraft
+    public let modelOptions: [AgentModelOption]
+    public var showsExecutionLimits: Bool { key != "goals" && key != "mainagent" }
 
-    private struct Identity: Decodable { let key: String }
+    private struct Identity: Decodable {
+        let key: String
+        let llmProfileId: Int64?
+        let maxTurns: Int?
+        let runSeconds: Int?
+    }
     private enum CodingKeys: String, CodingKey {
-        case agent, prompt, variables, versions
+        case agent, prompt, variables, versions, llmProfiles
         case wrapupPrompt, wrapupDefault, wrapupMaxTurns, wrapupMaxTurnsDefault
         case taskTimeoutWrapupSupported, taskTimeoutWrapupPrompt, taskTimeoutWrapupDefault
         case taskTimeoutWrapupMaxTurns, taskTimeoutWrapupMaxTurnsDefault
@@ -58,7 +66,11 @@ public struct AgentPromptDetails: Decodable, Sendable {
 
     public init(from decoder: any Decoder) throws {
         let fields = try decoder.container(keyedBy: CodingKeys.self)
-        key = try fields.decode(Identity.self, forKey: .agent).key
+        let agent = try fields.decode(Identity.self, forKey: .agent)
+        key = agent.key
+        execution = AgentExecutionDraft(profileID: agent.llmProfileId, maxTurns: String(agent.maxTurns ?? 0),
+                                        runSeconds: String(agent.runSeconds ?? 600))
+        modelOptions = try fields.decodeIfPresent([AgentModelOption].self, forKey: .llmProfiles) ?? []
         prompt = try fields.decodeIfPresent(String.self, forKey: .prompt) ?? ""
         variables = try fields.decodeIfPresent([Variable].self, forKey: .variables) ?? []
         versions = try fields.decodeIfPresent([Version].self, forKey: .versions) ?? []

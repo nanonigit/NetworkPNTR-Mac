@@ -90,6 +90,26 @@
 	<string>Version history</string>
 	<key>agent.detail.wrapUp</key>
 	<string>Wrap-up prompt</string>
+	<key>agent.execution.defaultSuffix</key>
+	<string> · default</string>
+	<key>agent.execution.inherit</key>
+	<string>Follow task / global active config</string>
+	<key>agent.execution.mismatch</key>
+	<string>The guest reported different execution settings. Review the draft and retry.</string>
+	<key>agent.execution.missing</key>
+	<string>Unavailable model profile #{id}</string>
+	<key>agent.execution.model</key>
+	<string>Default model (LLM config)</string>
+	<key>agent.execution.save</key>
+	<string>Save settings</string>
+	<key>agent.execution.saved</key>
+	<string>Run settings saved (applied immediately)</string>
+	<key>agent.execution.seconds</key>
+	<string>Run time (seconds, 0 = unlimited)</string>
+	<key>agent.execution.title</key>
+	<string>Model and execution limits</string>
+	<key>agent.execution.turns</key>
+	<string>Max turns (0 = unlimited)</string>
 	<key>agent.inspect.added</key>
 	<string>Added</string>
 	<key>agent.inspect.compare</key>

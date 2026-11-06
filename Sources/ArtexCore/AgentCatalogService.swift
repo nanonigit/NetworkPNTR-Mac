@@ -112,14 +112,19 @@ public struct AgentPromptPreview: Decodable, Sendable {
         struct Payload: Encodable { let prompt: String; let maxTurns: Int }
         let body = try BackendJSONCoding.encode(Payload(prompt: prompt, maxTurns: rounds))
         guard body.count <= 4 * 1024 * 1024 else { throw BackendAPIError.status(413) }
-        try await submitWrapUp(key: key, method: "PUT", suffix: section.routeSuffix, body: body)
+        try await submitSettings(key: key, method: "PUT", suffix: section.routeSuffix, body: body)
     }
 
     func restoreWrapUp(key: String, section: AgentWrapUpSection) async throws {
-        try await submitWrapUp(key: key, method: "POST", suffix: section.routeSuffix + "/reset", body: Data("{}".utf8))
+        try await submitSettings(key: key, method: "POST", suffix: section.routeSuffix + "/reset", body: Data("{}".utf8))
     }
 
-    private func submitWrapUp(key: String, method: String, suffix: String, body: Data) async throws {
+    func saveExecution(key: String, patch: AgentExecutionPatch) async throws {
+        let body = try JSONEncoder().encode(patch)
+        try await submitSettings(key: key, method: "PUT", suffix: "/config", body: body)
+    }
+
+    private func submitSettings(key: String, method: String, suffix: String, body: Data) async throws {
         struct Acknowledgement: Decodable { let ok: Bool }
         let path = try agentPath(key) + suffix
         try Task.checkCancellation()

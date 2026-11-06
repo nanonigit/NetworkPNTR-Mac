@@ -103,6 +103,7 @@ import SwiftUI
     }
 
     @ViewBuilder private func promptPanel(_ details: AgentPromptDetails) -> some View {
+        executionPanel(details)
         Text(s(.agentDetailsVariables)).font(.headline)
         if details.variables.isEmpty {
             Text(s(.agentDetailsNoVariables)).foregroundStyle(.secondary)
@@ -183,6 +184,66 @@ import SwiftUI
         }
     }
 
+    @ViewBuilder private func executionPanel(_ details: AgentPromptDetails) -> some View {
+        if let draft = editor.executionDraft {
+            GroupBox(s(.agentExecutionTitle)) {
+                VStack(alignment: .leading, spacing: 10) {
+                    Picker(s(.agentExecutionModel), selection: executionBinding(\.profileID, fallback: draft.profileID)) {
+                        Text(s(.agentExecutionInherit)).tag(Optional<Int64>.none)
+                        ForEach(details.modelOptions) { profile in
+                            let suffix = profile.isDefault ? s(.agentExecutionDefaultSuffix) : ""
+                            Text(verbatim: "\(profile.name) (\(profile.model))\(suffix)").tag(Optional(profile.id))
+                        }
+                        if let id = draft.profileID, !details.modelOptions.contains(where: { $0.id == id }) {
+                            Text(AppStrings.formatted(.agentExecutionMissing, language: language,
+                                                      values: ["id": String(id)])).tag(Optional(id))
+                        }
+                    }
+                    .accessibilityIdentifier("agent-execution-model")
+                    if details.showsExecutionLimits {
+                        LabeledContent(s(.agentExecutionTurns)) {
+                            TextField(s(.agentExecutionTurns), text: executionBinding(\.maxTurns, fallback: draft.maxTurns))
+                                .labelsHidden()
+                                .accessibilityIdentifier("agent-execution-turns")
+                        }
+                        LabeledContent(s(.agentExecutionSeconds)) {
+                            TextField(s(.agentExecutionSeconds), text: executionBinding(\.runSeconds, fallback: draft.runSeconds))
+                                .labelsHidden()
+                                .accessibilityIdentifier("agent-execution-seconds")
+                        }
+                        if !validExecutionLimit(draft.maxTurns) || !validExecutionLimit(draft.runSeconds) {
+                            Text(s(.agentWrapUpInvalidRounds)).foregroundStyle(.red)
+                        }
+                    }
+                    Button(s(.agentExecutionSave), systemImage: "square.and.arrow.down") {
+                        Task { await editor.saveExecution() }
+                    }
+                    .disabled(!editor.canSaveExecution)
+                    .accessibilityIdentifier("agent-execution-save")
+                }
+                .padding(.vertical, 4)
+                .disabled(!editor.canEdit)
+            }
+        }
+    }
+
+    private func validExecutionLimit(_ raw: String) -> Bool {
+        guard let value = Int32(raw) else { return false }
+        return value >= 0
+    }
+
+    private func executionBinding<Value>(_ keyPath: WritableKeyPath<AgentExecutionDraft, Value>,
+                                         fallback: Value) -> Binding<Value> {
+        Binding(
+            get: { editor.executionDraft?[keyPath: keyPath] ?? fallback },
+            set: { value in
+                guard var draft = editor.executionDraft else { return }
+                draft[keyPath: keyPath] = value
+                editor.editExecution(draft)
+            }
+        )
+    }
+
     @ViewBuilder private func wrapUpPanel(_ wrap: AgentPromptDetails.WrapUp,
                                          section: AgentWrapUpSection, title: AppStringKey) -> some View {
         Text(s(title)).font(.headline)
@@ -253,6 +314,9 @@ import SwiftUI
     }
 
     @ViewBuilder private var saveStatus: some View {
+        if editor.executionSaved {
+            Text(s(.agentExecutionSaved)).foregroundStyle(.secondary)
+        }
         if editor.wrapUpSaved {
             Text(s(.agentWrapUpSaved)).foregroundStyle(.secondary)
         }

@@ -1,6 +1,176 @@
 {
   "sourceLanguage": "en",
   "strings": {
+    "agent.execution.title": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Model and execution limits"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "モデルと実行上限"
+          }
+        }
+      }
+    },
+    "agent.execution.model": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Default model (LLM config)"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "既定のモデル（LLM 設定）"
+          }
+        }
+      }
+    },
+    "agent.execution.inherit": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Follow task / global active config"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "タスク / グローバルで有効な設定に従う"
+          }
+        }
+      }
+    },
+    "agent.execution.defaultSuffix": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": " · default"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": " · 既定"
+          }
+        }
+      }
+    },
+    "agent.execution.turns": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Max turns (0 = unlimited)"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "最大反復回数 (0=無制限)"
+          }
+        }
+      }
+    },
+    "agent.execution.seconds": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Run time (seconds, 0 = unlimited)"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "実行時間 (秒、0=無制限)"
+          }
+        }
+      }
+    },
+    "agent.execution.save": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Save settings"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "設定を保存"
+          }
+        }
+      }
+    },
+    "agent.execution.saved": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Run settings saved (applied immediately)"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "実行設定を保存しました（即時適用）"
+          }
+        }
+      }
+    },
+    "agent.execution.mismatch": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The guest reported different execution settings. Review the draft and retry."
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ゲストから異なる実行設定が返りました。下書きを確認して再試行してください。"
+          }
+        }
+      }
+    },
+    "agent.execution.missing": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Unavailable model profile #{id}"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "利用できないモデル設定 #{id}"
+          }
+        }
+      }
+    },
     "agent.wrapUp.rounds": {
       "extractionState": "manual",
       "localizations": {

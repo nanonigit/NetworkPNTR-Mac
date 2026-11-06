@@ -667,3 +667,9 @@ Use the frozen browser editor's action label. The Productboard restoration dialo
 Match the pinned normal and supported task-timeout wrap-up save and reset endpoints. Preserve literal prompt overrides and interpret empty text and zero rounds using the guest defaults. Keep drafts for both sections independently and verify the persisted pair of fields before displaying success.
 
 Use the authenticated editor and the existing mutation gate. Keep the saved default available as a disclosure and confirm reset. The pinned browser defines the two sections. Lazyweb settings references informed keeping the field labels and actions in each section. Test exact writes, validation, partial failure, and isolation between drafts before comparing native and pinned fixtures.
+
+### P4 Agent model and execution limits
+
+Read the model profile choices and agent limits from the authenticated detail endpoint. Allow an explicit model binding or inheritance, with limit controls on the same agents as the frozen browser. Send only changed, visible fields. Confirm the affected fields by reading them back, preserving drafts in other sections and after a partial write.
+
+Group the model selection and numeric limits with the prompt settings. The frozen editor defines their visibility and the Cursor settings result from Lazyweb informed the model picker layout. Verify numeric bounds, omitted versus null fields, unsupported limits, missing profiles, and readback before comparing with the pinned reference.

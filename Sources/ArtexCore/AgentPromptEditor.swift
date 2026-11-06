@@ -3,6 +3,10 @@ import Observation
 @MainActor @Observable public final class AgentPromptEditor {
     private enum Phase { case ready, reading, saving, reloadRequired }
     private enum Mutation { case save, restore }
+    private enum SettingsReceipt {
+        case wrapUp(AgentWrapUpSection, AgentWrapUpDraft)
+        case execution(AgentExecutionPatch)
+    }
     private struct PendingVersion {
         let id: Int
         let expectedTemplate: String?
@@ -18,7 +22,8 @@ import Observation
     private let service: AgentCatalogService
     private var phase = Phase.ready
     private var pendingVersion: PendingVersion?
-    private var pendingWrapUp: (section: AgentWrapUpSection, expected: AgentWrapUpDraft)?
+    private var pendingSettings: SettingsReceipt?
+    private var executionEdit: AgentExecutionDraft?
     private var wrapUpEdits: [AgentWrapUpSection: AgentWrapUpDraft] = [:]
 
     public private(set) var details: AgentPromptDetails?
@@ -27,6 +32,7 @@ import Observation
     public private(set) var savedVersion: Int?
     public private(set) var restoredDefault = false
     public private(set) var wrapUpSaved = false
+    public private(set) var executionSaved = false
 
     public init(key: String, service: AgentCatalogService) {
         self.key = key
@@ -36,7 +42,7 @@ import Observation
     public var isBusy: Bool { phase == .reading || phase == .saving }
     public var requiresRefresh: Bool { phase == .reloadRequired }
     public var canEdit: Bool { phase == .ready && details != nil }
-    public var hasUnsavedChanges: Bool { hasUnsavedPrompt || !wrapUpEdits.isEmpty }
+    public var hasUnsavedChanges: Bool { hasUnsavedPrompt || !wrapUpEdits.isEmpty || executionEdit != nil }
     public var hasUnsavedPrompt: Bool {
         guard let details else { return false }
         return !details.prompt.utf8.elementsEqual(draft.utf8)
@@ -67,14 +73,26 @@ import Observation
             } else if !preserveDraft {
                 draft = latest.prompt
             }
-            if let pendingWrapUp {
-                self.pendingWrapUp = nil
-                wrapUpSaved = latest.wrapUp(pendingWrapUp.section).map(pendingWrapUp.expected.matches) ?? false
+            switch pendingSettings {
+            case let .wrapUp(section, expected):
+                wrapUpSaved = latest.wrapUp(section).map(expected.matches) ?? false
                 if wrapUpSaved {
-                    wrapUpEdits.removeValue(forKey: pendingWrapUp.section)
+                    wrapUpEdits.removeValue(forKey: section)
                 } else {
                     failure = AppErrorMessage(key: .agentWrapUpMismatch)
                 }
+            case let .execution(patch):
+                executionSaved = patch.matches(latest.execution)
+                if executionSaved { executionEdit = nil }
+                else { failure = AppErrorMessage(key: .agentExecutionMismatch) }
+            case nil: break
+            }
+            pendingSettings = nil
+            if var draft = executionEdit, let previous = details?.execution {
+                if draft.profileID == previous.profileID { draft.profileID = latest.execution.profileID }
+                if Int32(draft.maxTurns) == Int32(previous.maxTurns) { draft.maxTurns = latest.execution.maxTurns }
+                if Int32(draft.runSeconds) == Int32(previous.runSeconds) { draft.runSeconds = latest.execution.runSeconds }
+                executionEdit = executionMatches(draft, latest) ? nil : draft
             }
             wrapUpEdits = wrapUpEdits.filter { section, draft in
                 guard let saved = latest.wrapUp(section) else { return true }
@@ -119,25 +137,51 @@ import Observation
 
     public func saveWrapUp(_ section: AgentWrapUpSection) async {
         guard canSaveWrapUp(section), let draft = wrapUpEdits[section], let rounds = draft.validRounds else { return }
-        await commitWrapUp(section, expected: draft) {
+        await commitSettings(.wrapUp(section, draft)) {
             try await service.saveWrapUp(key: key, section: section, prompt: draft.prompt, rounds: rounds)
         }
     }
 
     public func restoreWrapUp(_ section: AgentWrapUpSection) async {
         guard canEdit, details?.wrapUp(section) != nil else { return }
-        await commitWrapUp(section, expected: AgentWrapUpDraft(prompt: "", rounds: "0")) {
+        await commitSettings(.wrapUp(section, AgentWrapUpDraft(prompt: "", rounds: "0"))) {
             try await service.restoreWrapUp(key: key, section: section)
         }
     }
 
-    private func commitWrapUp(_ section: AgentWrapUpSection, expected: AgentWrapUpDraft,
-                              write: () async throws -> Void) async {
+    public var executionDraft: AgentExecutionDraft? { executionEdit ?? details?.execution }
+    public var canSaveExecution: Bool { canEdit && executionPatch != nil }
+
+    public func editExecution(_ draft: AgentExecutionDraft) {
+        guard canEdit, let details else { return }
+        executionEdit = executionMatches(draft, details) ? nil : draft
+        executionSaved = false
+    }
+
+    public func saveExecution() async {
+        guard canEdit, let patch = executionPatch else { return }
+        await commitSettings(.execution(patch)) {
+            try await service.saveExecution(key: key, patch: patch)
+        }
+    }
+
+    private var executionPatch: AgentExecutionPatch? {
+        guard let details, let executionEdit else { return nil }
+        return AgentExecutionPatch(draft: executionEdit, saved: details)
+    }
+
+    private func executionMatches(_ draft: AgentExecutionDraft, _ saved: AgentPromptDetails) -> Bool {
+        draft.profileID == saved.execution.profileID && (!saved.showsExecutionLimits
+            || (Int32(draft.maxTurns) == Int32(saved.execution.maxTurns)
+                && Int32(draft.runSeconds) == Int32(saved.execution.runSeconds)))
+    }
+
+    private func commitSettings(_ receipt: SettingsReceipt, write: () async throws -> Void) async {
         guard !Task.isCancelled else { return }
         beginMutation()
         do {
             try await write()
-            pendingWrapUp = (section, expected)
+            pendingSettings = receipt
             phase = .reloadRequired
             await refresh()
         } catch BackendAPIError.status(let status) where [400, 401, 403, 404, 413].contains(status) {
@@ -155,6 +199,7 @@ import Observation
         savedVersion = nil
         restoredDefault = false
         wrapUpSaved = false
+        executionSaved = false
     }
 
     private func commit(_ mutation: Mutation) async {
