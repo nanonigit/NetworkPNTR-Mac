@@ -34,12 +34,20 @@
 	<string>Built-in default (read-only, for reference)</string>
 	<key>agent.detail.current</key>
 	<string>Current</string>
+	<key>agent.detail.discard</key>
+	<string>Discard changes</string>
+	<key>agent.detail.discardQuestion</key>
+	<string>Discard unsaved prompt changes?</string>
 	<key>agent.detail.empty</key>
 	<string>(empty)</string>
 	<key>agent.detail.example</key>
 	<string>Example: {example}</string>
 	<key>agent.detail.failed</key>
 	<string>Unable to load agent details</string>
+	<key>agent.detail.invalidTemplate</key>
+	<string>The guest rejected the template. Check its syntax and variable names.</string>
+	<key>agent.detail.loadVersion</key>
+	<string>Load into editor</string>
 	<key>agent.detail.loading</key>
 	<string>Loading agent details…</string>
 	<key>agent.detail.noVariables</key>
@@ -48,14 +56,20 @@
 	<string>(no saved versions yet; using the built-in default)</string>
 	<key>agent.detail.prompt</key>
 	<string>Prompt</string>
-	<key>agent.detail.readOnly</key>
-	<string>View saved prompts and versions. Editing is planned for a later phase.</string>
+	<key>agent.detail.refreshHistory</key>
+	<string>Reload version history</string>
 	<key>agent.detail.rounds</key>
 	<string>Effective round limit</string>
+	<key>agent.detail.save</key>
+	<string>Save as new version</string>
+	<key>agent.detail.saved</key>
+	<string>Saved version {version}</string>
 	<key>agent.detail.section</key>
 	<string>Detail section</string>
 	<key>agent.detail.taskTimeout</key>
 	<string>Task timeout wrap-up prompt body</string>
+	<key>agent.detail.uncertain</key>
+	<string>Reload the history to check the current version before saving again.</string>
 	<key>agent.detail.usesDefault</key>
 	<string>Use built-in default</string>
 	<key>agent.detail.variables</key>

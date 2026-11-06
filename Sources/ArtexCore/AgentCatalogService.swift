@@ -70,17 +70,36 @@ public struct AgentCatalogEntry: Decodable, Identifiable, Sendable {
     }
 
     public func promptDetails(key: String) async throws -> AgentPromptDetails {
-        guard let first = key.utf8.first, (97...122).contains(first),
-              key.utf8.dropFirst().allSatisfy({ (97...122).contains($0) || (48...57).contains($0) || $0 == 95 }) else {
-            throw BackendAPIError.invalidResponse
-        }
-        let detail = try await fetch(AgentPromptDetails.self, path: "/api/agents/\(key)")
+        let path = try agentPath(key)
+        let detail = try await fetch(AgentPromptDetails.self, path: path)
         guard detail.key == key,
               detail.versions.allSatisfy({ $0.version > 0 }),
               Set(detail.versions.map(\.version)).count == detail.versions.count else {
             throw BackendAPIError.invalidResponse
         }
         return detail
+    }
+
+    public func savePrompt(key: String, template: String) async throws -> Int {
+        struct Draft: Encodable { let template: String; let note = "" }
+        struct Acknowledgement: Decodable { let version: Int }
+        let path = try agentPath(key) + "/prompt"
+        let body = try BackendJSONCoding.encode(Draft(template: template))
+        guard body.count <= 4 * 1024 * 1024 else { throw BackendAPIError.status(413) }
+        try Task.checkCancellation()
+        let response = try await client.send(method: "PUT", path: path, body: body, bearer: nil)
+        guard response.status == 200 else { throw BackendAPIError.status(response.status) }
+        let acknowledgement = try BackendJSONCoding.decode(Acknowledgement.self, from: response.body)
+        guard acknowledgement.version > 0 else { throw BackendAPIError.invalidResponse }
+        return acknowledgement.version
+    }
+
+    private func agentPath(_ key: String) throws -> String {
+        guard let first = key.utf8.first, (97...122).contains(first),
+              key.utf8.dropFirst().allSatisfy({ (97...122).contains($0) || (48...57).contains($0) || $0 == 95 }) else {
+            throw BackendAPIError.invalidResponse
+        }
+        return "/api/agents/\(key)"
     }
 
     private func fetch<T: Decodable>(_ type: T.Type, path: String) async throws -> T {

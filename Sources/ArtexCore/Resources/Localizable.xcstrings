@@ -1,6 +1,142 @@
 {
   "sourceLanguage": "en",
   "strings": {
+    "agent.detail.save": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Save as new version"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "新しい版として保存"
+          }
+        }
+      }
+    },
+    "agent.detail.loadVersion": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Load into editor"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "エディターに読み込む"
+          }
+        }
+      }
+    },
+    "agent.detail.saved": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Saved version {version}"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "バージョン {version} を保存しました"
+          }
+        }
+      }
+    },
+    "agent.detail.invalidTemplate": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The guest rejected the template. Check its syntax and variable names."
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "テンプレートを保存できませんでした。構文と変数名を確認してください。"
+          }
+        }
+      }
+    },
+    "agent.detail.uncertain": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Reload the history to check the current version before saving again."
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "もう一度保存する前に履歴を読み込み、現在の版を確認してください。"
+          }
+        }
+      }
+    },
+    "agent.detail.refreshHistory": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Reload version history"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "版履歴を再読み込み"
+          }
+        }
+      }
+    },
+    "agent.detail.discardQuestion": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Discard unsaved prompt changes?"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "未保存のプロンプト変更を破棄しますか？"
+          }
+        }
+      }
+    },
+    "agent.detail.discard": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Discard changes"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "変更を破棄"
+          }
+        }
+      }
+    },
     "agent.detail.example": {
       "extractionState": "manual",
       "localizations": {
@@ -184,23 +320,6 @@
           "stringUnit": {
             "state": "translated",
             "value": "worker の自己識別子(任意)"
-          }
-        }
-      }
-    },
-    "agent.detail.readOnly": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "View saved prompts and versions. Editing is planned for a later phase."
-          }
-        },
-        "ja": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "保存済みのプロンプトと履歴を確認できます。編集は今後の段階で対応します。"
           }
         }
       }

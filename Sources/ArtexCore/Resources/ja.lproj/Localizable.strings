@@ -34,12 +34,20 @@
 	<string>組み込みの既定値（読み取り専用、参考用）</string>
 	<key>agent.detail.current</key>
 	<string>現在</string>
+	<key>agent.detail.discard</key>
+	<string>変更を破棄</string>
+	<key>agent.detail.discardQuestion</key>
+	<string>未保存のプロンプト変更を破棄しますか？</string>
 	<key>agent.detail.empty</key>
 	<string>（空）</string>
 	<key>agent.detail.example</key>
 	<string>例: {example}</string>
 	<key>agent.detail.failed</key>
 	<string>エージェントの詳細を読み込めませんでした</string>
+	<key>agent.detail.invalidTemplate</key>
+	<string>テンプレートを保存できませんでした。構文と変数名を確認してください。</string>
+	<key>agent.detail.loadVersion</key>
+	<string>エディターに読み込む</string>
 	<key>agent.detail.loading</key>
 	<string>エージェントの詳細を読み込み中…</string>
 	<key>agent.detail.noVariables</key>
@@ -48,14 +56,20 @@
 	<string>（保存されたバージョンはまだなく、組み込みの既定値を使用しています）</string>
 	<key>agent.detail.prompt</key>
 	<string>プロンプト</string>
-	<key>agent.detail.readOnly</key>
-	<string>保存済みのプロンプトと履歴を確認できます。編集は今後の段階で対応します。</string>
+	<key>agent.detail.refreshHistory</key>
+	<string>版履歴を再読み込み</string>
 	<key>agent.detail.rounds</key>
 	<string>適用される最大ラウンド数</string>
+	<key>agent.detail.save</key>
+	<string>新しい版として保存</string>
+	<key>agent.detail.saved</key>
+	<string>バージョン {version} を保存しました</string>
 	<key>agent.detail.section</key>
 	<string>詳細の項目</string>
 	<key>agent.detail.taskTimeout</key>
 	<string>タスクのタイムアウト時の締めくくりプロンプト本文</string>
+	<key>agent.detail.uncertain</key>
+	<string>もう一度保存する前に履歴を読み込み、現在の版を確認してください。</string>
 	<key>agent.detail.usesDefault</key>
 	<string>組み込みの既定値を使用</string>
 	<key>agent.detail.variables</key>

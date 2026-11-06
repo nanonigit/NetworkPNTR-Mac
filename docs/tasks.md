@@ -639,3 +639,11 @@ A signed-in user must be able to open an agent card and inspect the current prom
 Use an authenticated detail GET, require the response to name the requested agent, and cancel obsolete loads on dismissal. The frozen editor drawer supplies the tab order and content. Lazyweb's audit-history references support separating the version list from the selected version text. Use a native sheet with Prompt and Wrap-up tabs, and a disclosure row for each saved version. Write, restore, diff, configuration and binding controls remain separate tasks.
 
 Verify route validation, response identity, preservation of literals, version ordering and defaults, server status, cancellation, native navigation and the disposable pinned backend.
+
+### P4 Save agent prompt versions
+
+The prompt editor must send the exact draft to the pinned guest, leave prior versions available, and display the acknowledged version. An invalid template must leave the draft editable. After an interrupted or unconfirmed write, preserve the draft and require a history read before another save. A historical version can be copied into the draft for a subsequent explicit save.
+
+Use the existing authenticated agent detail transport. PUT the literal template and the same empty note as the pinned editor. Serialize the save with its history refresh. Keep the current draft visible while it saves, provide an explicit history refresh for uncertain outcomes, and confirm before closing a dirty sheet. The frozen editor supplies the editing and history actions. Lazyweb's Notion and Canva results show the value of keeping history reachable alongside the editor.
+
+Verify request bytes, valid and invalid templates, lost acknowledgement and stale history, duplicate dispatch prevention, and saved-version replay into the draft. Compare the isolated native guest with the fixed browser backend before considering the save workflow accepted.
