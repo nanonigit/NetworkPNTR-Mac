@@ -1,0 +1,11 @@
+# Agent prompt preview and comparison
+
+The native prompt editor opens a separate inspection sheet. Preview sends the exact draft to authenticated `POST /api/agents/{key}/prompt/preview`. The guest substitutes catalog sample values. An empty draft follows the pinned endpoint's fallback to the current saved prompt. Rendered text and the guest's template diagnostics are selectable literal text. The pinned browser renders successful output as Markdown.
+
+An older version can be compared with the latest saved version. The local line comparison preserves UTF-8 identity and the pinned browser's LF splitting and LCS tie-breaking. The sheet labels additions and removals with signs and color. Comparisons that exceed the matrix or line limit show both originals. Neither inspection changes the draft or writes a prompt version.
+
+At frozen commit `e75ae371ad777ffd1eecdd28d2781a6519b05591`, the disposable Docker reference substituted the exact sample value, returned an inline diagnostic with HTTP 200 for an unknown variable, used the current saved prompt for an empty draft, and preserved the original prompt and history. Running the frozen browser comparison function on repeated lines and on CRLF and canonically equivalent Unicode cases produced the same expected rows as the Swift tests. Lazyweb's v0 result informed separating inspection from the editing surface.
+
+The signed Mac app substituted the same sample value in the disposable VM, showed the diagnostic for an unknown variable, and kept the draft and v1 intact. After explicitly saving v2, the comparison sheet displayed the removed lines and both added lines. The first VM review expired while waiting for interaction. A fresh fixture completed the review and shut down. The guest artifact suite initially hit two timeouts while the Swift build was running. All 195 passed on a standalone run. Swift passed 1,069 tests with one existing skip. The release build and refreshed preview signature passed. Hosted CI was skipped under the quota policy.
+
+Run `swift test --filter AgentPromptInspectionTests` for the request contract, comparison order, literal line boundaries and size limits. Markdown presentation parity, default reset, agent settings and bindings, and authenticated browser GUI comparison remain open.

@@ -78,6 +78,24 @@
 	<string>バージョン履歴</string>
 	<key>agent.detail.wrapUp</key>
 	<string>締めくくりプロンプト</string>
+	<key>agent.inspect.added</key>
+	<string>追加</string>
+	<key>agent.inspect.compare</key>
+	<string>現在のバージョンと比較</string>
+	<key>agent.inspect.diffTitle</key>
+	<string>バージョン比較: v{from} → v{to} (現在)</string>
+	<key>agent.inspect.emptyDraft</key>
+	<string>下書きが空のため、保存済みのプロンプトをサンプル値で展開します。</string>
+	<key>agent.inspect.largeDiff</key>
+	<string>行単位の比較にはプロンプトが大きすぎるため、両方の版の原文を表示します。</string>
+	<key>agent.inspect.preview</key>
+	<string>レンダリングのプレビュー</string>
+	<key>agent.inspect.removed</key>
+	<string>削除</string>
+	<key>agent.inspect.renderError</key>
+	<string>テンプレートを展開できませんでした。</string>
+	<key>agent.inspect.sample</key>
+	<string>変数はサンプル値に置き換えられます。</string>
 	<key>agent.seed.auto.description</key>
 	<string>プラットフォーム運用アシスタント: ツールで案件(作成・参照・一時停止・ヒント付与)と資産を管理し、skill・カスタムツール・MCP を作成または変更します。</string>
 	<key>agent.seed.auto.name</key>

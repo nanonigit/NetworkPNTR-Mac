@@ -78,6 +78,24 @@
 	<string>Version history</string>
 	<key>agent.detail.wrapUp</key>
 	<string>Wrap-up prompt</string>
+	<key>agent.inspect.added</key>
+	<string>Added</string>
+	<key>agent.inspect.compare</key>
+	<string>Compare with current version</string>
+	<key>agent.inspect.diffTitle</key>
+	<string>Version comparison: v{from} → v{to} (current)</string>
+	<key>agent.inspect.emptyDraft</key>
+	<string>The draft is empty. Showing the saved prompt with sample values.</string>
+	<key>agent.inspect.largeDiff</key>
+	<string>These prompts are too large for a line comparison. Both original versions are shown below.</string>
+	<key>agent.inspect.preview</key>
+	<string>Preview render</string>
+	<key>agent.inspect.removed</key>
+	<string>Removed</string>
+	<key>agent.inspect.renderError</key>
+	<string>The template could not be rendered.</string>
+	<key>agent.inspect.sample</key>
+	<string>Variables are replaced with their sample values.</string>
 	<key>agent.seed.auto.description</key>
 	<string>Platform operations assistant: uses tools to manage tasks (create / view / pause / hint) and assets, and can create or modify skills, custom tools, and MCP.</string>
 	<key>agent.seed.auto.name</key>

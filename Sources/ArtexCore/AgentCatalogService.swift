@@ -53,8 +53,14 @@ public struct AgentCatalogEntry: Decodable, Identifiable, Sendable {
     }
 }
 
+public struct AgentPromptPreview: Decodable, Sendable {
+    public let rendered: String
+    public let error: String?
+}
+
 @MainActor public final class AgentCatalogService {
     private struct Envelope: Decodable { let agents: [AgentCatalogEntry] }
+    private struct PromptPayload: Encodable { let template: String; let note: String? }
 
     private let client: any BackendJSONTransport
 
@@ -81,10 +87,9 @@ public struct AgentCatalogEntry: Decodable, Identifiable, Sendable {
     }
 
     public func savePrompt(key: String, template: String) async throws -> Int {
-        struct Draft: Encodable { let template: String; let note = "" }
         struct Acknowledgement: Decodable { let version: Int }
         let path = try agentPath(key) + "/prompt"
-        let body = try BackendJSONCoding.encode(Draft(template: template))
+        let body = try BackendJSONCoding.encode(PromptPayload(template: template, note: ""))
         guard body.count <= 4 * 1024 * 1024 else { throw BackendAPIError.status(413) }
         try Task.checkCancellation()
         let response = try await client.send(method: "PUT", path: path, body: body, bearer: nil)
@@ -92,6 +97,17 @@ public struct AgentCatalogEntry: Decodable, Identifiable, Sendable {
         let acknowledgement = try BackendJSONCoding.decode(Acknowledgement.self, from: response.body)
         guard acknowledgement.version > 0 else { throw BackendAPIError.invalidResponse }
         return acknowledgement.version
+    }
+
+    public func previewPrompt(key: String, template: String) async throws -> AgentPromptPreview {
+        let path = try agentPath(key) + "/prompt/preview"
+        let body = try BackendJSONCoding.encode(PromptPayload(template: template, note: nil))
+        guard body.count <= 4 * 1024 * 1024 else { throw BackendAPIError.status(413) }
+        try Task.checkCancellation()
+        let response = try await client.send(method: "POST", path: path, body: body, bearer: nil)
+        try Task.checkCancellation()
+        guard response.status == 200 else { throw BackendAPIError.status(response.status) }
+        return try BackendJSONCoding.decode(AgentPromptPreview.self, from: response.body)
     }
 
     private func agentPath(_ key: String) throws -> String {

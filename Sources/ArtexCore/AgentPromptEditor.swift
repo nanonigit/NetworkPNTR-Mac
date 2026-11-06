@@ -58,6 +58,10 @@ import Observation
         }
     }
 
+    public func preview(template: String) async throws -> AgentPromptPreview {
+        try await service.previewPrompt(key: key, template: template)
+    }
+
     public func save() async {
         guard canSave, !Task.isCancelled else { return }
         phase = .saving

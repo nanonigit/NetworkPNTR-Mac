@@ -10,6 +10,7 @@ import SwiftUI
     @Environment(\.locale) private var locale
     @State private var panel = Panel.prompt
     @State private var editor: AgentPromptEditor
+    @State private var inspection: AgentPromptInspectionView.Inspection?
     @State private var confirmDiscard = false
     @State private var replacementDraft: String?
 
@@ -71,6 +72,10 @@ import SwiftUI
         .frame(minWidth: 540, idealWidth: 670, minHeight: 460, idealHeight: 640)
         .task { await editor.refresh() }
         .interactiveDismissDisabled(editor.isBusy || editor.hasUnsavedChanges)
+        .sheet(item: $inspection) { selection in
+            AgentPromptInspectionView(inspection: selection, editor: editor)
+                .environment(\.locale, locale)
+        }
         .confirmationDialog(s(.agentDetailsDiscardQuestion), isPresented: $confirmDiscard, titleVisibility: .visible) {
             Button(s(.agentDetailsDiscard), role: .destructive) {
                 if let replacementDraft { editor.edit(replacementDraft) } else { dismiss() }
@@ -107,11 +112,16 @@ import SwiftUI
             .disabled(!editor.canEdit)
             .accessibilityLabel(s(.agentDetailsPrompt))
             .accessibilityIdentifier("agent-prompt-editor")
-        Button(s(.agentDetailsSave), systemImage: "square.and.arrow.down") {
-            Task { await editor.save() }
+        HStack {
+            Button(s(.agentInspectPreview), systemImage: "eye") { inspection = .preview(editor.draft) }
+                .disabled(editor.isBusy)
+                .accessibilityIdentifier("agent-prompt-preview")
+            Button(s(.agentDetailsSave), systemImage: "square.and.arrow.down") {
+                Task { await editor.save() }
+            }
+            .disabled(!editor.canSave)
+            .accessibilityIdentifier("agent-prompt-save")
         }
-        .disabled(!editor.canSave)
-        .accessibilityIdentifier("agent-prompt-save")
         Divider()
         Text(s(.agentDetailsVersions)).font(.headline)
         if details.versions.isEmpty {
@@ -120,6 +130,11 @@ import SwiftUI
         ForEach(details.versions) { version in
             DisclosureGroup {
                 literal(version.templateText)
+                if let current = details.versions.first, current.id != version.id {
+                    Button(s(.agentInspectCompare), systemImage: "arrow.left.arrow.right") {
+                        inspection = .comparison(version, current)
+                    }
+                }
                 Button(s(.agentDetailsLoadVersion)) { useAsDraft(version.templateText) }
                     .disabled(!editor.canEdit)
                     .accessibilityIdentifier("agent-prompt-load-version-\(version.id)")

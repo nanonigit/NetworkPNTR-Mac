@@ -1,6 +1,159 @@
 {
   "sourceLanguage": "en",
   "strings": {
+    "agent.inspect.preview": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Preview render"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "レンダリングのプレビュー"
+          }
+        }
+      }
+    },
+    "agent.inspect.compare": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Compare with current version"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "現在のバージョンと比較"
+          }
+        }
+      }
+    },
+    "agent.inspect.diffTitle": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Version comparison: v{from} → v{to} (current)"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "バージョン比較: v{from} → v{to} (現在)"
+          }
+        }
+      }
+    },
+    "agent.inspect.sample": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Variables are replaced with their sample values."
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "変数はサンプル値に置き換えられます。"
+          }
+        }
+      }
+    },
+    "agent.inspect.emptyDraft": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The draft is empty. Showing the saved prompt with sample values."
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "下書きが空のため、保存済みのプロンプトをサンプル値で展開します。"
+          }
+        }
+      }
+    },
+    "agent.inspect.renderError": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The template could not be rendered."
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "テンプレートを展開できませんでした。"
+          }
+        }
+      }
+    },
+    "agent.inspect.removed": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Removed"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "削除"
+          }
+        }
+      }
+    },
+    "agent.inspect.added": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Added"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "追加"
+          }
+        }
+      }
+    },
+    "agent.inspect.largeDiff": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "These prompts are too large for a line comparison. Both original versions are shown below."
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "行単位の比較にはプロンプトが大きすぎるため、両方の版の原文を表示します。"
+          }
+        }
+      }
+    },
     "agent.detail.save": {
       "extractionState": "manual",
       "localizations": {

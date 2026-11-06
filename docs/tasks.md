@@ -647,3 +647,11 @@ The prompt editor must send the exact draft to the pinned guest, leave prior ver
 Use the existing authenticated agent detail transport. PUT the literal template and the same empty note as the pinned editor. Serialize the save with its history refresh. Keep the current draft visible while it saves, provide an explicit history refresh for uncertain outcomes, and confirm before closing a dirty sheet. The frozen editor supplies the editing and history actions. Lazyweb's Notion and Canva results show the value of keeping history reachable alongside the editor.
 
 Verify request bytes, valid and invalid templates, lost acknowledgement and stale history, duplicate dispatch prevention, and saved-version replay into the draft. Compare the isolated native guest with the fixed browser backend before considering the save workflow accepted.
+
+### P4 Prompt preview and version comparison
+
+Render the current draft with the guest's sample variables and show the result without changing the saved prompt or history. Preserve the pinned API's empty-draft fallback to the current saved prompt. Compare a selected past version with the current saved version, keeping additions, removals, and unchanged lines in the frozen browser's order.
+
+Use the existing authenticated transport for preview and a local line comparison with a bounded matrix. When a comparison exceeds the bound, offer both originals without computing a diff. Keep preview output and diff lines selectable as literal text. Lazyweb's v0 reference informed separation of editing from inspection. The frozen browser controls the behavior and labels.
+
+Verify the request, parser diagnostics, unchanged version history, exact whitespace and line-ending behavior, repeated-line ordering, and large comparisons before trying the native sheet and pinned backend.
