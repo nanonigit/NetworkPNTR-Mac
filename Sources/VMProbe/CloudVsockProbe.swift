@@ -17,7 +17,7 @@ import Foundation
     #if DEBUG
     private static let manifestDigest = "ac33d360a1f24ee89e10fc07ea218079280c5ed8812a1651fdeceeace00909c5"
     private static let version = "artex-mac-e75ae371-cloud5"
-    private static let providers: [LLMCloudProvider] = [.openAI, .gemini, .groq]
+    private static let providers = LLMCloudProvider.allCases
 
     private final class Vault: SessionVault {
         var token: String?
@@ -144,7 +144,7 @@ import Foundation
             let held = fixture.snapshot
             guard held.held == 1, held.cancelled == 0, held.denied == 0,
                   held.models == providers.map({ "\($0.rawValue).models" }),
-                  held.completed == providers.map({ "\($0.rawValue).chat" }) else {
+                  held.completed == providers.map({ $0 == .anthropic ? "anthropic.messages" : "\($0.rawValue).chat" }) else {
                 throw RuntimeError.integrity("cloud vsock route sequence")
             }
 
@@ -164,7 +164,7 @@ import Foundation
             }
             stage = "complete"
             try writeReport(true)
-            print("PASS cloud_vsock models=3 chats=3 cancelled=1 nic=0 shares=0")
+            print("PASS cloud_vsock models=\(providers.count) chats=\(providers.count) cancelled=1 nic=0 shares=0")
         } catch {
             if controller.hasMachine { try? await controller.forceStop() }
             if created { try? writeReport(false) }

@@ -22,12 +22,13 @@
     "systemDiskSHA256": "322435d387aacce6eb30dfa62f151bc1d131eb2d35cefc39613b9b6a97bfceb5",
     "cpuCount": 1
   },
-  "signedProbeSHA256": "d035266dc2651f63af2439ade55dd4be55da22ec9c4c0e1dac0f7fdbdd5a77a7",
+  "signedProbeSHA256": "66e1af297cab34a96ff93bcf4ffaed6d67369af6b83524b887e4c91b9348a49e",
   "signedVM": {
     "fixture": {
       "cancelled": 1,
       "completed": [
         "openai.chat",
+        "anthropic.messages",
         "gemini.chat",
         "groq.chat"
       ],
@@ -35,6 +36,7 @@
       "held": 1,
       "models": [
         "openai.models",
+        "anthropic.models",
         "gemini.models",
         "groq.models"
       ]
@@ -66,9 +68,20 @@
     "hostedCI": "unverified"
   },
   "remaining": [
-    "Anthropic signed VM route exercise",
     "Live authenticated provider APIs",
     "Normal app cloud egress activation",
     "Native and pinned browser workflow comparison"
+  ],
+  "earlierFixtureFailures": [
+    {
+      "stage": "models-anthropic",
+      "denied": 1,
+      "machineStopped": true
+    },
+    {
+      "stage": "chat-anthropic",
+      "denied": 1,
+      "machineStopped": true
+    }
   ]
 }

@@ -9,6 +9,7 @@ package final class CloudEgressVMFixture: Sendable {
         package fileprivate(set) var held = 0
         package fileprivate(set) var cancelled = 0
         package fileprivate(set) var denied = 0
+        package fileprivate(set) var lastDenial: String?
     }
 
     package static let key = "synthetic-cloud-vsock-key"
@@ -29,17 +30,23 @@ package final class CloudEgressVMFixture: Sendable {
         let provider: LLMCloudProvider
         switch request.route {
         case .openAIModels, .openAIChat: provider = .openAI
+        case .anthropicModels, .anthropicMessages: provider = .anthropic
         case .geminiModels, .geminiChat: provider = .gemini
         case .groqModels, .groqChat: provider = .groq
-        default: throw reject()
+        default: throw reject("route")
         }
 
         let model = Self.model(provider)
-        guard request.header.range(of: Data("\r\nAuthorization: Bearer \(Self.key)\r\n".utf8)) != nil else {
-            throw reject()
-        }
+        let header = String(decoding: request.header, as: UTF8.self)
+        let authorization = provider == .anthropic
+            ? ["x-api-key: \(Self.key)", "anthropic-version: 2023-06-01"]
+            : ["Authorization: Bearer \(Self.key)"]
+        guard authorization.allSatisfy({ header.contains("\r\n\($0)\r\n") }) else { throw reject("authorization") }
         if !request.route.requiresBody {
-            let body = Data(#"{"data":[{"id":"\#(model)"}]}"#.utf8)
+            let json = provider == .anthropic
+                ? #"{"data":[{"id":"\#(model)","type":"model","display_name":"Fixture","created_at":"2026-01-01T00:00:00Z"}],"has_more":false,"first_id":"\#(model)","last_id":"\#(model)"}"#
+                : #"{"data":[{"id":"\#(model)"}]}"#
+            let body = Data(json.utf8)
             try CloudEgressTransport.frameResponse(receive: receive) { consume in
                 try consume(Data("HTTP/1.1 200 OK\r\nContent-Type: application/json\r\nContent-Length: \(body.count)\r\n\r\n".utf8))
                 try consume(body)
@@ -50,17 +57,26 @@ package final class CloudEgressVMFixture: Sendable {
 
         guard let json = try? JSONSerialization.jsonObject(with: request.body) as? [String: Any],
               json["model"] as? String == model, json["stream"] as? Bool == true,
-              let messages = json["messages"] as? [[String: Any]],
-              let message = messages.last, message["role"] as? String == "user" else {
-            throw reject()
+              let messages = json["messages"] as? [[String: Any]] else {
+            throw reject("body")
+        }
+        guard let message = messages.last, message["role"] as? String == "user" else {
+            throw reject("role")
         }
         let content = message["content"]
-        let prompt = content as? String ?? (content as? [[String: Any]])?.first?["text"] as? String
-        let held = provider == .openAI && prompt == Self.heldPrompt
-        guard held || prompt == Self.prompt else { throw reject() }
+        let blocks = content as? [[String: Any]] ?? []
+        let texts = (content as? String).map { [$0] }
+            ?? blocks.filter { $0["type"] as? String == "text" }.compactMap { $0["text"] as? String }
+        let held = provider == .openAI && texts.contains(Self.heldPrompt)
+        guard held || texts.contains(Self.prompt) else { throw reject("prompt") }
 
         try CloudEgressTransport.frameResponse(receive: receive) { consume in
             try consume(Data("HTTP/1.1 200 OK\r\nContent-Type: text/event-stream\r\nTransfer-Encoding: chunked\r\n\r\n".utf8))
+            if provider == .anthropic {
+                try Self.anthropicStream(model: model, consume: consume)
+                try consume(Data("0\r\n\r\n".utf8))
+                return
+            }
             let finishReason = held ? "null" : #""stop""#
             let event = #"data: {"choices":[{"index":0,"delta":{"content":"\#(Self.reply(provider))"},"finish_reason":\#(finishReason)}]}"#
             try Self.chunk(event + "\n\n", consume: consume)
@@ -80,9 +96,26 @@ package final class CloudEgressVMFixture: Sendable {
         state.withLock { $0.completed.append(request.route.rawValue) }
     }
 
-    private func reject() -> CloudEgressError {
-        state.withLock { $0.denied += 1 }
+    private func reject(_ reason: String) -> CloudEgressError {
+        state.withLock {
+            $0.denied += 1
+            $0.lastDenial = reason
+        }
         return .invalidRequest
+    }
+
+    private static func anthropicStream(model: String, consume: (Data) throws -> Void) throws {
+        let events: [(String, String)] = [
+            ("message_start", #","message":{"id":"msg_fixture","type":"message","role":"assistant","model":"\#(model)","content":[],"stop_reason":null,"stop_sequence":null,"usage":{"input_tokens":3,"output_tokens":0}}"#),
+            ("content_block_start", #","index":0,"content_block":{"type":"text","text":""}"#),
+            ("content_block_delta", #","index":0,"delta":{"type":"text_delta","text":"\#(reply(.anthropic))"}"#),
+            ("content_block_stop", #","index":0"#),
+            ("message_delta", #","delta":{"stop_reason":"end_turn","stop_sequence":null},"usage":{"output_tokens":4}"#),
+            ("message_stop", "")
+        ]
+        for (type, fields) in events {
+            try chunk("event: \(type)\ndata: {\"type\":\"\(type)\"\(fields)}\n\n", consume: consume)
+        }
     }
 
     private static func chunk(_ value: String, consume: (Data) throws -> Void) throws {

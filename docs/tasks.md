@@ -566,3 +566,10 @@ fixture stopped an in-flight stream on cooperative shutdown. Fresh disk,
 See cloud-egress-vm-verification in English and Japanese and the receipt.
 Anthropic VM delivery, live provider requests, normal app activation and
 native/browser comparison remain open. Publication uses [skip ci].
+
+CP3-B6 four-provider follow-up. The signed cloud5 probe now checks all four
+model routes and all four streaming routes, including Anthropic's API key
+and version headers and its native Messages events. The same isolated
+guest passed the held-stream cancellation and stopped-log audits. Live API
+acceptance, normal app activation and native/browser comparison remain open.
+Publication uses [skip ci].
