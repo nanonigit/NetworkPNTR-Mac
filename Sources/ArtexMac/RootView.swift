@@ -83,6 +83,13 @@ struct RootView: View {
             else if selection == "llm" {
                 ContentUnavailableView(s(.loginRequired), systemImage: "person.crop.circle", description: Text(s(.llmLogin)))
             }
+            else if selection == "agents", let session = environment.authentication, session.phase == .authenticated {
+                AgentCatalogView(session: session).id(ObjectIdentifier(session))
+            }
+            else if selection == "agents" {
+                ContentUnavailableView(s(.loginRequired), systemImage: "person.crop.circle",
+                                       description: Text(s(.agentCatalogLogin)))
+            }
             else if let feature = catalog?.features.first(where: { $0.id == selection }) {
                 ContentUnavailableView {
                     Label(title(feature), systemImage: "hammer")

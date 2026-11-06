@@ -2,6 +2,66 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
+	<key>agent.catalog.builtin</key>
+	<string>組み込み</string>
+	<key>agent.catalog.count</key>
+	<string>合計 {count} 件</string>
+	<key>agent.catalog.custom</key>
+	<string>カスタム</string>
+	<key>agent.catalog.disabled</key>
+	<string>無効</string>
+	<key>agent.catalog.empty</key>
+	<string>(エージェントがありません)</string>
+	<key>agent.catalog.listTitle</key>
+	<string>エージェント一覧</string>
+	<key>agent.catalog.loadFailed</key>
+	<string>エージェントを読み込めませんでした</string>
+	<key>agent.catalog.loading</key>
+	<string>エージェントを読み込み中…</string>
+	<key>agent.catalog.login</key>
+	<string>エージェントを表示するにはサインインしてください。</string>
+	<key>agent.catalog.noDescription</key>
+	<string>(説明なし)</string>
+	<key>agent.catalog.readOnly</key>
+	<string>エージェントと紐付け件数を確認できます。編集は今後の段階で対応します。</string>
+	<key>agent.catalog.refresh</key>
+	<string>エージェントを再読み込み</string>
+	<key>agent.catalog.skill</key>
+	<string>スキル</string>
+	<key>agent.catalog.tools</key>
+	<string>ツール</string>
+	<key>agent.seed.auto.description</key>
+	<string>プラットフォーム運用アシスタント: ツールで案件(作成・参照・一時停止・ヒント付与)と資産を管理し、skill・カスタムツール・MCP を作成または変更します。</string>
+	<key>agent.seed.auto.name</key>
+	<string>Auto</string>
+	<key>agent.seed.goals.description</key>
+	<string>ペネトレーションテスト案件の目標を、独立して検証可能な複数のサブ目標に分解します。</string>
+	<key>agent.seed.goals.name</key>
+	<string>目標分解</string>
+	<key>agent.seed.mainagent.description</key>
+	<string>人間と機械のインターフェース: 進捗を見守り、人間のインテントをヒントまたは高優先度のインテントに変換します。</string>
+	<key>agent.seed.mainagent.name</key>
+	<string>メイン</string>
+	<key>agent.seed.pentest.description</key>
+	<string>独立型ペネトレーションエージェント: 単独で偵察→攻撃面の探索→深掘りした悪用→検証→仕上げまでの全工程を実行し、自ら計画し、自ら実行し、自ら対立的に検証します。</string>
+	<key>agent.seed.pentest.name</key>
+	<string>ペネトレーションテスト</string>
+	<key>agent.seed.planner.description</key>
+	<string>現状を読み取って目標を判断し、まだ扱っていない新しい方向性が確実な場合にのみ探索インテントを追加します(案件ごとに計画ループは 1 つ)。</string>
+	<key>agent.seed.planner.name</key>
+	<string>計画立案</string>
+	<key>agent.seed.reporter.description</key>
+	<string>脆弱性が見つかると自動で起動し、証拠と実行履歴を確認して、詳細な Markdown レポートをその脆弱性に保存します。</string>
+	<key>agent.seed.reporter.name</key>
+	<string>レポート作成</string>
+	<key>agent.seed.retester.description</key>
+	<string>脆弱性の詳細から手動で開始し、元の証拠を読み取って、独立した再検証の結論を保存します。</string>
+	<key>agent.seed.retester.name</key>
+	<string>脆弱性の再検証</string>
+	<key>agent.seed.worker.description</key>
+	<string>インテントを 1 つ受け取って実行し、発見した事実・脆弱性をナレッジグラフに記録して停止します。</string>
+	<key>agent.seed.worker.name</key>
+	<string>実行</string>
 	<key>auth.acceptTerms</key>
 	<string>同意する</string>
 	<key>auth.agree</key>

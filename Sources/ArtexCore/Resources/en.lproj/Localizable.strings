@@ -2,6 +2,66 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
+	<key>agent.catalog.builtin</key>
+	<string>Built-in</string>
+	<key>agent.catalog.count</key>
+	<string>{count} total</string>
+	<key>agent.catalog.custom</key>
+	<string>Custom</string>
+	<key>agent.catalog.disabled</key>
+	<string>Disabled</string>
+	<key>agent.catalog.empty</key>
+	<string>(no agents)</string>
+	<key>agent.catalog.listTitle</key>
+	<string>Agent list</string>
+	<key>agent.catalog.loadFailed</key>
+	<string>Unable to load agents</string>
+	<key>agent.catalog.loading</key>
+	<string>Loading agents…</string>
+	<key>agent.catalog.login</key>
+	<string>Sign in to view agents.</string>
+	<key>agent.catalog.noDescription</key>
+	<string>(no description)</string>
+	<key>agent.catalog.readOnly</key>
+	<string>View agents and their binding counts. Editing is planned for a later phase.</string>
+	<key>agent.catalog.refresh</key>
+	<string>Reload agents</string>
+	<key>agent.catalog.skill</key>
+	<string>Skill</string>
+	<key>agent.catalog.tools</key>
+	<string>Tools</string>
+	<key>agent.seed.auto.description</key>
+	<string>Platform operations assistant: uses tools to manage tasks (create / view / pause / hint) and assets, and can create or modify skills, custom tools, and MCP.</string>
+	<key>agent.seed.auto.name</key>
+	<string>Auto</string>
+	<key>agent.seed.goals.description</key>
+	<string>Breaks the pentest objective down into several independent, verifiable sub-goals.</string>
+	<key>agent.seed.goals.name</key>
+	<string>Goal Decomposition</string>
+	<key>agent.seed.mainagent.description</key>
+	<string>Human-machine interface: watches progress and turns human intent into hints or high-priority intents.</string>
+	<key>agent.seed.mainagent.name</key>
+	<string>Main</string>
+	<key>agent.seed.pentest.description</key>
+	<string>Standalone pentest agent: single-handedly runs the full chain from recon → attack-surface discovery → deep exploitation → verification → wrap-up, planning, executing, and adversarially verifying on its own.</string>
+	<key>agent.seed.pentest.name</key>
+	<string>Penetration Test</string>
+	<key>agent.seed.planner.description</key>
+	<string>Reads the situation and decides on goals, adding exploration intents only when there is a genuinely uncovered new direction (one planning loop per task).</string>
+	<key>agent.seed.planner.name</key>
+	<string>Planning</string>
+	<key>agent.seed.reporter.description</key>
+	<string>Automatically prepares a detailed report when a vulnerability is found. It reviews the evidence and execution history, then saves a Markdown report to the finding.</string>
+	<key>agent.seed.reporter.name</key>
+	<string>Report Writer</string>
+	<key>agent.seed.retester.description</key>
+	<string>Launched manually from a finding's detail view; reads the original evidence and saves an independent retest conclusion.</string>
+	<key>agent.seed.retester.name</key>
+	<string>Vulnerability Retest</string>
+	<key>agent.seed.worker.description</key>
+	<string>Picks up a single intent and executes it, writing discovered facts / vulnerabilities back to the knowledge graph before stopping.</string>
+	<key>agent.seed.worker.name</key>
+	<string>Execution</string>
 	<key>auth.acceptTerms</key>
 	<string>Agree</string>
 	<key>auth.agree</key>

@@ -623,3 +623,11 @@ sheets now inherit the chosen language explicitly. All five Japanese
 choices, keyboard selection and dismissal, English Groq and Rotation,
 and switching back to Japanese Custom were observed. Current browser
 authentication, VoiceOver and live API acceptance remain open.
+
+### P4 Agents catalog
+
+The signed-in Agents screen must list every guest agent in the same order as the frozen browser, including disabled agents, with matching names, descriptions, type labels and binding counts. Localize seeded labels in English and Japanese and preserve custom labels verbatim.
+
+Use the authenticated guest `GET /api/agents` and an adaptive card grid. The pinned browser supplies the field and localization contract. Lazyweb's Superhuman Agents desktop result supplied a secondary reference for grouping names, descriptions and metadata inside cards. Display load failure separately from an empty catalog and keep mutations and prompt editing outside this checkpoint.
+
+Test the wire shape, order, optional fields, invalid responses, cancellation and language behavior first. Then build the native screen and compare it against the frozen browser source. Record actual paired GUI and editor acceptance separately.

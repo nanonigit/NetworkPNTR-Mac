@@ -161,12 +161,21 @@
       "title": "Agents",
       "browserPath": "/system/agents",
       "icon": "Bot",
-      "nativeStatus": "pending",
+      "nativeStatus": "in_progress",
       "phase": 4,
       "acceptance": [
         "Compare equivalent fixture data and visible controls",
         "Compare success, empty, validation and server-error states",
         "Verify mutations, persistence, cancellation and keyboard access"
+      ],
+      "evidence": [
+        "Tests/ArtexCoreTests/AgentCatalogTests.swift",
+        "docs/agents-catalog-verification.md"
+      ],
+      "remainingGates": [
+        "Agent details and editor including prompts, variables, settings and bindings",
+        "Creation, deletion, persistence and error recovery",
+        "Paired native/browser catalog and editor UI acceptance"
       ]
     },
     {
