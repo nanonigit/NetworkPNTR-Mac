@@ -48,13 +48,13 @@ import Foundation
         }
     }
 
-    private static func waitForReply(_ chat: ChatService, id: Int64, reply: String) async throws {
+    private static func waitForReply(_ chat: ChatService, id: Int64, reply: String, count: Int = 1) async throws {
         for _ in 0..<200 {
             let page = try await chat.history(id: id)
             guard !page.items.contains(where: { $0.isError == true }) else {
                 throw RuntimeError.integrity("cloud vsock chat error")
             }
-            if !page.running, page.items.contains(where: { $0.kind == "result" && $0.summary == reply }) { return }
+            if !page.running, page.items.filter({ $0.kind == "result" && $0.summary == reply }).count == count { return }
             try await Task.sleep(for: .milliseconds(100))
         }
         throw RuntimeError.timeout("cloud vsock reply")
@@ -112,6 +112,9 @@ import Foundation
             let client = AuthenticatedBackendClient(session: session)
             let llm = LLMService(client: client)
             let chat = ChatService(client: client)
+            let language = GuestOutputLanguageSync()
+            stage = "english-output"
+            await language.update(.english, session: session)?.value
             var openAIConversation: Int64?
             for provider in providers {
                 stage = "models-\(provider.rawValue)"
@@ -134,8 +137,16 @@ import Foundation
                 if provider == .openAI { openAIConversation = id }
             }
 
+            stage = "japanese-output"
+            guard let openAIConversation else { throw RuntimeError.integrity("cloud vsock chat identity") }
+            await language.update(.japanese, session: session)?.value
+            try await chat.send(id: openAIConversation, message: CloudEgressVMFixture.prompt)
+            try await waitForReply(chat, id: openAIConversation, reply: CloudEgressVMFixture.reply(.openAI), count: 2)
+            guard fixture.snapshot.openAIOutputLanguages == ["en", "ja"] else {
+                throw RuntimeError.integrity("cloud vsock output-language transition")
+            }
+
             stage = "held-stream"
-            guard let openAIConversation else { throw RuntimeError.integrity("cloud vsock held chat identity") }
             try await chat.send(id: openAIConversation, message: CloudEgressVMFixture.heldPrompt)
             for _ in 0..<200 {
                 if fixture.snapshot.held != 0 { break }
@@ -144,7 +155,7 @@ import Foundation
             let held = fixture.snapshot
             guard held.held == 1, held.cancelled == 0, held.denied == 0,
                   held.models == providers.map({ "\($0.rawValue).models" }),
-                  held.completed == providers.map({ $0 == .anthropic ? "anthropic.messages" : "\($0.rawValue).chat" }) else {
+                  held.completed == providers.map({ $0 == .anthropic ? "anthropic.messages" : "\($0.rawValue).chat" }) + ["openai.chat"] else {
                 throw RuntimeError.integrity("cloud vsock route sequence")
             }
 
@@ -164,7 +175,7 @@ import Foundation
             }
             stage = "complete"
             try writeReport(true)
-            print("PASS cloud_vsock models=\(providers.count) chats=\(providers.count) cancelled=1 nic=0 shares=0")
+            print("PASS cloud_vsock models=\(providers.count) chats=\(providers.count + 1) output=en,ja cancelled=1 nic=0 shares=0")
         } catch {
             if controller.hasMachine { try? await controller.forceStop() }
             if created { try? writeReport(false) }

@@ -1,0 +1,35 @@
+{
+  "fixture": {
+    "cancelled": 1,
+    "completed": [
+      "openai.chat",
+      "anthropic.messages",
+      "gemini.chat",
+      "groq.chat",
+      "openai.chat"
+    ],
+    "denied": 0,
+    "held": 1,
+    "models": [
+      "openai.models",
+      "anthropic.models",
+      "gemini.models",
+      "groq.models"
+    ],
+    "openAIOutputLanguages": [
+      "en",
+      "ja"
+    ]
+  },
+  "machineStopped": true,
+  "manifestSHA256": "42c47caf03c835c974eee569f8be041b234d3f96b7d7931585e410e146f73c70",
+  "passed": true,
+  "scope": {
+    "hostShares": 0,
+    "realModelResponseLanguageVerified": false,
+    "sameConversationOpenAIInstructionObserved": true,
+    "usedRealProviderCredentials": false,
+    "virtualNICs": 0
+  },
+  "stage": "complete"
+}

@@ -24,3 +24,20 @@ through the synchronizer, and read each value back after a separate VM
 restart. All three boots stopped cooperatively with zero NICs and shares.
 The language picker and live generation still require interactive checks.
 [Verification receipt](../evidence/llm/guest-output-language.json)
+
+At the provider boundary, test that one existing conversation switches from
+English to Japanese on its next request. The synthetic OpenAI receiver
+examines only the system-message field for the pinned output-language
+markers and records only language codes. Keep the existing four-provider
+streaming and in-flight stop checks. This verifies the instruction sent
+to the model; a real model's language adherence is a separate gate.
+
+The signed VM probe observed the system instruction change from `en` to
+`ja` on two completed turns of the same OpenAI fixture conversation.
+It also verified four model lists, five completed streams across the
+four presets, and one in-flight cancellation at shutdown. The fixture
+record contains codes and route names only.
+[Provider-boundary receipt](../evidence/llm/guest-output-language-provider-boundary.json)
+
+The pinned browser's existing five-role Go contract test also passed from
+matching source files in a network-disabled builder.

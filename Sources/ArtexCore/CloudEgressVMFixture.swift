@@ -6,6 +6,7 @@ package final class CloudEgressVMFixture: Sendable {
     package struct Snapshot: Encodable, Sendable {
         package fileprivate(set) var models: [String] = []
         package fileprivate(set) var completed: [String] = []
+        package fileprivate(set) var openAIOutputLanguages: [String] = []
         package fileprivate(set) var held = 0
         package fileprivate(set) var cancelled = 0
         package fileprivate(set) var denied = 0
@@ -69,6 +70,16 @@ package final class CloudEgressVMFixture: Sendable {
             ?? blocks.filter { $0["type"] as? String == "text" }.compactMap { $0["text"] as? String }
         let held = provider == .openAI && texts.contains(Self.heldPrompt)
         guard held || texts.contains(Self.prompt) else { throw reject("prompt") }
+
+        if provider == .openAI, !held {
+            let system = messages.filter { $0["role"] as? String == "system" }
+                .compactMap { $0["content"] as? String }
+                .joined(separator: "\n")
+            let english = system.contains("自然语言文字一律用【英语（English）】")
+            let japanese = system.contains("自然语言文字一律用【日语（日本語）】")
+            let language = english == japanese ? "unconfirmed" : (english ? "en" : "ja")
+            state.withLock { $0.openAIOutputLanguages.append(language) }
+        }
 
         try CloudEgressTransport.frameResponse(receive: receive) { consume in
             try consume(Data("HTTP/1.1 200 OK\r\nContent-Type: text/event-stream\r\nTransfer-Encoding: chunked\r\n\r\n".utf8))
