@@ -108,6 +108,70 @@ import Foundation
         }
     }
 
+    private static func verifyTaskCreationTrigger(
+        client: AuthenticatedBackendClient, chat: ChatService, llm: LLMService, fixture: CloudEgressVMFixture
+    ) async throws {
+        let service = AgentCatalogService(client: client)
+        guard let agent = try await service.list().first(where: { $0.key == "reporter" && !$0.builtin }) else {
+            throw RuntimeError.integrity("task creation fixture owner")
+        }
+        let oldIDs = Set(try await service.triggers(for: agent).map(\.id))
+        let conversations = Set(try await chat.conversations().map(\.id))
+        // Task bootstrap has its own loopback-only profile. Only Reporter uses the cloud fixture.
+        var offline = LLMProfileDraft(provider: .openAI)
+        offline.name = "Task creation offline bootstrap"
+        offline.baseUrl = "http://127.0.0.1:1/v1"
+        offline.model = "fixture-offline"
+        offline.apiKey = CloudEgressVMFixture.key
+        offline.poolExclude = true
+        offline.retry.connect.attempts = -1
+        offline.retry.empty.attempts = -1
+        offline.retry.stream.attempts = -1
+        let profile = try await llm.save(offline)
+        let tasks = TaskService(client: client)
+        func createTask(_ description: String) async throws -> TaskRecord {
+            var draft = TaskCreateDraft()
+            draft.description = description
+            draft.goal = "Verify synthetic task creation scheduling."
+            draft.llmProfileIds = [profile]
+            return try await tasks.create(draft)
+        }
+
+        var rule = AgentTriggerRule()
+        rule.enabled = false
+        rule.onTaskCreate = true
+        rule.taskCreateMessage = CloudEgressVMFixture.taskCreationPrompt
+        let rows = try await service.createTrigger(for: agent, rule: rule)
+        guard let row = rows.first(where: { !oldIDs.contains($0.id) }) else {
+            throw RuntimeError.integrity("task creation fixture rule")
+        }
+        _ = try await createTask("Historical task creation fixture")
+        try await Task.sleep(for: .seconds(6))
+        _ = try await service.setTriggerEnabled(for: agent, id: row.id, enabled: true)
+        try await Task.sleep(for: .seconds(6))
+        guard try await chat.conversations().allSatisfy({ conversations.contains($0.id) }),
+              fixture.snapshot.taskCreationReplies == 0 else {
+            throw RuntimeError.integrity("task creation history replay")
+        }
+        let task = try await createTask(CloudEgressVMFixture.currentTaskDescription)
+        var run: ChatConversation?
+        for _ in 0..<150 {
+            let fresh = try await chat.conversations().filter { !conversations.contains($0.id) }
+            guard fresh.count <= 1, fresh.allSatisfy({ $0.agentKey == agent.key && $0.title.hasSuffix("task#\(task.id)") }) else {
+                throw RuntimeError.integrity("task creation conversation scope")
+            }
+            if let first = fresh.first { run = first; break }
+            try await Task.sleep(for: .milliseconds(100))
+        }
+        guard let run else { throw RuntimeError.timeout("task creation conversation") }
+        try await waitForReply(chat, id: run.id, reply: CloudEgressVMFixture.reply(.openAI))
+        guard fixture.snapshot.taskCreationReplies == 1 else {
+            throw RuntimeError.integrity("task creation model execution")
+        }
+        let cleaned = try await service.removeTrigger(for: agent, id: row.id)
+        guard Set(cleaned.map(\.id)) == oldIDs else { throw RuntimeError.integrity("task creation fixture cleanup") }
+    }
+
     private static func exercise(artifacts: URL, output: URL) async {
         let controller = VMController()
         let fixture = CloudEgressVMFixture()
@@ -203,6 +267,9 @@ import Foundation
             try await llm.activate(id: String(openAIProfile))
             try await verifyIntervalTrigger(client: client, chat: chat, fixture: fixture)
 
+            stage = "task-creation-trigger"
+            try await verifyTaskCreationTrigger(client: client, chat: chat, llm: llm, fixture: fixture)
+
             stage = "held-stream"
             try await chat.send(id: openAIConversation, message: CloudEgressVMFixture.heldPrompt)
             for _ in 0..<200 {
@@ -212,7 +279,7 @@ import Foundation
             let held = fixture.snapshot
             guard held.held == 1, held.cancelled == 0, held.denied == 0,
                   held.models == providers.map({ "\($0.rawValue).models" }),
-                  held.completed == providers.map({ $0 == .anthropic ? "anthropic.messages" : "\($0.rawValue).chat" }) + ["openai.chat", "openai.chat"] else {
+                  held.completed == providers.map({ $0 == .anthropic ? "anthropic.messages" : "\($0.rawValue).chat" }) + ["openai.chat", "openai.chat", "openai.chat"] else {
                 throw RuntimeError.integrity("cloud vsock route sequence")
             }
 
@@ -232,7 +299,7 @@ import Foundation
             }
             stage = "complete"
             try writeReport(true)
-            print("PASS cloud_vsock models=\(providers.count) chats=\(providers.count + 2) interval=1 output=en,ja cancelled=1 nic=0 shares=0")
+            print("PASS cloud_vsock models=\(providers.count) chats=\(providers.count + 3) interval=1 task_creation=1 output=en,ja cancelled=1 nic=0 shares=0")
         } catch {
             if controller.hasMachine { try? await controller.forceStop() }
             if created { try? writeReport(false) }

@@ -58,3 +58,12 @@ removed. The VM retained zero NICs and host shares and stopped cleanly.
 The remaining five event kinds and the interactive UI comparison still
 require end-to-end tests.
 [Interval verification receipt](../evidence/agents/trigger-scheduler-interval.json)
+
+The task-creation probe created a historical task while the rule was
+disabled, waited across a scheduler tick, then enabled the rule. Neither
+backend replayed the historical event. A new task produced one completed
+Reporter conversation associated with its task ID. Task bootstrap used a
+separate loopback-only profile, and Reporter used a synthetic provider.
+The rule was removed after verification. The signed VM stopped with zero
+virtual NICs and host shares.
+[Task-creation verification receipt](../evidence/agents/trigger-scheduler-task-creation.json)
