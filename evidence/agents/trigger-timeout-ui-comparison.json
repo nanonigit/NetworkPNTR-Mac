@@ -1,0 +1,23 @@
+{
+  "browserSource": "e75ae371ad777ffd1eecdd28d2781a6519b05591",
+  "nativeGuestManifestSHA256": "7ab7cb7f5620f8470e73a1e7a9a6ee634e09905382b9564bff997cd3504e52c0",
+  "locale": "ja",
+  "agent": "reporter",
+  "scope": "Disposable native and browser environments, one timeout rule",
+  "native": {
+    "allSixConditionControlsObserved": true,
+    "createDisabled": true,
+    "enableExisting": true,
+    "savedMessageReopened": true,
+    "newRuleSaveDisabledWithoutCondition": true,
+    "reviewHoldExpired": true
+  },
+  "browser": {
+    "allSixConditionControlsObserved": true,
+    "createEnabledThenDisable": true,
+    "reenableExisting": true,
+    "savedMessageReopened": true,
+    "reporterNameAndDescriptionRenderedInKorean": true
+  },
+  "remaining": ["English comparison", "Keyboard and VoiceOver", "Edit-save and delete", "Full visual parity"]
+}

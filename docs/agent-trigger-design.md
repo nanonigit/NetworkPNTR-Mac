@@ -179,3 +179,17 @@ deadline comparison. Reporter uses the synthetic streaming provider and
 must complete one new conversation for that task. This exercises the
 error path of the final planner. A successful final planner that decides
 the goal was met is a separate case.
+
+### Live Japanese timeout-rule comparison
+
+In the disposable Mac app and pinned browser reference, Reporter exposed
+all six trigger conditions. Both saved a timeout rule, changed its
+enabled state and reopened the saved message. The Mac form allowed
+creating the rule disabled and gated saving until a condition was
+selected. The browser added it enabled, with disabling available in
+the saved row. The browser showed a Korean Reporter name and
+description in Japanese mode. The Mac showed Japanese Reporter labels
+and retained Chinese content in the seeded prompt and version note.
+The native review hold expired after the recorded actions. English,
+keyboard, VoiceOver, edit-save, delete and full visual acceptance remain
+open. [UI comparison receipt](../evidence/agents/trigger-timeout-ui-comparison.json)
