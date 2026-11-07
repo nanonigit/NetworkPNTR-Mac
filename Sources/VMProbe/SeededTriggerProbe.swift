@@ -41,7 +41,7 @@ import Foundation
 
     static func verify(
         _ kind: Kind, client: AuthenticatedBackendClient, chat: ChatService,
-        fixture: CloudEgressVMFixture, repairedTimeouts: Bool = false
+        fixture: CloudEgressVMFixture, repairedTimeouts: Bool = false, elapsedTimeoutProfile: Int64? = nil
     ) async throws {
         let service = AgentCatalogService(client: client)
         let agents = try await service.list()
@@ -122,25 +122,8 @@ import Foundation
             }
             taskID = try await seed(.current, kind: kind, client: client)
         }
-        var resultID: Int64?
-        for _ in 0..<150 {
-            let fresh = try await chat.conversations().filter { !conversationIDs.contains($0.id) }
-            guard fresh.count <= 1,
-                  fresh.allSatisfy({ $0.agentKey == agent.key && $0.title.hasSuffix("task#\(taskID)") }) else {
-                throw RuntimeError.integrity("seeded trigger conversation scope")
-            }
-            if let item = fresh.first {
-                let page = try await chat.history(id: item.id)
-                guard !page.items.contains(where: { $0.isError == true }) else {
-                    throw RuntimeError.integrity("seeded trigger conversation error")
-                }
-                if !page.running, page.items.contains(where: {
-                    $0.kind == "result" && $0.summary == CloudEgressVMFixture.reply(.openAI)
-                }) { resultID = item.id; break }
-            }
-            try await Task.sleep(for: .milliseconds(100))
-        }
-        guard let resultID, kind.replyCount(fixture) == 1 else {
+        let resultID = try await completedConversation(taskID: taskID, agent: agent.key, existing: conversationIDs, chat: chat)
+        guard kind.replyCount(fixture) == 1 else {
             throw RuntimeError.integrity("seeded trigger conversation completion")
         }
         if repairedTimeouts {
@@ -149,6 +132,12 @@ import Foundation
             guard fresh.map(\.id) == [resultID], kind.replyCount(fixture) == 1 else {
                 throw RuntimeError.integrity("timeout event replay")
             }
+        }
+        if let elapsedTimeoutProfile {
+            try await verifyElapsedTimeout(
+                profile: elapsedTimeoutProfile, agent: agent.key, existing: conversationIDs.union([resultID]),
+                client: client, chat: chat, fixture: fixture
+            )
         }
         _ = try await service.removeTrigger(for: agent, id: row.id)
         if let sentinelID { _ = try await service.removeTrigger(for: agent, id: sentinelID) }
@@ -163,6 +152,75 @@ import Foundation
               baseline.allSatisfy({ previous in restored.contains { $0.id == previous.id && $0.rule == previous.rule } }) else {
             throw RuntimeError.integrity("seeded trigger fixture cleanup")
         }
+    }
+
+    private static func completedConversation(
+        taskID: Int64, agent: String, existing: Set<Int64>, chat: ChatService
+    ) async throws -> Int64 {
+        for _ in 0..<150 {
+            let fresh = try await chat.conversations().filter { !existing.contains($0.id) }
+            guard fresh.count <= 1,
+                  fresh.allSatisfy({ $0.agentKey == agent && $0.title.hasSuffix("task#\(taskID)") }) else {
+                throw RuntimeError.integrity("seeded trigger conversation scope")
+            }
+            if let item = fresh.first {
+                let page = try await chat.history(id: item.id)
+                guard !page.items.contains(where: { $0.isError == true }) else {
+                    throw RuntimeError.integrity("seeded trigger conversation error")
+                }
+                if !page.running, page.items.contains(where: {
+                    $0.kind == "result" && $0.summary == CloudEgressVMFixture.reply(.openAI)
+                }) { return item.id }
+            }
+            try await Task.sleep(for: .milliseconds(100))
+        }
+        throw RuntimeError.timeout("seeded trigger conversation completion")
+    }
+
+    private static func verifyElapsedTimeout(
+        profile: Int64, agent: String, existing: Set<Int64>, client: AuthenticatedBackendClient,
+        chat: ChatService, fixture: CloudEgressVMFixture
+    ) async throws {
+        let service = TaskService(client: client)
+        let timeoutSeconds: Int64 = 8
+        var draft = TaskCreateDraft()
+        draft.description = CloudEgressVMFixture.elapsedTimeoutTaskDescription
+        draft.goal = "Keep this synthetic goal unmet until the task deadline."
+        draft.llmProfileIds = [profile]
+        draft.timeoutSeconds = timeoutSeconds
+        let clock = ContinuousClock()
+        let started = clock.now
+        let created = try await service.create(draft)
+        guard created.status != "timeout", let taskID = Int64(created.id) else {
+            throw RuntimeError.integrity("elapsed timeout initial task")
+        }
+        var observedAt: ContinuousClock.Instant?
+        for _ in 0..<150 {
+            let task = try await service.detail(id: created.id)
+            if task.status == "timeout" {
+                observedAt = clock.now
+                break
+            }
+            guard task.status != "done", task.status != "failed" else {
+                throw RuntimeError.integrity("elapsed timeout terminal status")
+            }
+            try await Task.sleep(for: .milliseconds(250))
+        }
+        guard let observedAt, started.duration(to: observedAt) >= .seconds(timeoutSeconds - 1) else {
+            throw RuntimeError.integrity("elapsed timeout observation")
+        }
+        // The engine compares the deadline at Unix-second precision.
+        let stampedTaskID = try await scalar("""
+        SELECT id FROM tasks
+        WHERE id = \(taskID) AND status = 'timeout' AND timeout_seconds = \(timeoutSeconds)
+          AND deadline_at = first_run_at + make_interval(secs => \(timeoutSeconds))
+          AND completed_at >= deadline_at - interval '1 second';
+        """, client: client)
+        guard stampedTaskID == taskID else {
+            throw RuntimeError.integrity("elapsed timeout deadline")
+        }
+        _ = try await completedConversation(taskID: taskID, agent: agent, existing: existing, chat: chat)
+        guard fixture.snapshot.timeoutReplies == 2 else { throw RuntimeError.integrity("elapsed timeout reply") }
     }
 
     private static func waitForDisabledTimeoutClaim(taskID: Int64, client: AuthenticatedBackendClient) async throws {

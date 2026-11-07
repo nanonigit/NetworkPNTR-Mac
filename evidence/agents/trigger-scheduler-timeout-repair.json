@@ -104,6 +104,67 @@
     "swiftPassed": 1097,
     "swiftSkipped": 1
   },
+  "elapsedDeadline": {
+    "candidateElapsedTimeoutCompletedConversations": 1,
+    "candidateHostElapsedAtFirstObservationAtLeastSeconds": 7,
+    "candidateObservedTimeoutViaTaskAPI": true,
+    "deadlineStateInjected": false,
+    "pinnedBrowserAPI": {
+      "completionWithinUnixSecondTolerance": true,
+      "deadlineStampedEightSecondsAfterFirstRun": true,
+      "elapsedTimeoutObserved": true,
+      "fixtureRemoved": true,
+      "hostMonotonicAtLeastSevenSeconds": true,
+      "pinnedReference": "e75ae371ad777ffd1eecdd28d2781a6519b05591",
+      "reporterConversations": 1,
+      "timeoutSeconds": 8
+    },
+    "plannerEndpoint": "unavailable guest loopback",
+    "report": {
+      "fixture": {
+        "cancelled": 1,
+        "completed": [
+          "openai.chat",
+          "anthropic.messages",
+          "gemini.chat",
+          "groq.chat",
+          "openai.chat",
+          "openai.chat",
+          "openai.chat",
+          "openai.chat",
+          "openai.chat",
+          "openai.chat",
+          "openai.chat",
+          "openai.chat"
+        ],
+        "denied": 0,
+        "findingReplies": 1,
+        "goalReplies": 1,
+        "held": 1,
+        "models": [
+          "openai.models",
+          "anthropic.models",
+          "gemini.models",
+          "groq.models"
+        ],
+        "openAIOutputLanguages": [
+          "en",
+          "ja"
+        ],
+        "scheduledReplies": 1,
+        "taskCreationReplies": 1,
+        "timeoutReplies": 2,
+        "toolReplies": 1
+      },
+      "machineStopped": true,
+      "manifestSHA256": "e12d2dc978ede2c403295a0032e6aa96f115c82a2473aa495908717230704db0",
+      "passed": true,
+      "stage": "complete"
+    },
+    "reportSHA256": "adac59b9ee6ff57d07058557708ceef60c5a6bcb355f4d10ff1dba2dfbeb101a",
+    "timeoutSeconds": 8,
+    "timestampToleranceSeconds": 1
+  },
   "fixedBrowserAPI": {
     "fixtureRemoved": true,
     "historicalTimeoutNotReplayed": true,
@@ -124,7 +185,7 @@
   "scope": {
     "allRulesDisabledVerifiedInVM": true,
     "candidateOlderLateTimeoutCompletedConversations": 1,
-    "elapsedDeadlineVerified": false,
+    "elapsedDeadlineVerified": true,
     "guestUpgradeBootVerified": true,
     "nativeAndBrowserGUICompared": false,
     "releasePromoted": false,

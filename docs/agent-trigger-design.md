@@ -166,3 +166,16 @@ backend replayed the historical timeout after enablement. The check
 observes persisted rule state and does not instrument the scheduler's
 in-memory rule snapshot. An earlier VM attempt panicked during guest boot.
 The final run passed its isolation and cooperative-stop audits.
+
+### Elapsed task deadline
+
+The elapsed-deadline probe creates a task through the regular task API
+with an eight-second budget. Its planner uses the loopback-only profile
+with an unavailable endpoint, leaving its synthetic goal unmet. The
+engine supplies the start, deadline and terminal status. The probe reads
+these values and requires the deadline to be exactly eight seconds after
+first run. It allows one second of tolerance for the engine's Unix-second
+deadline comparison. Reporter uses the synthetic streaming provider and
+must complete one new conversation for that task. This exercises the
+error path of the final planner. A successful final planner that decides
+the goal was met is a separate case.

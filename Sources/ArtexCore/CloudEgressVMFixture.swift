@@ -24,6 +24,7 @@ package final class CloudEgressVMFixture: Sendable {
     package static let timeoutPrompt = "Synthetic task timeout trigger fixture"
     package static let timeoutTaskDescription = "Current timeout fixture"
     package static let olderTimeoutTaskDescription = "Historical task creation fixture"
+    package static let elapsedTimeoutTaskDescription = "Elapsed timeout fixture"
     package static let toolPrompt = "Synthetic tool call trigger fixture"
     package static let goalPrompt = "Synthetic met goal trigger fixture"
     package static let currentGoalSummary = "Current synthetic goal"
@@ -109,7 +110,8 @@ package final class CloudEgressVMFixture: Sendable {
                 $0.contains("Synthetic tool input") && $0.hasSuffix("Synthetic tool output")
         }
         let timeout = provider == .openAI && texts.contains {
-            ($0.contains(Self.timeoutTaskDescription) || $0.contains(Self.olderTimeoutTaskDescription)) &&
+            ($0.contains(Self.timeoutTaskDescription) || $0.contains(Self.olderTimeoutTaskDescription) ||
+             $0.contains(Self.elapsedTimeoutTaskDescription)) &&
                 $0.hasSuffix(Self.timeoutPrompt + "\n\n【本次由任务超时触发】")
         }
         guard held || scheduled || taskCreation || finding || goal || tool || timeout || texts.contains(Self.prompt) else { throw reject("prompt") }
