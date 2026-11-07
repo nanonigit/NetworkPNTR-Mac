@@ -61,3 +61,19 @@ The blank-check label ambiguity is repaired in aaeb8db with fail-closed status s
 ## T7 single-boot staging observation
 
 The separate changed B1 profile passed one fresh boot with two actual upload batches,12byte-readbacks and cooperative shutdown in14.85s. Full stopped serial-log audit has no recognized diagnostic or tested secret, with all isolation witnesses. It matches a separately disposable pinned reference after preserving two failed reference preparations. No native retry or default promotion; previous kernel/memory faults remain unresolved counter-evidence. See ../task-staging-runtime-verification.md.
+
+## Release preview restart with a prepared authentication fixture
+
+A signed CLI fixture prepared a fresh guest disk through the local setup API,
+kept its session in memory, and stopped cleanly. The signed Release preview
+then opened a private copy through Launch Services with cloud egress enabled.
+On the first boot, the UI reported the configured 120-second readiness
+timeout. The serial log eventually contained the ready marker and had a
+131-second creation-to-final-write interval. File times approximate the
+timeline and do not identify the slow stage or its cause.
+
+Force stop recovered the UI. A second start of the same preview process and
+state disk reached the normal login form. The second serial log had a
+seven-second creation-to-final-write interval. No kernel panic marker was
+observed on either boot. Preserve both results when evaluating reliability.
+The provider model-list exercise is separate from startup acceptance.
