@@ -71,12 +71,17 @@
       "title": "Tool runs",
       "browserPath": "/function/commands",
       "icon": "Terminal",
-      "nativeStatus": "pending",
+      "nativeStatus": "in_progress",
       "phase": 4,
       "acceptance": [
         "Compare paginated tool runs, exploration and keyword filtering, and unpaginated tool totals",
         "Compare success, empty, validation and server-error states",
         "Verify literal input/output inspection, cancellation and keyboard access"
+      ],
+      "evidence": ["Tests/ArtexCoreTests/ToolRunServiceTests.swift"],
+      "remainingGates": [
+        "Filter generation ownership and populated guest/browser API comparison",
+        "Native list, detail, summary and keyboard/visual acceptance"
       ]
     },
     {
