@@ -22,3 +22,15 @@ source remains the comparison baseline. Lazyweb's adjacent Notion
 history example supported keeping the revision note next to the current
 revision marker. The new guest and updated native screen still require
 paired runtime verification.
+
+On the signed cloud9 review app (guest manifest SHA256
+`9c38d268d350e7ab4e265ca32d686c529d8e09e5facfc2c69581f31589b768d8`),
+Worker displayed the localized built-in note. Restoring the default
+created v2 with the localized restoration note and retained v1.
+Switching to English showed both English labels, with the visible
+prompt value unchanged. The disposable pinned browser showed the
+Chinese notes for Worker v1 and restored v2 in Japanese mode.
+The native test completed setup, restart and Keychain cleanup. Its
+separate stop-during-startup check timed out before guest initialization
+on a third boot. This run therefore records the live UI comparison
+without passing the full native diagnostic suite.
