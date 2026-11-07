@@ -66,3 +66,28 @@ Little Snitch の有効ルール一覧では ChatGPT 経由の VMProbe に対し
 接続先ドメインの拒否が表示された。個々の要求に適用されたルールと
 ARTEX Mac Release 本体の判定は未確認。
 [再試験記録](../../evidence/llm/cloud-egress-firewall-retest.json)
+
+## 起動経路の比較
+
+Little Snitch で通信を許可したとの連絡後、署名済み VMProbe を直接起動すると、
+4社とも HTTP 応答を確認できなかった。対象プロセスの TCP ソケットだけを
+macOS のコンテンツフィルタ一覧から読み取ると、接続済みで初回判定とドロップの
+フラグが立っていない状態を160回観測した。同じソケットを複数回数える場合がある。
+
+起動経路を比較するため、診断を署名済みのバックグラウンドアプリにまとめた。
+同じ実行ファイルと固定ゲストを使い、`open -n -W -g ... --args --cloud-live-models ...`
+で Launch Services から起動する場合と、`Contents/MacOS/VMProbe` を直接起動する場合を
+比べた。各回で新規の状態ディレクトリを使い、NIC と共有がなく VM が停止したことを
+監査した後に結果を書き出した。
+
+Launch Services 経由の2回はどちらも OpenAI・Anthropic・Groq が HTTP 401、
+Gemini が HTTP 400 を返した。直接起動では4社とも応答が確定しなかった。
+Gemini への到達は確認できたが、診断は応答を認証拒否には分類できなかった。
+
+Little Snitch は、別のアプリから起動されたツールに個別のルールを適用できる。
+今回の観測から起動経路を切り分けられたが、個々の接続に適用されたルールは未特定。
+配布用プレビューは署名上の識別情報が異なるため、手順書の Launch Services コマンドで
+別途確認する。実キーでのモデル一覧取得と Mac 版の一般 Web 閲覧は未確認。
+[Little Snitch のルール優先順位](https://help.obdev.at/littlesnitch6/concepts-rules) ·
+[macOS のフィルタ状態](https://raw.githubusercontent.com/apple-oss-distributions/xnu/main/bsd/net/content_filter.c) ·
+[起動比較の記録](../../evidence/llm/cloud-egress-launch-context-verification.json)

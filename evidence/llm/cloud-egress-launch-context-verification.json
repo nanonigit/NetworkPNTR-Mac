@@ -1,0 +1,118 @@
+{
+  "sourceCommit": "239751680b3072699e91a803159384f6e43907d9",
+  "guestManifestSHA256": "5bc88b952a14bfe695d091e384e666a2fa24a68a4eb97cea40e77dac18b6b290",
+  "macOSBuild": "26B123",
+  "sameSignedDiagnosticExecutableForContextComparison": true,
+  "freshDiskForEveryRun": true,
+  "directLaunch": [
+    {
+      "appRejected": true,
+      "authenticationRejected": false,
+      "provider": "openai"
+    },
+    {
+      "appRejected": true,
+      "authenticationRejected": false,
+      "provider": "anthropic"
+    },
+    {
+      "appRejected": true,
+      "authenticationRejected": false,
+      "provider": "gemini"
+    },
+    {
+      "appRejected": true,
+      "authenticationRejected": false,
+      "provider": "groq"
+    }
+  ],
+  "launchServices": [
+    [
+      {
+        "appRejected": true,
+        "authenticationRejected": true,
+        "provider": "openai",
+        "upstreamStatus": 401
+      },
+      {
+        "appRejected": true,
+        "authenticationRejected": true,
+        "provider": "anthropic",
+        "upstreamStatus": 401
+      },
+      {
+        "appRejected": true,
+        "authenticationRejected": false,
+        "provider": "gemini",
+        "upstreamStatus": 400
+      },
+      {
+        "appRejected": true,
+        "authenticationRejected": true,
+        "provider": "groq",
+        "upstreamStatus": 401
+      }
+    ],
+    [
+      {
+        "appRejected": true,
+        "authenticationRejected": true,
+        "provider": "openai",
+        "upstreamStatus": 401
+      },
+      {
+        "appRejected": true,
+        "authenticationRejected": true,
+        "provider": "anthropic",
+        "upstreamStatus": 401
+      },
+      {
+        "appRejected": true,
+        "authenticationRejected": false,
+        "provider": "gemini",
+        "upstreamStatus": 400
+      },
+      {
+        "appRejected": true,
+        "authenticationRejected": true,
+        "provider": "groq",
+        "upstreamStatus": 401
+      }
+    ]
+  ],
+  "separateDirectProbeFilterSample": {
+    "probeExit": 1,
+    "sampleCountByState": [
+      {
+        "family": 2,
+        "connected": false,
+        "initialVerdict": false,
+        "drop": false,
+        "samples": 3
+      },
+      {
+        "family": 2,
+        "connected": false,
+        "initialVerdict": true,
+        "drop": false,
+        "samples": 46
+      },
+      {
+        "family": 2,
+        "connected": true,
+        "initialVerdict": false,
+        "drop": false,
+        "samples": 160
+      }
+    ]
+  },
+  "filterConfigurationChangedByProbe": false,
+  "releaseAppPolicyVerified": false,
+  "validCredentialUsed": false,
+  "inferenceRequests": 0,
+  "guestIsolationAudit": {
+    "virtualNICs": 0,
+    "hostShares": 0,
+    "stoppedBeforeRecording": true
+  }
+}

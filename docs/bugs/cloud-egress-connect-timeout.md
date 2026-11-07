@@ -83,3 +83,34 @@ ChatGPT / VMProbe process pair. The presence of overlapping entries
 does not establish which rule governed a specific attempt. The
 ARTEX Mac Release executable's decision was outside this probe.
 [Retest receipt](../../evidence/llm/cloud-egress-firewall-retest.json)
+
+## Launch context comparison
+
+After the user reported allowing connections in Little Snitch, a signed
+VMProbe started directly still produced no confirmed HTTP status for all
+four providers. A read-only macOS content-filter sample, limited to that
+probe's TCP sockets, recorded the connected flag without an initial
+verdict or drop flag in 160 socket observations. These are observations
+of socket state, and several samples can represent the same socket.
+
+To compare startup contexts, package the diagnostic as a signed background
+app and use the same executable and pinned guest for both launches. Start
+the app with `open -n -W -g ... --args --cloud-live-models ...` through
+Launch Services and invoke its `Contents/MacOS/VMProbe` directly in the
+other run. Use a fresh state directory for every run. The probe writes the
+result only after the zero-NIC, zero-share and shutdown audit passes.
+
+Both Launch Services runs returned HTTP 401 from OpenAI, Anthropic and Groq
+and HTTP 400 from Gemini. The direct launch returned no confirmed status
+for any provider. Gemini's HTTP status proves reachability in these samples,
+while the probe did not classify its response as a credential rejection.
+
+Little Snitch can apply different rules to a tool launched through another
+app. The observed filter state and launch comparison identify a useful
+test variable, but do not identify the individual rule. Use the
+documented Launch Services command for the release preview when checking
+its separate network identity. The diagnostic does not verify authenticated
+model discovery or general web access in the Mac app.
+[Little Snitch rule precedence](https://help.obdev.at/littlesnitch6/concepts-rules) ·
+[macOS content-filter flags](https://raw.githubusercontent.com/apple-oss-distributions/xnu/main/bsd/net/content_filter.c) ·
+[Launch comparison receipt](../../evidence/llm/cloud-egress-launch-context-verification.json)
