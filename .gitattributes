@@ -7,3 +7,4 @@ guest/backend-extension/provider-origin-redirect.patch -whitespace
 guest/backend-extension/provider-credential-target.patch -whitespace
 guest/backend-extension/norma-provider-vsock-terminal.patch -whitespace
 guest/backend-extension/provider-vsock-transport.patch -whitespace
+guest/backend-extension/task-timeout-scheduler.patch -whitespace

@@ -115,3 +115,29 @@ Before promoting a repaired guest, verify that a late timeout on an
 older task is delivered once, that timeouts from the disabled period
 are not replayed, and that upgrades do not replay historical timeouts
 or discard a still-running older task's future timeout.
+
+### Managed timeout dispatch repair
+
+The managed guest will track consumed timeouts by task ID membership.
+A one-time schema migration records tasks already timed out at upgrade,
+including archived rows still present in the task table. An active older
+task remains eligible when it later becomes timed out. The poll claims
+unseen live rows atomically with a unique key and still runs when no rules
+are enabled. Other event pollers keep their existing activation rules.
+Suppression is evaluated at the poll. Re-enabling a rule before the
+next poll can deliver a timeout from the preceding disabled period.
+Claims prevent redispatch on routine restart. Conversation delivery
+is best effort because shutdown or an unavailable chat agent can
+interrupt delivery after a claim. Verify migration replay, out-of-order claims, concurrent
+claims, all-disabled polling, and the fixed browser comparison before
+promoting the guest.
+
+The signed cloud8 candidate probe used the same trigger sequence as the
+fixed baseline through the late timeout. The lower-ID task now completed
+one Reporter conversation, with no additional conversation across the
+next polling interval. The separate disposable PostgreSQL 16 fixture
+ran the migration and claim statements, covering upgrade seed data,
+migration rerun and concurrent claims. The VM used a fresh disk. An
+upgrade boot on an existing disk, an all-rules-disabled VM run and the
+native screen comparison remain release gates.
+[Repair receipt](../evidence/agents/trigger-scheduler-timeout-repair.json)

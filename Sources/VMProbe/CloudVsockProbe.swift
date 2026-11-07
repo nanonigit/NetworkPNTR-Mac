@@ -5,18 +5,18 @@ import Foundation
 @MainActor enum CloudVsockProbe {
     static func run(_ args: [String]) async {
         #if DEBUG
-        if args.count == 2 {
-            await exercise(artifacts: URL(fileURLWithPath: args[0]), output: URL(fileURLWithPath: args[1]))
+        let repairedTimeouts = args.count == 3 && args[2] == "--timeout-repair"
+        if args.count == 2 || repairedTimeouts {
+            await exercise(artifacts: URL(fileURLWithPath: args[0]), output: URL(fileURLWithPath: args[1]), repairedTimeouts: repairedTimeouts)
             return
         }
         #endif
-        FileHandle.standardError.write(Data("Usage: DEBUG VMProbe --cloud-vsock ARTIFACTS NEW_PRIVATE_OUTPUT\n".utf8))
+        FileHandle.standardError.write(Data("Usage: DEBUG VMProbe --cloud-vsock ARTIFACTS NEW_PRIVATE_OUTPUT [--timeout-repair]\n".utf8))
         exit(2)
     }
 
     #if DEBUG
-    private static let manifestDigest = GuestArtifacts.cloudEgressManifestSHA256
-    private static let version = "artex-mac-e75ae371-cloud7"
+    private static let timeoutRepairManifestDigest = "e12d2dc978ede2c403295a0032e6aa96f115c82a2473aa495908717230704db0"
     private static let providers = LLMCloudProvider.allCases
 
     private final class Vault: SessionVault {
@@ -34,7 +34,7 @@ import Foundation
         let fixture: CloudEgressVMFixture.Snapshot
     }
 
-    private static func requireManifest(_ artifacts: URL) throws {
+    private static func requireManifest(_ artifacts: URL, digest: String) throws {
         let url = artifacts.appendingPathComponent("manifest.json")
         let values = try url.resourceValues(forKeys: [.isRegularFileKey, .isSymbolicLinkKey])
         guard values.isRegularFile == true, values.isSymbolicLink != true else {
@@ -43,7 +43,7 @@ import Foundation
         let file = try FileHandle(forReadingFrom: url)
         defer { try? file.close() }
         let data = try file.read(upToCount: 64 * 1024 + 1) ?? Data()
-        guard ArtifactIntegrity.sha256(data) == manifestDigest else {
+        guard ArtifactIntegrity.sha256(data) == digest else {
             throw RuntimeError.integrity("cloud vsock manifest digest")
         }
     }
@@ -172,7 +172,9 @@ import Foundation
         guard Set(cleaned.map(\.id)) == oldIDs else { throw RuntimeError.integrity("task creation fixture cleanup") }
     }
 
-    private static func exercise(artifacts: URL, output: URL) async {
+    private static func exercise(artifacts: URL, output: URL, repairedTimeouts: Bool) async {
+        let manifestDigest = repairedTimeouts ? timeoutRepairManifestDigest : GuestArtifacts.cloudEgressManifestSHA256
+        let version = repairedTimeouts ? "artex-mac-e75ae371-cloud8" : "artex-mac-e75ae371-cloud7"
         let controller = VMController()
         let fixture = CloudEgressVMFixture()
         var stage = "prepare"
@@ -185,7 +187,7 @@ import Foundation
             try encoder.encode(report).write(to: output.appendingPathComponent("cloud-vsock.json"), options: .atomic)
         }
         do {
-            try requireManifest(artifacts)
+            try requireManifest(artifacts, digest: manifestDigest)
             guard mkdir(output.path, 0o700) == 0 else { throw RuntimeError.integrity("new private output required") }
             created = true
             let logs = output.appendingPathComponent("logs")
@@ -287,7 +289,7 @@ import Foundation
             timeoutTask.goal = "Verify synthetic timeout scheduling."
             timeoutTask.llmProfileIds = [profileID]
             _ = try await TaskService(client: client).create(timeoutTask)
-            try await SeededTriggerProbe.verify(.timeout, client: client, chat: chat, fixture: fixture)
+            try await SeededTriggerProbe.verify(.timeout, client: client, chat: chat, fixture: fixture, repairedTimeouts: repairedTimeouts)
 
             stage = "held-stream"
             try await chat.send(id: openAIConversation, message: CloudEgressVMFixture.heldPrompt)
@@ -308,7 +310,7 @@ import Foundation
                 if fixture.snapshot.cancelled == 1 { break }
                 try await Task.sleep(for: .milliseconds(20))
             }
-            try requireManifest(artifacts)
+            try requireManifest(artifacts, digest: manifestDigest)
             let tokens = [provisioning.transportToken, provisioning.setupToken, password, token, CloudEgressVMFixture.key]
             let audit = GuestBootDiagnostics.audit(logDirectory: logs, tokens: tokens)
             guard !controller.hasMachine, fixture.snapshot.cancelled == 1, fixture.snapshot.denied == 0,

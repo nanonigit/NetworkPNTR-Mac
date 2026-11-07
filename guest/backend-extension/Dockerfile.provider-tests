@@ -27,7 +27,9 @@ COPY provider-credential-target.patch /tmp/provider-credential-target.patch
 RUN --network=none git apply --check /tmp/provider-credential-target.patch && git apply /tmp/provider-credential-target.patch
 COPY provider-vsock-transport.patch /tmp/provider-vsock-transport.patch
 RUN --network=none git apply --check /tmp/provider-vsock-transport.patch && git apply /tmp/provider-vsock-transport.patch
+COPY task-timeout-scheduler.patch /tmp/task-timeout-scheduler.patch
+RUN --network=none git apply --check /tmp/task-timeout-scheduler.patch && git apply /tmp/task-timeout-scheduler.patch
 SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 RUN --network=none GOMAXPROCS=2 go test -p 2 -mod=readonly github.com/Autumn-27/norma/llm github.com/Autumn-27/norma/harness -count=1 -json -coverprofile=/tmp/norma.cover | tee /tmp/norma-tests.json
-RUN --network=none GOMAXPROCS=2 go test -p 2 -mod=readonly ./traffic ./agent ./server ./cloudegress -count=1 -json | tee /tmp/cloud-provider-tests.json
-RUN --network=none GOMAXPROCS=2 go build -p 2 -mod=readonly -trimpath -buildvcs=false -ldflags="-s -w -X main.version=artex-mac-e75ae371-cloud7" -o /out/artex ./cmd/artex
+RUN --network=none GOMAXPROCS=2 go test -p 2 -mod=readonly ./traffic ./agent ./server ./db ./cloudegress -count=1 -json | tee /tmp/cloud-provider-tests.json
+RUN --network=none GOMAXPROCS=2 go build -p 2 -mod=readonly -trimpath -buildvcs=false -ldflags="-s -w -X main.version=artex-mac-e75ae371-cloud8" -o /out/artex ./cmd/artex

@@ -39,7 +39,10 @@ import Foundation
     }
     private enum Event: String { case historical, unmatched, pending, current }
 
-    static func verify(_ kind: Kind, client: AuthenticatedBackendClient, chat: ChatService, fixture: CloudEgressVMFixture) async throws {
+    static func verify(
+        _ kind: Kind, client: AuthenticatedBackendClient, chat: ChatService,
+        fixture: CloudEgressVMFixture, repairedTimeouts: Bool = false
+    ) async throws {
         let service = AgentCatalogService(client: client)
         guard let agent = try await service.list().first(where: { $0.key == "reporter" && !$0.builtin }) else {
             throw RuntimeError.integrity("seeded trigger fixture owner")
@@ -82,17 +85,23 @@ import Foundation
             _ = try await seed(.unmatched, kind: kind, client: client)
             _ = try await seed(.pending, kind: kind, client: client)
         }
+        var lateTimeoutID: Int64?
         if kind == .timeout {
             let olderTaskID = try await seed(.unmatched, kind: kind, client: client)
             guard olderTaskID < historicalTaskID else { throw RuntimeError.integrity("timeout fixture ordering") }
+            lateTimeoutID = olderTaskID
         }
-        try await Task.sleep(for: .seconds(6))
-        guard try await chat.conversations().allSatisfy({ conversationIDs.contains($0.id) }),
-              kind.replyCount(fixture) == 0 else {
-            throw RuntimeError.integrity("historical event replay")
+        let taskID: Int64
+        if repairedTimeouts, let lateTimeoutID {
+            taskID = lateTimeoutID
+        } else {
+            try await Task.sleep(for: .seconds(6))
+            guard try await chat.conversations().allSatisfy({ conversationIDs.contains($0.id) }),
+                  kind.replyCount(fixture) == 0 else {
+                throw RuntimeError.integrity("historical event replay")
+            }
+            taskID = try await seed(.current, kind: kind, client: client)
         }
-
-        let taskID = try await seed(.current, kind: kind, client: client)
         var resultID: Int64?
         for _ in 0..<150 {
             let fresh = try await chat.conversations().filter { !conversationIDs.contains($0.id) }
@@ -111,8 +120,15 @@ import Foundation
             }
             try await Task.sleep(for: .milliseconds(100))
         }
-        guard resultID != nil, kind.replyCount(fixture) == 1 else {
+        guard let resultID, kind.replyCount(fixture) == 1 else {
             throw RuntimeError.integrity("seeded trigger conversation completion")
+        }
+        if repairedTimeouts {
+            try await Task.sleep(for: .seconds(6))
+            let fresh = try await chat.conversations().filter { !conversationIDs.contains($0.id) }
+            guard fresh.map(\.id) == [resultID], kind.replyCount(fixture) == 1 else {
+                throw RuntimeError.integrity("timeout event replay")
+            }
         }
         _ = try await service.removeTrigger(for: agent, id: row.id)
         _ = try await service.removeTrigger(for: agent, id: sentinelRow.id)
@@ -131,7 +147,7 @@ import Foundation
         let description: String
         switch (kind, event) {
         case (.timeout, .current): description = CloudEgressVMFixture.timeoutTaskDescription
-        case (.timeout, .unmatched): description = "Historical task creation fixture"
+        case (.timeout, .unmatched): description = CloudEgressVMFixture.olderTimeoutTaskDescription
         default: description = CloudEgressVMFixture.currentTaskDescription
         }
         let write: String

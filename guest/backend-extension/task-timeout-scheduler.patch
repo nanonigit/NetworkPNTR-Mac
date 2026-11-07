@@ -1,0 +1,145 @@
+diff --git a/db/schema.sql b/db/schema.sql
+index a945b76..abad3c6 100644
+--- a/db/schema.sql
++++ b/db/schema.sql
+@@ -1027,6 +1027,20 @@ CREATE TABLE IF NOT EXISTS scheduler_state (
+     value TEXT NOT NULL DEFAULT ''
+ );
+ 
++CREATE TABLE IF NOT EXISTS scheduler_consumed_task_timeouts (
++    task_id BIGINT PRIMARY KEY
++);
++
++-- Seed existing timeouts exactly once while applying the schema.
++WITH migration AS (
++    INSERT INTO scheduler_state(key, value) VALUES ('task_timeout_membership_v1', '1')
++    ON CONFLICT DO NOTHING
++    RETURNING key
++)
++INSERT INTO scheduler_consumed_task_timeouts(task_id)
++SELECT tasks.id FROM tasks CROSS JOIN migration WHERE tasks.status = 'timeout'
++ON CONFLICT DO NOTHING;
++
+ -- =====================================================================
+ -- K. 拦截规则
+ -- =====================================================================
+diff --git a/db/triggers.go b/db/triggers.go
+index c93e7a5..be3d535 100644
+--- a/db/triggers.go
++++ b/db/triggers.go
+@@ -189,13 +189,23 @@ ORDER BY n.id`, lastID)
+ 	return out, rows.Err()
+ }
+ 
+-// TimedOutTasksSince returns tasks that reached status='timeout' with id > lastID,
+-// ordered by id (monotonic watermark → no double-fire across restarts).
+-func (d *DB) TimedOutTasksSince(lastID int64) ([]TaskEvent, error) {
++// ClaimTaskTimeouts records each live timed-out task once and returns newly claimed events.
++func (d *DB) ClaimTaskTimeouts() ([]TaskEvent, error) {
+ 	rows, err := d.Query(`
+-SELECT id, description, goal FROM tasks
+-WHERE status='timeout' AND deleted_at IS NULL AND id > $1
+-ORDER BY id`, lastID)
++WITH claimed AS (
++    INSERT INTO scheduler_consumed_task_timeouts(task_id)
++    SELECT id FROM tasks
++    WHERE status = 'timeout' AND deleted_at IS NULL
++      AND NOT EXISTS (
++          SELECT 1 FROM scheduler_consumed_task_timeouts WHERE task_id = tasks.id
++      )
++    ORDER BY id
++    ON CONFLICT DO NOTHING
++    RETURNING task_id
++)
++SELECT tasks.id, tasks.description, tasks.goal
++FROM claimed JOIN tasks ON tasks.id = claimed.task_id
++ORDER BY tasks.id`)
+ 	if err != nil {
+ 		return nil, err
+ 	}
+@@ -206,7 +216,7 @@ ORDER BY id`, lastID)
+ 		if err := rows.Scan(&e.NodeID, &e.TaskDesc, &e.TaskGoal); err != nil {
+ 			return nil, err
+ 		}
+-		e.TaskID = e.NodeID // task id doubles as NodeID for the watermark
++		e.TaskID = e.NodeID
+ 		e.Summary = e.TaskGoal
+ 		out = append(out, e)
+ 	}
+diff --git a/server/scheduler.go b/server/scheduler.go
+index 976c048..7917636 100644
+--- a/server/scheduler.go
++++ b/server/scheduler.go
+@@ -28,7 +28,6 @@ type Scheduler struct {
+ const (
+ 	schedKeyLastFinding    = "last_finding_id"    // watermark: max finding node id fired for
+ 	schedKeyFiredGoals     = "fired_goals"        // JSON array of goal node ids already fired
+-	schedKeyLastTimeout    = "last_timeout_id"    // watermark: max task id fired for task timeout
+ 	schedKeyLastToolCall   = "last_toolcall_id"   // watermark: max activity id fired for tool call
+ 	schedKeyLastTaskCreate = "last_taskcreate_id" // watermark: max task id fired for task create
+ )
+@@ -79,17 +78,6 @@ func (sc *Scheduler) init() {
+ 		}
+ 		sc.saveFiredGoalSet(set)
+ 	}
+-	if sc.mustState(schedKeyLastTimeout) == "" {
+-		var maxID int64
+-		if evs, err := sc.pg.TimedOutTasksSince(0); err == nil {
+-			for _, e := range evs {
+-				if e.NodeID > maxID {
+-					maxID = e.NodeID
+-				}
+-			}
+-		}
+-		_ = sc.pg.SetSchedState(schedKeyLastTimeout, strconv.FormatInt(maxID, 10))
+-	}
+ 	if sc.mustState(schedKeyLastToolCall) == "" {
+ 		var maxID int64
+ 		if evs, err := sc.pg.NewToolCallsSince(0); err == nil {
+@@ -120,6 +108,7 @@ func (sc *Scheduler) step() {
+ 		return
+ 	}
+ 	if len(triggers) == 0 {
++		sc.fireTaskTimeouts(nil)
+ 		return
+ 	}
+ 	sc.fireIntervals(triggers)
+@@ -223,8 +212,7 @@ func (sc *Scheduler) fireGoals(triggers []*db.AgentTrigger) {
+ 	}
+ }
+ 
+-// fireTaskTimeouts fires on_task_timeout triggers for tasks that newly reached
+-// status='timeout' above the persisted watermark (task id → no double-fire).
++// fireTaskTimeouts consumes new timeouts even if no timeout rule is enabled.
+ func (sc *Scheduler) fireTaskTimeouts(triggers []*db.AgentTrigger) {
+ 	var want []*db.AgentTrigger
+ 	for _, tr := range triggers {
+@@ -232,17 +220,12 @@ func (sc *Scheduler) fireTaskTimeouts(triggers []*db.AgentTrigger) {
+ 			want = append(want, tr)
+ 		}
+ 	}
+-	last, _ := strconv.ParseInt(sc.mustState(schedKeyLastTimeout), 10, 64)
+-	events, err := sc.pg.TimedOutTasksSince(last)
+-	if err != nil || len(events) == 0 {
++	events, err := sc.pg.ClaimTaskTimeouts()
++	if err != nil {
++		log.Printf("[scheduler] claim task timeouts: %v", err)
+ 		return
+ 	}
+-	// Advance the watermark even with no active trigger — see fireFindings.
+-	maxID := last
+ 	for _, e := range events {
+-		if e.NodeID > maxID {
+-			maxID = e.NodeID
+-		}
+ 		if len(want) == 0 {
+ 			continue
+ 		}
+@@ -251,7 +234,6 @@ func (sc *Scheduler) fireTaskTimeouts(triggers []*db.AgentTrigger) {
+ 			sc.s.StartTriggeredRun(tr.AgentKey, fmt.Sprintf("超时触发 · task#%d", e.TaskID), tr.TaskTimeoutMessage+msgCtx, e.TaskID, true, e.TaskDesc, e.TaskGoal)
+ 		}
+ 	}
+-	_ = sc.pg.SetSchedState(schedKeyLastTimeout, strconv.FormatInt(maxID, 10))
+ }
+ 
+ // fireTaskCreates fires on_task_create triggers for tasks newly created above the

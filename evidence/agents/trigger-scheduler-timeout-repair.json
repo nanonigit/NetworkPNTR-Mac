@@ -1,0 +1,78 @@
+{
+  "backendSHA256": "816cd4929b408abe2a9fad0629446faafa5ca2dbaa5b0c5b327abb4e630cade6",
+  "candidateVM": {
+    "fixture": {
+      "cancelled": 1,
+      "completed": [
+        "openai.chat",
+        "anthropic.messages",
+        "gemini.chat",
+        "groq.chat",
+        "openai.chat",
+        "openai.chat",
+        "openai.chat",
+        "openai.chat",
+        "openai.chat",
+        "openai.chat",
+        "openai.chat"
+      ],
+      "denied": 0,
+      "findingReplies": 1,
+      "goalReplies": 1,
+      "held": 1,
+      "models": [
+        "openai.models",
+        "anthropic.models",
+        "gemini.models",
+        "groq.models"
+      ],
+      "openAIOutputLanguages": [
+        "en",
+        "ja"
+      ],
+      "scheduledReplies": 1,
+      "taskCreationReplies": 1,
+      "timeoutReplies": 1,
+      "toolReplies": 1
+    },
+    "machineStopped": true,
+    "manifestSHA256": "e12d2dc978ede2c403295a0032e6aa96f115c82a2473aa495908717230704db0",
+    "passed": true,
+    "stage": "complete"
+  },
+  "candidateVMReportSHA256": "afbcd6961e1e901a5502e389aea4f3ee3c56a520cceac1965bfdbccf7cbbf892",
+  "checks": {
+    "candidateBackendMatchesFullBuild": true,
+    "goPassed": 680,
+    "goSkipped": 266,
+    "swiftPassed": 1097,
+    "swiftSkipped": 1
+  },
+  "fixedBrowserAPI": {
+    "fixtureRemoved": true,
+    "historicalTimeoutNotReplayed": true,
+    "newTimeoutCompletedConversations": 1,
+    "newTimeoutTaskMatched": true,
+    "olderLateTimeoutDropped": true,
+    "pinnedReference": "e75ae371ad777ffd1eecdd28d2781a6519b05591"
+  },
+  "patchSHA256": "21471d79e55faba2900240b47eb2b2071eb6058c47787125a83999a329b7a077",
+  "postgresFixture": {
+    "concurrentClaimDeliveredOnce": true,
+    "migrationRerunPreservedNewTimeout": true,
+    "migrationSeededHistoricalAndArchived": true,
+    "olderTaskClaimedAfterNewerTask": true,
+    "postgres": "16.15 (Debian 16.15-1.pgdg12+2)",
+    "repeatClaimEmpty": true
+  },
+  "scope": {
+    "allRulesDisabledVerifiedInVM": false,
+    "candidateOlderLateTimeoutCompletedConversations": 1,
+    "elapsedDeadlineVerified": false,
+    "guestUpgradeBootVerified": false,
+    "nativeAndBrowserGUICompared": false,
+    "releasePromoted": false,
+    "replayCheckAdditionalPolls": 1,
+    "stateInjected": true
+  }
+}
