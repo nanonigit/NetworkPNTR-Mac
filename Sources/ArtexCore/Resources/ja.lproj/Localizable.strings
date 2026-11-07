@@ -186,6 +186,70 @@
 	<string>このエージェントに割り当てるツールを選択します。ツール自体の有効化はツール一覧で設定します。</string>
 	<key>agent.toolBinding.needsCapture</key>
 	<string>トラフィック記録が必要</string>
+	<key>agent.trigger.add</key>
+	<string>トリガーを追加</string>
+	<key>agent.trigger.byTask</key>
+	<string>タスクごと</string>
+	<key>agent.trigger.delete</key>
+	<string>トリガーを削除</string>
+	<key>agent.trigger.deleteQuestion</key>
+	<string>このトリガーを削除しますか？</string>
+	<key>agent.trigger.disable</key>
+	<string>無効にする</string>
+	<key>agent.trigger.disabled</key>
+	<string>無効</string>
+	<key>agent.trigger.edit</key>
+	<string>トリガーを編集</string>
+	<key>agent.trigger.empty</key>
+	<string>トリガーが設定されていません。</string>
+	<key>agent.trigger.enable</key>
+	<string>有効にする</string>
+	<key>agent.trigger.enabled</key>
+	<string>有効</string>
+	<key>agent.trigger.finding</key>
+	<string>脆弱性の発見</string>
+	<key>agent.trigger.goal</key>
+	<string>目標達成</string>
+	<key>agent.trigger.help</key>
+	<string>このエージェントを自動実行する条件を設定します。</string>
+	<key>agent.trigger.lastFire</key>
+	<string>最終発火</string>
+	<key>agent.trigger.limit</key>
+	<string>並列実行の上限（0は無制限）</string>
+	<key>agent.trigger.merge</key>
+	<string>待機中のイベントの結合</string>
+	<key>agent.trigger.mergeAll</key>
+	<string>すべて</string>
+	<key>agent.trigger.mergeNone</key>
+	<string>結合しない</string>
+	<key>agent.trigger.message</key>
+	<string>メッセージ（任意）</string>
+	<key>agent.trigger.parallel</key>
+	<string>並列</string>
+	<key>agent.trigger.policy</key>
+	<string>実行方針</string>
+	<key>agent.trigger.run</key>
+	<string>実行モード</string>
+	<key>agent.trigger.save</key>
+	<string>トリガーを保存</string>
+	<key>agent.trigger.savePolicy</key>
+	<string>実行方針を保存</string>
+	<key>agent.trigger.schedule</key>
+	<string>定期実行</string>
+	<key>agent.trigger.seconds</key>
+	<string>実行間隔（秒）</string>
+	<key>agent.trigger.serial</key>
+	<string>直列</string>
+	<key>agent.trigger.task</key>
+	<string>タスク作成</string>
+	<key>agent.trigger.timeout</key>
+	<string>タスクのタイムアウト</string>
+	<key>agent.trigger.title</key>
+	<string>トリガー</string>
+	<key>agent.trigger.tool</key>
+	<string>ツール呼び出し</string>
+	<key>agent.trigger.tools</key>
+	<string>このルールを発火させるツールを選択します。</string>
 	<key>agent.variable.global.DataDir</key>
 	<string>サーバー上のタスクと会話の成果物を格納するルートディレクトリです。</string>
 	<key>agent.variable.global.Now</key>

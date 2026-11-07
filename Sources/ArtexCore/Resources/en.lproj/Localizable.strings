@@ -186,6 +186,70 @@
 	<string>Choose which tools this agent can use. Tool activation is managed in the tool catalog.</string>
 	<key>agent.toolBinding.needsCapture</key>
 	<string>Requires traffic capture</string>
+	<key>agent.trigger.add</key>
+	<string>Add trigger</string>
+	<key>agent.trigger.byTask</key>
+	<string>By task</string>
+	<key>agent.trigger.delete</key>
+	<string>Delete trigger</string>
+	<key>agent.trigger.deleteQuestion</key>
+	<string>Delete this trigger?</string>
+	<key>agent.trigger.disable</key>
+	<string>Disable</string>
+	<key>agent.trigger.disabled</key>
+	<string>Disabled</string>
+	<key>agent.trigger.edit</key>
+	<string>Edit trigger</string>
+	<key>agent.trigger.empty</key>
+	<string>No triggers configured.</string>
+	<key>agent.trigger.enable</key>
+	<string>Enable</string>
+	<key>agent.trigger.enabled</key>
+	<string>Enabled</string>
+	<key>agent.trigger.finding</key>
+	<string>Finding recorded</string>
+	<key>agent.trigger.goal</key>
+	<string>Goal met</string>
+	<key>agent.trigger.help</key>
+	<string>Choose when this agent runs automatically.</string>
+	<key>agent.trigger.lastFire</key>
+	<string>Last fired</string>
+	<key>agent.trigger.limit</key>
+	<string>Parallel limit (0 means unlimited)</string>
+	<key>agent.trigger.merge</key>
+	<string>Merge pending events</string>
+	<key>agent.trigger.mergeAll</key>
+	<string>All</string>
+	<key>agent.trigger.mergeNone</key>
+	<string>None</string>
+	<key>agent.trigger.message</key>
+	<string>Message (optional)</string>
+	<key>agent.trigger.parallel</key>
+	<string>Parallel</string>
+	<key>agent.trigger.policy</key>
+	<string>Execution policy</string>
+	<key>agent.trigger.run</key>
+	<string>Run mode</string>
+	<key>agent.trigger.save</key>
+	<string>Save trigger</string>
+	<key>agent.trigger.savePolicy</key>
+	<string>Save policy</string>
+	<key>agent.trigger.schedule</key>
+	<string>Schedule</string>
+	<key>agent.trigger.seconds</key>
+	<string>Interval in seconds</string>
+	<key>agent.trigger.serial</key>
+	<string>Serial</string>
+	<key>agent.trigger.task</key>
+	<string>Task created</string>
+	<key>agent.trigger.timeout</key>
+	<string>Task timed out</string>
+	<key>agent.trigger.title</key>
+	<string>Triggers</string>
+	<key>agent.trigger.tool</key>
+	<string>Tool called</string>
+	<key>agent.trigger.tools</key>
+	<string>Select the tools that can trigger this rule.</string>
 	<key>agent.variable.global.DataDir</key>
 	<string>Root directory for task and conversation artifacts on the server.</string>
 	<key>agent.variable.global.Now</key>

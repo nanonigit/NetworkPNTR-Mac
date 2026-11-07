@@ -264,6 +264,10 @@ extension AgentCatalogService {
         let agent: Agent
     }
 
+    package func triggerToolNames() async throws -> [String] {
+        try await toolBindings().map(\.key)
+    }
+
     public func triggers(for agent: AgentCatalogEntry) async throws -> [AgentTrigger] {
         let path = try triggerPath(agent)
         let rows = try await fetch(TriggerList.self, path: path).triggers
@@ -288,6 +292,18 @@ extension AgentCatalogService {
         let body = try triggerBody(rule)
         try await requireTrigger(for: agent, id: id)
         try await submitAcknowledged(method: "PATCH", path: "/api/triggers/\(id)", body: body)
+        return try await confirmedTriggers(for: agent, id: id, rule: rule)
+    }
+
+    public func setTriggerEnabled(for agent: AgentCatalogEntry, id: Int64, enabled: Bool) async throws -> [AgentTrigger] {
+        guard id > 0 else { throw BackendAPIError.invalidResponse }
+        let rows = try await triggers(for: agent)
+        guard var rule = rows.first(where: { $0.id == id })?.rule else {
+            throw BackendAPIError.invalidResponse
+        }
+        guard rule.enabled != enabled else { return rows }
+        rule.enabled = enabled
+        try await submitAcknowledged(method: "PATCH", path: "/api/triggers/\(id)", body: triggerBody(rule))
         return try await confirmedTriggers(for: agent, id: id, rule: rule)
     }
 

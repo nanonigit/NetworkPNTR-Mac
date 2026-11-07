@@ -61,6 +61,21 @@ final class AgentTriggerServiceTests: XCTestCase {
         XCTAssertFalse(String(decoding: body, as: UTF8.self).contains("agent_key"))
     }
 
+    @MainActor func testEnableChangePreservesFreshRuleFields() async throws {
+        let api = ChatTestTransport()
+        let service = AgentCatalogService(client: api)
+        var stored = rule
+        stored.goalMessage = "Changed elsewhere"
+        try api.enqueue(["triggers": [try row(stored)]])
+        try api.enqueue(["ok": true])
+        stored.enabled = true
+        try api.enqueue(["triggers": [try row(stored)]])
+        let verified = try await service.setTriggerEnabled(for: agent(), id: id, enabled: true)
+        XCTAssertEqual(verified.first?.rule, stored)
+        let body = try XCTUnwrap(api.calls[1].body)
+        XCTAssertEqual(try BackendJSONCoding.decode(AgentTriggerRule.self, from: body), stored)
+    }
+
     @MainActor func testWrongOwnerAndUnconfirmedDeleteDoNotReplay() async throws {
         let api = ChatTestTransport()
         let service = AgentCatalogService(client: api)

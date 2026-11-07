@@ -3,23 +3,26 @@ import SwiftUI
 
 @MainActor struct AgentPromptDetailsView: View {
     private enum Panel: Hashable {
-        case prompt, wrapUp, mcp, skill, tools
+        case prompt, wrapUp, mcp, skill, tools, triggers
 
         var visibilityKind: AgentVisibilityKind? {
             switch self {
             case .mcp: .mcp
             case .skill: .skill
-            case .prompt, .wrapUp, .tools: nil
+            case .prompt, .wrapUp, .tools, .triggers: nil
             }
         }
     }
 
     let agent: AgentCatalogEntry
+    let service: AgentCatalogService
     let onVisibilityChange: () -> Void
 
     @Environment(\.dismiss) private var dismiss
     @Environment(\.locale) private var locale
     @State private var panel = Panel.prompt
+    @State private var triggerBusy = false
+    @State private var triggerEditing = false
     @State private var editor: AgentPromptEditor
     @State private var visibility: AgentVisibilityEditor
     @State private var toolBindings: AgentToolBindingEditor
@@ -31,6 +34,7 @@ import SwiftUI
 
     init(agent: AgentCatalogEntry, service: AgentCatalogService, onVisibilityChange: @escaping () -> Void) {
         self.agent = agent
+        self.service = service
         self.onVisibilityChange = onVisibilityChange
         _visibility = State(initialValue: AgentVisibilityEditor(key: agent.key, service: service))
         _toolBindings = State(initialValue: AgentToolBindingEditor(key: agent.key, service: service))
@@ -49,7 +53,7 @@ import SwiftUI
                 Spacer()
                 Button(s(.close), action: close)
                     .keyboardShortcut(.cancelAction)
-                    .disabled((editor.isBusy && editor.details != nil) || visibility.isBusy || toolBindings.isBusy)
+                    .disabled((editor.isBusy && editor.details != nil) || visibility.isBusy || toolBindings.isBusy || triggerBusy || triggerEditing)
             }
             if let details = editor.details {
                 saveStatus
@@ -59,9 +63,10 @@ import SwiftUI
                     Text(verbatim: "MCP").tag(Panel.mcp)
                     Text(s(.agentCatalogSkill)).tag(Panel.skill)
                     Text(s(.agentCatalogTools)).tag(Panel.tools)
+                    if !agent.builtin { Text(s(.agentTriggerTitle)).tag(Panel.triggers) }
                 }
                 .pickerStyle(.segmented)
-                .disabled(editor.isBusy || visibility.isBusy || toolBindings.isBusy)
+                .disabled(editor.isBusy || visibility.isBusy || toolBindings.isBusy || triggerBusy || triggerEditing)
                 .accessibilityIdentifier("agent-detail-section")
                 ScrollView {
                     VStack(alignment: .leading, spacing: 16) {
@@ -70,6 +75,7 @@ import SwiftUI
                         case .mcp: visibilityPanel(.mcp, agentID: details.backendID)
                         case .skill: visibilityPanel(.skill, agentID: details.backendID)
                         case .tools: toolBindingPanel
+                        case .triggers: AgentTriggerPanel(agent: agent, service: service, busy: $triggerBusy, editing: $triggerEditing)
                         case .wrapUp:
                             wrapUpPanel(details.wrapUp, section: .normal, title: .agentDetailsWrapUp)
                             if let task = details.taskTimeout {
@@ -103,7 +109,7 @@ import SwiftUI
             if let kind = panel.visibilityKind { await visibility.load(kind) }
             if panel == .tools { await toolBindings.load() }
         }
-        .interactiveDismissDisabled(editor.isBusy || editor.hasUnsavedChanges || visibility.isBusy || toolBindings.isBusy)
+        .interactiveDismissDisabled(editor.isBusy || editor.hasUnsavedChanges || visibility.isBusy || toolBindings.isBusy || triggerBusy || triggerEditing)
         .sheet(item: $inspection) { selection in
             AgentPromptInspectionView(inspection: selection, editor: editor)
                 .environment(\.locale, locale)
