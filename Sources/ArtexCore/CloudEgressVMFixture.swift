@@ -9,6 +9,7 @@ package final class CloudEgressVMFixture: Sendable {
         package fileprivate(set) var openAIOutputLanguages: [String] = []
         package fileprivate(set) var scheduledReplies = 0
         package fileprivate(set) var taskCreationReplies = 0
+        package fileprivate(set) var findingReplies = 0
         package fileprivate(set) var held = 0
         package fileprivate(set) var cancelled = 0
         package fileprivate(set) var denied = 0
@@ -17,6 +18,8 @@ package final class CloudEgressVMFixture: Sendable {
 
     package static let key = "synthetic-cloud-vsock-key"
     package static let prompt = "Respond to the cloud vsock fixture"
+    package static let findingPrompt = "Synthetic finding trigger fixture"
+    package static let currentFindingSummary = "Current synthetic finding"
     package static let taskCreationPrompt = "Synthetic task creation trigger fixture"
     package static let currentTaskDescription = "Current task creation fixture"
     package static let scheduledPrompt = "Synthetic interval trigger fixture"
@@ -81,9 +84,14 @@ package final class CloudEgressVMFixture: Sendable {
             $0.contains(Self.currentTaskDescription) &&
                 $0.hasSuffix(Self.taskCreationPrompt + "\n\n【本次由任务创建触发】")
         }
-        guard held || scheduled || taskCreation || texts.contains(Self.prompt) else { throw reject("prompt") }
+        let finding = provider == .openAI && texts.contains {
+            $0.contains(Self.currentTaskDescription) &&
+                $0.contains(Self.findingPrompt + "\n\n【本次由任务发现 finding 触发】") &&
+                $0.hasSuffix(Self.currentFindingSummary)
+        }
+        guard held || scheduled || taskCreation || finding || texts.contains(Self.prompt) else { throw reject("prompt") }
 
-        if provider == .openAI, !held, !scheduled, !taskCreation {
+        if provider == .openAI, !held, !scheduled, !taskCreation, !finding {
             let system = messages.filter { $0["role"] as? String == "system" }
                 .compactMap { $0["content"] as? String }
                 .joined(separator: "\n")
@@ -120,6 +128,7 @@ package final class CloudEgressVMFixture: Sendable {
             $0.completed.append(request.route.rawValue)
             if scheduled { $0.scheduledReplies += 1 }
             if taskCreation { $0.taskCreationReplies += 1 }
+            if finding { $0.findingReplies += 1 }
         }
     }
 

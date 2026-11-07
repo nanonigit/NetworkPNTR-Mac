@@ -67,3 +67,12 @@ separate loopback-only profile, and Reporter used a synthetic provider.
 The rule was removed after verification. The signed VM stopped with zero
 virtual NICs and host shares.
 [Task-creation verification receipt](../evidence/agents/trigger-scheduler-task-creation.json)
+
+The finding-trigger probe inserted two fixed synthetic finding nodes in a
+disposable task. The disabled period advanced the scheduler watermark, and
+enabling the rule did not replay the historical finding. A new finding
+produced one completed Reporter conversation with the owning task ID.
+Both the pinned browser backend and the dedicated VM matched this
+behavior. The VM restored the original rules and stopped cleanly.
+This covers scheduling and model handoff after a finding is recorded.
+[Finding verification receipt](../evidence/agents/trigger-scheduler-finding.json)

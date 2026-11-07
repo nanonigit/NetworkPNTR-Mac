@@ -270,6 +270,9 @@ import Foundation
             stage = "task-creation-trigger"
             try await verifyTaskCreationTrigger(client: client, chat: chat, llm: llm, fixture: fixture)
 
+            stage = "finding-trigger"
+            try await FindingTriggerProbe.verify(client: client, chat: chat, fixture: fixture)
+
             stage = "held-stream"
             try await chat.send(id: openAIConversation, message: CloudEgressVMFixture.heldPrompt)
             for _ in 0..<200 {
@@ -279,7 +282,7 @@ import Foundation
             let held = fixture.snapshot
             guard held.held == 1, held.cancelled == 0, held.denied == 0,
                   held.models == providers.map({ "\($0.rawValue).models" }),
-                  held.completed == providers.map({ $0 == .anthropic ? "anthropic.messages" : "\($0.rawValue).chat" }) + ["openai.chat", "openai.chat", "openai.chat"] else {
+                  held.completed == providers.map({ $0 == .anthropic ? "anthropic.messages" : "\($0.rawValue).chat" }) + ["openai.chat", "openai.chat", "openai.chat", "openai.chat"] else {
                 throw RuntimeError.integrity("cloud vsock route sequence")
             }
 
@@ -299,7 +302,7 @@ import Foundation
             }
             stage = "complete"
             try writeReport(true)
-            print("PASS cloud_vsock models=\(providers.count) chats=\(providers.count + 3) interval=1 task_creation=1 output=en,ja cancelled=1 nic=0 shares=0")
+            print("PASS cloud_vsock models=\(providers.count) chats=\(providers.count + 4) interval=1 task_creation=1 finding=1 output=en,ja cancelled=1 nic=0 shares=0")
         } catch {
             if controller.hasMachine { try? await controller.forceStop() }
             if created { try? writeReport(false) }

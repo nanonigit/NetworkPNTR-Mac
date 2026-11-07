@@ -1,0 +1,56 @@
+{
+  "findingTrigger": {
+    "agent": "reporter",
+    "defaultRulesRestored": true,
+    "fixtureRulesRemoved": true,
+    "historicalFindingNotReplayed": true,
+    "newFindingCompletedConversations": 1,
+    "newFindingTaskMatched": true
+  },
+  "fixture": {
+    "cancelled": 1,
+    "completed": [
+      "openai.chat",
+      "anthropic.messages",
+      "gemini.chat",
+      "groq.chat",
+      "openai.chat",
+      "openai.chat",
+      "openai.chat",
+      "openai.chat"
+    ],
+    "denied": 0,
+    "findingReplies": 1,
+    "held": 1,
+    "models": [
+      "openai.models",
+      "anthropic.models",
+      "gemini.models",
+      "groq.models"
+    ],
+    "openAIOutputLanguages": [
+      "en",
+      "ja"
+    ],
+    "scheduledReplies": 1,
+    "taskCreationReplies": 1
+  },
+  "machineStopped": true,
+  "manifestSHA256": "42c47caf03c835c974eee569f8be041b234d3f96b7d7931585e410e146f73c70",
+  "passed": true,
+  "pinnedBrowserAPI": {
+    "fixtureRemoved": true,
+    "historicalFindingNotReplayed": true,
+    "newFindingCompletedConversations": 1,
+    "newFindingTaskMatched": true,
+    "pinnedReference": "e75ae371ad777ffd1eecdd28d2781a6519b05591"
+  },
+  "scope": {
+    "hostShares": 0,
+    "nativeAndBrowserGUICompared": false,
+    "syntheticDatabaseEvents": true,
+    "syntheticProvider": true,
+    "virtualNICs": 0
+  },
+  "stage": "complete"
+}
