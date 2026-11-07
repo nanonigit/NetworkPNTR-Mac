@@ -1,0 +1,111 @@
+{
+  "basicBrowserComparison": {
+    "api_contract_equal": true,
+    "baseline": "e75ae371ad777ffd1eecdd28d2781a6519b05591",
+    "browser_data_modified": false,
+    "cases": [
+      "first_run_auth_status",
+      "protected_api_requires_login",
+      "wrong_setup_token_rejected",
+      "setup",
+      "profile_save_and_read"
+    ],
+    "identical_fixture": true,
+    "ui_workflow_parity": "pending"
+  },
+  "candidateManifestSHA256": "7ab7cb7f5620f8470e73a1e7a9a6ee634e09905382b9564bff997cd3504e52c0",
+  "cliLifecycle": {
+    "boots": [
+      {
+        "formatted": true,
+        "nonblankRejected": false,
+        "ready": true,
+        "serialSHA256": "0eac62b024d1296c6886a8d148e54857a5877cfcbd48109ed18e4cc3bb49d7bd",
+        "stoppedMarker": true
+      },
+      {
+        "formatted": false,
+        "nonblankRejected": false,
+        "ready": true,
+        "serialSHA256": "00a0e88e356ed43d10c3c2648c7050c6758be4b0ba1c2680159037ba76cddce6",
+        "stoppedMarker": false
+      },
+      {
+        "formatted": false,
+        "nonblankRejected": false,
+        "ready": true,
+        "serialSHA256": "00a0e88e356ed43d10c3c2648c7050c6758be4b0ba1c2680159037ba76cddce6",
+        "stoppedMarker": false
+      },
+      {
+        "formatted": false,
+        "nonblankRejected": false,
+        "ready": true,
+        "serialSHA256": "00a0e88e356ed43d10c3c2648c7050c6758be4b0ba1c2680159037ba76cddce6",
+        "stoppedMarker": false
+      },
+      {
+        "formatted": false,
+        "nonblankRejected": false,
+        "ready": true,
+        "serialSHA256": "2142f720be51c7ce9717d41ada02eb55a9862432127f3b69ff0c9d0d7753b18c",
+        "stoppedMarker": true
+      },
+      {
+        "formatted": false,
+        "nonblankRejected": true,
+        "ready": false,
+        "serialSHA256": "1188da3a2e027284f70d243a5ae0374201cf84f34946ad535a3abf2bfeb12025",
+        "stoppedMarker": false
+      }
+    ],
+    "invalidDiskBytesRead": 2147483648,
+    "invalidDiskExactContentsPreserved": true
+  },
+  "llmBrowserComparison": {
+    "api_contract_equal": true,
+    "baseline": "e75ae371ad777ffd1eecdd28d2781a6519b05591",
+    "browser_data_modified": false,
+    "cases": [
+      "three_api_formats",
+      "profile_create_edit",
+      "blank_key_preservation",
+      "streaming_and_thinking_fields",
+      "active_selection",
+      "active_delete_rejected",
+      "inactive_delete",
+      "rotation_and_exclusion",
+      "retry_policy",
+      "missing_key_model_query",
+      "missing_key_connection_test"
+    ],
+    "identical_fixture": true,
+    "ui_workflow_parity": "pending"
+  },
+  "nativeExecutableSHA256": "7811b68be00e8f24c7cd4aef0b50f44ee05bf655c6dd5d394fbc02ed0933e3c4",
+  "nativeServiceChecks": {
+    "app_owned_backend_ready": true,
+    "app_owned_backend_stopped": true,
+    "authenticated_content_snapshot": true,
+    "cooperative_stop_during_boot": true,
+    "native_llm_restart_persistence": true,
+    "native_llm_three_formats_crud_key_preservation_pool_retry": true,
+    "native_login_validation_and_real_auth": true,
+    "native_setup_authenticated": true,
+    "native_window_rendered": true,
+    "real_keychain_session_restored_after_vm_restart": true,
+    "setup_content_snapshot": true,
+    "temporary_keychain_item_removed": true,
+    "ui_click_workflow_verified": false,
+    "validation_content_snapshot": true,
+    "virtual_cpu_count": 1,
+    "visual_acceptance": "pending external native automation"
+  },
+  "scope": {
+    "cliRuntimeDockerExcludedFromPATH": true,
+    "dockerDesktopStopped": false,
+    "externalNativeClickComparison": false,
+    "previewPromoted": false,
+    "releaseReliabilityEstablished": false
+  }
+}

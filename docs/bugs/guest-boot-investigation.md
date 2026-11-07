@@ -121,3 +121,19 @@ allocation. Those measurements do not establish guest kernel
 allocation behavior, the cause of the panic, or release reliability.
 The packaged preview still uses its previous guest.
 [Experiment receipt](../../evidence/native-runtime/cloud8-blank-buffer.json)
+
+The same reusable-buffer candidate passed the six-boot CLI lifecycle
+suite. Five boots reached readiness. These covered first setup, one
+normal restart and three forced-stop recoveries. The sixth boot
+rejected the nonblank fixture before format. A read-only scan verified
+its exact marker and zero remainder across 2 GiB. Auth, JWT and profile
+persistence were observed on the same owned disk. Five API contract
+groups matched a disposable fixed browser backend.
+
+A separately signed Debug app bundled that same candidate and ran the
+native diagnostics through Launch Services. First setup, login checks,
+real Keychain restoration, temporary item removal and cooperative stop
+during startup passed. Its LLM workflow matched eleven API contract
+groups in a second disposable fixed browser backend. The app remained
+a private fixture. Actual interaction and visual parity remain open.
+[Lifecycle receipt](../../evidence/native-runtime/cloud8-blank-buffer-lifecycle.json)
