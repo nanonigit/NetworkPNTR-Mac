@@ -26,8 +26,18 @@ public struct AgentPromptDetails: Decodable, Sendable {
         public let version: Int
         public let templateText: String
         public let note: String?
+        private let updatedBy: String?
         public let ts: String?
         public var id: Int { version }
+
+        public func displayNote(language: AppLanguage) -> String? {
+            guard updatedBy == "system" else { return note }
+            switch note {
+            case "内置默认": return AppStrings.lookup("agent.detail.note.default", language: language)
+            case "恢复为内置默认": return AppStrings.lookup("agent.detail.note.restored", language: language)
+            default: return note
+            }
+        }
     }
 
     public struct WrapUp: Sendable {

@@ -207,7 +207,7 @@ import SwiftUI
                     if version.id == details.versions.first?.id {
                         Text(s(.agentDetailsCurrent)).font(.caption).foregroundStyle(.secondary)
                     }
-                    if let note = version.note {
+                    if let note = version.displayNote(language: language) {
                         Text(verbatim: note).foregroundStyle(.secondary).lineLimit(1)
                     }
                     Spacer()

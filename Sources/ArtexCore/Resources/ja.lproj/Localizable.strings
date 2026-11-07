@@ -56,6 +56,10 @@
 	<string>（変数なし）</string>
 	<key>agent.detail.noVersions</key>
 	<string>（保存されたバージョンはまだなく、組み込みの既定値を使用しています）</string>
+	<key>agent.detail.note.default</key>
+	<string>組み込みの既定値</string>
+	<key>agent.detail.note.restored</key>
+	<string>組み込みの既定値に復元</string>
 	<key>agent.detail.prompt</key>
 	<string>プロンプト</string>
 	<key>agent.detail.refreshHistory</key>

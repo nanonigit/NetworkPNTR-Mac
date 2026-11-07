@@ -56,6 +56,10 @@
 	<string>(no variables)</string>
 	<key>agent.detail.noVersions</key>
 	<string>(no saved versions yet; using the built-in default)</string>
+	<key>agent.detail.note.default</key>
+	<string>Built-in default</string>
+	<key>agent.detail.note.restored</key>
+	<string>Restored built-in default</string>
 	<key>agent.detail.prompt</key>
 	<string>Prompt</string>
 	<key>agent.detail.refreshHistory</key>

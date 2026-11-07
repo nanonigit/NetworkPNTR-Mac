@@ -11,3 +11,14 @@ The signed native review used a fresh isolated Linux VM. In Japanese, Worker dis
 Local verification passed 1,060 Swift tests with one existing skip, 195 guest artifact tests, the release build, generated localizations and strict signature verification of the updated local preview. Hosted CI was skipped under the quota policy.
 
 English and Japanese localize native controls and known variable descriptions. Stored prompts, version notes, and variable examples are shown verbatim, including the Chinese and Korean text in the pinned seed prompts. Editing, version diff and restore, model and permission settings, and paired rendered browser UI acceptance remain open.
+
+The managed backend now includes optional version authorship from the
+existing `agent_prompts.updated_by` column. The app translates the two
+known default and restore notes only when their stored author is
+`system`. The original note and prompt body remain literal for editing
+and inspection. Missing authorship, arbitrary system notes and identical
+user-authored notes retain the original display. The fixed browser
+source remains the comparison baseline. Lazyweb's adjacent Notion
+history example supported keeping the revision note next to the current
+revision marker. The new guest and updated native screen still require
+paired runtime verification.

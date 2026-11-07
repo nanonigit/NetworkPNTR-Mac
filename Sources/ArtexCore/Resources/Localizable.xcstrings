@@ -1857,6 +1857,40 @@
         }
       }
     },
+    "agent.detail.note.default": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Built-in default"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "組み込みの既定値"
+          }
+        }
+      }
+    },
+    "agent.detail.note.restored": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Restored built-in default"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "組み込みの既定値に復元"
+          }
+        }
+      }
+    },
     "agent.detail.empty": {
       "extractionState": "manual",
       "localizations": {

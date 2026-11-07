@@ -2,6 +2,27 @@ import XCTest
 @testable import ArtexCore
 
 final class AgentPromptDetailsTests: XCTestCase {
+    func testOnlyRecognizedSystemVersionNotesAreLocalized() throws {
+        let json = """
+        [
+          {"version":5,"template_text":"原文","note":"恢复为内置默认","updated_by":"system"},
+          {"version":4,"template_text":"原文","note":"内置默认","updated_by":"ui"},
+          {"version":3,"template_text":"原文","note":"内置默认"},
+          {"version":2,"template_text":"原文","note":"自訂說明","updated_by":"system"},
+          {"version":1,"template_text":"原文","note":"内置默认","updated_by":"system"}
+        ]
+        """
+        let versions = try BackendJSONCoding.decode([AgentPromptDetails.Version].self, from: Data(json.utf8))
+        XCTAssertEqual(versions.map { $0.displayNote(language: .english) }, [
+            "Restored built-in default", "内置默认", "内置默认", "自訂說明", "Built-in default"
+        ])
+        XCTAssertEqual(versions.map { $0.displayNote(language: .japanese) }, [
+            "組み込みの既定値に復元", "内置默认", "内置默认", "自訂說明", "組み込みの既定値"
+        ])
+        XCTAssertEqual(versions.first?.note, "恢复为内置默认")
+        XCTAssertTrue(versions.allSatisfy { $0.templateText == "原文" })
+    }
+
     @MainActor func testReadsLiteralPromptHistoryAndWrapUpFromSelectedAgent() async throws {
         let api = ChatTestTransport()
         let text = "  **原文**\n{{.target}}\n"

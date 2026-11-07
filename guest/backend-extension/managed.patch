@@ -90,3 +90,28 @@
  }
  
  // seedDefaultInterceptRules inserts built-in safety intercept rules once on
+--- a/db/config.go
++++ b/db/config.go
+@@ -784,11 +784,12 @@
+ 	Version   int       `json:"version"`
+ 	Template  string    `json:"template_text"`
+ 	Note      string    `json:"note,omitempty"`
++	UpdatedBy string    `json:"updated_by,omitempty"`
+ 	CreatedAt time.Time `json:"ts"`
+ }
+ 
+ func (d *DB) ListPromptVersions(agentID int64) ([]PromptVersion, error) {
+-	rows, err := d.Query(`SELECT version,template_text,COALESCE(note,''),created_at FROM agent_prompts WHERE agent_id=$1 ORDER BY version DESC`, agentID)
++	rows, err := d.Query(`SELECT version,template_text,COALESCE(note,''),COALESCE(updated_by,''),created_at FROM agent_prompts WHERE agent_id=$1 ORDER BY version DESC`, agentID)
+ 	if err != nil {
+ 		return nil, err
+ 	}
+@@ -796,7 +797,7 @@
+ 	out := []PromptVersion{}
+ 	for rows.Next() {
+ 		var v PromptVersion
+-		if err := rows.Scan(&v.Version, &v.Template, &v.Note, &v.CreatedAt); err != nil {
++		if err := rows.Scan(&v.Version, &v.Template, &v.Note, &v.UpdatedBy, &v.CreatedAt); err != nil {
+ 			return nil, err
+ 		}
+ 		out = append(out, v)
