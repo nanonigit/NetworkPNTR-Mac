@@ -41,15 +41,25 @@ import SwiftUI
     }
 }
 @main struct ArtexMacApp: App {
+    private struct GuestLanguageSelection: Equatable {
+        let language: AppLanguage
+        let epoch: UUID?
+    }
+
     @NSApplicationDelegateAdaptor(AppDelegate.self) private var delegate
     @State private var environment = RuntimeFactory.make()
     @State private var language = AppLanguagePreferences()
+    @State private var guestLanguageSync = GuestOutputLanguageSync()
     @State private var trafficRetirements = TrafficBodyExportRetirement()
     var body: some Scene {
         WindowGroup("ARTEX Mac") {
             RootView(environment: environment, language: language, trafficRetirements: trafficRetirements)
                 .onAppear { delegate.environment = environment;delegate.updateMenuLanguage(language.language) }
                 .onChange(of: language.language) { _, value in delegate.updateMenuLanguage(value) }
+                .onChange(of: GuestLanguageSelection(language: language.language,
+                                                      epoch: environment.authentication?.exportSessionGeneration), initial: true) { _, change in
+                    guestLanguageSync.update(change.language, session: environment.authentication)
+                }
                 .frame(minWidth: 980, minHeight: 680)
         }
         .defaultSize(width: 1180, height: 800)
