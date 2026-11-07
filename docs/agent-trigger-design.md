@@ -93,3 +93,25 @@ matching result produced one completed Reporter conversation with the
 owning task ID and the paired input and output. The test used synthetic
 activity, removed its rules, and stopped the isolated VM.
 [Tool-call verification receipt](../evidence/agents/trigger-scheduler-tool.json)
+
+The task-timeout probe injected three timeout state transitions. Both the
+pinned browser backend and the dedicated VM skipped the timeout recorded
+while the timeout rule was disabled and an unrelated rule stayed enabled.
+A later timeout on an older task was also
+missed, while a new higher-ID task produced one completed Reporter
+conversation. The fixed scheduler stores `last_timeout_id` and selects
+only timed-out tasks with IDs above it. Task IDs follow creation order,
+so an older task can time out after the scheduler has advanced past it.
+The signed VM removed the fixture rules and stopped cleanly. These tests
+cover dispatch after a timeout state is recorded. Elapsed timeout
+enforcement and the actual screens still need separate checks.
+[Task-timeout verification receipt](../evidence/agents/trigger-scheduler-timeout.json)
+
+A repair must distinguish timeout occurrence from task creation order
+and define the rule's disabled-period semantics across restarts.
+The fixed scheduler skips polling entirely when no rules are enabled,
+so the repair needs a separate test for the all-rules-disabled case.
+Before promoting a repaired guest, verify that a late timeout on an
+older task is delivered once, that timeouts from the disabled period
+are not replayed, and that upgrades do not replay historical timeouts
+or discard a still-running older task's future timeout.

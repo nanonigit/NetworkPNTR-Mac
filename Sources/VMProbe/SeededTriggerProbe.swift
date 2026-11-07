@@ -4,7 +4,7 @@ import Foundation
 
 @MainActor enum SeededTriggerProbe {
     enum Kind: String {
-        case finding, goal, tool
+        case finding, goal, tool, timeout
 
         var state: String { self == .finding ? "confirmed" : "met" }
         var prompt: String {
@@ -12,6 +12,7 @@ import Foundation
             case .finding: CloudEgressVMFixture.findingPrompt
             case .goal: CloudEgressVMFixture.goalPrompt
             case .tool: CloudEgressVMFixture.toolPrompt
+            case .timeout: CloudEgressVMFixture.timeoutPrompt
             }
         }
 
@@ -20,6 +21,7 @@ import Foundation
             case .finding: rule.onFinding
             case .goal: rule.onGoalMet
             case .tool: rule.onToolCall
+            case .timeout: rule.onTaskTimeout
             }
         }
         var summary: String {
@@ -31,6 +33,7 @@ import Foundation
             case .finding: fixture.snapshot.findingReplies
             case .goal: fixture.snapshot.goalReplies
             case .tool: fixture.snapshot.toolReplies
+            case .timeout: fixture.snapshot.timeoutReplies
             }
         }
     }
@@ -62,6 +65,7 @@ import Foundation
         switch kind {
         case .finding: rule.onFinding = true; rule.findingMessage = kind.prompt
         case .goal: rule.onGoalMet = true; rule.goalMessage = kind.prompt
+        case .timeout: rule.onTaskTimeout = true; rule.taskTimeoutMessage = kind.prompt
         case .tool:
             rule.onToolCall = true
             rule.toolCallMessage = kind.prompt
@@ -71,12 +75,16 @@ import Foundation
         guard let row = rows.first(where: { !ids.contains($0.id) && $0.id != sentinelRow.id }) else {
             throw RuntimeError.integrity("seeded trigger fixture rule")
         }
-        _ = try await seed(.historical, kind: kind, client: client)
+        let historicalTaskID = try await seed(.historical, kind: kind, client: client)
         try await Task.sleep(for: .seconds(6))
         _ = try await service.setTriggerEnabled(for: agent, id: row.id, enabled: true)
         if kind == .tool {
             _ = try await seed(.unmatched, kind: kind, client: client)
             _ = try await seed(.pending, kind: kind, client: client)
+        }
+        if kind == .timeout {
+            let olderTaskID = try await seed(.unmatched, kind: kind, client: client)
+            guard olderTaskID < historicalTaskID else { throw RuntimeError.integrity("timeout fixture ordering") }
         }
         try await Task.sleep(for: .seconds(6))
         guard try await chat.conversations().allSatisfy({ conversationIDs.contains($0.id) }),
@@ -120,19 +128,35 @@ import Foundation
 
     private static func seed(_ event: Event, kind: Kind, client: AuthenticatedBackendClient) async throws -> Int64 {
         let summary = event == .historical ? "Historical synthetic \(kind.rawValue)" : kind.summary
+        let description: String
+        switch (kind, event) {
+        case (.timeout, .current): description = CloudEgressVMFixture.timeoutTaskDescription
+        case (.timeout, .unmatched): description = "Historical task creation fixture"
+        default: description = CloudEgressVMFixture.currentTaskDescription
+        }
         let write: String
-        if kind == .tool {
+        let readTaskID = kind == .timeout ? "" : """
+            SELECT id FROM tasks WHERE description = '\(description)' AND deleted_at IS NULL;
+            """
+        if kind == .timeout {
+            write = """
+                UPDATE tasks SET status = 'timeout', completed_at = now()
+                WHERE description = '\(description)' AND deleted_at IS NULL
+                  AND status IS DISTINCT FROM 'timeout'
+                RETURNING id;
+                """
+        } else if kind == .tool {
             let tool = event == .unmatched ? "fixture_other_tool" : "fixture_selected_tool"
             let useID = event == .current ? "scheduler-fixture-pending" : "scheduler-fixture-\(event.rawValue)"
             let toolUse = """
                 INSERT INTO activity(exploration_id,kind,tool,tool_use_id,detail)
                 SELECT exploration_id,'tool_use','\(tool)','\(useID)','Synthetic tool input'
-                FROM tasks WHERE description = '\(CloudEgressVMFixture.currentTaskDescription)' AND deleted_at IS NULL;
+                FROM tasks WHERE description = '\(description)' AND deleted_at IS NULL;
                 """
             let toolResult = """
                 INSERT INTO activity(exploration_id,kind,tool,tool_use_id,detail)
                 SELECT exploration_id,'tool_result','\(tool)','\(useID)','Synthetic tool output'
-                FROM tasks WHERE description = '\(CloudEgressVMFixture.currentTaskDescription)' AND deleted_at IS NULL;
+                FROM tasks WHERE description = '\(description)' AND deleted_at IS NULL;
                 """
             switch event {
             case .historical, .unmatched: write = toolUse + "\n" + toolResult
@@ -143,7 +167,7 @@ import Foundation
             write = """
                 INSERT INTO exploration_nodes(exploration_id,kind,payload,state)
                 SELECT exploration_id,'\(kind.rawValue)',jsonb_build_object('summary','\(summary)','vulnclass','fixture','severity','low'),'\(kind.state)'
-                FROM tasks WHERE description = '\(CloudEgressVMFixture.currentTaskDescription)' AND deleted_at IS NULL;
+                FROM tasks WHERE description = '\(description)' AND deleted_at IS NULL;
                 """
         }
         let code = """
@@ -158,12 +182,12 @@ import Foundation
         BEGIN;
         SET LOCAL statement_timeout = '4s';
         DO $$ BEGIN
-          IF (SELECT count(*) FROM tasks WHERE description = '\(CloudEgressVMFixture.currentTaskDescription)' AND deleted_at IS NULL) <> 1
+          IF (SELECT count(*) FROM tasks WHERE description = '\(description)' AND deleted_at IS NULL) <> 1
           OR EXISTS (SELECT 1 FROM exploration_nodes WHERE kind = '\(kind.rawValue)' AND payload->>'summary' = '\(summary)')
           THEN RAISE EXCEPTION 'unexpected seeded event fixture state'; END IF;
         END $$;
         \(write)
-        SELECT id FROM tasks WHERE description = '\(CloudEgressVMFixture.currentTaskDescription)' AND deleted_at IS NULL;
+        \(readTaskID)
         COMMIT;
         '''
         env={'PATH':'/usr/libexec/postgresql16:/usr/bin:/bin','PGHOST':'127.0.0.1','PGPORT':'5432',

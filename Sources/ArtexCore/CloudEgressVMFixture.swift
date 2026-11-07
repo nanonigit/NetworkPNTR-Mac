@@ -12,6 +12,7 @@ package final class CloudEgressVMFixture: Sendable {
         package fileprivate(set) var findingReplies = 0
         package fileprivate(set) var goalReplies = 0
         package fileprivate(set) var toolReplies = 0
+        package fileprivate(set) var timeoutReplies = 0
         package fileprivate(set) var held = 0
         package fileprivate(set) var cancelled = 0
         package fileprivate(set) var denied = 0
@@ -20,6 +21,8 @@ package final class CloudEgressVMFixture: Sendable {
 
     package static let key = "synthetic-cloud-vsock-key"
     package static let prompt = "Respond to the cloud vsock fixture"
+    package static let timeoutPrompt = "Synthetic task timeout trigger fixture"
+    package static let timeoutTaskDescription = "Current timeout fixture"
     package static let toolPrompt = "Synthetic tool call trigger fixture"
     package static let goalPrompt = "Synthetic met goal trigger fixture"
     package static let currentGoalSummary = "Current synthetic goal"
@@ -104,9 +107,13 @@ package final class CloudEgressVMFixture: Sendable {
                 $0.contains(Self.toolPrompt + "\n\n【本次由工具调用触发】\n工具: fixture_selected_tool") &&
                 $0.contains("Synthetic tool input") && $0.hasSuffix("Synthetic tool output")
         }
-        guard held || scheduled || taskCreation || finding || goal || tool || texts.contains(Self.prompt) else { throw reject("prompt") }
+        let timeout = provider == .openAI && texts.contains {
+            $0.contains(Self.timeoutTaskDescription) &&
+                $0.hasSuffix(Self.timeoutPrompt + "\n\n【本次由任务超时触发】")
+        }
+        guard held || scheduled || taskCreation || finding || goal || tool || timeout || texts.contains(Self.prompt) else { throw reject("prompt") }
 
-        if provider == .openAI, !held, !scheduled, !taskCreation, !finding, !goal, !tool {
+        if provider == .openAI, !held, !scheduled, !taskCreation, !finding, !goal, !tool, !timeout {
             let system = messages.filter { $0["role"] as? String == "system" }
                 .compactMap { $0["content"] as? String }
                 .joined(separator: "\n")
@@ -146,6 +153,7 @@ package final class CloudEgressVMFixture: Sendable {
             if finding { $0.findingReplies += 1 }
             if goal { $0.goalReplies += 1 }
             if tool { $0.toolReplies += 1 }
+            if timeout { $0.timeoutReplies += 1 }
         }
     }
 
