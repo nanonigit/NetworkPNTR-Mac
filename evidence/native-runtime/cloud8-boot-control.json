@@ -1,0 +1,111 @@
+{
+  "earlierSameKernelFault": "evidence/chat/upload-a2-boot-red.json",
+  "guestManifestSHA256": "e12d2dc978ede2c403295a0032e6aa96f115c82a2473aa495908717230704db0",
+  "hardwareModel": "Mac14,2",
+  "kernelSHA256": "8e57308787c420cb42e4c4ea80e6def6438a52232692c010dc4609bb9bf21879",
+  "macOS": "27.2 (26B123)",
+  "priorFault": {
+    "bootStage": "state_zero_check",
+    "diskAllZero": true,
+    "diskAllocatedBlocks": 0,
+    "diskBytesRead": 2147483648,
+    "diskSHA256": "a7c744c13cc101ed66c29f672f92455547889cc586ce6d44fe76ae824958ea51",
+    "fault": "anon_vma_clone / __split_vma / munmap",
+    "kernelPanic": true,
+    "reachedFormat": false,
+    "reachedReady": false,
+    "reachedStateMount": false,
+    "serialSHA256": "4e4bca0008324815eca5058c6631e02fb1403f8ecc552b60bd4b51b2ee32a202"
+  },
+  "scope": {
+    "bootCountFixedBeforeExecution": true,
+    "dockerDesktopStopped": false,
+    "readOnlyAuthProbes": true,
+    "releaseReliabilityEstablished": false,
+    "rootCauseEstablished": false,
+    "runtimeDockerCLIExcludedFromPATH": true
+  },
+  "sequentialFreshDiskControls": [
+    {
+      "exitCode": 0,
+      "hostDurationSeconds": 18,
+      "number": 1,
+      "report": {
+        "bootAttempts": 1,
+        "cooperativeStop": true,
+        "credentialLogCheckPassed": true,
+        "diagnostics": [],
+        "formatStageObserved": true,
+        "freshAuth": true,
+        "isolationVerified": true,
+        "logAuditComplete": true,
+        "machineStopped": true,
+        "passed": true,
+        "protectedStatus": 401,
+        "reachedReady": true
+      },
+      "reportSHA256": "20fda6aadad39f5f173781f0cdb78de3de11ca5e9b2ab2770523945d90790f27"
+    },
+    {
+      "exitCode": 0,
+      "hostDurationSeconds": 15,
+      "number": 2,
+      "report": {
+        "bootAttempts": 1,
+        "cooperativeStop": true,
+        "credentialLogCheckPassed": true,
+        "diagnostics": [],
+        "formatStageObserved": true,
+        "freshAuth": true,
+        "isolationVerified": true,
+        "logAuditComplete": true,
+        "machineStopped": true,
+        "passed": true,
+        "protectedStatus": 401,
+        "reachedReady": true
+      },
+      "reportSHA256": "20fda6aadad39f5f173781f0cdb78de3de11ca5e9b2ab2770523945d90790f27"
+    },
+    {
+      "exitCode": 0,
+      "hostDurationSeconds": 16,
+      "number": 3,
+      "report": {
+        "bootAttempts": 1,
+        "cooperativeStop": true,
+        "credentialLogCheckPassed": true,
+        "diagnostics": [],
+        "formatStageObserved": true,
+        "freshAuth": true,
+        "isolationVerified": true,
+        "logAuditComplete": true,
+        "machineStopped": true,
+        "passed": true,
+        "protectedStatus": 401,
+        "reachedReady": true
+      },
+      "reportSHA256": "20fda6aadad39f5f173781f0cdb78de3de11ca5e9b2ab2770523945d90790f27"
+    },
+    {
+      "exitCode": 0,
+      "hostDurationSeconds": 15,
+      "number": 4,
+      "report": {
+        "bootAttempts": 1,
+        "cooperativeStop": true,
+        "credentialLogCheckPassed": true,
+        "diagnostics": [],
+        "formatStageObserved": true,
+        "freshAuth": true,
+        "isolationVerified": true,
+        "logAuditComplete": true,
+        "machineStopped": true,
+        "passed": true,
+        "protectedStatus": 401,
+        "reachedReady": true
+      },
+      "reportSHA256": "20fda6aadad39f5f173781f0cdb78de3de11ca5e9b2ab2770523945d90790f27"
+    }
+  ],
+  "signedProbeSHA256": "dd76d77a224c56a0d970a20c14c092236834fa9669b4860a7884ca8e90790f4c"
+}

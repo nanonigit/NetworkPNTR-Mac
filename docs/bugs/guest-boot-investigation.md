@@ -77,3 +77,25 @@ state disk reached the normal login form. The second serial log had a
 seven-second creation-to-final-write interval. No kernel panic marker was
 observed on either boot. Preserve both results when evaluating reliability.
 The provider model-list exercise is separate from startup acceptance.
+
+## Cloud8 timeout candidate and fresh-disk controls
+
+A signed timeout test on the one-vCPU cloud8 candidate panicked during
+the blank-state disk check. The last stage before the fault was
+`state_zero_check`, with no state format, mount or readiness marker.
+The stack again includes `anon_vma_clone`, `__split_vma` and `munmap`.
+After stopping the VM, a read-only host scan verified that all 2 GiB of
+the retained synthetic disk were zero. The kernel hash matches the
+earlier upload preflight that faulted on the same path.
+
+Four prespecified, sequential fresh-disk preflights on that exact cloud8
+manifest passed in 15–18 seconds. Each reached readiness, confirmed
+fresh auth and a 401 on the protected API, and passed isolation and
+cooperative-stop checks. The runtime PATH excluded Docker and the
+Docker socket was deliberately unusable. Docker Desktop was running
+for the separate browser baseline. The failure remains release
+counter-evidence. The checker process was active at the fault, while
+the cause of the invalid kernel memory access remains unresolved.
+A controlled follow-up can vary only the checker implementation,
+retaining full-device reads and fail-closed formatting decisions.
+[Cloud8 boot evidence](../../evidence/native-runtime/cloud8-boot-control.json)
