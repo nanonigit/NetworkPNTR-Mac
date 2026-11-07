@@ -137,9 +137,8 @@ fixed baseline through the late timeout. The lower-ID task now completed
 one Reporter conversation, with no additional conversation across the
 next polling interval. The separate disposable PostgreSQL 16 fixture
 ran the migration and claim statements, covering upgrade seed data,
-migration rerun and concurrent claims. The first probe used a fresh disk. The upgrade proof is below. An
-all-rules-disabled VM run and the native screen comparison remain
-release gates.
+migration rerun and concurrent claims. The first probe used a fresh disk. The upgrade and all-disabled
+results are below. The native screen comparison remains a release gate.
 [Repair receipt](../evidence/agents/trigger-scheduler-timeout-repair.json)
 
 The upgrade probe creates an owned fixture disk on cloud7 and boots
@@ -157,3 +156,13 @@ Run the signed DEBUG probe with the pinned cloud7 and cloud8 artifacts:
 The output directory must be new. The probe creates its own disk.
 The signed upgrade passed on Mac hardware. See the repair receipt
 for the two manifest hashes and stopped-VM result.
+
+The all-disabled probe temporarily disables the existing custom-agent
+rules and verifies zero enabled rows before injecting the historical
+timeout and when observing its first claim. It enables the fixture rule
+only after observing that claim. The repaired VM completed only the
+later eligible timeout and restored the changed rules. The fixed browser
+backend replayed the historical timeout after enablement. The check
+observes persisted rule state and does not instrument the scheduler's
+in-memory rule snapshot. An earlier VM attempt panicked during guest boot.
+The final run passed its isolation and cooperative-stop audits.

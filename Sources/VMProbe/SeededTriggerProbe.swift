@@ -44,23 +44,35 @@ import Foundation
         fixture: CloudEgressVMFixture, repairedTimeouts: Bool = false
     ) async throws {
         let service = AgentCatalogService(client: client)
-        guard let agent = try await service.list().first(where: { $0.key == "reporter" && !$0.builtin }) else {
+        let agents = try await service.list()
+        guard let agent = agents.first(where: { $0.key == "reporter" && !$0.builtin }) else {
             throw RuntimeError.integrity("seeded trigger fixture owner")
         }
         let baseline = try await service.triggers(for: agent)
         let ids = Set(baseline.map(\.id))
         let conversationIDs = Set(try await chat.conversations().map(\.id))
-        let defaults = baseline.filter { $0.rule.enabled && kind.matches($0.rule) }
-        for row in defaults {
-            _ = try await service.setTriggerEnabled(for: agent, id: row.id, enabled: false)
+        var defaults = baseline.filter { $0.rule.enabled && (repairedTimeouts || kind.matches($0.rule)) }
+            .map { (owner: agent, trigger: $0) }
+        if repairedTimeouts {
+            for owner in agents where !owner.builtin && owner.key != agent.key {
+                let enabled = try await service.triggers(for: owner).filter { $0.rule.enabled }
+                defaults.append(contentsOf: enabled.map { (owner: owner, trigger: $0) })
+            }
         }
-        // Keep one enabled unrelated rule so the pinned scheduler advances event state.
-        var sentinel = AgentTriggerRule()
-        sentinel.onToolCall = true
-        sentinel.toolNames = ["nonexistent_fixture_tool"]
-        let armed = try await service.createTrigger(for: agent, rule: sentinel)
-        guard let sentinelRow = armed.first(where: { !ids.contains($0.id) }) else {
-            throw RuntimeError.integrity("seeded trigger sentinel")
+        for (owner, trigger) in defaults {
+            _ = try await service.setTriggerEnabled(for: owner, id: trigger.id, enabled: false)
+        }
+        var sentinelID: Int64?
+        if !repairedTimeouts {
+            // Keep one enabled unrelated rule so the pinned scheduler advances event state.
+            var sentinel = AgentTriggerRule()
+            sentinel.onToolCall = true
+            sentinel.toolNames = ["nonexistent_fixture_tool"]
+            let armed = try await service.createTrigger(for: agent, rule: sentinel)
+            guard let row = armed.first(where: { !ids.contains($0.id) }) else {
+                throw RuntimeError.integrity("seeded trigger sentinel")
+            }
+            sentinelID = row.id
         }
 
         var rule = AgentTriggerRule()
@@ -75,11 +87,19 @@ import Foundation
             rule.toolNames = ["fixture_selected_tool"]
         }
         let rows = try await service.createTrigger(for: agent, rule: rule)
-        guard let row = rows.first(where: { !ids.contains($0.id) && $0.id != sentinelRow.id }) else {
+        guard let row = rows.first(where: { !ids.contains($0.id) && $0.id != sentinelID }) else {
             throw RuntimeError.integrity("seeded trigger fixture rule")
         }
-        let historicalTaskID = try await seed(.historical, kind: kind, client: client)
-        try await Task.sleep(for: .seconds(6))
+        let historicalTaskID = try await seed(.historical, kind: kind, client: client, requireNoEnabledRules: repairedTimeouts)
+        if repairedTimeouts {
+            try await waitForDisabledTimeoutClaim(taskID: historicalTaskID, client: client)
+            guard try await chat.conversations().allSatisfy({ conversationIDs.contains($0.id) }),
+                  kind.replyCount(fixture) == 0 else {
+                throw RuntimeError.integrity("timeout fired with all rules disabled")
+            }
+        } else {
+            try await Task.sleep(for: .seconds(6))
+        }
         _ = try await service.setTriggerEnabled(for: agent, id: row.id, enabled: true)
         if kind == .tool {
             _ = try await seed(.unmatched, kind: kind, client: client)
@@ -131,9 +151,12 @@ import Foundation
             }
         }
         _ = try await service.removeTrigger(for: agent, id: row.id)
-        _ = try await service.removeTrigger(for: agent, id: sentinelRow.id)
-        for previous in defaults {
-            _ = try await service.setTriggerEnabled(for: agent, id: previous.id, enabled: true)
+        if let sentinelID { _ = try await service.removeTrigger(for: agent, id: sentinelID) }
+        for (owner, previous) in defaults {
+            let rows = try await service.setTriggerEnabled(for: owner, id: previous.id, enabled: true)
+            guard rows.contains(where: { $0.id == previous.id && $0.rule == previous.rule }) else {
+                throw RuntimeError.integrity("seeded trigger default restoration")
+            }
         }
         let restored = try await service.triggers(for: agent)
         guard Set(restored.map(\.id)) == ids,
@@ -142,7 +165,25 @@ import Foundation
         }
     }
 
-    private static func seed(_ event: Event, kind: Kind, client: AuthenticatedBackendClient) async throws -> Int64 {
+    private static func waitForDisabledTimeoutClaim(taskID: Int64, client: AuthenticatedBackendClient) async throws {
+        for _ in 0..<40 {
+            let state = try await scalar("""
+            SELECT CASE
+              WHEN EXISTS (SELECT 1 FROM agent_triggers WHERE enabled) THEN 3
+              WHEN EXISTS (SELECT 1 FROM scheduler_consumed_task_timeouts WHERE task_id = \(taskID)) THEN 2
+              ELSE 1
+            END;
+            """, client: client)
+            guard state != 3 else { throw RuntimeError.integrity("timeout fixture has an enabled rule") }
+            if state == 2 { return }
+            try await Task.sleep(for: .milliseconds(250))
+        }
+        throw RuntimeError.timeout("timeout claim with all rules disabled")
+    }
+
+    private static func seed(
+        _ event: Event, kind: Kind, client: AuthenticatedBackendClient, requireNoEnabledRules: Bool = false
+    ) async throws -> Int64 {
         let summary = event == .historical ? "Historical synthetic \(kind.rawValue)" : kind.summary
         let description: String
         switch (kind, event) {
@@ -186,10 +227,19 @@ import Foundation
                 FROM tasks WHERE description = '\(description)' AND deleted_at IS NULL;
                 """
         }
+        let ruleGuard = requireNoEnabledRules ? """
+          OR EXISTS (SELECT 1 FROM agent_triggers WHERE enabled)
+          OR EXISTS (
+              SELECT 1 FROM scheduler_consumed_task_timeouts AS consumed
+              JOIN tasks ON tasks.id = consumed.task_id
+              WHERE tasks.description = '\(description)' AND tasks.deleted_at IS NULL
+          )
+        """ : ""
         return try await scalar("""
         DO $$ BEGIN
           IF (SELECT count(*) FROM tasks WHERE description = '\(description)' AND deleted_at IS NULL) <> 1
           OR EXISTS (SELECT 1 FROM exploration_nodes WHERE kind = '\(kind.rawValue)' AND payload->>'summary' = '\(summary)')
+          \(ruleGuard)
           THEN RAISE EXCEPTION 'unexpected seeded event fixture state'; END IF;
         END $$;
         \(write)

@@ -1,4 +1,60 @@
 {
+  "allDisabledVM": {
+    "changedRulesRestored": true,
+    "earlierGuestBootKernelPanic": true,
+    "historicalTimeoutReplayedAfterEnabling": false,
+    "laterEligibleTimeoutCompletedConversations": 1,
+    "pinnedBrowserAPI": {
+      "allRulesDisabledAtSeed": true,
+      "fixtureRemoved": true,
+      "historicalTimeoutReplayedAfterEnabling": true,
+      "pinnedReference": "e75ae371ad777ffd1eecdd28d2781a6519b05591",
+      "reporterConversations": 1
+    },
+    "report": {
+      "fixture": {
+        "cancelled": 1,
+        "completed": [
+          "openai.chat",
+          "anthropic.messages",
+          "gemini.chat",
+          "groq.chat",
+          "openai.chat",
+          "openai.chat",
+          "openai.chat",
+          "openai.chat",
+          "openai.chat",
+          "openai.chat",
+          "openai.chat"
+        ],
+        "denied": 0,
+        "findingReplies": 1,
+        "goalReplies": 1,
+        "held": 1,
+        "models": [
+          "openai.models",
+          "anthropic.models",
+          "gemini.models",
+          "groq.models"
+        ],
+        "openAIOutputLanguages": [
+          "en",
+          "ja"
+        ],
+        "scheduledReplies": 1,
+        "taskCreationReplies": 1,
+        "timeoutReplies": 1,
+        "toolReplies": 1
+      },
+      "machineStopped": true,
+      "manifestSHA256": "e12d2dc978ede2c403295a0032e6aa96f115c82a2473aa495908717230704db0",
+      "passed": true,
+      "stage": "complete"
+    },
+    "reportSHA256": "afbcd6961e1e901a5502e389aea4f3ee3c56a520cceac1965bfdbccf7cbbf892",
+    "schedulerInMemoryRuleSnapshotObserved": false,
+    "zeroPersistedEnabledRulesAtSeedAndClaimObservation": true
+  },
   "backendSHA256": "816cd4929b408abe2a9fad0629446faafa5ca2dbaa5b0c5b327abb4e630cade6",
   "candidateVM": {
     "fixture": {
@@ -66,7 +122,7 @@
     "repeatClaimEmpty": true
   },
   "scope": {
-    "allRulesDisabledVerifiedInVM": false,
+    "allRulesDisabledVerifiedInVM": true,
     "candidateOlderLateTimeoutCompletedConversations": 1,
     "elapsedDeadlineVerified": false,
     "guestUpgradeBootVerified": true,
