@@ -1,3 +1,4 @@
+from io import BytesIO
 from pathlib import Path
 import sys
 import tempfile
@@ -10,6 +11,25 @@ import check_blank_disk
 
 
 class BlankDiskTests(unittest.TestCase):
+    def test_short_reads_reuse_the_buffer_and_detect_later_data(self):
+        class ShortReadStream(BytesIO):
+            def readinto(self, buffer):
+                self.buffers.append(buffer)
+                return super().readinto(memoryview(buffer)[:3])
+
+        stream = ShortReadStream(b'\0' * 7 + b'x')
+        stream.buffers = []
+        with patch.object(Path, 'open', return_value=stream):
+            self.assertFalse(check_blank_disk.is_blank(Path('/fixture')))
+        self.assertEqual(len(stream.buffers), 3)
+        self.assertTrue(all(buffer is stream.buffers[0] for buffer in stream.buffers))
+
+    def test_indeterminate_read_is_an_execution_failure(self):
+        with patch.object(Path, 'stat', return_value=SimpleNamespace(st_mode=stat.S_IFBLK)):
+            with patch.object(Path, 'open') as open_disk:
+                open_disk.return_value.__enter__.return_value.readinto.return_value = None
+                self.assertEqual(check_blank_disk.check_status(Path('/fixture')), 3)
+
     def test_full_disk_is_checked_without_modification(self):
         with tempfile.TemporaryDirectory() as directory:
             disk = Path(directory) / 'disk'

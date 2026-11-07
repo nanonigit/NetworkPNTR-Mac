@@ -99,3 +99,25 @@ the cause of the invalid kernel memory access remains unresolved.
 A controlled follow-up can vary only the checker implementation,
 retaining full-device reads and fail-closed formatting decisions.
 [Cloud8 boot evidence](../../evidence/native-runtime/cloud8-boot-control.json)
+
+## Reusable blank-check buffer experiment
+
+The alternative checker uses a single 1 MiB buffer and counts zero
+bytes only in the range returned by each read. It scans through short
+reads until EOF, rejects any nonzero data and treats an indeterminate
+read as an execution failure. The block-device check and the init
+format gate retain the same contract. Unit fixtures cover short reads
+with nonzero data near the end and an indeterminate read.
+
+The experiment rebuilt the cloud8 system disk from its pinned runtime
+image with the checker as the only root filesystem file replaced. The
+kernel, backend executable, init and package inventory matched the
+control. The fixed sequence was control, reusable buffer, reusable
+buffer, control. All four independent fresh-disk boots passed the
+read-only auth, isolation and cooperative-stop preflight. Host
+wall-clock times were 16, 11, 10 and 16 seconds. A separate local
+regular-file sample traced about 2 MiB versus 1 MiB of peak Python
+allocation. Those measurements do not establish guest kernel
+allocation behavior, the cause of the panic, or release reliability.
+The packaged preview still uses its previous guest.
+[Experiment receipt](../../evidence/native-runtime/cloud8-blank-buffer.json)

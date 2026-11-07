@@ -5,11 +5,16 @@ import stat
 
 
 def is_blank(path):
+    buffer = bytearray(1024 * 1024)
     with path.open('rb', buffering=0) as disk:
-        while chunk := disk.read(1024 * 1024):
-            if chunk.strip(b'\0'):
+        while True:
+            count = disk.readinto(buffer)
+            if count is None:
+                raise OSError('Disk read did not complete')
+            if count == 0:
+                return True
+            if buffer.count(b'\0', 0, count) != count:
                 return False
-    return True
 
 
 def check_status(path):

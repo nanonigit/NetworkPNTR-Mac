@@ -1,0 +1,103 @@
+{
+  "attempts": [
+    {
+      "exitCode": 0,
+      "hostSeconds": 16,
+      "profile": "control-1",
+      "report": {
+        "bootAttempts": 1,
+        "cooperativeStop": true,
+        "credentialLogCheckPassed": true,
+        "diagnostics": [],
+        "formatStageObserved": true,
+        "freshAuth": true,
+        "isolationVerified": true,
+        "logAuditComplete": true,
+        "machineStopped": true,
+        "passed": true,
+        "protectedStatus": 401,
+        "reachedReady": true
+      }
+    },
+    {
+      "exitCode": 0,
+      "hostSeconds": 11,
+      "profile": "buffer-1",
+      "report": {
+        "bootAttempts": 1,
+        "cooperativeStop": true,
+        "credentialLogCheckPassed": true,
+        "diagnostics": [],
+        "formatStageObserved": true,
+        "freshAuth": true,
+        "isolationVerified": true,
+        "logAuditComplete": true,
+        "machineStopped": true,
+        "passed": true,
+        "protectedStatus": 401,
+        "reachedReady": true
+      }
+    },
+    {
+      "exitCode": 0,
+      "hostSeconds": 10,
+      "profile": "buffer-2",
+      "report": {
+        "bootAttempts": 1,
+        "cooperativeStop": true,
+        "credentialLogCheckPassed": true,
+        "diagnostics": [],
+        "formatStageObserved": true,
+        "freshAuth": true,
+        "isolationVerified": true,
+        "logAuditComplete": true,
+        "machineStopped": true,
+        "passed": true,
+        "protectedStatus": 401,
+        "reachedReady": true
+      }
+    },
+    {
+      "exitCode": 0,
+      "hostSeconds": 16,
+      "profile": "control-2",
+      "report": {
+        "bootAttempts": 1,
+        "cooperativeStop": true,
+        "credentialLogCheckPassed": true,
+        "diagnostics": [],
+        "formatStageObserved": true,
+        "freshAuth": true,
+        "isolationVerified": true,
+        "logAuditComplete": true,
+        "machineStopped": true,
+        "passed": true,
+        "protectedStatus": 401,
+        "reachedReady": true
+      }
+    }
+  ],
+  "bufferCheckerSHA256": "578e4c158512262b62a43889c76f6141c588b60ba45bb6c809f8117671a3d964",
+  "bufferManifestSHA256": "7ab7cb7f5620f8470e73a1e7a9a6ee634e09905382b9564bff997cd3504e52c0",
+  "checks": {
+    "backendInitAndPackageBytesMatched": true,
+    "firstFullPythonRunTimeout": "CaptureRuntimeTests.test_incomplete_headers_cannot_block_server_shutdown",
+    "focusedPythonPassed": 5,
+    "fullPythonRetestPassed": 197,
+    "isolatedCaptureRuntimeRetestPassed": true,
+    "previewPromoted": false,
+    "releaseReliabilityEstablished": false
+  },
+  "controlCheckerSHA256": "cc1776fae8120feca24d11dbf0ad94143715572f1d5e398898ca6607aa993b1d",
+  "controlManifestSHA256": "e12d2dc978ede2c403295a0032e6aa96f115c82a2473aa495908717230704db0",
+  "hostRegularFileTrace": {
+    "control": {
+      "peakPythonTracedBytes": 2097354
+    },
+    "reusableBuffer": {
+      "peakPythonTracedBytes": 1049021
+    }
+  },
+  "kernelSHA256": "8e57308787c420cb42e4c4ea80e6def6438a52232692c010dc4609bb9bf21879",
+  "overlayRecipeSHA256": "325a95e88fc9ca2ad4fe1c28ec30a1050fda88fca0e3d2dac6785eafd2027311"
+}
