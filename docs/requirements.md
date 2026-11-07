@@ -173,3 +173,10 @@ Support OpenAI, Anthropic, Gemini and Groq with model discovery, streaming and g
 
 
 Standalone Traffic must migrate the complete pinned workflow, including full filters/sort/host and flow selections, raw detail/blob original downloads, distinct deletion scopes/compaction/evidence preservation and settings linkage. TR1 finite contracts alone do not accept this screen. See traffic-workflow-design.md; all original goals remain.
+
+Tool-run history must show the same recorded tools as the pinned browser
+page, including non-shell tools, missing results and execution errors.
+Require exploration ID and keyword filtering, pagination, literal
+input/output inspection and unpaginated per-tool counts under the same
+filters. Compare equivalent synthetic data through the actual native
+and browser screens before acceptance.

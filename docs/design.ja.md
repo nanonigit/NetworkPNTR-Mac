@@ -117,3 +117,10 @@ Dirsearch、Fscan、Masscan、SoftEther VPNをネイティブ操作から利用�
 ## クラウド接続先の追加
 
 OpenAI・Anthropic・Gemini・Groqでモデル取得、ストリーミング、ゲスト内ツール呼出しを扱う。既存カスタムURLと通信形式を維持。4社すべてをMacアプリから隔離Linux VM経由で利用できることを受入条件とする。GeminiとGroqは設定プリセットと模擬APIの試験まで進んでいる。実API接続と画面操作の受入試験は残っている。[4社対応の計画](cloud-providers-design.ja.md)を参照。
+
+ツール実行履歴は認証済みのGET /api/commandsとGET /api/commands/statsを使用する。
+一覧は0始まりのページ番号を使う。両リクエストで正規化したキーワードと探索IDを共有する。
+パラメーター名は `task` だが、照合対象は `exploration_id`。集計にはページ番号と
+ページ件数を送らない。記録済み入出力は原文テキストとして扱い、遅延した応答が
+新しい絞り込み結果を上書きしないようにする。画面設計はLazywebと固定版実画面の
+調査を経て別に行う。

@@ -689,3 +689,11 @@ Use the current detail's numeric agent identity and the resource catalog's IDs. 
 ### P4 Keep seeded skill removals across guest restarts
 
 Seed default skill memberships once per database. Commit the marker and initial memberships in one transaction. For databases already initialized by the pinned backend, recognize its completed intercept seed marker and adopt the existing memberships during migration. Validate fresh setup, same-database restart after removal, and migration from the fixed browser backend.
+
+Tool-run history implementation order: verify the authenticated wire
+contract and filter ownership, then compare a populated disposable guest
+and pinned browser fixture. Cover multiple pages, non-shell and failed
+runs, missing results, non-ASCII input and empty/error states. Verify
+that changing the page does not change the aggregate. Then validate
+native list, detail and summary with actual keyboard and visible
+browser comparisons. Keep the catalog item pending until code lands.

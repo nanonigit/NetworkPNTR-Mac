@@ -74,9 +74,9 @@
       "nativeStatus": "pending",
       "phase": 4,
       "acceptance": [
-        "Compare equivalent fixture data and visible controls",
+        "Compare paginated tool runs, exploration and keyword filtering, and unpaginated tool totals",
         "Compare success, empty, validation and server-error states",
-        "Verify mutations, persistence, cancellation and keyboard access"
+        "Verify literal input/output inspection, cancellation and keyboard access"
       ]
     },
     {
@@ -180,10 +180,15 @@
         "docs/agent-execution-permissions-verification.md",
         "docs/agent-visibility-verification.md",
         "docs/bugs/agent-skill-restart-investigation.md",
-        "evidence/agents/seeded-skill-restart.json"
+        "evidence/agents/seeded-skill-restart.json",
+        "docs/agent-tool-binding-design.md",
+        "docs/agent-trigger-design.md",
+        "evidence/agents/trigger-scheduler-timeout-repair.json",
+        "evidence/agents/trigger-timeout-ui-comparison.json"
       ],
       "remainingGates": [
-        "Markdown preview presentation, built-in tool bindings and triggers",
+        "Markdown preview and full tool-binding UI acceptance",
+        "Trigger editor edit-save, delete, English, keyboard, VoiceOver and visual comparison",
         "Creation, deletion, persistence of other settings, and error recovery",
         "Paired native/browser catalog and editor UI acceptance"
       ]

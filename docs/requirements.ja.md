@@ -143,3 +143,8 @@ OpenAI・Anthropic・Gemini・Groqでモデル取得、ストリーミング、�
 
 
 独立Trafficは固定workflow全体（全検索／sort／host・flow選択／raw詳細／blob原本／区別した削除scope・圧縮・証跡保持／settings連携）を移す。TR1 finite契約だけでは画面を受入しない。traffic-workflow-design.ja.md参照。従来の全目標を維持。
+
+ツール実行履歴は固定ブラウザ版と同じ記録を表示する。シェル以外のツール、結果未記録、
+エラーを含む。探索ID・キーワードによる絞り込み、ページ送り、入出力の原文表示、
+同じ条件で全ページを対象にしたツール別集計を確認する。合成データを揃え、
+Mac版とブラウザ版の実画面で比較する。

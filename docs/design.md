@@ -146,3 +146,12 @@ User-requested goal: integrate Dirsearch, Fscan, Masscan and SoftEther VPN throu
 ## Cloud provider extension
 
 Support OpenAI, Anthropic, Gemini and Groq with model discovery, streaming and guest-only local tool calls. Preserve existing custom endpoints and protocol variants. Acceptance requires all four providers to work from the Mac app through the isolated Linux VM. Gemini and Groq have profile presets and fixture coverage. Live API and UI acceptance are pending. See [the four-provider plan](cloud-providers-design.md).
+
+Tool-run history uses authenticated GET /api/commands and
+GET /api/commands/stats. The list uses zero-based pagination. Both
+requests share the normalized keyword and exploration ID. The wire
+parameter is named `task`, but the backend matches `exploration_id`.
+The list's page and size are absent from the summary request. Treat
+recorded input and output as text. Bind list and summary results to
+their filter generations so late responses cannot replace newer
+selection. UI design remains a separate Lazyweb and pinned-screen step.
