@@ -60,6 +60,54 @@ import Foundation
         throw RuntimeError.timeout("cloud vsock reply")
     }
 
+    private static func verifyIntervalTrigger(
+        client: AuthenticatedBackendClient, chat: ChatService, fixture: CloudEgressVMFixture
+    ) async throws {
+        let service = AgentCatalogService(client: client)
+        guard let agent = try await service.list().first(where: { $0.key == "reporter" && !$0.builtin }) else {
+            throw RuntimeError.integrity("interval fixture owner")
+        }
+        let oldIDs = Set(try await service.triggers(for: agent).map(\.id))
+        let conversationIDs = Set(try await chat.conversations().map(\.id))
+        var rule = AgentTriggerRule()
+        rule.enabled = false
+        rule.intervalSec = 3600
+        rule.intervalMessage = CloudEgressVMFixture.scheduledPrompt
+        let rows = try await service.createTrigger(for: agent, rule: rule)
+        guard let row = rows.first(where: { !oldIDs.contains($0.id) }), row.lastFire == nil else {
+            throw RuntimeError.integrity("interval fixture creation")
+        }
+        // The frozen scheduler ticks every five seconds.
+        try await Task.sleep(for: .seconds(6))
+        let before = try await service.triggers(for: agent)
+        guard before.contains(where: { $0.id == row.id && !$0.rule.enabled && $0.lastFire == nil }),
+              fixture.snapshot.scheduledReplies == 0,
+              try await chat.conversations().allSatisfy({ conversationIDs.contains($0.id) }) else {
+            throw RuntimeError.integrity("disabled interval fired")
+        }
+        _ = try await service.setTriggerEnabled(for: agent, id: row.id, enabled: true)
+        var scheduled: ChatConversation?
+        for _ in 0..<150 {
+            let new = try await chat.conversations().filter { !conversationIDs.contains($0.id) }
+            guard new.count <= 1, new.allSatisfy({ $0.agentKey == agent.key }) else {
+                throw RuntimeError.integrity("interval conversation scope")
+            }
+            if let first = new.first { scheduled = first; break }
+            try await Task.sleep(for: .milliseconds(100))
+        }
+        guard let scheduled else { throw RuntimeError.timeout("interval conversation") }
+        try await waitForReply(chat, id: scheduled.id, reply: CloudEgressVMFixture.reply(.openAI))
+        let fired = try await service.triggers(for: agent)
+        guard fired.contains(where: { $0.id == row.id && $0.lastFire != nil }),
+              fixture.snapshot.scheduledReplies == 1 else {
+            throw RuntimeError.integrity("interval model execution")
+        }
+        let cleaned = try await service.removeTrigger(for: agent, id: row.id)
+        guard Set(cleaned.map(\.id)) == oldIDs else {
+            throw RuntimeError.integrity("interval fixture cleanup")
+        }
+    }
+
     private static func exercise(artifacts: URL, output: URL) async {
         let controller = VMController()
         let fixture = CloudEgressVMFixture()
@@ -116,6 +164,7 @@ import Foundation
             stage = "english-output"
             await language.update(.english, session: session)?.value
             var openAIConversation: Int64?
+            var openAIProfile: Int64?
             for provider in providers {
                 stage = "models-\(provider.rawValue)"
                 var draft = LLMProfileDraft(provider: provider)
@@ -134,7 +183,10 @@ import Foundation
                 let id = try await chat.create(agentKey: "mainagent", title: draft.name, profileID: profile).id
                 try await chat.send(id: id, message: CloudEgressVMFixture.prompt)
                 try await waitForReply(chat, id: id, reply: CloudEgressVMFixture.reply(provider))
-                if provider == .openAI { openAIConversation = id }
+                if provider == .openAI {
+                    openAIConversation = id
+                    openAIProfile = profile
+                }
             }
 
             stage = "japanese-output"
@@ -146,6 +198,11 @@ import Foundation
                 throw RuntimeError.integrity("cloud vsock output-language transition")
             }
 
+            stage = "interval-trigger"
+            guard let openAIProfile else { throw RuntimeError.integrity("interval fixture profile") }
+            try await llm.activate(id: String(openAIProfile))
+            try await verifyIntervalTrigger(client: client, chat: chat, fixture: fixture)
+
             stage = "held-stream"
             try await chat.send(id: openAIConversation, message: CloudEgressVMFixture.heldPrompt)
             for _ in 0..<200 {
@@ -155,7 +212,7 @@ import Foundation
             let held = fixture.snapshot
             guard held.held == 1, held.cancelled == 0, held.denied == 0,
                   held.models == providers.map({ "\($0.rawValue).models" }),
-                  held.completed == providers.map({ $0 == .anthropic ? "anthropic.messages" : "\($0.rawValue).chat" }) + ["openai.chat"] else {
+                  held.completed == providers.map({ $0 == .anthropic ? "anthropic.messages" : "\($0.rawValue).chat" }) + ["openai.chat", "openai.chat"] else {
                 throw RuntimeError.integrity("cloud vsock route sequence")
             }
 
@@ -175,7 +232,7 @@ import Foundation
             }
             stage = "complete"
             try writeReport(true)
-            print("PASS cloud_vsock models=\(providers.count) chats=\(providers.count + 1) output=en,ja cancelled=1 nic=0 shares=0")
+            print("PASS cloud_vsock models=\(providers.count) chats=\(providers.count + 2) interval=1 output=en,ja cancelled=1 nic=0 shares=0")
         } catch {
             if controller.hasMachine { try? await controller.forceStop() }
             if created { try? writeReport(false) }

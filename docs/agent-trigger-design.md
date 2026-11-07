@@ -47,3 +47,14 @@ Interactive native and browser comparison remain open. An interval firing
 test should use a synthetic provider to check the generated conversation
 and last-fire timestamp. The frozen scheduler includes Chinese in its
 generated interval title and message context.
+
+The signed local Release preview now includes the Trigger tab and its English
+and Japanese resources. The interval acceptance probe exercised a single
+Reporter rule on both the signed managed VM and the disposable pinned
+browser backend. The disabled rule remained idle across a scheduler tick.
+After enablement, one new Reporter conversation completed with a synthetic
+provider, and the rule acquired a last-fire timestamp. The fixture was
+removed. The VM retained zero NICs and host shares and stopped cleanly.
+The remaining five event kinds and the interactive UI comparison still
+require end-to-end tests.
+[Interval verification receipt](../evidence/agents/trigger-scheduler-interval.json)

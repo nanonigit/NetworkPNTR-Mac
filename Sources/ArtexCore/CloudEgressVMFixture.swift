@@ -7,6 +7,7 @@ package final class CloudEgressVMFixture: Sendable {
         package fileprivate(set) var models: [String] = []
         package fileprivate(set) var completed: [String] = []
         package fileprivate(set) var openAIOutputLanguages: [String] = []
+        package fileprivate(set) var scheduledReplies = 0
         package fileprivate(set) var held = 0
         package fileprivate(set) var cancelled = 0
         package fileprivate(set) var denied = 0
@@ -15,6 +16,7 @@ package final class CloudEgressVMFixture: Sendable {
 
     package static let key = "synthetic-cloud-vsock-key"
     package static let prompt = "Respond to the cloud vsock fixture"
+    package static let scheduledPrompt = "Synthetic interval trigger fixture"
     package static let heldPrompt = "Hold this cloud vsock fixture response"
 
     private let state = Mutex(Snapshot())
@@ -69,9 +71,12 @@ package final class CloudEgressVMFixture: Sendable {
         let texts = (content as? String).map { [$0] }
             ?? blocks.filter { $0["type"] as? String == "text" }.compactMap { $0["text"] as? String }
         let held = provider == .openAI && texts.contains(Self.heldPrompt)
-        guard held || texts.contains(Self.prompt) else { throw reject("prompt") }
+        let scheduled = provider == .openAI && texts.contains {
+            $0.hasPrefix(Self.scheduledPrompt + "\n\n【本次为定时触发】")
+        }
+        guard held || scheduled || texts.contains(Self.prompt) else { throw reject("prompt") }
 
-        if provider == .openAI, !held {
+        if provider == .openAI, !held, !scheduled {
             let system = messages.filter { $0["role"] as? String == "system" }
                 .compactMap { $0["content"] as? String }
                 .joined(separator: "\n")
@@ -104,7 +109,10 @@ package final class CloudEgressVMFixture: Sendable {
             try Self.chunk("data: [DONE]\n\n", consume: consume)
             try consume(Data("0\r\n\r\n".utf8))
         }
-        state.withLock { $0.completed.append(request.route.rawValue) }
+        state.withLock {
+            $0.completed.append(request.route.rawValue)
+            if scheduled { $0.scheduledReplies += 1 }
+        }
     }
 
     private func reject(_ reason: String) -> CloudEgressError {
