@@ -685,3 +685,7 @@ Use the existing changed-field patch and authenticated readback. Preserve existi
 Display the guest MCP servers and skills in the agent editor. Read the selected agent's current assignments. Save each checkbox through the frozen guest's resource-specific endpoint, so changing one assignment preserves concurrent changes to other assignments. Read back the saved membership and refresh the card counts.
 
 Use the current detail's numeric agent identity and the resource catalog's IDs. Keep failed or uncertain requests separate from an empty catalog and require a fresh read before retrying an unverified change. The frozen editor and Lazyweb permissions references inform the two checkbox lists. Test the payloads, readback, and failed writes, then compare with disposable native and browser fixtures.
+
+### P4 Keep seeded skill removals across guest restarts
+
+Seed default skill memberships once per database. Commit the marker and initial memberships in one transaction. For databases already initialized by the pinned backend, recognize its completed intercept seed marker and adopt the existing memberships during migration. Validate fresh setup, same-database restart after removal, and migration from the fixed browser backend.

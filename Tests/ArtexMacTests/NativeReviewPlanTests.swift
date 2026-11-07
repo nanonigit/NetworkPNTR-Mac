@@ -23,7 +23,12 @@ final class NativeReviewPlanTests: XCTestCase {
         XCTAssertFalse(try NativeReviewPlan(arguments: ["--native-review"]).noLLM)
         XCTAssertTrue(try NativeReviewPlan(arguments: ["--native-review", "--no-llm-review"]).noLLM)
         XCTAssertThrowsError(try NativeReviewPlan(arguments: ["--no-llm-review"]))
+        let skillFlag = "--skill-visibility-diagnostics"
+        XCTAssertTrue(try NativeReviewPlan(arguments: [skillFlag]).skillVisibility)
+        XCTAssertTrue(try NativeReviewPlan(arguments: [skillFlag]).noLLM)
+        XCTAssertThrowsError(try NativeReviewPlan(arguments: ["--native-review", skillFlag]))
         for flag in NativeReviewPlan.seedingFlags {
+            XCTAssertThrowsError(try NativeReviewPlan(arguments: [flag, skillFlag]))
             XCTAssertThrowsError(try NativeReviewPlan(arguments: ["--native-review", "--no-llm-review", flag]))
             XCTAssertFalse(try NativeReviewPlan(arguments: [flag]).noLLM)
         }

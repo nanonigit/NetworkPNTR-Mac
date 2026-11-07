@@ -32,3 +32,53 @@
  }
  
  // BlobRange reads at most length bytes of a blob from offset, and reports the
+--- a/db/db.go
++++ b/db/db.go
+@@ -326,21 +326,39 @@
+ 	"api-recon": {"auto", "pentest", "worker"},
+ }
+ 
+-// seedBuiltinSkillVisibility binds the shipped built-in skills to their default
+-// agents. Insert-if-absent (ON CONFLICT DO NOTHING) so a user's later toggle-off is
+-// never resurrected on restart — matches the browser-MCP / intercept-rule seed policy.
++// seedBuiltinSkillVisibility initializes default assignments once per database.
+ func (d *DB) seedBuiltinSkillVisibility() error {
+-	for skillName, agentKeys := range builtinSkillVisibility {
+-		for _, key := range agentKeys {
+-			if _, err := d.Exec(`
++	const marker = "builtin_skill_visibility_v1"
++	tx, err := d.Begin()
++	if err != nil {
++		return err
++	}
++	defer tx.Rollback()
++	var initialized bool
++	// The pinned backend seeds intercept rules after skill visibility and before
++	// serving requests. Adopt memberships already chosen in those databases.
++	if err := tx.QueryRow(`SELECT EXISTS (
++SELECT 1 FROM settings WHERE key IN ($1, 'intercept_default_rules_v1') AND value = 'done')`, marker).
++		Scan(&initialized); err != nil {
++		return err
++	}
++	if !initialized {
++		for skillName, agentKeys := range builtinSkillVisibility {
++			for _, key := range agentKeys {
++				if _, err := tx.Exec(`
+ INSERT INTO agent_skill_visibility(agent_id, skill_name, enabled)
+ SELECT id, $2, true FROM agents WHERE key=$1
+ ON CONFLICT (agent_id, skill_name) DO NOTHING`, key, skillName); err != nil {
+-				return fmt.Errorf("skill %s → agent %s: %w", skillName, key, err)
++					return fmt.Errorf("skill %s → agent %s: %w", skillName, key, err)
++				}
+ 			}
+ 		}
+ 	}
+-	return nil
++	if _, err := tx.Exec(`INSERT INTO settings(key, value) VALUES ($1, 'done')
++ON CONFLICT (key) DO NOTHING`, marker); err != nil {
++		return err
++	}
++	return tx.Commit()
+ }
+ 
+ // seedDefaultInterceptRules inserts built-in safety intercept rules once on

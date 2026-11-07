@@ -70,7 +70,7 @@ public struct GuestArtifacts: Codable, Sendable {
         return manifest
     }
 
-    package static let cloudEgressManifestSHA256 = "ac33d360a1f24ee89e10fc07ea218079280c5ed8812a1651fdeceeace00909c5"
+    package static let cloudEgressManifestSHA256 = "5bc88b952a14bfe695d091e384e666a2fa24a68a4eb97cea40e77dac18b6b290"
 
     static func requireCloudEgressManifest(_ data: Data) throws {
         guard data.count <= 64 * 1024, ArtifactIntegrity.sha256(data) == cloudEgressManifestSHA256 else {

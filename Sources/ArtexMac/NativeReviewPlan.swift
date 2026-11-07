@@ -9,10 +9,16 @@ struct NativeReviewPlan {
         "--upload-limit-diagnostics", "--upload-cancellation-diagnostics", "--chat-review", "--mention-review"
     ]
     let noLLM: Bool
+    let skillVisibility: Bool
     init(arguments: [String]) throws {
         let flags = Set(arguments)
-        noLLM = flags.contains("--no-llm-review")
-        if noLLM && (!flags.contains("--native-review") || !flags.isDisjoint(with: Self.seedingFlags)) {
+        skillVisibility = flags.contains("--skill-visibility-diagnostics")
+        let explicitNoLLM = flags.contains("--no-llm-review")
+        if skillVisibility && (explicitNoLLM || flags.contains("--native-review") || !flags.isDisjoint(with: Self.seedingFlags)) {
+            throw RuntimeError.integrity("skill visibility requires an independent diagnostic fixture")
+        }
+        noLLM = explicitNoLLM || skillVisibility
+        if explicitNoLLM && (!flags.contains("--native-review") || !flags.isDisjoint(with: Self.seedingFlags)) {
             throw RuntimeError.integrity("no-LLM review requires an independent native review fixture")
         }
     }

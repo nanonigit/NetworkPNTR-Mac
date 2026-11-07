@@ -16,7 +16,7 @@ import Foundation
 
     #if DEBUG
     private static let manifestDigest = GuestArtifacts.cloudEgressManifestSHA256
-    private static let version = "artex-mac-e75ae371-cloud5"
+    private static let version = "artex-mac-e75ae371-cloud6"
     private static let providers = LLMCloudProvider.allCases
 
     private final class Vault: SessionVault {

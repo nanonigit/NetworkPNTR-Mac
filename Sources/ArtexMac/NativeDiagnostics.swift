@@ -67,6 +67,10 @@ import Foundation
                 guard let current = environment.authentication, current.phase == .authenticated else { throw RuntimeError.integrity("dashboard seed authentication") }
                 try await NativeDashboardDiagnostics.seed(session: current, directory: directory)
             }
+            if plan.skillVisibility {
+                try await verifySkillFixture(session: authentication, expectedVisible: true, remove: true)
+                result["native_seeded_skill_removed"] = true
+            }
             try await environment.stop()
             await environment.start()
             guard environment.authentication?.phase == .authenticated else { throw RuntimeError.integrity(environment.authentication?.error ?? environment.error ?? "Keychain session restore") }
@@ -77,6 +81,10 @@ import Foundation
             if CommandLine.arguments.contains("--dashboard-diagnostics"), let restored = environment.authentication {
                 try await NativeDashboardDiagnostics.collect(session: restored, directory: directory)
                 result["native_dashboard_nonempty_endpoints_and_metrics"] = true
+            }
+            if plan.skillVisibility, let restored = environment.authentication {
+                try await verifySkillFixture(session: restored, expectedVisible: false, remove: false)
+                result["native_seeded_skill_removal_survived_restart"] = true
             }
             if llm != nil { result["native_llm_restart_persistence"] = true }
             else { result["native_review_no_llm_after_restart"] = true }
@@ -173,6 +181,32 @@ import Foundation
             NSApp.terminate(nil)
         }
     }
+    private static func verifySkillFixture(session: AuthenticationSession, expectedVisible: Bool, remove: Bool) async throws {
+        struct Health: Decodable { let version: String }
+        let client = AuthenticatedBackendClient(session: session)
+        let health = try await client.send(method: "GET", path: "/api/health", body: nil, bearer: nil)
+        guard health.status == 200,
+              try BackendJSONCoding.decode(Health.self, from: health.body).version == "artex-mac-e75ae371-cloud6" else {
+            throw RuntimeError.integrity("skill visibility candidate version")
+        }
+        let service = AgentCatalogService(client: client)
+        let details = try await service.promptDetails(key: "worker")
+        guard let id = details.backendID else { throw RuntimeError.integrity("skill visibility agent identity") }
+        let editor = AgentVisibilityEditor(key: "worker", service: service)
+        let target = AgentVisibilityTarget.skill("api-recon")
+        await editor.load(.skill)
+        guard editor.canEdit, editor.resources.contains(where: { $0.id == target }),
+              editor.contains(target) == expectedVisible else {
+            throw RuntimeError.integrity("seeded skill visibility")
+        }
+        if remove {
+            await editor.set(target, visible: false, agentID: id)
+            guard editor.canEdit, !editor.contains(target) else {
+                throw RuntimeError.integrity("remove seeded skill visibility")
+            }
+        }
+    }
+
     static func cleanupUserBodyAfterFailure(client: (any BackendJSONTransport)?, ids: [Int64]) async -> Bool {
         guard !ids.isEmpty else { return true }
         guard let client else { return false }

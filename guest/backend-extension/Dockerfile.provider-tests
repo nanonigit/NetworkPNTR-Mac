@@ -30,4 +30,4 @@ RUN --network=none git apply --check /tmp/provider-vsock-transport.patch && git 
 SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 RUN --network=none GOMAXPROCS=2 go test -p 2 -mod=readonly github.com/Autumn-27/norma/llm github.com/Autumn-27/norma/harness -count=1 -json -coverprofile=/tmp/norma.cover | tee /tmp/norma-tests.json
 RUN --network=none GOMAXPROCS=2 go test -p 2 -mod=readonly ./traffic ./agent ./server ./cloudegress -count=1 -json | tee /tmp/cloud-provider-tests.json
-RUN --network=none GOMAXPROCS=2 go build -p 2 -mod=readonly -trimpath -buildvcs=false -ldflags="-s -w -X main.version=artex-mac-e75ae371-cloud5" -o /out/artex ./cmd/artex
+RUN --network=none GOMAXPROCS=2 go build -p 2 -mod=readonly -trimpath -buildvcs=false -ldflags="-s -w -X main.version=artex-mac-e75ae371-cloud6" -o /out/artex ./cmd/artex

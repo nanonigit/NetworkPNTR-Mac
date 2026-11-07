@@ -1,0 +1,55 @@
+{
+  "browserBaseline": "e75ae371ad777ffd1eecdd28d2781a6519b05591",
+  "cloudFixtureVM": {
+    "fixture": {
+      "cancelled": 1,
+      "completed": [
+        "openai.chat",
+        "anthropic.messages",
+        "gemini.chat",
+        "groq.chat"
+      ],
+      "denied": 0,
+      "held": 1,
+      "models": [
+        "openai.models",
+        "anthropic.models",
+        "gemini.models",
+        "groq.models"
+      ]
+    },
+    "guestNetworkAdapters": 0,
+    "guestSharedDirectories": 0,
+    "machineStopped": true,
+    "manifestSHA256": "5bc88b952a14bfe695d091e384e666a2fa24a68a4eb97cea40e77dac18b6b290",
+    "passed": true,
+    "stage": "complete"
+  },
+  "managedBackendSHA256": "524d06d1e60cac72a68f2793ac7186662e02866e064da49ca3617fa599c7f076",
+  "managedFreshRestart": {
+    "mcp_scope_verified": true,
+    "seeded_skill_visible_after_restart": false,
+    "skill": "api-recon",
+    "skill_scope_verified": true
+  },
+  "managedPinnedDatabaseUpgrade": {
+    "mcp_scope_verified": true,
+    "seeded_skill_visible_after_restart": false,
+    "skill": "api-recon",
+    "skill_scope_verified": true
+  },
+  "nativeVM": {
+    "app_owned_backend_stopped": true,
+    "native_seeded_skill_removal_survived_restart": true,
+    "native_seeded_skill_removed": true,
+    "real_keychain_session_restored_after_vm_restart": true,
+    "temporary_keychain_item_removed": true
+  },
+  "patchSHA256": "39485cd500621eab6484c7e829925dbc917e451d6f3e52e87f1bb7e8314e07f5",
+  "pinnedBrowserAfterRestart": {
+    "mcp_scope_verified": true,
+    "seeded_skill_visible_after_restart": true,
+    "skill": "api-recon",
+    "skill_scope_verified": true
+  }
+}

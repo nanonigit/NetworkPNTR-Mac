@@ -1,0 +1,13 @@
+# Seeded skill returns after restart
+
+On the frozen browser backend at `e75ae371ad777ffd1eecdd28d2781a6519b05591`, remove Worker’s `api-recon` membership, read its absence, restart the backend against the same PostgreSQL database, and read the membership again. The assignment returns. This affects an agent’s ability to see a skill that the operator previously removed.
+
+The remove endpoint deletes the assignment row. The startup seeder then tries to insert a default assignment on every boot. Its conflict guard only preserves present rows. The schema has no separate record that default skill membership has already been initialized, so deleted rows are indistinguishable from fresh defaults. Earlier checks read the assignment in the same boot and therefore missed the transition.
+
+The managed guest now marks default skill initialization as done in the same transaction as the seed inserts. The pinned backend seeds intercept rules after skill visibility and before it serves traffic. Its completed intercept marker lets the migration adopt the memberships already stored in that database, including absent ones. The migration cannot infer an earlier removal if the old backend already restored it.
+
+Use the same database for restart regression tests. Exercise both a fresh managed database and an upgrade after removal on the pinned backend. Assert that another agent keeps its default assignment. Retain the pinned checkout and its observed behavior as comparison evidence. Lazyweb is out of scope for this guest database repair.
+
+The managed Linux arm64 backend passed 383 Go test cases with 251 skip events. The PostgreSQL fixtures confirmed that a freshly initialized managed database and a pinned database upgraded after removing the assignment both retained the removal. Auto retained its default assignment in both runs. The signed Mac diagnostics then removed the skill in Apple Virtualization, restarted with the same disk and verified it was still absent. The cloud fixture passed four synthetic model and chat routes and cancellation, with zero network adapters and zero shared folders. The fixture VMs stopped and disposable state was removed. [Verification receipt](../../evidence/agents/seeded-skill-restart.json)
+
+The local signed Cloud Preview now bundles the verified cloud6 guest. Its manifest digest is bound in the native binary, and the release signature passed. The full Swift suite passed 1,084 tests with one existing skip before the manifest pin changed. The final pin and diagnostic selection passed 23 focused Swift tests. All 195 guest artifact tests passed. GitHub Actions was skipped under the quota policy. The pinned browser continues to provide the unpatched reference behavior.
