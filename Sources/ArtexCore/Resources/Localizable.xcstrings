@@ -65,6 +65,38 @@
         }
       }
     },
+    "agent.skill.apiReconDescription": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Use this skill to discover a website’s API endpoints."
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "WebサイトのAPIエンドポイントを調べるスキルです。"
+          }
+        }
+      }
+    },
+    "agent.skill.playwrightDescription": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Automate browser interactions, test web pages and work with Playwright tests."
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ブラウザ操作の自動化、Webページの検証、Playwrightテストに使います。"
+          }
+        }
+      }
+    },
     "agent.visibility.mcp": {
       "extractionState": "manual",
       "localizations": {

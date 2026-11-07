@@ -2,6 +2,26 @@ import XCTest
 @testable import ArtexCore
 
 final class AgentVisibilityEditorTests: XCTestCase {
+    func testKnownSkillDescriptionsResolveBothLocalesAndPreserveAuthoredText() {
+        let apiDefault = "收集网站API接口时调用该skill。"
+        let apiRecon = AgentVisibilityResource(id: .skill("api-recon"), name: "api-recon", detail: apiDefault)
+        let browser = AgentVisibilityResource(id: .skill("playwright-cli"), name: "playwright-cli",
+                                              detail: "Automate browser interactions, test web pages and work with Playwright tests.")
+        XCTAssertEqual(apiRecon.displayDetail(language: .english), "Use this skill to discover a website’s API endpoints.")
+        XCTAssertEqual(apiRecon.displayDetail(language: .japanese), "WebサイトのAPIエンドポイントを調べるスキルです。")
+        XCTAssertEqual(browser.displayDetail(language: .japanese), "ブラウザ操作の自動化、Webページの検証、Playwrightテストに使います。")
+        XCTAssertEqual(browser.displayDetail(language: .english), browser.detail)
+        XCTAssertEqual(apiRecon.detail, apiDefault)
+        for language in AppLanguage.allCases {
+            let edited = AgentVisibilityResource(id: .skill("api-recon"), name: "api-recon", detail: apiDefault + " ")
+            let custom = AgentVisibilityResource(id: .skill("custom"), name: "custom", detail: apiDefault)
+            let mcp = AgentVisibilityResource(id: .mcp(1), name: "api-recon", detail: apiDefault)
+            XCTAssertEqual(edited.displayDetail(language: language), edited.detail)
+            XCTAssertEqual(custom.displayDetail(language: language), custom.detail)
+            XCTAssertEqual(mcp.displayDetail(language: language), mcp.detail)
+        }
+    }
+
     @MainActor func testSkillToggleReadsBackAndWritesOnlyOneAssignment() async throws {
         let api = ChatTestTransport()
         let editor = AgentVisibilityEditor(key: "worker", service: AgentCatalogService(client: api))

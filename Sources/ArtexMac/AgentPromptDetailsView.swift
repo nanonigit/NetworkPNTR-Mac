@@ -241,7 +241,7 @@ import SwiftUI
                     HStack(alignment: .firstTextBaseline) {
                         Text(verbatim: resource.name)
                         Spacer()
-                        if let detail = resource.detail, !detail.isEmpty {
+                        if let detail = resource.displayDetail(language: language), !detail.isEmpty {
                             Text(verbatim: detail).font(.caption).foregroundStyle(.secondary)
                         }
                     }

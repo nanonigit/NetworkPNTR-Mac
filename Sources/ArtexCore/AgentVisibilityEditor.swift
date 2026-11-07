@@ -13,6 +13,23 @@ public struct AgentVisibilityResource: Identifiable, Sendable {
     public let id: AgentVisibilityTarget
     public let name: String
     public let detail: String?
+
+    public func displayDetail(language: AppLanguage) -> String? {
+        guard let detail else { return nil }
+        let original: String
+        let translation: AppStringKey
+        switch id {
+        case .skill("api-recon"):
+            original = "收集网站API接口时调用该skill。"
+            translation = .agentSkillAPIReconDescription
+        case .skill("playwright-cli"):
+            original = "Automate browser interactions, test web pages and work with Playwright tests."
+            translation = .agentSkillPlaywrightDescription
+        default:
+            return detail
+        }
+        return detail.utf8.elementsEqual(original.utf8) ? AppStrings.text(translation, language: language) : detail
+    }
 }
 
 struct AgentVisibilitySnapshot: Decodable {

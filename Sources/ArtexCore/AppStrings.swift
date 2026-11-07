@@ -952,6 +952,8 @@ public enum AppStringKey: String, CaseIterable, Sendable {
     case agentToolBindingEmpty = "agent.toolBinding.empty"
     case agentToolBindingNeedsCapture = "agent.toolBinding.needsCapture"
     case agentToolBindingDisabled = "agent.toolBinding.disabled"
+    case agentSkillAPIReconDescription = "agent.skill.apiReconDescription"
+    case agentSkillPlaywrightDescription = "agent.skill.playwrightDescription"
     case agentVisibilityMCP = "agent.visibility.mcp"
     case agentVisibilityNoMCP = "agent.visibility.noMCP"
     case agentVisibilitySkills = "agent.visibility.skills"

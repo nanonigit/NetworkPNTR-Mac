@@ -174,6 +174,10 @@
 	<string>Picks up a single intent and executes it, writing discovered facts / vulnerabilities back to the knowledge graph before stopping.</string>
 	<key>agent.seed.worker.name</key>
 	<string>Execution</string>
+	<key>agent.skill.apiReconDescription</key>
+	<string>Use this skill to discover a website’s API endpoints.</string>
+	<key>agent.skill.playwrightDescription</key>
+	<string>Automate browser interactions, test web pages and work with Playwright tests.</string>
 	<key>agent.toolBinding.disabled</key>
 	<string>Disabled in the tool catalog</string>
 	<key>agent.toolBinding.empty</key>

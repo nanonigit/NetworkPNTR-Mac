@@ -174,6 +174,10 @@
 	<string>インテントを 1 つ受け取って実行し、発見した事実・脆弱性をナレッジグラフに記録して停止します。</string>
 	<key>agent.seed.worker.name</key>
 	<string>実行</string>
+	<key>agent.skill.apiReconDescription</key>
+	<string>WebサイトのAPIエンドポイントを調べるスキルです。</string>
+	<key>agent.skill.playwrightDescription</key>
+	<string>ブラウザ操作の自動化、Webページの検証、Playwrightテストに使います。</string>
 	<key>agent.toolBinding.disabled</key>
 	<string>ツール一覧で無効</string>
 	<key>agent.toolBinding.empty</key>
