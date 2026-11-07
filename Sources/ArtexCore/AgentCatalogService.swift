@@ -242,3 +242,117 @@ public struct AgentPromptPreview: Decodable, Sendable {
         return try BackendJSONCoding.decode(type, from: response.body)
     }
 }
+
+extension AgentCatalogService {
+    private struct TriggerList: Decodable { let triggers: [AgentTrigger] }
+    private struct TriggerRemoval: Decodable { let deleted: Int64 }
+    private struct TriggerAgentDetail: Decodable {
+        struct Agent: Decodable {
+            let key: String
+            let builtin: Bool
+            let policy: AgentTriggerPolicy
+
+            private enum CodingKeys: String, CodingKey { case key, builtin }
+
+            init(from decoder: any Decoder) throws {
+                let values = try decoder.container(keyedBy: CodingKeys.self)
+                key = try values.decode(String.self, forKey: .key)
+                builtin = try values.decode(Bool.self, forKey: .builtin)
+                policy = try AgentTriggerPolicy(from: decoder)
+            }
+        }
+        let agent: Agent
+    }
+
+    public func triggers(for agent: AgentCatalogEntry) async throws -> [AgentTrigger] {
+        let path = try triggerPath(agent)
+        let rows = try await fetch(TriggerList.self, path: path).triggers
+        guard rows.allSatisfy({ $0.id > 0 && $0.agentKey == agent.key }),
+              Set(rows.map(\.id)).count == rows.count else { throw BackendAPIError.invalidResponse }
+        return rows
+    }
+
+    public func createTrigger(for agent: AgentCatalogEntry, rule: AgentTriggerRule) async throws -> [AgentTrigger] {
+        let path = try triggerPath(agent)
+        let rule = rule.normalizingToolNames()
+        let response = try await triggerRequest(method: "POST", path: path, body: triggerBody(rule))
+        let created = try BackendJSONCoding.decode(AgentTrigger.self, from: response)
+        guard created.id > 0, created.agentKey == agent.key, created.rule == rule else {
+            throw BackendAPIError.invalidResponse
+        }
+        return try await confirmedTriggers(for: agent, id: created.id, rule: rule)
+    }
+
+    public func updateTrigger(for agent: AgentCatalogEntry, id: Int64, rule: AgentTriggerRule) async throws -> [AgentTrigger] {
+        let rule = rule.normalizingToolNames()
+        let body = try triggerBody(rule)
+        try await requireTrigger(for: agent, id: id)
+        try await submitAcknowledged(method: "PATCH", path: "/api/triggers/\(id)", body: body)
+        return try await confirmedTriggers(for: agent, id: id, rule: rule)
+    }
+
+    public func removeTrigger(for agent: AgentCatalogEntry, id: Int64) async throws -> [AgentTrigger] {
+        try await requireTrigger(for: agent, id: id)
+        let response = try await triggerRequest(method: "DELETE", path: "/api/triggers/\(id)")
+        guard try BackendJSONCoding.decode(TriggerRemoval.self, from: response).deleted == id else {
+            throw BackendAPIError.invalidResponse
+        }
+        let rows = try await triggers(for: agent)
+        guard !rows.contains(where: { $0.id == id }) else { throw BackendAPIError.invalidResponse }
+        return rows
+    }
+
+    public func triggerPolicy(for agent: AgentCatalogEntry) async throws -> AgentTriggerPolicy {
+        guard !agent.builtin else { throw BackendAPIError.invalidResponse }
+        let stored = try await fetch(TriggerAgentDetail.self, path: agentPath(agent.key)).agent
+        guard stored.key == agent.key, !stored.builtin, stored.policy.isValid else {
+            throw BackendAPIError.invalidResponse
+        }
+        return stored.policy
+    }
+
+    public func saveTriggerPolicy(for agent: AgentCatalogEntry, policy: AgentTriggerPolicy) async throws -> AgentTriggerPolicy {
+        guard policy.isValid else { throw BackendAPIError.invalidResponse }
+        let before = try await triggerPolicy(for: agent)
+        if before == policy { return before }
+        let body = try BackendJSONCoding.encode(policy)
+        try await submitSettings(key: agent.key, method: "PUT", suffix: "/config", body: body)
+        let stored = try await triggerPolicy(for: agent)
+        guard stored == policy else { throw BackendAPIError.invalidResponse }
+        return stored
+    }
+
+    private func triggerPath(_ agent: AgentCatalogEntry) throws -> String {
+        guard !agent.builtin else { throw BackendAPIError.invalidResponse }
+        return try agentPath(agent.key) + "/triggers"
+    }
+
+    private func triggerBody(_ rule: AgentTriggerRule) throws -> Data {
+        guard rule.isValid else { throw BackendAPIError.invalidResponse }
+        let body = try BackendJSONCoding.encode(rule)
+        guard body.count <= 4 * 1024 * 1024 else { throw BackendAPIError.status(413) }
+        return body
+    }
+
+    private func triggerRequest(method: String, path: String, body: Data? = nil) async throws -> Data {
+        try Task.checkCancellation()
+        let response = try await client.send(method: method, path: path, body: body, bearer: nil)
+        try Task.checkCancellation()
+        guard response.status == 200 else { throw BackendAPIError.status(response.status) }
+        return response.body
+    }
+
+    private func requireTrigger(for agent: AgentCatalogEntry, id: Int64) async throws {
+        guard id > 0, try await triggers(for: agent).contains(where: { $0.id == id }) else {
+            throw BackendAPIError.invalidResponse
+        }
+    }
+
+    private func confirmedTriggers(for agent: AgentCatalogEntry, id: Int64, rule: AgentTriggerRule) async throws -> [AgentTrigger] {
+        let rows = try await triggers(for: agent)
+        guard rows.contains(where: { $0.id == id && $0.rule == rule }) else {
+            throw BackendAPIError.invalidResponse
+        }
+        return rows
+    }
+}
