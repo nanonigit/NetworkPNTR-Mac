@@ -76,3 +76,12 @@ Both the pinned browser backend and the dedicated VM matched this
 behavior. The VM restored the original rules and stopped cleanly.
 This covers scheduling and model handoff after a finding is recorded.
 [Finding verification receipt](../evidence/agents/trigger-scheduler-finding.json)
+
+The goal trigger used the same scoped test harness as the finding trigger.
+A synthetic met goal recorded while the rule was disabled did not replay
+after enablement. A second synthetic met goal completed one Reporter
+conversation and matched the owning task ID, in both the pinned backend
+and the dedicated VM. The VM restored the initial rules and shut down
+with no virtual NICs or host shares. This checks dispatch after the goal
+reaches the met state.
+[Goal verification receipt](../evidence/agents/trigger-scheduler-goal.json)
