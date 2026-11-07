@@ -21,6 +21,8 @@ struct RuntimeView: View {
                         VStack(alignment: .leading, spacing: 5) {
                             Text(runtime.guestReady ? s(.runtimeUIReady) : runtime.state == .running ? s(.runtimeUIARTEXStarting) : f(.runtimeUIState, ["state": RuntimeLabels.state(runtime.state, language: language)])).font(.headline)
                             Text(s(.runtimeUIIsolation)).font(.callout).foregroundStyle(.secondary)
+                            Text(s(runtime.cloudEgressActive ? .runtimeUICloudRelayActive : .runtimeUICloudRelayInactive))
+                                .font(.callout).foregroundStyle(.secondary)
                         }
                         Spacer()
                         if runtime.state == .starting || runtime.state == .stopping { ProgressView().controlSize(.small) }

@@ -8291,13 +8291,13 @@
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "No Docker required · No host shares · No network"
+            "value": "No Docker required · No host shares · No virtual NIC"
           }
         },
         "ja": {
           "stringUnit": {
             "state": "translated",
-            "value": "Docker不要 · ホスト共有なし · ネットワークなし"
+            "value": "Docker不要 · ホスト共有なし · 仮想NICなし"
           }
         }
       }
@@ -8419,13 +8419,45 @@
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "Manage authentication from Account. Cloud API networking is currently off. Sidebar features are connected progressively after comparison testing."
+            "value": "Manage authentication from Account."
           }
         },
         "ja": {
           "stringUnit": {
             "state": "translated",
-            "value": "認証はアカウント画面から操作できます。クラウドAPI向け通信は現在オフです。サイドバーの各機能は、比較検証を経て順に接続します。"
+            "value": "認証はアカウント画面から操作できます。"
+          }
+        }
+      }
+    },
+    "runtime.ui.cloudRelayActive": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Cloud API relay active · Supported providers only"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "クラウドAPI中継：稼働中（対応プロバイダーのみ）"
+          }
+        }
+      }
+    },
+    "runtime.ui.cloudRelayInactive": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Cloud API relay inactive"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "クラウドAPI中継：停止中"
           }
         }
       }

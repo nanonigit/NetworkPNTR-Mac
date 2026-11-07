@@ -1280,6 +1280,10 @@
 	<string>拡大／縮小</string>
 	<key>runtime.ui.aRTEXStarting</key>
 	<string>ARTEXを起動しています</string>
+	<key>runtime.ui.cloudRelayActive</key>
+	<string>クラウドAPI中継：稼働中（対応プロバイダーのみ）</string>
+	<key>runtime.ui.cloudRelayInactive</key>
+	<string>クラウドAPI中継：停止中</string>
 	<key>runtime.ui.environment</key>
 	<string>専用実行環境</string>
 	<key>runtime.ui.forceStop</key>
@@ -1287,13 +1291,13 @@
 	<key>runtime.ui.guestLog</key>
 	<string>ゲスト起動ログ</string>
 	<key>runtime.ui.help</key>
-	<string>認証はアカウント画面から操作できます。クラウドAPI向け通信は現在オフです。サイドバーの各機能は、比較検証を経て順に接続します。</string>
+	<string>認証はアカウント画面から操作できます。</string>
 	<key>runtime.ui.integrity</key>
 	<string>起動前にカーネル・初期RAM・OSディスクのSHA-256を照合</string>
 	<key>runtime.ui.integrityError</key>
 	<string>実行環境の検証に失敗しました。実行環境のファイルとゲストログを確認してください。</string>
 	<key>runtime.ui.isolation</key>
-	<string>Docker不要 · ホスト共有なし · ネットワークなし</string>
+	<string>Docker不要 · ホスト共有なし · 仮想NICなし</string>
 	<key>runtime.ui.parityBaseline</key>
 	<string>基準：{commit} · {features}主要機能 / {routes}画面 / {endpoints} APIハンドラー</string>
 	<key>runtime.ui.parityBrowser</key>

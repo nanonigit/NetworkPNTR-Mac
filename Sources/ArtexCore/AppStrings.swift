@@ -521,6 +521,8 @@ public enum AppStringKey: String, CaseIterable, Sendable {
     case runtimeUIReady = "runtime.ui.ready"
     case runtimeUIARTEXStarting = "runtime.ui.aRTEXStarting"
     case runtimeUIIsolation = "runtime.ui.isolation"
+    case runtimeUICloudRelayActive = "runtime.ui.cloudRelayActive"
+    case runtimeUICloudRelayInactive = "runtime.ui.cloudRelayInactive"
     case runtimeUIStart = "runtime.ui.start"
     case runtimeUIStop = "runtime.ui.stop"
     case runtimeUIForceStop = "runtime.ui.forceStop"

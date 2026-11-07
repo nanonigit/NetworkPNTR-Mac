@@ -25,7 +25,7 @@ import Virtualization
     @ObservationIgnored private var backendConnections: [UUID: VZVirtioSocketConnection] = [:]
     @ObservationIgnored private var backendUploads: [UUID: BackendUploadSocket] = [:]
     @ObservationIgnored private var cloudEgressAuthorized = false
-    @ObservationIgnored private var cloudEgressListener: CloudEgressVMListener?
+    private var cloudEgressListener: CloudEgressVMListener?
     private var forceStopping = false
     private var cooperativeStopping = false
     @ObservationIgnored private var evidenceEpoch = UUID()

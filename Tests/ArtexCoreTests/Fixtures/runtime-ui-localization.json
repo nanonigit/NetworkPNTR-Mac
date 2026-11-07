@@ -27,8 +27,8 @@
     {
       "key": "runtime.ui.isolation",
       "case": "runtimeUIIsolation",
-      "ja": "Docker不要 · ホスト共有なし · ネットワークなし",
-      "en": "No Docker required · No host shares · No network"
+      "ja": "Docker不要 · ホスト共有なし · 仮想NICなし",
+      "en": "No Docker required · No host shares · No virtual NIC"
     },
     {
       "key": "runtime.ui.start",
@@ -75,8 +75,8 @@
     {
       "key": "runtime.ui.help",
       "case": "runtimeUIHelp",
-      "ja": "認証はアカウント画面から操作できます。クラウドAPI向け通信は現在オフです。サイドバーの各機能は、比較検証を経て順に接続します。",
-      "en": "Manage authentication from Account. Cloud API networking is currently off. Sidebar features are connected progressively after comparison testing."
+      "ja": "認証はアカウント画面から操作できます。",
+      "en": "Manage authentication from Account."
     },
     {
       "key": "runtime.ui.guestLog",
@@ -203,6 +203,18 @@
       "case": "runtimeUIParityWaiting",
       "ja": "フェーズ{phase}・移植待ち",
       "en": "Phase {phase} · Awaiting migration"
+    },
+    {
+      "key": "runtime.ui.cloudRelayActive",
+      "case": "runtimeUICloudRelayActive",
+      "ja": "クラウドAPI中継：稼働中（対応プロバイダーのみ）",
+      "en": "Cloud API relay active · Supported providers only"
+    },
+    {
+      "key": "runtime.ui.cloudRelayInactive",
+      "case": "runtimeUICloudRelayInactive",
+      "ja": "クラウドAPI中継：停止中",
+      "en": "Cloud API relay inactive"
     }
   ]
 }

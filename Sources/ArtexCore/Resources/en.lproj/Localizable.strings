@@ -1280,6 +1280,10 @@
 	<string>Zoom</string>
 	<key>runtime.ui.aRTEXStarting</key>
 	<string>Starting ARTEX</string>
+	<key>runtime.ui.cloudRelayActive</key>
+	<string>Cloud API relay active · Supported providers only</string>
+	<key>runtime.ui.cloudRelayInactive</key>
+	<string>Cloud API relay inactive</string>
 	<key>runtime.ui.environment</key>
 	<string>Dedicated runtime</string>
 	<key>runtime.ui.forceStop</key>
@@ -1287,13 +1291,13 @@
 	<key>runtime.ui.guestLog</key>
 	<string>Guest boot log</string>
 	<key>runtime.ui.help</key>
-	<string>Manage authentication from Account. Cloud API networking is currently off. Sidebar features are connected progressively after comparison testing.</string>
+	<string>Manage authentication from Account.</string>
 	<key>runtime.ui.integrity</key>
 	<string>Verify kernel, initial RAM disk, and OS disk SHA-256 before boot</string>
 	<key>runtime.ui.integrityError</key>
 	<string>Runtime validation failed. Check the runtime files and guest log.</string>
 	<key>runtime.ui.isolation</key>
-	<string>No Docker required · No host shares · No network</string>
+	<string>No Docker required · No host shares · No virtual NIC</string>
 	<key>runtime.ui.parityBaseline</key>
 	<string>Baseline: {commit} · {features} main features / {routes} screens / {endpoints} API handlers</string>
 	<key>runtime.ui.parityBrowser</key>
