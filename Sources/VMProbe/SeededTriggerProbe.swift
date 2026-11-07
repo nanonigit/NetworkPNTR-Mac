@@ -4,19 +4,37 @@ import Foundation
 
 @MainActor enum SeededTriggerProbe {
     enum Kind: String {
-        case finding, goal
+        case finding, goal, tool
 
         var state: String { self == .finding ? "confirmed" : "met" }
-        var prompt: String { self == .finding ? CloudEgressVMFixture.findingPrompt : CloudEgressVMFixture.goalPrompt }
+        var prompt: String {
+            switch self {
+            case .finding: CloudEgressVMFixture.findingPrompt
+            case .goal: CloudEgressVMFixture.goalPrompt
+            case .tool: CloudEgressVMFixture.toolPrompt
+            }
+        }
+
+        func matches(_ rule: AgentTriggerRule) -> Bool {
+            switch self {
+            case .finding: rule.onFinding
+            case .goal: rule.onGoalMet
+            case .tool: rule.onToolCall
+            }
+        }
         var summary: String {
             self == .finding ? CloudEgressVMFixture.currentFindingSummary : CloudEgressVMFixture.currentGoalSummary
         }
 
         func replyCount(_ fixture: CloudEgressVMFixture) -> Int {
-            self == .finding ? fixture.snapshot.findingReplies : fixture.snapshot.goalReplies
+            switch self {
+            case .finding: fixture.snapshot.findingReplies
+            case .goal: fixture.snapshot.goalReplies
+            case .tool: fixture.snapshot.toolReplies
+            }
         }
     }
-    private enum Event: String { case historical, current }
+    private enum Event: String { case historical, unmatched, pending, current }
 
     static func verify(_ kind: Kind, client: AuthenticatedBackendClient, chat: ChatService, fixture: CloudEgressVMFixture) async throws {
         let service = AgentCatalogService(client: client)
@@ -26,7 +44,7 @@ import Foundation
         let baseline = try await service.triggers(for: agent)
         let ids = Set(baseline.map(\.id))
         let conversationIDs = Set(try await chat.conversations().map(\.id))
-        let defaults = baseline.filter { $0.rule.enabled && (kind == .finding ? $0.rule.onFinding : $0.rule.onGoalMet) }
+        let defaults = baseline.filter { $0.rule.enabled && kind.matches($0.rule) }
         for row in defaults {
             _ = try await service.setTriggerEnabled(for: agent, id: row.id, enabled: false)
         }
@@ -36,7 +54,7 @@ import Foundation
         sentinel.toolNames = ["nonexistent_fixture_tool"]
         let armed = try await service.createTrigger(for: agent, rule: sentinel)
         guard let sentinelRow = armed.first(where: { !ids.contains($0.id) }) else {
-            throw RuntimeError.integrity("finding trigger sentinel")
+            throw RuntimeError.integrity("seeded trigger sentinel")
         }
 
         var rule = AgentTriggerRule()
@@ -44,6 +62,10 @@ import Foundation
         switch kind {
         case .finding: rule.onFinding = true; rule.findingMessage = kind.prompt
         case .goal: rule.onGoalMet = true; rule.goalMessage = kind.prompt
+        case .tool:
+            rule.onToolCall = true
+            rule.toolCallMessage = kind.prompt
+            rule.toolNames = ["fixture_selected_tool"]
         }
         let rows = try await service.createTrigger(for: agent, rule: rule)
         guard let row = rows.first(where: { !ids.contains($0.id) && $0.id != sentinelRow.id }) else {
@@ -52,6 +74,10 @@ import Foundation
         _ = try await seed(.historical, kind: kind, client: client)
         try await Task.sleep(for: .seconds(6))
         _ = try await service.setTriggerEnabled(for: agent, id: row.id, enabled: true)
+        if kind == .tool {
+            _ = try await seed(.unmatched, kind: kind, client: client)
+            _ = try await seed(.pending, kind: kind, client: client)
+        }
         try await Task.sleep(for: .seconds(6))
         guard try await chat.conversations().allSatisfy({ conversationIDs.contains($0.id) }),
               kind.replyCount(fixture) == 0 else {
@@ -94,6 +120,32 @@ import Foundation
 
     private static func seed(_ event: Event, kind: Kind, client: AuthenticatedBackendClient) async throws -> Int64 {
         let summary = event == .historical ? "Historical synthetic \(kind.rawValue)" : kind.summary
+        let write: String
+        if kind == .tool {
+            let tool = event == .unmatched ? "fixture_other_tool" : "fixture_selected_tool"
+            let useID = event == .current ? "scheduler-fixture-pending" : "scheduler-fixture-\(event.rawValue)"
+            let toolUse = """
+                INSERT INTO activity(exploration_id,kind,tool,tool_use_id,detail)
+                SELECT exploration_id,'tool_use','\(tool)','\(useID)','Synthetic tool input'
+                FROM tasks WHERE description = '\(CloudEgressVMFixture.currentTaskDescription)' AND deleted_at IS NULL;
+                """
+            let toolResult = """
+                INSERT INTO activity(exploration_id,kind,tool,tool_use_id,detail)
+                SELECT exploration_id,'tool_result','\(tool)','\(useID)','Synthetic tool output'
+                FROM tasks WHERE description = '\(CloudEgressVMFixture.currentTaskDescription)' AND deleted_at IS NULL;
+                """
+            switch event {
+            case .historical, .unmatched: write = toolUse + "\n" + toolResult
+            case .pending: write = toolUse
+            case .current: write = toolResult
+            }
+        } else {
+            write = """
+                INSERT INTO exploration_nodes(exploration_id,kind,payload,state)
+                SELECT exploration_id,'\(kind.rawValue)',jsonb_build_object('summary','\(summary)','vulnclass','fixture','severity','low'),'\(kind.state)'
+                FROM tasks WHERE description = '\(CloudEgressVMFixture.currentTaskDescription)' AND deleted_at IS NULL;
+                """
+        }
         let code = """
         import json, os, platform, re, subprocess, urllib.parse
         if platform.system() != 'Linux' or platform.machine() != 'aarch64' or os.getuid() != 1000:
@@ -110,9 +162,7 @@ import Foundation
           OR EXISTS (SELECT 1 FROM exploration_nodes WHERE kind = '\(kind.rawValue)' AND payload->>'summary' = '\(summary)')
           THEN RAISE EXCEPTION 'unexpected seeded event fixture state'; END IF;
         END $$;
-        INSERT INTO exploration_nodes(exploration_id,kind,payload,state)
-          SELECT exploration_id,'\(kind.rawValue)',jsonb_build_object('summary','\(summary)','vulnclass','fixture','severity','low'),'\(kind.state)'
-          FROM tasks WHERE description = '\(CloudEgressVMFixture.currentTaskDescription)' AND deleted_at IS NULL;
+        \(write)
         SELECT id FROM tasks WHERE description = '\(CloudEgressVMFixture.currentTaskDescription)' AND deleted_at IS NULL;
         COMMIT;
         '''

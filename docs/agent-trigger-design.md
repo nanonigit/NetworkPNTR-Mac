@@ -85,3 +85,11 @@ and the dedicated VM. The VM restored the initial rules and shut down
 with no virtual NICs or host shares. This checks dispatch after the goal
 reaches the met state.
 [Goal verification receipt](../evidence/agents/trigger-scheduler-goal.json)
+
+The tool-call trigger matched the pinned browser backend and the dedicated
+VM. An older completed call, a completed call for a different tool, and a
+matching call without a result produced no conversation. Adding the
+matching result produced one completed Reporter conversation with the
+owning task ID and the paired input and output. The test used synthetic
+activity, removed its rules, and stopped the isolated VM.
+[Tool-call verification receipt](../evidence/agents/trigger-scheduler-tool.json)

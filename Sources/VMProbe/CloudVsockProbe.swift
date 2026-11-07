@@ -276,6 +276,9 @@ import Foundation
             stage = "goal-trigger"
             try await SeededTriggerProbe.verify(.goal, client: client, chat: chat, fixture: fixture)
 
+            stage = "tool-trigger"
+            try await SeededTriggerProbe.verify(.tool, client: client, chat: chat, fixture: fixture)
+
             stage = "held-stream"
             try await chat.send(id: openAIConversation, message: CloudEgressVMFixture.heldPrompt)
             for _ in 0..<200 {
@@ -285,7 +288,7 @@ import Foundation
             let held = fixture.snapshot
             guard held.held == 1, held.cancelled == 0, held.denied == 0,
                   held.models == providers.map({ "\($0.rawValue).models" }),
-                  held.completed == providers.map({ $0 == .anthropic ? "anthropic.messages" : "\($0.rawValue).chat" }) + Array(repeating: "openai.chat", count: 5) else {
+                  held.completed == providers.map({ $0 == .anthropic ? "anthropic.messages" : "\($0.rawValue).chat" }) + Array(repeating: "openai.chat", count: 6) else {
                 throw RuntimeError.integrity("cloud vsock route sequence")
             }
 
@@ -305,7 +308,7 @@ import Foundation
             }
             stage = "complete"
             try writeReport(true)
-            print("PASS cloud_vsock models=\(providers.count) chats=\(providers.count + 5) interval=1 task_creation=1 finding=1 goal=1 output=en,ja cancelled=1 nic=0 shares=0")
+            print("PASS cloud_vsock models=\(providers.count) chats=\(providers.count + 6) interval=1 task_creation=1 finding=1 goal=1 tool=1 output=en,ja cancelled=1 nic=0 shares=0")
         } catch {
             if controller.hasMachine { try? await controller.forceStop() }
             if created { try? writeReport(false) }
