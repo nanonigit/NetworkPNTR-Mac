@@ -1,0 +1,44 @@
+{
+  "releaseSourceCommit": "f31c8e2242db52609f63daf0649983a6ec110406",
+  "browserSourceCommit": "e75ae371ad777ffd1eecdd28d2781a6519b05591",
+  "guestManifestSHA256": "5bc88b952a14bfe695d091e384e666a2fa24a68a4eb97cea40e77dac18b6b290",
+  "launch": "Launch Services",
+  "browserComparison": "pinned source for model list error workflow",
+  "releaseUI": [
+    {
+      "provider": "openai",
+      "localizedModelListFailureVisible": true,
+      "correlatedFilteredTCPSockets": 1,
+      "observedInitialVerdictWithoutDrop": true
+    },
+    {
+      "provider": "anthropic",
+      "localizedModelListFailureVisible": true,
+      "correlatedFilteredTCPSockets": 1,
+      "observedInitialVerdictWithoutDrop": true
+    },
+    {
+      "provider": "gemini",
+      "localizedModelListFailureVisible": true,
+      "correlatedFilteredTCPSockets": 1,
+      "observedInitialVerdictWithoutDrop": true
+    },
+    {
+      "provider": "groq",
+      "localizedModelListFailureVisible": true,
+      "correlatedFilteredTCPSockets": 1,
+      "observedInitialVerdictWithoutDrop": true
+    }
+  ],
+  "observedProviderHTTPStatusInReleaseUI": false,
+  "validProviderCredentialUsed": false,
+  "inferenceRequests": 0,
+  "profileSaved": false,
+  "nativeLogoutVerified": true,
+  "testKeychainSessionRemoved": true,
+  "isolation": {
+    "virtualNICs": 0,
+    "hostShares": 0,
+    "cooperativeStopObserved": true
+  }
+}

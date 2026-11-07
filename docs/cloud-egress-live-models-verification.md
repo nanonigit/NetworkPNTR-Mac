@@ -32,3 +32,25 @@ A separate host request identified an API-key argument error, but the final
 VM run did not independently confirm that error category.
 
 [Verification receipt](../evidence/llm/cloud-egress-live-models-verification.json)
+
+## Signed Release preview model-list controls
+
+A prepared disposable disk reached the normal login flow in the signed Release
+app launched through Launch Services. After accepting the terms with the
+user's authorization, the native New menu opened all four provider presets.
+Each model-list action used a deliberately invalid value and showed the
+localized Japanese model-list failure. One TCP socket owned by the Release
+process was observed within eight seconds of each recorded click. Each
+correlated socket showed an initial content-filter verdict with no drop
+flag in at least one sample. This is socket evidence. The Release UI does
+not expose upstream HTTP statuses.
+
+The pinned browser source invokes the same model-list workflow, showing
+failure in a toast. The native sheet keeps its translated failure inline.
+The comparison for this run used the pinned source, with no interactive
+browser run. The native list remained empty after closing the drafts.
+Logout cleared the test Keychain session and the VM stopped cooperatively
+with zero virtual NICs and zero shares. Valid-key discovery and generation
+remain separate checks.
+
+[Release verification receipt](../evidence/llm/cloud-egress-release-models-verification.json)
