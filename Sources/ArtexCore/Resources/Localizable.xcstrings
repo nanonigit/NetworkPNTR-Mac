@@ -1,6 +1,70 @@
 {
   "sourceLanguage": "en",
   "strings": {
+    "agent.toolBinding.help": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Choose which tools this agent can use. Tool activation is managed in the tool catalog."
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "このエージェントに割り当てるツールを選択します。ツール自体の有効化はツール一覧で設定します。"
+          }
+        }
+      }
+    },
+    "agent.toolBinding.empty": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "No tools are available."
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ツールがありません。"
+          }
+        }
+      }
+    },
+    "agent.toolBinding.needsCapture": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Requires traffic capture"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "トラフィック記録が必要"
+          }
+        }
+      }
+    },
+    "agent.toolBinding.disabled": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Disabled in the tool catalog"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ツール一覧で無効"
+          }
+        }
+      }
+    },
     "agent.visibility.mcp": {
       "extractionState": "manual",
       "localizations": {

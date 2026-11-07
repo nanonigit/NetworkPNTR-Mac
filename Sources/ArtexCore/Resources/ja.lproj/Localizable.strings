@@ -174,6 +174,14 @@
 	<string>インテントを 1 つ受け取って実行し、発見した事実・脆弱性をナレッジグラフに記録して停止します。</string>
 	<key>agent.seed.worker.name</key>
 	<string>実行</string>
+	<key>agent.toolBinding.disabled</key>
+	<string>ツール一覧で無効</string>
+	<key>agent.toolBinding.empty</key>
+	<string>ツールがありません。</string>
+	<key>agent.toolBinding.help</key>
+	<string>このエージェントに割り当てるツールを選択します。ツール自体の有効化はツール一覧で設定します。</string>
+	<key>agent.toolBinding.needsCapture</key>
+	<string>トラフィック記録が必要</string>
 	<key>agent.variable.global.DataDir</key>
 	<string>サーバー上のタスクと会話の成果物を格納するルートディレクトリです。</string>
 	<key>agent.variable.global.Now</key>

@@ -185,6 +185,34 @@ public struct AgentPromptPreview: Decodable, Sendable {
         try await submitAcknowledged(method: "POST", path: path, body: body)
     }
 
+    func toolBindings() async throws -> [AgentToolBinding] {
+        struct Catalog: Decodable { let tools: [AgentToolBinding] }
+        let tools = try await fetch(Catalog.self, path: "/api/tools").tools
+        guard Set(tools.map(\.key)).count == tools.count, tools.allSatisfy({ validKey($0.key) }) else {
+            throw BackendAPIError.invalidResponse
+        }
+        return tools
+    }
+
+    func toolBindingTrafficCapture() async throws -> Bool {
+        try await fetch(TrafficCaptureSettings.self, path: "/api/settings").trafficCapture
+    }
+
+    func setToolBinding(key: String, tool: String, bound: Bool) async throws {
+        struct Receipt: Decodable { let agent: String; let tool: String; let bound: Bool }
+        guard validKey(tool) else { throw BackendAPIError.invalidResponse }
+        let path = try agentPath(key) + "/tool-bindings/" + tool
+        let body = try BackendJSONCoding.encode(bound)
+        try Task.checkCancellation()
+        let response = try await client.send(method: "PUT", path: path, body: body, bearer: nil)
+        try Task.checkCancellation()
+        guard response.status == 200 else { throw BackendAPIError.status(response.status) }
+        let receipt = try BackendJSONCoding.decode(Receipt.self, from: response.body)
+        guard receipt.agent == key, receipt.tool == tool, receipt.bound == bound else {
+            throw BackendAPIError.invalidResponse
+        }
+    }
+
     public func previewPrompt(key: String, template: String) async throws -> AgentPromptPreview {
         let path = try agentPath(key) + "/prompt/preview"
         let body = try BackendJSONCoding.encode(PromptPayload(template: template, note: nil))
@@ -197,11 +225,13 @@ public struct AgentPromptPreview: Decodable, Sendable {
     }
 
     private func agentPath(_ key: String) throws -> String {
-        guard let first = key.utf8.first, (97...122).contains(first),
-              key.utf8.dropFirst().allSatisfy({ (97...122).contains($0) || (48...57).contains($0) || $0 == 95 }) else {
-            throw BackendAPIError.invalidResponse
-        }
+        guard validKey(key) else { throw BackendAPIError.invalidResponse }
         return "/api/agents/\(key)"
+    }
+
+    private func validKey(_ key: String) -> Bool {
+        guard let first = key.utf8.first, (97...122).contains(first) else { return false }
+        return key.utf8.dropFirst().allSatisfy { (97...122).contains($0) || (48...57).contains($0) || $0 == 95 }
     }
 
     private func fetch<T: Decodable>(_ type: T.Type, path: String) async throws -> T {

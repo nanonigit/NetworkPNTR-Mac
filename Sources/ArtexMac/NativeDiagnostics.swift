@@ -186,7 +186,7 @@ import Foundation
         let client = AuthenticatedBackendClient(session: session)
         let health = try await client.send(method: "GET", path: "/api/health", body: nil, bearer: nil)
         guard health.status == 200,
-              try BackendJSONCoding.decode(Health.self, from: health.body).version == "artex-mac-e75ae371-cloud6" else {
+              try BackendJSONCoding.decode(Health.self, from: health.body).version == "artex-mac-e75ae371-cloud7" else {
             throw RuntimeError.integrity("skill visibility candidate version")
         }
         let service = AgentCatalogService(client: client)

@@ -35,3 +35,25 @@ and removal, unknown rows, legacy null, malformed elements, protection of
 other tool fields, and traffic capture disabled before and after a binding.
 The fixture had no published port and was removed after verification.
 The installed preview still uses its current guest.
+
+The SwiftUI detail sheet adds a Tools tab beside MCP and Skills. The pinned
+browser is the reference for assignment, enabled status, and the recording
+dependency. Lazyweb's Krea AI access dialog and Cresta agent editor informed
+the per-row control and nearby status. Use localized status and dependency
+labels. This tab displays stable keys, while catalog descriptions are a
+separate localization task. Confirm each save against a fresh catalog and
+offer explicit reload on an ambiguous result. Refresh the agent card count.
+
+The signed native review showed the Worker card count change from 12 to 11
+when removing `record_fact`, kept the change when reopening details, and
+restored 12 after adding it back. Both traffic tool rows were disabled.
+The separate API exercise used two boots of one disk and retained the change
+across restart. The isolated pinned browser API produced the same membership
+change. Interactive browser UI comparison remains open.
+
+The first native fixture boot hit a guest kernel panic before setup.
+The retry on a fresh disk completed and stopped with its temporary session
+removed. The signed Release preview now bundles cloud7. The synthetic cloud
+probe passed four model lists, four streaming sessions, and cancellation.
+The broader boot reliability gate remains open.
+[Verification receipt](../evidence/agents/tool-binding-cloud7.json)

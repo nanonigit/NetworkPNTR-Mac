@@ -3,13 +3,13 @@ import SwiftUI
 
 @MainActor struct AgentPromptDetailsView: View {
     private enum Panel: Hashable {
-        case prompt, wrapUp, mcp, skill
+        case prompt, wrapUp, mcp, skill, tools
 
         var visibilityKind: AgentVisibilityKind? {
             switch self {
             case .mcp: .mcp
             case .skill: .skill
-            case .prompt, .wrapUp: nil
+            case .prompt, .wrapUp, .tools: nil
             }
         }
     }
@@ -22,6 +22,7 @@ import SwiftUI
     @State private var panel = Panel.prompt
     @State private var editor: AgentPromptEditor
     @State private var visibility: AgentVisibilityEditor
+    @State private var toolBindings: AgentToolBindingEditor
     @State private var inspection: AgentPromptInspectionView.Inspection?
     @State private var confirmDiscard = false
     @State private var confirmRestore = false
@@ -32,6 +33,7 @@ import SwiftUI
         self.agent = agent
         self.onVisibilityChange = onVisibilityChange
         _visibility = State(initialValue: AgentVisibilityEditor(key: agent.key, service: service))
+        _toolBindings = State(initialValue: AgentToolBindingEditor(key: agent.key, service: service))
         _editor = State(initialValue: AgentPromptEditor(key: agent.key, service: service))
     }
 
@@ -47,7 +49,7 @@ import SwiftUI
                 Spacer()
                 Button(s(.close), action: close)
                     .keyboardShortcut(.cancelAction)
-                    .disabled((editor.isBusy && editor.details != nil) || visibility.isBusy)
+                    .disabled((editor.isBusy && editor.details != nil) || visibility.isBusy || toolBindings.isBusy)
             }
             if let details = editor.details {
                 saveStatus
@@ -56,9 +58,10 @@ import SwiftUI
                     Text(s(.agentDetailsWrapUp)).tag(Panel.wrapUp)
                     Text(verbatim: "MCP").tag(Panel.mcp)
                     Text(s(.agentCatalogSkill)).tag(Panel.skill)
+                    Text(s(.agentCatalogTools)).tag(Panel.tools)
                 }
                 .pickerStyle(.segmented)
-                .disabled(editor.isBusy || visibility.isBusy)
+                .disabled(editor.isBusy || visibility.isBusy || toolBindings.isBusy)
                 .accessibilityIdentifier("agent-detail-section")
                 ScrollView {
                     VStack(alignment: .leading, spacing: 16) {
@@ -66,6 +69,7 @@ import SwiftUI
                         case .prompt: promptPanel(details)
                         case .mcp: visibilityPanel(.mcp, agentID: details.backendID)
                         case .skill: visibilityPanel(.skill, agentID: details.backendID)
+                        case .tools: toolBindingPanel
                         case .wrapUp:
                             wrapUpPanel(details.wrapUp, section: .normal, title: .agentDetailsWrapUp)
                             if let task = details.taskTimeout {
@@ -97,8 +101,9 @@ import SwiftUI
         }
         .task(id: panel) {
             if let kind = panel.visibilityKind { await visibility.load(kind) }
+            if panel == .tools { await toolBindings.load() }
         }
-        .interactiveDismissDisabled(editor.isBusy || editor.hasUnsavedChanges || visibility.isBusy)
+        .interactiveDismissDisabled(editor.isBusy || editor.hasUnsavedChanges || visibility.isBusy || toolBindings.isBusy)
         .sheet(item: $inspection) { selection in
             AgentPromptInspectionView(inspection: selection, editor: editor)
                 .environment(\.locale, locale)
@@ -244,6 +249,42 @@ import SwiftUI
                 .toggleStyle(.checkbox)
                 .disabled(!visibility.canEdit || agentID == nil)
             }
+        }
+    }
+
+    @ViewBuilder private var toolBindingPanel: some View {
+        Text(s(.agentToolBindingHelp)).foregroundStyle(.secondary)
+        if let failure = toolBindings.failure {
+            Text(failure.text(language: language)).foregroundStyle(.red)
+            Button(s(.authRetry)) { Task { await toolBindings.load() } }
+        }
+        if toolBindings.isBusy { ProgressView().controlSize(.small) }
+        if toolBindings.hasLoaded && toolBindings.tools.isEmpty {
+            Text(s(.agentToolBindingEmpty)).foregroundStyle(.secondary)
+        }
+        ForEach(toolBindings.tools) { tool in
+            Toggle(isOn: Binding(
+                get: { toolBindings.contains(tool) },
+                set: { value in
+                    Task {
+                        await toolBindings.set(tool.id, bound: value)
+                        onVisibilityChange()
+                    }
+                }
+            )) {
+                VStack(alignment: .leading, spacing: 2) {
+                    Text(verbatim: tool.key).font(.body.monospaced())
+                    if toolBindings.trafficGated(tool) {
+                        Text(s(.agentToolBindingNeedsCapture)).font(.caption).foregroundStyle(.secondary)
+                    }
+                    if !tool.enabled {
+                        Text(s(.agentToolBindingDisabled)).font(.caption).foregroundStyle(.secondary)
+                    }
+                }
+            }
+            .toggleStyle(.checkbox)
+            .disabled(!toolBindings.canSet(tool))
+            .accessibilityIdentifier("agent-tool-binding-\(tool.key)")
         }
     }
 
