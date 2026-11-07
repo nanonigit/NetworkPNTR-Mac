@@ -137,3 +137,21 @@ during startup passed. Its LLM workflow matched eleven API contract
 groups in a second disposable fixed browser backend. The app remained
 a private fixture. Actual interaction and visual parity remain open.
 [Lifecycle receipt](../../evidence/native-runtime/cloud8-blank-buffer-lifecycle.json)
+
+### Cloud9 stop during startup
+
+The live prompt review completed the first two boots, then the
+stop-during-startup step timed out. The third boot's serial file was
+empty. The guest's cooperative stop protocol begins only after
+bootstrap and readiness, so this trace does not distinguish a stalled
+guest start from a host-side startup or serial failure.
+
+Two prespecified native diagnostic runs used the exact same signed app
+and cloud9 manifest, with fresh disks and without the UI review hold.
+Both passed the startup stop, Keychain restoration and cleanup. All
+six serial logs showed readiness and the cooperative stopping marker.
+The first run also matched eleven LLM API contract groups against the
+disposable fixed browser backend. The change in review timing and
+fixture contents limits the comparison. The earlier timeout remains
+part of the release evidence.
+[Cloud9 startup-stop receipt](../../evidence/native-runtime/cloud9-start-stop-control.json)
