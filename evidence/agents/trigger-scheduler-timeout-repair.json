@@ -69,10 +69,62 @@
     "allRulesDisabledVerifiedInVM": false,
     "candidateOlderLateTimeoutCompletedConversations": 1,
     "elapsedDeadlineVerified": false,
-    "guestUpgradeBootVerified": false,
+    "guestUpgradeBootVerified": true,
     "nativeAndBrowserGUICompared": false,
     "releasePromoted": false,
     "replayCheckAdditionalPolls": 1,
     "stateInjected": true
+  },
+  "upgradeVM": {
+    "bothStoppedIsolationAuditsPassed": true,
+    "existingSessionAndConversationIDsPreserved": true,
+    "formatObservedOnlyOnFirstBoot": true,
+    "historicalTimeoutMemberships": 3,
+    "migrationMarkerPresent": true,
+    "report": {
+      "fixture": {
+        "cancelled": 1,
+        "completed": [
+          "openai.chat",
+          "anthropic.messages",
+          "gemini.chat",
+          "groq.chat",
+          "openai.chat",
+          "openai.chat",
+          "openai.chat",
+          "openai.chat",
+          "openai.chat",
+          "openai.chat",
+          "openai.chat"
+        ],
+        "denied": 0,
+        "findingReplies": 1,
+        "goalReplies": 1,
+        "held": 1,
+        "models": [
+          "openai.models",
+          "anthropic.models",
+          "gemini.models",
+          "groq.models"
+        ],
+        "openAIOutputLanguages": [
+          "en",
+          "ja"
+        ],
+        "scheduledReplies": 1,
+        "taskCreationReplies": 1,
+        "timeoutReplies": 1,
+        "toolReplies": 1
+      },
+      "machineStopped": true,
+      "manifestSHA256": "42c47caf03c835c974eee569f8be041b234d3f96b7d7931585e410e146f73c70",
+      "passed": true,
+      "stage": "complete",
+      "upgradedManifestSHA256": "e12d2dc978ede2c403295a0032e6aa96f115c82a2473aa495908717230704db0"
+    },
+    "reportSHA256": "1c312f3d9830618979adef5f3a531f80eb4cb150198e80ba0d1b9a81f207abca",
+    "sameFixtureDisk": true,
+    "softDeletedTimeoutMemberships": 1,
+    "unauthenticatedConversationStatusAfterUpgrade": 401
   }
 }

@@ -186,6 +186,44 @@ import Foundation
                 FROM tasks WHERE description = '\(description)' AND deleted_at IS NULL;
                 """
         }
+        return try await scalar("""
+        DO $$ BEGIN
+          IF (SELECT count(*) FROM tasks WHERE description = '\(description)' AND deleted_at IS NULL) <> 1
+          OR EXISTS (SELECT 1 FROM exploration_nodes WHERE kind = '\(kind.rawValue)' AND payload->>'summary' = '\(summary)')
+          THEN RAISE EXCEPTION 'unexpected seeded event fixture state'; END IF;
+        END $$;
+        \(write)
+        \(readTaskID)
+        """, client: client)
+    }
+
+    static func markHistoricalTimeoutDeleted(client: AuthenticatedBackendClient) async throws {
+        _ = try await scalar("""
+        UPDATE tasks SET deleted_at = now()
+        WHERE status = 'timeout' AND deleted_at IS NULL
+          AND description = '\(CloudEgressVMFixture.timeoutTaskDescription)'
+        RETURNING id;
+        """, client: client)
+    }
+
+    static func verifyMigratedTimeouts(client: AuthenticatedBackendClient) async throws {
+        let count = try await scalar("""
+        SELECT count(DISTINCT tasks.description)
+        FROM tasks JOIN scheduler_consumed_task_timeouts AS consumed ON consumed.task_id = tasks.id
+        WHERE tasks.status = 'timeout' AND tasks.description IN (
+            '\(CloudEgressVMFixture.olderTimeoutTaskDescription)',
+            '\(CloudEgressVMFixture.currentTaskDescription)',
+            '\(CloudEgressVMFixture.timeoutTaskDescription)'
+        )
+          AND (tasks.description <> '\(CloudEgressVMFixture.timeoutTaskDescription)' OR tasks.deleted_at IS NOT NULL)
+          AND EXISTS (
+              SELECT 1 FROM scheduler_state WHERE key = 'task_timeout_membership_v1' AND value = '1'
+          );
+        """, client: client)
+        guard count == 3 else { throw RuntimeError.integrity("timeout upgrade migration") }
+    }
+
+    private static func scalar(_ sql: String, client: AuthenticatedBackendClient) async throws -> Int64 {
         let code = """
         import json, os, platform, re, subprocess, urllib.parse
         if platform.system() != 'Linux' or platform.machine() != 'aarch64' or os.getuid() != 1000:
@@ -197,13 +235,7 @@ import Foundation
         sql = '''
         BEGIN;
         SET LOCAL statement_timeout = '4s';
-        DO $$ BEGIN
-          IF (SELECT count(*) FROM tasks WHERE description = '\(description)' AND deleted_at IS NULL) <> 1
-          OR EXISTS (SELECT 1 FROM exploration_nodes WHERE kind = '\(kind.rawValue)' AND payload->>'summary' = '\(summary)')
-          THEN RAISE EXCEPTION 'unexpected seeded event fixture state'; END IF;
-        END $$;
-        \(write)
-        \(readTaskID)
+        \(sql)
         COMMIT;
         '''
         env={'PATH':'/usr/libexec/postgresql16:/usr/bin:/bin','PGHOST':'127.0.0.1','PGPORT':'5432',

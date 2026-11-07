@@ -6,12 +6,16 @@ import Foundation
     static func run(_ args: [String]) async {
         #if DEBUG
         let repairedTimeouts = args.count == 3 && args[2] == "--timeout-repair"
-        if args.count == 2 || repairedTimeouts {
-            await exercise(artifacts: URL(fileURLWithPath: args[0]), output: URL(fileURLWithPath: args[1]), repairedTimeouts: repairedTimeouts)
+        let upgrade = args.count == 4 && args[2] == "--timeout-upgrade" ? URL(fileURLWithPath: args[3]) : nil
+        if args.count == 2 || repairedTimeouts || upgrade != nil {
+            await exercise(
+                artifacts: URL(fileURLWithPath: args[0]), output: URL(fileURLWithPath: args[1]),
+                repairedTimeouts: repairedTimeouts, upgrade: upgrade
+            )
             return
         }
         #endif
-        FileHandle.standardError.write(Data("Usage: DEBUG VMProbe --cloud-vsock ARTIFACTS NEW_PRIVATE_OUTPUT [--timeout-repair]\n".utf8))
+        FileHandle.standardError.write(Data("Usage: DEBUG VMProbe --cloud-vsock ARTIFACTS NEW_PRIVATE_OUTPUT [--timeout-repair | --timeout-upgrade CANDIDATE]\n".utf8))
         exit(2)
     }
 
@@ -32,6 +36,7 @@ import Foundation
         let manifestSHA256: String
         let machineStopped: Bool
         let fixture: CloudEgressVMFixture.Snapshot
+        let upgradedManifestSHA256: String?
     }
 
     private static func requireManifest(_ artifacts: URL, digest: String) throws {
@@ -172,22 +177,25 @@ import Foundation
         guard Set(cleaned.map(\.id)) == oldIDs else { throw RuntimeError.integrity("task creation fixture cleanup") }
     }
 
-    private static func exercise(artifacts: URL, output: URL, repairedTimeouts: Bool) async {
+    private static func exercise(artifacts: URL, output: URL, repairedTimeouts: Bool, upgrade: URL?) async {
         let manifestDigest = repairedTimeouts ? timeoutRepairManifestDigest : GuestArtifacts.cloudEgressManifestSHA256
         let version = repairedTimeouts ? "artex-mac-e75ae371-cloud8" : "artex-mac-e75ae371-cloud7"
         let controller = VMController()
         let fixture = CloudEgressVMFixture()
         var stage = "prepare"
         var created = false
+        var upgradedManifestSHA256: String?
         func writeReport(_ passed: Bool) throws {
             let report = Report(passed: passed, stage: stage, manifestSHA256: manifestDigest,
-                                machineStopped: !controller.hasMachine, fixture: fixture.snapshot)
+                                machineStopped: !controller.hasMachine, fixture: fixture.snapshot,
+                                upgradedManifestSHA256: upgradedManifestSHA256)
             let encoder = JSONEncoder()
             encoder.outputFormatting = [.prettyPrinted, .sortedKeys]
             try encoder.encode(report).write(to: output.appendingPathComponent("cloud-vsock.json"), options: .atomic)
         }
         do {
             try requireManifest(artifacts, digest: manifestDigest)
+            if let upgrade { try requireManifest(upgrade, digest: timeoutRepairManifestDigest) }
             guard mkdir(output.path, 0o700) == 0 else { throw RuntimeError.integrity("new private output required") }
             created = true
             let logs = output.appendingPathComponent("logs")
@@ -303,6 +311,12 @@ import Foundation
                   held.completed == providers.map({ $0 == .anthropic ? "anthropic.messages" : "\($0.rawValue).chat" }) + Array(repeating: "openai.chat", count: 7) else {
                 throw RuntimeError.integrity("cloud vsock route sequence")
             }
+            var oldConversations: [Int64] = []
+            if upgrade != nil {
+                stage = "upgrade-seed"
+                try await SeededTriggerProbe.markHistoricalTimeoutDeleted(client: client)
+                oldConversations = try await chat.conversations().map(\.id).sorted()
+            }
 
             stage = "stop"
             try await controller.stop()
@@ -317,6 +331,45 @@ import Foundation
                   audit.complete, audit.credentialsAbsent, audit.isolationWitnessesPresent,
                   audit.diagnostics.isEmpty, audit.formatStageObserved else {
                 throw RuntimeError.integrity("cloud vsock stopped audit")
+            }
+            if let upgrade {
+                stage = "upgrade-boot"
+                let upgradeLogs = output.appendingPathComponent("upgrade-logs")
+                try FileManager.default.createDirectory(at: upgradeLogs, withIntermediateDirectories: false, attributes: [.posixPermissions: 0o700])
+                let boot = try GuestProvisioning.generate()
+                try await controller.start(artifacts: upgrade, logs: upgradeLogs, readinessTimeout: .seconds(120), dataDisk: disk, provisioning: boot)
+                for _ in 0..<1300 {
+                    if controller.guestReady || controller.state == .failed || controller.state == .stopped { break }
+                    try await Task.sleep(for: .milliseconds(100))
+                }
+                guard controller.guestReady else { throw RuntimeError.timeout("timeout upgrade readiness") }
+                stage = "upgrade-auth"
+                let api = BackendJSONClient(runtime: controller, provisioning: boot)
+                let health = try await api.send(method: "GET", path: "/api/health", body: nil, bearer: nil)
+                let denied = try await api.send(method: "GET", path: "/api/conversations", body: nil, bearer: nil)
+                let payload = try JSONSerialization.jsonObject(with: health.body) as? [String: Any]
+                guard health.status == 200, denied.status == 401,
+                      payload?["version"] as? String == "artex-mac-e75ae371-cloud8" else {
+                    throw RuntimeError.integrity("timeout upgrade backend identity")
+                }
+                let resumed = AuthenticationSession(client: api, vault: vault, setupToken: boot.setupToken)
+                await resumed.refresh()
+                guard resumed.phase == .authenticated else { throw RuntimeError.integrity("timeout upgrade session") }
+                let upgradedClient = AuthenticatedBackendClient(session: resumed)
+                stage = "upgrade-migration"
+                try await SeededTriggerProbe.verifyMigratedTimeouts(client: upgradedClient)
+                guard try await ChatService(client: upgradedClient).conversations().map(\.id).sorted() == oldConversations else {
+                    throw RuntimeError.integrity("timeout upgrade conversation identity")
+                }
+                stage = "upgrade-stop"
+                try await controller.stop()
+                let audit = GuestBootDiagnostics.audit(logDirectory: upgradeLogs, tokens: tokens + [boot.transportToken, boot.setupToken])
+                guard !controller.hasMachine, audit.complete, audit.credentialsAbsent, audit.isolationWitnessesPresent,
+                      audit.diagnostics.isEmpty, !audit.formatStageObserved else {
+                    throw RuntimeError.integrity("timeout upgrade stopped audit")
+                }
+                try requireManifest(upgrade, digest: timeoutRepairManifestDigest)
+                upgradedManifestSHA256 = timeoutRepairManifestDigest
             }
             stage = "complete"
             try writeReport(true)

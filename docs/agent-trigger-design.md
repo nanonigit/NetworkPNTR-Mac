@@ -137,7 +137,23 @@ fixed baseline through the late timeout. The lower-ID task now completed
 one Reporter conversation, with no additional conversation across the
 next polling interval. The separate disposable PostgreSQL 16 fixture
 ran the migration and claim statements, covering upgrade seed data,
-migration rerun and concurrent claims. The VM used a fresh disk. An
-upgrade boot on an existing disk, an all-rules-disabled VM run and the
-native screen comparison remain release gates.
+migration rerun and concurrent claims. The first probe used a fresh disk. The upgrade proof is below. An
+all-rules-disabled VM run and the native screen comparison remain
+release gates.
 [Repair receipt](../evidence/agents/trigger-scheduler-timeout-repair.json)
+
+The upgrade probe creates an owned fixture disk on cloud7 and boots
+cloud8 with that same disk after a cooperative stop. It checks that
+the existing session and conversation identities survive, and that
+the upgraded guest still rejects unauthenticated conversation reads.
+The probe marks one synthetic timeout as soft-deleted before shutdown.
+Only schema migration can seed that row because the normal scheduler
+excludes deleted rows. The upgraded probe checks the migration marker
+and all three fixture memberships, audits both isolated boots, and
+requires the disk format step to occur only on the first boot.
+
+Run the signed DEBUG probe with the pinned cloud7 and cloud8 artifacts:
+`VMProbe --cloud-vsock CLOUD7 NEW_PRIVATE_OUTPUT --timeout-upgrade CLOUD8`.
+The output directory must be new. The probe creates its own disk.
+The signed upgrade passed on Mac hardware. See the repair receipt
+for the two manifest hashes and stopped-VM result.
