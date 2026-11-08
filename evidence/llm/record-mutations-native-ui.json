@@ -1,0 +1,31 @@
+{
+  "baseCommit": "8e0a4c134b5598171d831aee30e0f697d2912f62",
+  "guestManifestSHA256": "9c38d268d350e7ab4e265ca32d686c529d8e09e5facfc2c69581f31589b768d8",
+  "fixtureSHA256": "dc02717308bd5e4a2e64487ea2692f338e03d883915ff6f976e18e22ae4f4c85",
+  "scope": "Signed DEBUG app with local startup and fixture diagnostics; production SwiftUI history view and Linux backend",
+  "language": "en",
+  "initialRows": 4,
+  "recordingReadback": [
+    false,
+    true,
+    false
+  ],
+  "deleteDisabledWithoutTask": true,
+  "filterRows": 2,
+  "confirmationTarget": "task+A",
+  "confirmationAction": "Delete Task History",
+  "cancelDefault": true,
+  "cancelPreservedRows": 4,
+  "deletedCount": 2,
+  "remainingIDs": [
+    9104,
+    9103
+  ],
+  "remainingTask": "task-B",
+  "cooperativeStop": true,
+  "networkHardwareDevices": 0,
+  "externalRoutes": 0,
+  "sharedMounts": 0,
+  "temporaryKeychainItemRemoved": true,
+  "temporaryDisksRemoved": true
+}

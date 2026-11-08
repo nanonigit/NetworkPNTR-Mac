@@ -132,7 +132,7 @@ import SwiftUI
             get: { deletionTask != nil },
             set: { if !$0 { deletionTask = nil } }
         ), presenting: deletionTask) { target in
-            Button(s(.trafficUIConfirmDelete), role: .destructive) {
+            Button(s(.llmRecordDeleteTask), role: .destructive) {
                 deletionTask = nil
                 Task {
                     if await store.delete(task: target) { task = Data() }
