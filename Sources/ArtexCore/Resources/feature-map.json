@@ -112,11 +112,11 @@
         "Tests/ArtexCoreTests/LLMRecordStoreTests.swift",
         "evidence/llm/record-mutations-native-ui.json",
         "evidence/llm/record-details-comparison.json",
-        "evidence/llm/record-detail-recovery.json"
+        "evidence/llm/record-detail-recovery.json",
+        "evidence/llm/record-list-comparison.json"
       ],
       "remainingGates": [
-        "Paired list pagination, model and session filters, empty and failure states",
-        "Recording persistence across restart and remaining visual and keyboard acceptance"
+        "Remaining visual and keyboard acceptance beyond the exercised filters and cancellation controls"
       ]
     },
     {

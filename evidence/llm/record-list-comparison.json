@@ -1,0 +1,52 @@
+{
+  "browserSourceCommit": "e75ae371ad777ffd1eecdd28d2781a6519b05591",
+  "macSourceCommit": "07b9d2e705aa376fe9b81c4c38ccdbc73230ff34",
+  "fixtureSHA256": "f55e612a430cf1a0ffb02f9319581d8102a80875987a178fe581b7d5ff27df87",
+  "browserOracleSHA256": "296405337c0ee24962b51a9b43525ab226558d9ce7c646b183d6acbc1b76e677",
+  "guestManifestSHA256": "9c38d268d350e7ab4e265ca32d686c529d8e09e5facfc2c69581f31589b768d8",
+  "browser": {
+    "initialRows": 54,
+    "pageRows": [
+      50,
+      4
+    ],
+    "pageSizes": [
+      25,
+      50,
+      100
+    ],
+    "modelRows": 27,
+    "combinedRows": 9,
+    "emptyVisible": true,
+    "keyboardTabMovesBetweenFilters": true,
+    "injectedListStatus": 500,
+    "emptyListRetainedOnError": true,
+    "recoveredRows": 9
+  },
+  "browserContainersRemoved": true,
+  "native": {
+    "signedDebugWithLocalFixture": true,
+    "language": "ja",
+    "initialRows": 54,
+    "pageRows": [
+      50,
+      4
+    ],
+    "pageSizes": [
+      25,
+      50,
+      100
+    ],
+    "modelRows": 27,
+    "combinedRows": 9,
+    "emptyVisible": true,
+    "keyboardTabMovesBetweenFilters": true,
+    "enterAppliesFilters": true,
+    "recordingAndRowsPersistedAcrossVMRestart": true,
+    "guestListStatusWithTableUnavailable": 500,
+    "explicitErrorWithoutEmptyMessage": true,
+    "refreshRecoveredRows": 54,
+    "cooperativeStop": true,
+    "temporaryDisksAndKeychainRemoved": true
+  }
+}
