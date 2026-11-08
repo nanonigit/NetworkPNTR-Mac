@@ -1,0 +1,36 @@
+{
+  "browserSourceCommit": "e75ae371ad777ffd1eecdd28d2781a6519b05591",
+  "macBaseCommit": "9a53f8d0e17092f29a91d5c98c03f94a7b2e56ba",
+  "fixtureSHA256": "02e854ee311de862e23a5a2b9aec4b102f7b04402bd868b21b6f3653d3b82f7f",
+  "browserOracleSHA256": "5cf3f6b0866c66d5bf700b7b1b08177b5c0669d875b8f5749a1118e9eb1a62cb",
+  "guestManifestSHA256": "9c38d268d350e7ab4e265ca32d686c529d8e09e5facfc2c69581f31589b768d8",
+  "browser": {
+    "initialRows": 4,
+    "parsedBodies": true,
+    "rawBodies": true,
+    "legacyBodies": true,
+    "legacyRawDisabled": true,
+    "rawPreferenceRestored": true,
+    "injectedDetailStatus": 500,
+    "errorShowsEmptyBodies": true,
+    "reselectionRecovers": true
+  },
+  "native": {
+    "signedDebugWithLocalFixture": true,
+    "parsedBodies": true,
+    "rawBodies": true,
+    "legacyBodies": true,
+    "legacyRawDisabled": true,
+    "rawPreferenceRestored": true,
+    "detailLanguages": [
+      "en",
+      "ja"
+    ],
+    "cooperativeStop": true,
+    "temporaryDisksAndKeychainRemoved": true
+  },
+  "pending": [
+    "Native detail error recovery",
+    "Cancellation while detail read is pending"
+  ]
+}

@@ -10,6 +10,7 @@ import SwiftUI
     @State private var task = Data()
     @State private var selectedID: Int64?
     @State private var detail: LLMRecord?
+    @State private var prefersRawDetail = false
     @State private var reload = 0
     @State private var deletionTask: String?
 
@@ -127,7 +128,10 @@ import SwiftUI
         .task(id: reload) { await store.refreshTasks() }
         .task(id: reload) { await store.refreshRecording() }
         .onChange(of: request) { _, _ in selectedID = nil; detail = nil }
-        .sheet(item: $detail) { row in LLMRecordDetailSheet(row: row, store: store).id(row.id) }
+        .sheet(item: $detail) { row in
+            LLMRecordDetailSheet(row: row, store: store, language: language, prefersRaw: $prefersRawDetail)
+                .id(row.id)
+        }
         .alert(s(.llmRecordDeleteTask), isPresented: Binding(
             get: { deletionTask != nil },
             set: { if !$0 { deletionTask = nil } }
@@ -173,15 +177,17 @@ private extension LLMRecordTask {
 
 @MainActor private struct LLMRecordDetailSheet: View {
     @Environment(\.dismiss) private var dismiss
-    @Environment(\.locale) private var locale
     let row: LLMRecord
     let store: LLMRecordStore
     @State private var state: FindingReadState<LLMRecordDetail>
-    @State private var raw = false
+    let language: AppLanguage
+    @Binding private var prefersRaw: Bool
 
-    init(row: LLMRecord, store: LLMRecordStore) {
+    init(row: LLMRecord, store: LLMRecordStore, language: AppLanguage, prefersRaw: Binding<Bool>) {
         self.row = row
         self.store = store
+        self.language = language
+        _prefersRaw = prefersRaw
         _state = State(initialValue: store.detailState())
     }
 
@@ -202,15 +208,19 @@ private extension LLMRecordTask {
                 Text(verbatim: message).foregroundStyle(.red).textSelection(.enabled)
             }
             if let detail = state.value {
-                Toggle(s(.llmRecordRaw), isOn: $raw)
-                    .disabled(detail.rawRequest == nil && detail.rawResponse == nil)
+                let hasRaw = detail.rawRequest?.isEmpty == false || detail.rawResponse?.isEmpty == false
+                let showRaw = hasRaw && prefersRaw
+                Toggle(s(.llmRecordRaw), isOn: Binding(
+                    get: { showRaw }, set: { prefersRaw = $0 }
+                ))
+                .disabled(!hasRaw)
                 HStack(alignment: .top, spacing: 12) {
-                    payload(.llmRecordRequest, raw ? detail.rawRequest : detail.requestBody)
+                    payload(.llmRecordRequest, showRaw ? detail.rawRequest : detail.requestBody)
                     Divider()
-                    payload(.llmRecordResponse, raw ? detail.rawResponse : detail.responseBody)
+                    payload(.llmRecordResponse, showRaw ? detail.rawResponse : detail.responseBody)
                 }
             } else if let failure = state.failure {
-                Text(failure.text(language: .preferred(in: [locale.identifier]))).foregroundStyle(.red)
+                Text(failure.text(language: language)).foregroundStyle(.red)
             } else {
                 ProgressView()
             }
@@ -232,6 +242,6 @@ private extension LLMRecordTask {
     }
 
     private func s(_ key: AppStringKey) -> String {
-        AppStrings.text(key, language: .preferred(in: [locale.identifier]))
+        AppStrings.text(key, language: language)
     }
 }
