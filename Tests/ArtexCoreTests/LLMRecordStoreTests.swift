@@ -37,4 +37,23 @@ final class LLMRecordStoreTests: XCTestCase {
         XCTAssertNil(reopened.failure)
         XCTAssertNil(reopened.value)
     }
+
+    @MainActor func testFailedDeleteInvalidatesCachedRowsAndTaskTargets() async throws {
+        let client = ChatTestTransport()
+        let store = LLMRecordStore(service: LLMRecordService(client: client))
+        try client.enqueue(["tasks": [["task_id": "selected", "count": 3]]])
+        await store.refreshTasks()
+        try client.enqueue(["records": [], "total": 0])
+        await store.refresh()
+        try client.enqueue(["error": "unavailable"], status: 500)
+        let deleted = await store.delete(task: "selected")
+        XCTAssertFalse(deleted)
+        XCTAssertNotNil(store.mutationFailure)
+        XCTAssertNil(store.list.value)
+        XCTAssertTrue(store.tasks.isStale)
+        let repeated = await store.delete(task: "selected")
+        XCTAssertFalse(repeated)
+        XCTAssertEqual(client.calls.map(\.method), ["GET", "GET", "DELETE"])
+    }
+
 }

@@ -94,4 +94,36 @@ final class LLMRecordServiceTests: XCTestCase {
         XCTAssertEqual(client.calls.count, 1)
     }
 
+
+    @MainActor func testRecordingWritesOnlyItsFieldAndUsesIndependentReadback() async throws {
+        let client = ChatTestTransport()
+        let service = LLMRecordService(client: client)
+        try client.enqueue(["llm_record": true])
+        try client.enqueue(["llm_record": false])
+        let actual = try await service.setRecording(true)
+        XCTAssertFalse(actual)
+        XCTAssertEqual(client.calls.map(\.method), ["PUT", "GET"])
+        XCTAssertEqual(client.calls.map(\.path), ["/api/settings", "/api/settings"])
+        let body = try XCTUnwrap(client.calls.first?.body)
+        XCTAssertEqual(try JSONSerialization.jsonObject(with: body) as? [String: Bool], ["llm_record": true])
+    }
+
+    @MainActor func testTaskDeletionCannotRetargetWhitespaceAndEscapesExactID() async throws {
+        let client = ChatTestTransport()
+        let service = LLMRecordService(client: client)
+        for target in ["", "task ", "\u{0085}task", "task\0"] {
+            do {
+                _ = try await service.delete(task: target)
+                XCTFail("Unsafe target was accepted")
+            } catch LLMRecordQueryError.invalidQuery {}
+        }
+        XCTAssertTrue(client.calls.isEmpty)
+        try client.enqueue(["deleted": 3])
+        let count = try await service.delete(task: "task+%&")
+        XCTAssertEqual(count, 3)
+        XCTAssertEqual(client.calls.first?.path, "/api/llm/records?task=task%2B%25%26")
+        XCTAssertEqual(client.calls.first?.method, "DELETE")
+        XCTAssertNil(client.calls.first?.body)
+    }
+
 }

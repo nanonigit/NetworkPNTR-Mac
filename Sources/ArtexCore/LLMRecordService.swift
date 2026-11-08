@@ -112,10 +112,40 @@ public enum LLMRecordQueryError: Error, Sendable {
         return result
     }
 
-    private func read<T: Decodable>(_ path: String) async throws -> T {
+    private struct RecordingSetting: Codable { let llmRecord: Bool }
+
+    public func recordingEnabled() async throws -> Bool {
+        let setting: RecordingSetting = try await read("/api/settings")
+        return setting.llmRecord
+    }
+
+    public func setRecording(_ enabled: Bool) async throws -> Bool {
+        let body = try BackendJSONCoding.encode(RecordingSetting(llmRecord: enabled))
+        let _: RecordingSetting = try await read("/api/settings", method: "PUT", body: body)
+        return try await recordingEnabled()
+    }
+
+    public func delete(task: String) async throws -> Int64 {
+        // The pinned DELETE handler trims Go whitespace before selecting the target.
+        let goWhitespace = CharacterSet(charactersIn: "\u{0009}\u{000A}\u{000B}\u{000C}\u{000D} \u{0085}\u{00A0}\u{1680}\u{2000}\u{2001}\u{2002}\u{2003}\u{2004}\u{2005}\u{2006}\u{2007}\u{2008}\u{2009}\u{200A}\u{2028}\u{2029}\u{202F}\u{205F}\u{3000}")
+        guard !task.isEmpty, task.utf8.count <= 8192, !task.utf8.contains(0),
+              task.utf8.elementsEqual(task.trimmingCharacters(in: goWhitespace).utf8) else {
+            throw LLMRecordQueryError.invalidQuery
+        }
+        var query = URLComponents()
+        query.queryItems = [.init(name: "task", value: task)]
+        guard let encoded = query.percentEncodedQuery else { throw LLMRecordQueryError.invalidQuery }
+        struct Receipt: Decodable { let deleted: Int64 }
+        let receipt: Receipt = try await read(route + "?" + encoded.replacingOccurrences(of: "+", with: "%2B"),
+                                             method: "DELETE")
+        guard receipt.deleted >= 0 else { throw BackendAPIError.invalidResponse }
+        return receipt.deleted
+    }
+
+    private func read<T: Decodable>(_ path: String, method: String = "GET", body: Data? = nil) async throws -> T {
         try Task.checkCancellation()
         guard path.utf8.count <= 8192 else { throw LLMRecordQueryError.invalidQuery }
-        let response = try await client.send(method: "GET", path: path, body: nil, bearer: nil)
+        let response = try await client.send(method: method, path: path, body: body, bearer: nil)
         try Task.checkCancellation()
         guard (200..<300).contains(response.status) else { throw BackendAPIError.status(response.status) }
         guard response.status == 200, response.body.count <= 4 * 1024 * 1024 else {

@@ -1304,6 +1304,12 @@
 	<string>未保存の変更があります</string>
 	<key>llmRecord.ui.allTasks</key>
 	<string>すべてのタスク</string>
+	<key>llmRecord.ui.deletePrompt</key>
+	<string>タスク #{task} のLLM呼び出し履歴をすべて削除しますか？</string>
+	<key>llmRecord.ui.deleteTask</key>
+	<string>タスクの履歴を削除</string>
+	<key>llmRecord.ui.deleted</key>
+	<string>LLM呼び出し履歴を{count}件削除しました。</string>
 	<key>llmRecord.ui.empty</key>
 	<string>LLM呼び出し履歴がありません。</string>
 	<key>llmRecord.ui.latency</key>
@@ -1314,6 +1320,8 @@
 	<string>プロファイル</string>
 	<key>llmRecord.ui.raw</key>
 	<string>生の本文</string>
+	<key>llmRecord.ui.recording</key>
+	<string>LLM呼び出しを記録</string>
 	<key>llmRecord.ui.request</key>
 	<string>リクエスト</string>
 	<key>llmRecord.ui.response</key>

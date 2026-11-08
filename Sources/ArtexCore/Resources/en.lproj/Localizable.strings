@@ -1304,6 +1304,12 @@
 	<string>You have unsaved changes</string>
 	<key>llmRecord.ui.allTasks</key>
 	<string>All Tasks</string>
+	<key>llmRecord.ui.deletePrompt</key>
+	<string>Delete all recorded LLM calls for task #{task}?</string>
+	<key>llmRecord.ui.deleteTask</key>
+	<string>Delete Task History</string>
+	<key>llmRecord.ui.deleted</key>
+	<string>Deleted {count} LLM call records.</string>
 	<key>llmRecord.ui.empty</key>
 	<string>No LLM call records.</string>
 	<key>llmRecord.ui.latency</key>
@@ -1314,6 +1320,8 @@
 	<string>Profile</string>
 	<key>llmRecord.ui.raw</key>
 	<string>Raw Payloads</string>
+	<key>llmRecord.ui.recording</key>
+	<string>Record LLM Calls</string>
 	<key>llmRecord.ui.request</key>
 	<string>Request</string>
 	<key>llmRecord.ui.response</key>

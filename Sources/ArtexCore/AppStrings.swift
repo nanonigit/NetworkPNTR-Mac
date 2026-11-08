@@ -1,6 +1,10 @@
 import Foundation
 
 public enum AppStringKey: String, CaseIterable, Sendable {
+    case llmRecordRecording = "llmRecord.ui.recording"
+    case llmRecordDeleteTask = "llmRecord.ui.deleteTask"
+    case llmRecordDeletePrompt = "llmRecord.ui.deletePrompt"
+    case llmRecordDeleted = "llmRecord.ui.deleted"
     case llmRecordSession = "llmRecord.ui.session"
     case llmRecordTask = "llmRecord.ui.task"
     case llmRecordAllTasks = "llmRecord.ui.allTasks"

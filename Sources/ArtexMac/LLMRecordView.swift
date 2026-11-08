@@ -11,6 +11,7 @@ import SwiftUI
     @State private var selectedID: Int64?
     @State private var detail: LLMRecord?
     @State private var reload = 0
+    @State private var deletionTask: String?
 
     init(session: AuthenticationSession) {
         let service = LLMRecordService(client: AuthenticatedBackendClient(session: session))
@@ -35,6 +36,14 @@ import SwiftUI
             HStack {
                 Text(s(.llmRecords)).font(.largeTitle.bold())
                 if let total = store.list.value?.total { Text(total, format: .number).foregroundStyle(.secondary) }
+                Spacer()
+                if let recording = store.recording.value {
+                    Toggle(s(.llmRecordRecording), isOn: Binding(get: { recording }, set: { enabled in
+                        Task { await store.setRecording(enabled) }
+                    }))
+                    .toggleStyle(.switch)
+                    .disabled(store.isMutating || store.recording.isStale || store.recording.isLoading)
+                }
             }
             HStack {
                 TextField(s(.llmRecordSession), text: $sessionQuery).onSubmit(apply)
@@ -50,6 +59,13 @@ import SwiftUI
                 Picker(s(.toolRunPageSize), selection: Binding(get: { store.size }, set: store.setSize)) {
                     ForEach(LLMRecordService.pageSizes, id: \.self) { Text($0, format: .number).tag($0) }
                 }.fixedSize()
+            }
+            .disabled(store.isMutating)
+            if let failure = store.recording.failure { error(failure, label: .llmRecordRecording) }
+            if let failure = store.mutationFailure { error(failure, label: .llmRecords) }
+            if let deleted = store.deletedCount {
+                Text(s(.llmRecordDeleted).replacingOccurrences(of: "{count}", with: deleted.formatted(.number.locale(locale))))
+                    .foregroundStyle(.secondary)
             }
             if let failure = store.tasks.failure { error(failure, label: .llmRecordTask) }
             if let failure = store.list.failure { error(failure, label: .llmRecords) }
@@ -75,7 +91,7 @@ import SwiftUI
             } primaryAction: { ids in
                 detail = rows.first { ids.contains($0.id) }
             }
-            .disabled(store.list.isLoading)
+            .disabled(store.list.isLoading || store.isMutating)
             .overlay {
                 if store.list.isLoading { ProgressView() }
                 else if store.list.value?.records.isEmpty == true && !store.list.isStale {
@@ -84,26 +100,49 @@ import SwiftUI
             }
             HStack {
                 Button(s(.toolRunDetails)) { detail = rows.first { $0.id == selectedID } }
-                    .disabled(selectedID == nil || store.list.isLoading)
+                    .disabled(selectedID == nil || store.list.isLoading || store.isMutating)
                 Button(s(.toolRunRefresh)) { reload += 1 }
-                    .disabled(store.list.isLoading || store.tasks.isLoading)
+                    .disabled(store.list.isLoading || store.tasks.isLoading || store.recording.isLoading || store.isMutating)
+                Button(s(.llmRecordDeleteTask), role: .destructive) {
+                    deletionTask = String(decoding: task, as: UTF8.self)
+                }
+                .disabled(
+                    task.isEmpty || store.tasks.isStale || store.tasks.isLoading || store.isMutating
+                        || store.tasks.value?.contains(where: { $0.wireIdentity == task }) != true
+                )
                 Spacer()
                 if let result = store.list.value, !store.list.isStale {
                     let range = ToolRunPresentation.pageRange(page: store.page, size: store.size, count: rows.count)
                     Text("\(range.first, format: .number)–\(range.last, format: .number) / \(result.total, format: .number)")
                         .foregroundStyle(.secondary)
                 }
-                Button(s(.toolRunPrevious)) { store.setPage(store.page - 1) }.disabled(store.page == 0)
+                Button(s(.toolRunPrevious)) { store.setPage(store.page - 1) }.disabled(store.page == 0 || store.isMutating)
                 Text(store.page + 1, format: .number).monospacedDigit()
-                Button(s(.toolRunNext)) { store.setPage(store.page + 1) }.disabled(!store.hasNext)
+                Button(s(.toolRunNext)) { store.setPage(store.page + 1) }.disabled(!store.hasNext || store.isMutating)
             }
         }
         .padding()
         .navigationTitle(s(.llmRecords))
         .task(id: request) { await store.refresh() }
         .task(id: reload) { await store.refreshTasks() }
+        .task(id: reload) { await store.refreshRecording() }
         .onChange(of: request) { _, _ in selectedID = nil; detail = nil }
         .sheet(item: $detail) { row in LLMRecordDetailSheet(row: row, store: store).id(row.id) }
+        .alert(s(.llmRecordDeleteTask), isPresented: Binding(
+            get: { deletionTask != nil },
+            set: { if !$0 { deletionTask = nil } }
+        ), presenting: deletionTask) { target in
+            Button(s(.trafficUIConfirmDelete), role: .destructive) {
+                deletionTask = nil
+                Task {
+                    if await store.delete(task: target) { task = Data() }
+                    reload += 1
+                }
+            }
+            Button(s(.trafficUICancel), role: .cancel) { deletionTask = nil }
+        } message: { target in
+            Text(s(.llmRecordDeletePrompt).replacingOccurrences(of: "{task}", with: target))
+        }
     }
 
     private func apply() {

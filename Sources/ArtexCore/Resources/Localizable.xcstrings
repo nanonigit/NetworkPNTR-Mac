@@ -1,6 +1,70 @@
 {
   "sourceLanguage": "en",
   "strings": {
+      "llmRecord.ui.recording": {
+        "localizations": {
+          "en": {
+            "stringUnit": {
+              "state": "translated",
+              "value": "Record LLM Calls"
+            }
+          },
+          "ja": {
+            "stringUnit": {
+              "state": "translated",
+              "value": "LLM呼び出しを記録"
+            }
+          }
+        }
+      },
+      "llmRecord.ui.deleteTask": {
+        "localizations": {
+          "en": {
+            "stringUnit": {
+              "state": "translated",
+              "value": "Delete Task History"
+            }
+          },
+          "ja": {
+            "stringUnit": {
+              "state": "translated",
+              "value": "タスクの履歴を削除"
+            }
+          }
+        }
+      },
+      "llmRecord.ui.deletePrompt": {
+        "localizations": {
+          "en": {
+            "stringUnit": {
+              "state": "translated",
+              "value": "Delete all recorded LLM calls for task #{task}?"
+            }
+          },
+          "ja": {
+            "stringUnit": {
+              "state": "translated",
+              "value": "タスク #{task} のLLM呼び出し履歴をすべて削除しますか？"
+            }
+          }
+        }
+      },
+      "llmRecord.ui.deleted": {
+        "localizations": {
+          "en": {
+            "stringUnit": {
+              "state": "translated",
+              "value": "Deleted {count} LLM call records."
+            }
+          },
+          "ja": {
+            "stringUnit": {
+              "state": "translated",
+              "value": "LLM呼び出し履歴を{count}件削除しました。"
+            }
+          }
+        }
+      },
       "llmRecord.ui.session": {
         "localizations": {
           "en": {

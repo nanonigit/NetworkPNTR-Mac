@@ -112,7 +112,6 @@
         "Tests/ArtexCoreTests/LLMRecordStoreTests.swift"
       ],
       "remainingGates": [
-        "Recording preference and confirmed task-scoped deletion",
         "Browser and isolated VM fixtures, visual and keyboard acceptance"
       ]
     },
