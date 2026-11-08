@@ -697,7 +697,7 @@ runs, missing results, non-ASCII input and empty/error states. Verify
 that changing the page does not change the aggregate. Then validate
 native list, detail and summary with actual keyboard and visible
 browser comparisons. The authenticated native screen is implemented.
-Keep the catalog item in progress until real-screen comparisons pass.
+Keep the catalog item in progress through live invalid-filter and cancellation checks.
 
 The pinned backend API oracle passed on a fresh offline reference
 container with 54 synthetic runs. It checked 30 list responses and
@@ -748,4 +748,20 @@ adding `--tool-runs-failure-review` to the DEBUG review invocation.
 Wait for `tool-run-failure-ready`, inspect the list, then write
 `tool-run-failure-restore` in the private review directory. The
 `native-review-ready.json` marker confirms restoration before Refresh.
-Side-by-side visual review remains open.
+The visual review compared the English screens at a 1180 × 800
+logical viewport/window. Both show six columns in the same order.
+The browser places pagination above the table and opens details in
+a trailing drawer. The Mac places pagination below the table and
+uses a sheet with stacked input and output. The browser uses bars
+and percentages in its summary. The Mac uses native
+table headers and numeric columns. The review identified two missing
+values in the Mac UI, the visible row range and each tool's share of
+total calls. Both values are now shown alongside the existing
+pagination and summary counts. The comparison uses the browser's
+light appearance and the Mac's dark appearance. The disposable
+Chromium image lacks Japanese glyphs in the screenshots.
+
+The revised Mac build was checked in Japanese with external native
+automation. It showed `1–50 / 54` and `51–54 / 54`, and the summary
+opened from page 2 showed `33.3%` for each tool. See the
+[visual comparison receipt](../evidence/tool-runs/visual-comparison.json).

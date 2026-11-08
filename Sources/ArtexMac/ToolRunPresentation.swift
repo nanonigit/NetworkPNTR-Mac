@@ -19,6 +19,16 @@ enum ToolRunPresentation {
         return String(decoding: pretty, as: UTF8.self)
     }
 
+    static func pageRange(page: Int64, size: Int, count: Int) -> (first: Decimal, last: Decimal) {
+        guard count > 0 else { return (0, 0) }
+        let offset = Decimal(page) * Decimal(size)
+        return (offset + 1, offset + Decimal(count))
+    }
+
+    static func share(count: Int64, total: Decimal) -> Decimal {
+        total > 0 ? Decimal(count) / total : 0
+    }
+
     static func preview(_ raw: String) -> String {
         let input = input(raw)
         let firstLine = input.prefix { !$0.isNewline }

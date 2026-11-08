@@ -2049,6 +2049,8 @@
 	<string>更新</string>
 	<key>toolRun.ui.search</key>
 	<string>実行履歴を検索</string>
+	<key>toolRun.ui.share</key>
+	<string>割合</string>
 	<key>toolRun.ui.status</key>
 	<string>状態</string>
 	<key>toolRun.ui.succeeded</key>

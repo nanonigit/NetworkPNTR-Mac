@@ -1,6 +1,7 @@
 import Foundation
 
 public enum AppStringKey: String, CaseIterable, Sendable {
+    case toolRunShare = "toolRun.ui.share"
     case toolRunSummary = "toolRun.ui.summary"
     case toolRunSummaryScope = "toolRun.ui.summaryScope"
     case toolRunSearch = "toolRun.ui.search"

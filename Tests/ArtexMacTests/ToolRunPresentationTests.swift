@@ -2,6 +2,15 @@
 import XCTest
 
 final class ToolRunPresentationTests: XCTestCase {
+    func testPageRangeAndShareUseDisplayedRowsAndAllCalls() {
+        let secondPage = ToolRunPresentation.pageRange(page: 1, size: 50, count: 4)
+        XCTAssertEqual(secondPage.first, 51)
+        XCTAssertEqual(secondPage.last, 54)
+        XCTAssertEqual(ToolRunPresentation.pageRange(page: 1, size: 50, count: 0).last, 0)
+        XCTAssertEqual(ToolRunPresentation.share(count: 18, total: 54).formatted(.percent.precision(.fractionLength(1)).locale(.init(identifier: "en_US"))), "33.3%")
+        XCTAssertEqual(ToolRunPresentation.share(count: 0, total: 0), 0)
+    }
+
     func testCommandAndPlainTextRemainLiteral() {
         XCTAssertEqual(ToolRunPresentation.input(#"{"command":"echo <タグ>\nsecond"}"#), "echo <タグ>\nsecond")
         XCTAssertEqual(ToolRunPresentation.input("<script>"), "<script>")

@@ -87,10 +87,11 @@
         "evidence/tool-runs/pinned-browser-ui.json",
         "evidence/tool-runs/native-ui-comparison.json",
         "evidence/tool-runs/pinned-browser-error-ui.json",
-        "evidence/tool-runs/native-error-ui.json"
+        "evidence/tool-runs/native-error-ui.json",
+        "evidence/tool-runs/visual-comparison.json"
       ],
       "remainingGates": [
-        "Side-by-side visual review"
+        "Live invalid-filter and in-flight cancellation checks"
       ]
     },
     {

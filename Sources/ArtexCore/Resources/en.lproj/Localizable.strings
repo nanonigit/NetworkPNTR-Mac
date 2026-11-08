@@ -2051,6 +2051,8 @@ Archive IDs: {archives}</string>
 	<string>Refresh</string>
 	<key>toolRun.ui.search</key>
 	<string>Search runs</string>
+	<key>toolRun.ui.share</key>
+	<string>Share</string>
 	<key>toolRun.ui.status</key>
 	<string>Status</string>
 	<key>toolRun.ui.succeeded</key>

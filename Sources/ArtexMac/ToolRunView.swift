@@ -93,8 +93,18 @@ import SwiftUI
                 Button(s(.toolRunDetails)) { detail = selectedRun }.disabled(selectedRun == nil || store.list.isLoading)
                 Button(s(.toolRunRefresh)) { reload += 1 }.disabled(store.list.isLoading)
                 Spacer()
+                if let page = store.list.value, !store.list.isStale {
+                    let range = ToolRunPresentation.pageRange(page: store.page, size: store.pageSize, count: page.commands.count)
+                    Text("\(range.first, format: .number)–\(range.last, format: .number) / \(page.total, format: .number)")
+                        .monospacedDigit().foregroundStyle(.secondary)
+                }
                 Button(s(.toolRunPrevious)) { store.setPage(store.page - 1) }.disabled(!store.hasPrevious)
-                Text((store.page + 1), format: .number).monospacedDigit()
+                if let page = store.list.value, !store.list.isStale {
+                    let lastPage = page.total == 0 ? 1 : (page.total - 1) / Int64(store.pageSize) + 1
+                    Text("\(store.page + 1, format: .number) / \(lastPage, format: .number)").monospacedDigit()
+                } else {
+                    Text(store.page + 1, format: .number).monospacedDigit()
+                }
                 Button(s(.toolRunNext)) { store.setPage(store.page + 1) }.disabled(!store.hasNext)
             }
         }
@@ -155,6 +165,10 @@ import SwiftUI
                         TableColumn(s(.toolRunTool)) { row in literal(row.tool) }
                         TableColumn(s(.toolRunCalls)) { row in Text(row.total, format: .number) }
                         TableColumn(s(.toolRunFailed)) { row in Text(row.errors, format: .number) }
+                        TableColumn(s(.toolRunShare)) { row in
+                            Text(ToolRunPresentation.share(count: row.total, total: calls),
+                                 format: .percent.precision(.fractionLength(1)))
+                        }
                     }.frame(minHeight: 200)
                 }
             }
