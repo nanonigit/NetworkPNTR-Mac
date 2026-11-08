@@ -718,3 +718,14 @@ One repeat stopped at seed with guest ext4 inode checksum errors.
 A fresh run of the same signed probe and pinned artifacts reproduced
 the successful receipt. VM boot and storage stability remain open,
 as do rendered UI and keyboard comparison.
+
+The pinned browser also passed a rendered Chromium run on the same
+54 records. It verified the six column labels, literal detail output,
+50 and 4 rows on the two default pages, all three per-tool counts
+with the summary opened from page 2, five combined-filter rows and
+the empty result. Browser input verified Tab between filters and
+Escape to close both detail and summary. The Chromium and backend
+containers shared an isolated loopback namespace and were removed.
+Rerun with `python3 script/tool_run_reference_host.py --browser`.
+The [browser receipt](../evidence/tool-runs/pinned-browser-ui.json)
+leaves the corresponding native window and keyboard comparison open.

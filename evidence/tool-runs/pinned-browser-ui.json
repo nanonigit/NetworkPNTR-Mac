@@ -1,0 +1,43 @@
+{
+  "sourceCommit": "e75ae371ad777ffd1eecdd28d2781a6519b05591",
+  "backendSHA256": "0ebad83ddda276b03b415d64ce30af44e7a587860f3b660c12563462a0ac5e80",
+  "referenceImage": "sha256:d481ba2c608cdcd0a2752179d753eef095c26a9c47a538467262e4ecca22607f",
+  "browserImage": "sha256:c4b84cbe9766ff624e79e06db9b743647b04383dc0a30d1f13a753f1d2b41768",
+  "network": {
+    "network_interfaces": "erspan0,gre0,gretap0,ip6_vti0,ip6gre0,ip6tnl0,ip_vti0,lo,sit0,tunl0",
+    "network_hardware_devices": 0,
+    "network_nonloopback_up": 0,
+    "network_external_routes": 0
+  },
+  "containerRemoved": true,
+  "browserContainerRemoved": true,
+  "browser": {
+    "columns": [
+      "Time",
+      "Task",
+      "Worker",
+      "Tool",
+      "Input",
+      "Status"
+    ],
+    "detail": [
+      "{\n  \"fixture_input\": \"plain 53\"\n}",
+      "<literal> result 53\n結果"
+    ],
+    "pageRows": [
+      50,
+      4
+    ],
+    "summary": {
+      "Bash": 18,
+      "Read": 18,
+      "WebFetch": 18
+    },
+    "combinedRows": 5,
+    "emptyFilterVisible": true,
+    "escapeClosesDialogs": true,
+    "tabMovesBetweenFilters": true
+  },
+  "referenceSHA256": "e49af8c5907995296b9ea1936e114f46fe2962ec157adc18170f6e968c523ad3",
+  "browserOracleSHA256": "4b5af7c2ebec4b9ed3ed8b148cd5cf9bbb44d76d1080ebc5697abc0da2d9dbb1"
+}

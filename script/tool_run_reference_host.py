@@ -1,4 +1,5 @@
 """Run the pinned history oracle in an owned, offline Docker reference."""
+import argparse
 import hashlib
 import json
 from pathlib import Path
@@ -33,6 +34,22 @@ sys.path.insert(0, '/state/tools')
 runpy.run_module('tool_run_fixture', run_name='__main__')
 """
 
+BROWSER_IMAGE = 'sha256:c4b84cbe9766ff624e79e06db9b743647b04383dc0a30d1f13a753f1d2b41768'
+EXECUTE_BROWSER = EXECUTE.rsplit('runpy.run_module', 1)[0] + """
+import subprocess
+import tool_run_fixture
+snapshot = tool_run_fixture.snapshot
+def with_browser(client):
+    result = snapshot(client)
+    browser = subprocess.run(['/usr/bin/node', '/state/tools/tool_run_browser_oracle.mjs'],
+                             input=client.token.encode(), stdout=subprocess.PIPE, env={}, check=True, timeout=90)
+    with open('/state/tool-run-browser.json', 'xb') as stream:
+        stream.write(browser.stdout)
+    return result
+tool_run_fixture.snapshot = with_browser
+tool_run_fixture.main()
+"""
+
 
 def docker(*args, data=None, timeout=100):
     result = subprocess.run([*DOCKER, *args], input=data, stdout=subprocess.PIPE, timeout=timeout, check=True)
@@ -40,6 +57,9 @@ def docker(*args, data=None, timeout=100):
 
 
 def main():
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument('--browser', action='store_true')
+    options = parser.parse_args()
     if not local_context(docker('context', 'inspect', 'desktop-linux', '--format', '{{.Endpoints.docker.Host}}').decode().strip()):
         raise RuntimeError('Tool history requires a local Docker context')
     if not builder_is_local(docker('buildx', 'inspect', 'desktop-linux').decode()):
@@ -55,6 +75,10 @@ def main():
     files = {'check_network.py': ROOT / 'guest/check_network.py'}
     for name in ('tool_run_fixture.py', 'findings_seed_guest.py', 'chat_upload_contract_fixture.py'):
         files[name] = ROOT / 'script' / name
+    if options.browser:
+        if docker('image', 'inspect', BROWSER_IMAGE, '--format', '{{.Id}}').decode().strip() != BROWSER_IMAGE:
+            raise RuntimeError('Pinned Chromium image is unavailable')
+        files['tool_run_browser_oracle.mjs'] = ROOT / 'script/tool_run_browser_oracle.mjs'
     bundle = {name: path.read_text(encoding='utf-8') for name, path in files.items()}
     try:
         docker('tag', RUNTIME, parent)
@@ -72,7 +96,30 @@ def main():
             docker('start', container)
             docker('exec', '-i', container, 'python3', '-', data=SETUP.encode())
             docker('exec', '-i', container, 'python3', '-c', INSTALL, data=json.dumps(bundle).encode())
-            proof = json.loads(docker('exec', container, 'python3', '-c', EXECUTE))
+            if options.browser:
+                browser_name = container_name + '-browser'
+                try:
+                    docker('run', '--detach', '--name', browser_name, '--label', label_filter,
+                           '--pull', 'never', '--network', 'container:' + container,
+                           '--read-only', '--tmpfs', '/tmp:rw,nosuid,nodev,size=128m,mode=1777',
+                           '--user', '1000:1000', '--cap-drop', 'ALL', '--security-opt', 'no-new-privileges',
+                           '--memory', '1g', '--pids-limit', '192', '--entrypoint', '/usr/bin/chromium',
+                           BROWSER_IMAGE, '--headless', '--no-sandbox', '--disable-dev-shm-usage',
+                           '--no-proxy-server', '--remote-debugging-port=9222', '--remote-allow-origins=*',
+                           '--user-data-dir=/tmp/tool-run-browser', '--window-size=1440,1000', 'about:blank')
+                    proof = json.loads(docker('exec', container, 'python3', '-c', EXECUTE_BROWSER, timeout=120))
+                    proof['browser'] = json.loads(docker('exec', container, 'cat', '/state/tool-run-browser.json'))
+                    proof['browserImage'] = BROWSER_IMAGE
+                finally:
+                    owned_browser = docker('ps', '-aq', '--no-trunc', '--filter', f'name=^/{browser_name}$',
+                                           '--filter', 'label=' + label_filter).decode().split()
+                    for identity in owned_browser:
+                        docker('rm', '-fv', identity, timeout=30)
+                    if len(owned_browser) != 1:
+                        raise RuntimeError('Disposable Chromium container identity was not confirmed')
+                proof['browserContainerRemoved'] = True
+            else:
+                proof = json.loads(docker('exec', container, 'python3', '-c', EXECUTE))
         finally:
             # Recover ownership by name and label if create did not return an ID.
             owned = docker('ps', '-aq', '--no-trunc', '--filter', f'name=^/{container_name}$',
