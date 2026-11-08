@@ -697,8 +697,7 @@ runs, missing results, non-ASCII input and empty/error states. Verify
 that changing the page does not change the aggregate. Then validate
 native list, detail and summary with actual keyboard and visible
 browser comparisons. The authenticated native screen is implemented.
-Keep the catalog item in progress until the matched fixture and
-real-screen comparisons pass.
+Keep the catalog item in progress until real-screen comparisons pass.
 
 The pinned backend API oracle passed on a fresh offline reference
 container with 54 synthetic runs. It checked 30 list responses and
@@ -706,6 +705,16 @@ six filtered aggregates, initial empty state, protected routes,
 rejection of a second seed, and cooperative shutdown. Rerun with
 `python3 script/tool_run_reference_host.py` using the pinned local
 reference runtime image. The [reference receipt](../evidence/tool-runs/pinned-browser-api.json)
-is the browser backend side of the comparison. The Mac VM still needs
-the same seed and snapshot checks, followed by rendered UI and
-keyboard comparison.
+is the browser backend side of the comparison. The signed DEBUG
+`VMProbe --tool-runs ARTIFACTS NEW_PRIVATE_OUTPUT` then seeded the same
+data in a fresh isolated VM and read through the native ToolRunService.
+The probe and comparison both pin the reviewed VM manifest digest.
+The [comparison receipt](../evidence/tool-runs/native-api-comparison.json)
+shows exact matches for all six decoded snapshots, including all 30
+pages and six aggregates. The run also checked initial empty state,
+two unauthenticated rejections and cooperative shutdown. Recheck a
+native output with `python3 script/compare_tool_runs.py OUTPUT/tool-runs-vm.json`.
+One repeat stopped at seed with guest ext4 inode checksum errors.
+A fresh run of the same signed probe and pinned artifacts reproduced
+the successful receipt. VM boot and storage stability remain open,
+as do rendered UI and keyboard comparison.

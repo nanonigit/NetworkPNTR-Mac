@@ -82,10 +82,10 @@
         "Tests/ArtexCoreTests/ToolRunServiceTests.swift",
         "Tests/ArtexCoreTests/ToolRunStoreTests.swift",
         "Tests/ArtexMacTests/ToolRunPresentationTests.swift",
-        "evidence/tool-runs/pinned-browser-api.json"
+        "evidence/tool-runs/pinned-browser-api.json",
+        "evidence/tool-runs/native-api-comparison.json"
       ],
       "remainingGates": [
-        "Populated guest/browser API comparison",
         "Native list, detail, summary and keyboard/visual acceptance"
       ]
     },

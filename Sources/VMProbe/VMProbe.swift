@@ -13,6 +13,7 @@ import Foundation
         if args[1] == "--captured-blob" { await CapturedProbe.run(Array(args.dropFirst(2)), sourceBlobs: true); return }
         if args[1] == "--captured" { await CapturedProbe.run(Array(args.dropFirst(2))); return }
         if args[1] == "--findings" { await FindingProbe.run(Array(args.dropFirst(2))); return }
+        if args[1] == "--tool-runs" { await ToolRunProbe.run(Array(args.dropFirst(2))); return }
         if args[1] == "--evidence-export" { await EvidenceExportProbe.run(Array(args.dropFirst(2))); return }
         if args[1] == "--task-archive" { await TaskArchiveProbe.run(Array(args.dropFirst(2))); return }
         if args[1] == "--task-catalog" { await TaskCatalogProbe.run(Array(args.dropFirst(2))); return }

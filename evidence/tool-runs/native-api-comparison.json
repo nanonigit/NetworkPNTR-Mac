@@ -1,0 +1,44 @@
+{
+  "sourceCommit": "e75ae371ad777ffd1eecdd28d2781a6519b05591",
+  "referenceSHA256": "e49af8c5907995296b9ea1936e114f46fe2962ec157adc18170f6e968c523ad3",
+  "guestManifestSHA256": "9c38d268d350e7ab4e265ca32d686c529d8e09e5facfc2c69581f31589b768d8",
+  "protectedStatuses": [
+    401,
+    401
+  ],
+  "freshEmpty": true,
+  "cooperativeStop": true,
+  "isolated": true,
+  "cases": {
+    "all": {
+      "pagesChecked": 5,
+      "rows": 54,
+      "matchedSHA256": "a3909983b26accb5fea041c4e788a2fdaac6ebdae38c4901994cb1ddc46d88b7"
+    },
+    "exploration": {
+      "pagesChecked": 5,
+      "rows": 28,
+      "matchedSHA256": "3c71dac00a850bc1b39cd33cdff183a27de768df7eb930fe02001e0dd5418d4e"
+    },
+    "keyword": {
+      "pagesChecked": 5,
+      "rows": 11,
+      "matchedSHA256": "9e1bf27c0252be59f7c485d949ab1fc47b2ad8e7cbf06d0af1d0c541aaf260fc"
+    },
+    "combined": {
+      "pagesChecked": 5,
+      "rows": 5,
+      "matchedSHA256": "ec33f1f2515cac5eaf6516606e4dc8a59d44bec28b0b124051ba79222e4a47d9"
+    },
+    "tool": {
+      "pagesChecked": 5,
+      "rows": 18,
+      "matchedSHA256": "620816f38ccae9e3b32aa64fb31d4a5e3b18d7088b63136b9d3fc153b1836cf3"
+    },
+    "empty": {
+      "pagesChecked": 5,
+      "rows": 0,
+      "matchedSHA256": "fbe92d834e841704df56ecf1598f6ea8c0ae8eeb7755628388904c0637190143"
+    }
+  }
+}
