@@ -1,0 +1,134 @@
+{
+  "sourceCommit": "e75ae371ad777ffd1eecdd28d2781a6519b05591",
+  "backendSHA256": "0ebad83ddda276b03b415d64ce30af44e7a587860f3b660c12563462a0ac5e80",
+  "network": {
+    "network_interfaces": "erspan0,gre0,gretap0,ip6_vti0,ip6gre0,ip6tnl0,ip_vti0,lo,sit0,tunl0",
+    "network_hardware_devices": 0,
+    "network_nonloopback_up": 0,
+    "network_external_routes": 0
+  },
+  "protectedStatuses": [
+    401,
+    401
+  ],
+  "freshEmpty": true,
+  "reseedRejected": true,
+  "cooperativeStop": true,
+  "cases": {
+    "all": {
+      "rows": 54,
+      "pagesChecked": 5,
+      "stats": [
+        {
+          "tool": "Bash",
+          "total": 18,
+          "errors": 4
+        },
+        {
+          "tool": "Read",
+          "total": 18,
+          "errors": 4
+        },
+        {
+          "tool": "WebFetch",
+          "total": 18,
+          "errors": 4
+        }
+      ],
+      "snapshotSHA256": "a3909983b26accb5fea041c4e788a2fdaac6ebdae38c4901994cb1ddc46d88b7"
+    },
+    "exploration": {
+      "rows": 28,
+      "pagesChecked": 5,
+      "stats": [
+        {
+          "tool": "Bash",
+          "total": 10,
+          "errors": 2
+        },
+        {
+          "tool": "Read",
+          "total": 9,
+          "errors": 2
+        },
+        {
+          "tool": "WebFetch",
+          "total": 9,
+          "errors": 2
+        }
+      ],
+      "snapshotSHA256": "3c71dac00a850bc1b39cd33cdff183a27de768df7eb930fe02001e0dd5418d4e"
+    },
+    "keyword": {
+      "rows": 11,
+      "pagesChecked": 5,
+      "stats": [
+        {
+          "tool": "Bash",
+          "total": 4,
+          "errors": 0
+        },
+        {
+          "tool": "WebFetch",
+          "total": 4,
+          "errors": 1
+        },
+        {
+          "tool": "Read",
+          "total": 3,
+          "errors": 1
+        }
+      ],
+      "snapshotSHA256": "9e1bf27c0252be59f7c485d949ab1fc47b2ad8e7cbf06d0af1d0c541aaf260fc"
+    },
+    "combined": {
+      "rows": 5,
+      "pagesChecked": 5,
+      "stats": [
+        {
+          "tool": "Bash",
+          "total": 2,
+          "errors": 0
+        },
+        {
+          "tool": "WebFetch",
+          "total": 2,
+          "errors": 0
+        },
+        {
+          "tool": "Read",
+          "total": 1,
+          "errors": 1
+        }
+      ],
+      "snapshotSHA256": "ec33f1f2515cac5eaf6516606e4dc8a59d44bec28b0b124051ba79222e4a47d9"
+    },
+    "tool": {
+      "rows": 18,
+      "pagesChecked": 5,
+      "stats": [
+        {
+          "tool": "WebFetch",
+          "total": 18,
+          "errors": 4
+        }
+      ],
+      "snapshotSHA256": "620816f38ccae9e3b32aa64fb31d4a5e3b18d7088b63136b9d3fc153b1836cf3"
+    },
+    "empty": {
+      "rows": 0,
+      "pagesChecked": 5,
+      "stats": [],
+      "snapshotSHA256": "fbe92d834e841704df56ecf1598f6ea8c0ae8eeb7755628388904c0637190143"
+    }
+  },
+  "containerRemoved": true,
+  "referenceParentImage": "sha256:735d063ffd4290be40a870c4c77f6a6f9ad16ae306262e2e21e3865cd9c2b91d",
+  "referenceImage": "sha256:b610476839c7fafb39ae72dc289f0fd137c3ef2163af71b7bdfbcd12cd559f48",
+  "sourceSHA256": {
+    "check_network.py": "4bc167e71c655d31eda1872f11ad4b8a90b201994834a63c82194a3fa317ee2e",
+    "tool_run_fixture.py": "754b6b99968420eb5aa5b05ebd50bbef9f39076cf0e240d3b6c94a586a0f1f35",
+    "findings_seed_guest.py": "ff65b9603ddd06704a6ace53398554f14479c5825ec0da573bc775f52036b70f",
+    "chat_upload_contract_fixture.py": "ffb8383c24b4d64675f5426880e4841b1e97b94fbc186fee336258adee1b64ba"
+  }
+}

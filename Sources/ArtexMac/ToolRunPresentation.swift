@@ -1,12 +1,17 @@
 import Foundation
 
 enum ToolRunPresentation {
+    private struct CommandInput: Decodable { let command: String }
+
     static func input(_ raw: String) -> String {
-        guard let value = try? JSONSerialization.jsonObject(with: Data(raw.utf8), options: .fragmentsAllowed) else {
-            return raw
+        let data = Data(raw.utf8)
+        if let input = try? JSONDecoder().decode(CommandInput.self, from: data) {
+            return input.command
         }
-        if let fields = value as? [String: Any], let command = fields["command"] as? String {
-            return command
+        // JSONSerialization can strip a BOM at the start of a JSON string value.
+        guard !raw.contains("\u{FEFF}"), raw.range(of: #"\uFEFF"#, options: .caseInsensitive) == nil,
+              let value = try? JSONSerialization.jsonObject(with: data, options: .fragmentsAllowed) else {
+            return raw
         }
         guard let pretty = try? JSONSerialization.data(withJSONObject: value, options: [
             .prettyPrinted, .sortedKeys, .withoutEscapingSlashes, .fragmentsAllowed

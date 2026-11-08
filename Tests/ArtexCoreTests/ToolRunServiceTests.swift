@@ -8,6 +8,16 @@ final class ToolRunServiceTests: XCTestCase {
         XCTAssertEqual(ToolRunFilter(keyword: "  keyword "), ToolRunFilter(keyword: "keyword"))
     }
 
+    @MainActor func testTallyIdentityPreservesDistinctToolNameBytes() async throws {
+        let api = ChatTestTransport()
+        try api.enqueue(["stats": [
+            ["tool": "\u{E9}", "total": 2, "errors": 0],
+            ["tool": "e\u{301}", "total": 1, "errors": 0]
+        ]])
+        let rows = try await ToolRunService(client: api).stats()
+        XCTAssertEqual(Set(rows.map(\.id)).count, 2)
+    }
+
     @MainActor func testListAndStatsShareFiltersWithoutPaginatingStats() async throws {
         let api = ChatTestTransport()
         let service = ToolRunService(client: api)

@@ -38,7 +38,7 @@ public struct ToolRunPage: Decodable, Sendable {
 }
 
 public struct ToolRunTally: Decodable, Identifiable, Sendable {
-    public var id: String { tool }
+    public var id: Data { Data(tool.utf8) }
     public let tool: String
     public let total: Int64
     public let errors: Int64

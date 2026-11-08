@@ -699,3 +699,13 @@ native list, detail and summary with actual keyboard and visible
 browser comparisons. The authenticated native screen is implemented.
 Keep the catalog item in progress until the matched fixture and
 real-screen comparisons pass.
+
+The pinned backend API oracle passed on a fresh offline reference
+container with 54 synthetic runs. It checked 30 list responses and
+six filtered aggregates, initial empty state, protected routes,
+rejection of a second seed, and cooperative shutdown. Rerun with
+`python3 script/tool_run_reference_host.py` using the pinned local
+reference runtime image. The [reference receipt](../evidence/tool-runs/pinned-browser-api.json)
+is the browser backend side of the comparison. The Mac VM still needs
+the same seed and snapshot checks, followed by rendered UI and
+keyboard comparison.

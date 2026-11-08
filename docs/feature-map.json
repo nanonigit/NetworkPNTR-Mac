@@ -81,7 +81,8 @@
       "evidence": [
         "Tests/ArtexCoreTests/ToolRunServiceTests.swift",
         "Tests/ArtexCoreTests/ToolRunStoreTests.swift",
-        "Tests/ArtexMacTests/ToolRunPresentationTests.swift"
+        "Tests/ArtexMacTests/ToolRunPresentationTests.swift",
+        "evidence/tool-runs/pinned-browser-api.json"
       ],
       "remainingGates": [
         "Populated guest/browser API comparison",
