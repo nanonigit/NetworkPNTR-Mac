@@ -696,4 +696,6 @@ and pinned browser fixture. Cover multiple pages, non-shell and failed
 runs, missing results, non-ASCII input and empty/error states. Verify
 that changing the page does not change the aggregate. Then validate
 native list, detail and summary with actual keyboard and visible
-browser comparisons. Keep the catalog item pending until code lands.
+browser comparisons. The authenticated native screen is implemented.
+Keep the catalog item in progress until the matched fixture and
+real-screen comparisons pass.

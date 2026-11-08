@@ -1,6 +1,358 @@
 {
   "sourceLanguage": "en",
   "strings": {
+      "toolRun.ui.summary": {
+        "localizations": {
+          "en": {
+            "stringUnit": {
+              "state": "translated",
+              "value": "Tool statistics"
+            }
+          },
+          "ja": {
+            "stringUnit": {
+              "state": "translated",
+              "value": "ツール統計"
+            }
+          }
+        }
+      },
+      "toolRun.ui.summaryScope": {
+        "localizations": {
+          "en": {
+            "stringUnit": {
+              "state": "translated",
+              "value": "Totals across all pages for the current filters"
+            }
+          },
+          "ja": {
+            "stringUnit": {
+              "state": "translated",
+              "value": "現在の絞り込み条件に一致する全ページの集計"
+            }
+          }
+        }
+      },
+      "toolRun.ui.search": {
+        "localizations": {
+          "en": {
+            "stringUnit": {
+              "state": "translated",
+              "value": "Search runs"
+            }
+          },
+          "ja": {
+            "stringUnit": {
+              "state": "translated",
+              "value": "実行履歴を検索"
+            }
+          }
+        }
+      },
+      "toolRun.ui.exploration": {
+        "localizations": {
+          "en": {
+            "stringUnit": {
+              "state": "translated",
+              "value": "Exploration ID"
+            }
+          },
+          "ja": {
+            "stringUnit": {
+              "state": "translated",
+              "value": "調査ID"
+            }
+          }
+        }
+      },
+      "toolRun.ui.apply": {
+        "localizations": {
+          "en": {
+            "stringUnit": {
+              "state": "translated",
+              "value": "Apply Filters"
+            }
+          },
+          "ja": {
+            "stringUnit": {
+              "state": "translated",
+              "value": "絞り込む"
+            }
+          }
+        }
+      },
+      "toolRun.ui.pageSize": {
+        "localizations": {
+          "en": {
+            "stringUnit": {
+              "state": "translated",
+              "value": "Rows per page"
+            }
+          },
+          "ja": {
+            "stringUnit": {
+              "state": "translated",
+              "value": "ページあたりの件数"
+            }
+          }
+        }
+      },
+      "toolRun.ui.invalidID": {
+        "localizations": {
+          "en": {
+            "stringUnit": {
+              "state": "translated",
+              "value": "Enter a valid nonnegative exploration ID."
+            }
+          },
+          "ja": {
+            "stringUnit": {
+              "state": "translated",
+              "value": "調査IDには0以上の整数を入力してください。"
+            }
+          }
+        }
+      },
+      "toolRun.ui.time": {
+        "localizations": {
+          "en": {
+            "stringUnit": {
+              "state": "translated",
+              "value": "Time"
+            }
+          },
+          "ja": {
+            "stringUnit": {
+              "state": "translated",
+              "value": "時刻"
+            }
+          }
+        }
+      },
+      "toolRun.ui.worker": {
+        "localizations": {
+          "en": {
+            "stringUnit": {
+              "state": "translated",
+              "value": "Worker"
+            }
+          },
+          "ja": {
+            "stringUnit": {
+              "state": "translated",
+              "value": "ワーカー"
+            }
+          }
+        }
+      },
+      "toolRun.ui.tool": {
+        "localizations": {
+          "en": {
+            "stringUnit": {
+              "state": "translated",
+              "value": "Tool"
+            }
+          },
+          "ja": {
+            "stringUnit": {
+              "state": "translated",
+              "value": "ツール"
+            }
+          }
+        }
+      },
+      "toolRun.ui.input": {
+        "localizations": {
+          "en": {
+            "stringUnit": {
+              "state": "translated",
+              "value": "Input"
+            }
+          },
+          "ja": {
+            "stringUnit": {
+              "state": "translated",
+              "value": "入力"
+            }
+          }
+        }
+      },
+      "toolRun.ui.output": {
+        "localizations": {
+          "en": {
+            "stringUnit": {
+              "state": "translated",
+              "value": "Output"
+            }
+          },
+          "ja": {
+            "stringUnit": {
+              "state": "translated",
+              "value": "出力"
+            }
+          }
+        }
+      },
+      "toolRun.ui.status": {
+        "localizations": {
+          "en": {
+            "stringUnit": {
+              "state": "translated",
+              "value": "Status"
+            }
+          },
+          "ja": {
+            "stringUnit": {
+              "state": "translated",
+              "value": "状態"
+            }
+          }
+        }
+      },
+      "toolRun.ui.details": {
+        "localizations": {
+          "en": {
+            "stringUnit": {
+              "state": "translated",
+              "value": "Run Details"
+            }
+          },
+          "ja": {
+            "stringUnit": {
+              "state": "translated",
+              "value": "実行の詳細"
+            }
+          }
+        }
+      },
+      "toolRun.ui.empty": {
+        "localizations": {
+          "en": {
+            "stringUnit": {
+              "state": "translated",
+              "value": "No tool runs found."
+            }
+          },
+          "ja": {
+            "stringUnit": {
+              "state": "translated",
+              "value": "実行履歴がありません。"
+            }
+          }
+        }
+      },
+      "toolRun.ui.refresh": {
+        "localizations": {
+          "en": {
+            "stringUnit": {
+              "state": "translated",
+              "value": "Refresh"
+            }
+          },
+          "ja": {
+            "stringUnit": {
+              "state": "translated",
+              "value": "更新"
+            }
+          }
+        }
+      },
+      "toolRun.ui.previous": {
+        "localizations": {
+          "en": {
+            "stringUnit": {
+              "state": "translated",
+              "value": "Previous"
+            }
+          },
+          "ja": {
+            "stringUnit": {
+              "state": "translated",
+              "value": "前へ"
+            }
+          }
+        }
+      },
+      "toolRun.ui.next": {
+        "localizations": {
+          "en": {
+            "stringUnit": {
+              "state": "translated",
+              "value": "Next"
+            }
+          },
+          "ja": {
+            "stringUnit": {
+              "state": "translated",
+              "value": "次へ"
+            }
+          }
+        }
+      },
+      "toolRun.ui.calls": {
+        "localizations": {
+          "en": {
+            "stringUnit": {
+              "state": "translated",
+              "value": "Calls"
+            }
+          },
+          "ja": {
+            "stringUnit": {
+              "state": "translated",
+              "value": "呼び出し数"
+            }
+          }
+        }
+      },
+      "toolRun.ui.failed": {
+        "localizations": {
+          "en": {
+            "stringUnit": {
+              "state": "translated",
+              "value": "Failed"
+            }
+          },
+          "ja": {
+            "stringUnit": {
+              "state": "translated",
+              "value": "失敗"
+            }
+          }
+        }
+      },
+      "toolRun.ui.succeeded": {
+        "localizations": {
+          "en": {
+            "stringUnit": {
+              "state": "translated",
+              "value": "Succeeded"
+            }
+          },
+          "ja": {
+            "stringUnit": {
+              "state": "translated",
+              "value": "成功"
+            }
+          }
+        }
+      },
+      "toolRun.ui.login": {
+        "localizations": {
+          "en": {
+            "stringUnit": {
+              "state": "translated",
+              "value": "Sign in to view tool runs."
+            }
+          },
+          "ja": {
+            "stringUnit": {
+              "state": "translated",
+              "value": "実行履歴を表示するにはログインしてください。"
+            }
+          }
+        }
+      },
     "agent.trigger.title": {
       "localizations": {
         "en": {

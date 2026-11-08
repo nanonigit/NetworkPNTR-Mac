@@ -154,4 +154,8 @@ parameter is named `task`, but the backend matches `exploration_id`.
 The list's page and size are absent from the summary request. Treat
 recorded input and output as text. Bind list and summary results to
 their filter generations so late responses cannot replace newer
-selection. UI design remains a separate Lazyweb and pinned-screen step.
+selection. The Mac screen follows the pinned browser's table columns,
+input preview, detail and separate summary. Lazyweb's Front audit-log
+reference informed the placement of filters above the table and the
+status column. Mac applies filters on Enter or Apply Filters and shows
+read failures separately from empty results.

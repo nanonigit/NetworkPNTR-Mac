@@ -80,7 +80,8 @@
       ],
       "evidence": [
         "Tests/ArtexCoreTests/ToolRunServiceTests.swift",
-        "Tests/ArtexCoreTests/ToolRunStoreTests.swift"
+        "Tests/ArtexCoreTests/ToolRunStoreTests.swift",
+        "Tests/ArtexMacTests/ToolRunPresentationTests.swift"
       ],
       "remainingGates": [
         "Populated guest/browser API comparison",

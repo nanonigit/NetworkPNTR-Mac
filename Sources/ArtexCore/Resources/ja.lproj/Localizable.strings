@@ -2019,6 +2019,50 @@
 	<string>タスクの下書きに添付するファイルを選択してください。</string>
 	<key>task.upload.progress</key>
 	<string>{total}バイト中{sent}バイトを送信。保存の確認を待っています</string>
+	<key>toolRun.ui.apply</key>
+	<string>絞り込む</string>
+	<key>toolRun.ui.calls</key>
+	<string>呼び出し数</string>
+	<key>toolRun.ui.details</key>
+	<string>実行の詳細</string>
+	<key>toolRun.ui.empty</key>
+	<string>実行履歴がありません。</string>
+	<key>toolRun.ui.exploration</key>
+	<string>調査ID</string>
+	<key>toolRun.ui.failed</key>
+	<string>失敗</string>
+	<key>toolRun.ui.input</key>
+	<string>入力</string>
+	<key>toolRun.ui.invalidID</key>
+	<string>調査IDには0以上の整数を入力してください。</string>
+	<key>toolRun.ui.login</key>
+	<string>実行履歴を表示するにはログインしてください。</string>
+	<key>toolRun.ui.next</key>
+	<string>次へ</string>
+	<key>toolRun.ui.output</key>
+	<string>出力</string>
+	<key>toolRun.ui.pageSize</key>
+	<string>ページあたりの件数</string>
+	<key>toolRun.ui.previous</key>
+	<string>前へ</string>
+	<key>toolRun.ui.refresh</key>
+	<string>更新</string>
+	<key>toolRun.ui.search</key>
+	<string>実行履歴を検索</string>
+	<key>toolRun.ui.status</key>
+	<string>状態</string>
+	<key>toolRun.ui.succeeded</key>
+	<string>成功</string>
+	<key>toolRun.ui.summary</key>
+	<string>ツール統計</string>
+	<key>toolRun.ui.summaryScope</key>
+	<string>現在の絞り込み条件に一致する全ページの集計</string>
+	<key>toolRun.ui.time</key>
+	<string>時刻</string>
+	<key>toolRun.ui.tool</key>
+	<string>ツール</string>
+	<key>toolRun.ui.worker</key>
+	<string>ワーカー</string>
 	<key>traffic.ui.acknowledge</key>
 	<string>確認した状態を承認</string>
 	<key>traffic.ui.advanced</key>

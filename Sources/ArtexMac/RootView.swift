@@ -62,6 +62,13 @@ struct RootView: View {
             else if selection == "chat", let session = environment.authentication, session.phase == .authenticated {
                 ChatView(session: session).id(ObjectIdentifier(session))
             }
+            else if selection == "commands", let session = environment.authentication, session.phase == .authenticated {
+                ToolRunView(session: session).id(ObjectIdentifier(session))
+            }
+            else if selection == "commands" {
+                ContentUnavailableView(s(.loginRequired), systemImage: "person.crop.circle",
+                                       description: Text(s(.toolRunLogin)))
+            }
             else if selection == "traffic", let session = environment.authentication, session.phase == .authenticated {
                 trafficContent(session)
             }

@@ -2021,6 +2021,50 @@ Archive IDs: {archives}</string>
 	<string>Choose files to attach to the task draft.</string>
 	<key>task.upload.progress</key>
 	<string>Sending {sent} of {total} bytes; awaiting storage confirmation</string>
+	<key>toolRun.ui.apply</key>
+	<string>Apply Filters</string>
+	<key>toolRun.ui.calls</key>
+	<string>Calls</string>
+	<key>toolRun.ui.details</key>
+	<string>Run Details</string>
+	<key>toolRun.ui.empty</key>
+	<string>No tool runs found.</string>
+	<key>toolRun.ui.exploration</key>
+	<string>Exploration ID</string>
+	<key>toolRun.ui.failed</key>
+	<string>Failed</string>
+	<key>toolRun.ui.input</key>
+	<string>Input</string>
+	<key>toolRun.ui.invalidID</key>
+	<string>Enter a valid nonnegative exploration ID.</string>
+	<key>toolRun.ui.login</key>
+	<string>Sign in to view tool runs.</string>
+	<key>toolRun.ui.next</key>
+	<string>Next</string>
+	<key>toolRun.ui.output</key>
+	<string>Output</string>
+	<key>toolRun.ui.pageSize</key>
+	<string>Rows per page</string>
+	<key>toolRun.ui.previous</key>
+	<string>Previous</string>
+	<key>toolRun.ui.refresh</key>
+	<string>Refresh</string>
+	<key>toolRun.ui.search</key>
+	<string>Search runs</string>
+	<key>toolRun.ui.status</key>
+	<string>Status</string>
+	<key>toolRun.ui.succeeded</key>
+	<string>Succeeded</string>
+	<key>toolRun.ui.summary</key>
+	<string>Tool statistics</string>
+	<key>toolRun.ui.summaryScope</key>
+	<string>Totals across all pages for the current filters</string>
+	<key>toolRun.ui.time</key>
+	<string>Time</string>
+	<key>toolRun.ui.tool</key>
+	<string>Tool</string>
+	<key>toolRun.ui.worker</key>
+	<string>Worker</string>
 	<key>traffic.ui.acknowledge</key>
 	<string>Acknowledge reviewed state</string>
 	<key>traffic.ui.advanced</key>

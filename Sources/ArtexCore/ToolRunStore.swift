@@ -55,8 +55,12 @@ import Observation
     }
 
     public func refreshStats() async {
+        guard !Task.isCancelled else { return }
         let filter = filter
-        await stats.refresh { try await service.stats(filter: filter) }
+        // A reopened summary owns its request even if the dismissed sheet is still unwinding.
+        let state = stats.isLoading ? FindingReadState<[ToolRunTally]>() : stats
+        if state !== stats { stats = state }
+        await state.refresh { try await service.stats(filter: filter) }
     }
 
     public func reset() {

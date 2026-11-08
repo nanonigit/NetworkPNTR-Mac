@@ -80,6 +80,37 @@ final class ToolRunStoreTests: XCTestCase {
         XCTAssertFalse(store.stats.isLoading)
     }
 
+    @MainActor func testReopenedSummarySupersedesCancelledReadForSameFilter() async throws {
+        let api = ChatTestTransport()
+        var dismissedReply: CheckedContinuation<BackendHTTPResponse, any Error>?
+        api.handler = { _ in
+            if dismissedReply == nil {
+                return try await withCheckedThrowingContinuation { dismissedReply = $0 }
+            }
+            return try ChatTestTransport.response(["stats": [["tool": "new", "total": 2, "errors": 0]]])
+        }
+        let store = ToolRunStore(service: ToolRunService(client: api))
+        let dismissed = Task { await store.refreshStats() }
+        for _ in 0..<10_000 {
+            if dismissedReply != nil { break }
+            await Task.yield()
+        }
+        defer {
+            dismissed.cancel()
+            dismissedReply?.resume(throwing: CancellationError())
+        }
+        let reply = try XCTUnwrap(dismissedReply)
+        dismissed.cancel()
+        await store.refreshStats()
+        dismissedReply = nil
+        reply.resume(throwing: CancellationError())
+        await dismissed.value
+
+        XCTAssertEqual(store.stats.value?.first?.tool, "new")
+        XCTAssertFalse(store.stats.isLoading)
+        XCTAssertNil(store.stats.failure)
+    }
+
     @MainActor func testFilterChangeDuringPublicationDetachesOldResult() async throws {
         let api = ChatTestTransport()
         let store = ToolRunStore(service: ToolRunService(client: api))
