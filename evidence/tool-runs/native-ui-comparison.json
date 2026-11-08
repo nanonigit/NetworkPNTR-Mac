@@ -1,0 +1,46 @@
+{
+  "browserUIReferenceSHA256": "36364f4a1d9e5e0920f5a7a5008ce0fcff3bbbb86222afbd84a1490c4fcfcca9",
+  "guestManifestSHA256": "9c38d268d350e7ab4e265ca32d686c529d8e09e5facfc2c69581f31589b768d8",
+  "execution": "Signed DEBUG SwiftUI app, isolated VM, external macOS accessibility and keyboard actions",
+  "nativeLanguage": "ja",
+  "listTotal": 54,
+  "defaultPageSize": 50,
+  "secondPageVisibleRows": 4,
+  "columns": [
+    "時刻",
+    "調査ID",
+    "ワーカー",
+    "ツール",
+    "入力",
+    "状態"
+  ],
+  "detailInput": {
+    "fixture_input": "plain 53"
+  },
+  "detailOutput": "<literal> result 53\n結果",
+  "summaryOpenedOnPage": 2,
+  "summaryCalls": 54,
+  "summaryErrors": 12,
+  "summary": {
+    "Bash": {
+      "calls": 18,
+      "errors": 4
+    },
+    "Read": {
+      "calls": 18,
+      "errors": 4
+    },
+    "WebFetch": {
+      "calls": 18,
+      "errors": 4
+    }
+  },
+  "combinedFilterVisibleRows": 5,
+  "emptyFilterVisible": true,
+  "tabMovesBetweenFilters": true,
+  "returnAppliesFilters": true,
+  "escapeClosesDetailAndSummary": true,
+  "keychainFixtureRemoved": true,
+  "cooperativeVMStop": true,
+  "reviewedExecutableSHA256": "d7c2a6b6068ab807404a5393fd5b863c86e83188f2da048dd154ee7bf21227a2"
+}

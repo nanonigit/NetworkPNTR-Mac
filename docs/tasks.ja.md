@@ -376,12 +376,20 @@ Mac版のToolRunServiceで読み取り、一覧30応答と集計6応答を含む
 `python3 script/compare_tool_runs.py OUTPUT/tool-runs-vm.json` で再照合できる。
 再試験の1回ではゲストのext4 inodeチェックサムエラーでデータ投入に失敗し、VMは停止した。
 同じ署名済みプローブと固定成果物で新規ディスクを使って再実行し、同じ比較結果を確認した。
-VM起動・ストレージの安定性と、両方の実画面およびキーボード操作の比較は未完了。
+VM起動とストレージの安定性は引き続き検証する。
 
 同じ54件で固定版のChromium実画面も検証した。6列の見出し、詳細の出力文字列、
 既定ページの50件と4件、2ページ目から開いた集計のツール別件数、複合条件の5件と
 空表示を確認した。Tabで絞り込み欄を移動し、Escapeで詳細と集計を閉じた。
 Chromiumとバックエンドは隔離されたループバックを共有し、試験後に両コンテナを削除した。
 `python3 script/tool_run_reference_host.py --browser` で再実行できる。
-[固定版の画面記録](../evidence/tool-runs/pinned-browser-ui.json)に対応するMac版の
-実画面とキーボード操作の照合は未完了。
+[固定版の画面記録](../evidence/tool-runs/pinned-browser-ui.json)と
+[Mac版の操作記録](../evidence/tool-runs/native-ui-comparison.json)を照合した。
+署名済みDEBUGアプリで総数54件、2ページ目の4件、詳細の出力を確認した。
+2ページ目からの集計では合計54件・失敗12件、各ツール18件・失敗4件だった。
+Tabで欄を移動し、Enterで複合条件を適用して5件、該当なしでは0件と空表示を確認した。
+Escapeで詳細と集計を閉じ、終了時に一時キーチェーン項目の削除とVMの正常停止を確認した。
+検証済みゲストを含むDEBUGバンドルを
+`--native-diagnostics NEW_PRIVATE_DIRECTORY --native-review --no-llm-review --tool-runs-review`
+で起動し、`native-review-finish` マーカーで終了できる。
+サーバー障害時の実画面と、両画面を並べた見た目の比較は未完了。

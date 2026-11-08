@@ -84,10 +84,11 @@
         "Tests/ArtexMacTests/ToolRunPresentationTests.swift",
         "evidence/tool-runs/pinned-browser-api.json",
         "evidence/tool-runs/native-api-comparison.json",
-        "evidence/tool-runs/pinned-browser-ui.json"
+        "evidence/tool-runs/pinned-browser-ui.json",
+        "evidence/tool-runs/native-ui-comparison.json"
       ],
       "remainingGates": [
-        "Native list, detail, summary and keyboard/visual acceptance"
+        "Live server-error presentation and side-by-side visual review"
       ]
     },
     {

@@ -17,62 +17,11 @@ import Foundation
     }
 
     #if DEBUG
-    private static let reviewedManifestSHA256 = "9c38d268d350e7ab4e265ca32d686c529d8e09e5facfc2c69581f31589b768d8"
-
     private final class Vault: SessionVault {
         var token: String?
         func load() throws -> String? { token }
         func save(_ token: String) throws { self.token = token }
         func remove() throws { token = nil }
-    }
-
-    private struct Reference: Decodable {
-        let sourceCommit: String
-        let sourceSHA256: [String: String]
-    }
-
-    private static func sourceRoot() -> URL {
-        URL(fileURLWithPath: #filePath).deletingLastPathComponent().deletingLastPathComponent().deletingLastPathComponent()
-    }
-
-    private static func seed(client: AuthenticatedBackendClient, reference: Reference) async throws {
-        let modules = ["chat_upload_contract_fixture", "check_network", "findings_seed_guest", "tool_run_fixture"]
-        var sources: [String: String] = [:]
-        for name in modules {
-            let file = name + ".py"
-            let data = try Data(contentsOf: sourceRoot().appendingPathComponent(name == "check_network" ? "guest/" + file : "script/" + file))
-            guard ArtifactIntegrity.sha256(data) == reference.sourceSHA256[file],
-                  let source = String(data: data, encoding: .utf8) else {
-                throw RuntimeError.integrity("tool-run source mismatch")
-            }
-            sources[name] = source
-        }
-        let bundle = try JSONEncoder().encode(sources)
-        guard bundle.count <= 48 * 1024 else { throw RuntimeError.integrity("tool-run source size") }
-        let code = """
-        import base64,json,os,sys,types
-        os.environ['ARTEX_FINDINGS_FIXTURE']='1'
-        os.environ['ARTEX_TOOL_RUN_FIXTURE']='1'
-        sources=json.loads(base64.b64decode('\(bundle.base64EncodedString())'))
-        for name in ['chat_upload_contract_fixture','check_network','findings_seed_guest','tool_run_fixture']:
-            module=types.ModuleType(name)
-            sys.modules[name]=module
-            exec(compile(sources[name],name+'.py','exec'),module.__dict__)
-        sys.modules['tool_run_fixture'].seed()
-        print('tool-run-seeded')
-        """
-        struct Script: Encodable { let code: String; let timeoutMs = 20_000 }
-        struct Request: Encodable { let kind = "script"; let exec: Script; let params: [String: String] = [:] }
-        struct Reply: Decodable { let output: String; let isError: Bool }
-        let response = try await client.send(method: "POST", path: "/api/tools/custom/test",
-            body: BackendJSONCoding.encode(Request(exec: Script(code: code))), bearer: nil)
-        guard response.status == 200, response.body.count <= 64 * 1024 else {
-            throw RuntimeError.integrity("tool-run seed response")
-        }
-        let proof = try BackendJSONCoding.decode(Reply.self, from: response.body)
-        guard !proof.isError, proof.output.trimmingCharacters(in: .whitespacesAndNewlines) == "tool-run-seeded" else {
-            throw RuntimeError.integrity("tool-run seed witness")
-        }
     }
 
     private static func snapshots(service: ToolRunService) async throws -> [String: [Any]] {
@@ -108,15 +57,9 @@ import Foundation
             guard output.path.withCString({ Darwin.mkdir($0, 0o700) }) == 0 else {
                 throw RuntimeError.integrity("tool-run private output")
             }
-            let referenceData = try Data(contentsOf: sourceRoot().appendingPathComponent("evidence/tool-runs/pinned-browser-api.json"))
-            let reference = try JSONDecoder().decode(Reference.self, from: referenceData)
-            let manifest = try Data(contentsOf: artifacts.appendingPathComponent("manifest.json"))
-            let manifestSHA256 = ArtifactIntegrity.sha256(manifest)
-            let metadata = try JSONSerialization.jsonObject(with: manifest) as? [String: Any]
-            guard manifestSHA256 == reviewedManifestSHA256,
-                  metadata?["sourceCommit"] as? String == reference.sourceCommit else {
-                throw RuntimeError.integrity("tool-run VM source")
-            }
+            let referenceData = try ToolRunDiagnosticFixture.referenceData()
+            let reference = try JSONDecoder().decode(ToolRunDiagnosticFixture.Reference.self, from: referenceData)
+            let manifestSHA256 = try ToolRunDiagnosticFixture.verifiedManifest(at: artifacts, reference: reference)
             let disk = output.appendingPathComponent("state.ext4")
             let logs = output.appendingPathComponent("boot")
             _ = try PersistentGuestDisk.createIfMissing(at: disk, byteCount: 2 * 1024 * 1024 * 1024)
@@ -150,7 +93,7 @@ import Foundation
                 throw RuntimeError.integrity("tool-run fresh history")
             }
             stage = "seed"
-            try await seed(client: client, reference: reference)
+            try await ToolRunDiagnosticFixture.seed(client: client, reference: reference)
             stage = "snapshots"
             let observed = try await snapshots(service: service)
             stage = "shutdown"

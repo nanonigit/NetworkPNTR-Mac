@@ -10,12 +10,17 @@ struct NativeReviewPlan {
     ]
     let noLLM: Bool
     let skillVisibility: Bool
+    let toolRuns: Bool
     init(arguments: [String]) throws {
         let flags = Set(arguments)
+        toolRuns = flags.contains("--tool-runs-review")
         skillVisibility = flags.contains("--skill-visibility-diagnostics")
         let explicitNoLLM = flags.contains("--no-llm-review")
         if skillVisibility && (explicitNoLLM || flags.contains("--native-review") || !flags.isDisjoint(with: Self.seedingFlags)) {
             throw RuntimeError.integrity("skill visibility requires an independent diagnostic fixture")
+        }
+        if toolRuns && (!explicitNoLLM || skillVisibility) {
+            throw RuntimeError.integrity("tool-run review requires an independent no-LLM fixture")
         }
         noLLM = explicitNoLLM || skillVisibility
         if explicitNoLLM && (!flags.contains("--native-review") || !flags.isDisjoint(with: Self.seedingFlags)) {

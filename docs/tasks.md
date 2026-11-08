@@ -717,7 +717,7 @@ native output with `python3 script/compare_tool_runs.py OUTPUT/tool-runs-vm.json
 One repeat stopped at seed with guest ext4 inode checksum errors.
 A fresh run of the same signed probe and pinned artifacts reproduced
 the successful receipt. VM boot and storage stability remain open,
-as do rendered UI and keyboard comparison.
+independently of the UI checks below.
 
 The pinned browser also passed a rendered Chromium run on the same
 54 records. It verified the six column labels, literal detail output,
@@ -728,4 +728,15 @@ Escape to close both detail and summary. The Chromium and backend
 containers shared an isolated loopback namespace and were removed.
 Rerun with `python3 script/tool_run_reference_host.py --browser`.
 The [browser receipt](../evidence/tool-runs/pinned-browser-ui.json)
-leaves the corresponding native window and keyboard comparison open.
+is paired with an [external native UI receipt](../evidence/tool-runs/native-ui-comparison.json).
+A signed DEBUG app using the reviewed VM displayed 54 total records
+and four rows on page 2. Its detail preserved the literal output.
+The page-2 summary displayed 54 calls and 12 failures, with 18 calls
+and four failures per tool. Tab moved between filters, Return applied
+the combined filter (five records), and Escape closed both sheets.
+The empty filter displayed zero records. The review removed its
+temporary Keychain item and stopped the VM cooperatively.
+Use `--native-diagnostics NEW_PRIVATE_DIRECTORY --native-review --no-llm-review --tool-runs-review`
+with a DEBUG bundle carrying the reviewed guest. Write the fixed
+`native-review-finish` marker to end the disposable review.
+Live server-error presentation and side-by-side visual review remain open.

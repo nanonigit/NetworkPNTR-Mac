@@ -5,6 +5,15 @@ import Foundation
 @testable import ArtexMac
 
 final class NativeReviewPlanTests: XCTestCase {
+    func testToolRunsRequireAnIndependentNoProviderReview() throws {
+        let flag = "--tool-runs-review"
+        XCTAssertThrowsError(try NativeReviewPlan(arguments: [flag]))
+        XCTAssertThrowsError(try NativeReviewPlan(arguments: ["--native-review", flag]))
+        let args = ["--native-review", "--no-llm-review", flag]
+        XCTAssertTrue(try NativeReviewPlan(arguments: args).toolRuns)
+        XCTAssertThrowsError(try NativeReviewPlan(arguments: args + ["--dashboard-diagnostics"]))
+    }
+
     @MainActor final class Client: BackendJSONTransport {
         struct Call { let method: String; let path: String }
         var calls: [Call] = []

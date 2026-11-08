@@ -1,5 +1,6 @@
 #if DEBUG
 import AppKit
+import Darwin
 import ArtexCore
 import Foundation
 
@@ -7,11 +8,28 @@ import Foundation
 /// Internal rendering/service diagnostics do not replace external native click acceptance.
 @MainActor enum NativeDiagnostics {
     static func run(environment: DesktopRuntime, directory: URL) async {
+        let toolRunReview = CommandLine.arguments.contains("--tool-runs-review")
+        if toolRunReview, directory.path.withCString({ Darwin.mkdir($0, 0o700) }) != 0 {
+            FileHandle.standardError.write(Data("Tool-run review requires a new private directory\n".utf8))
+            NSApp.terminate(nil)
+            return
+        }
         var result: [String: Any] = ["ui_click_workflow_verified": false, "visual_acceptance": "pending external native automation"]
         var userBodyIDs: [Int64] = []
         do {
             let plan = try NativeReviewPlan(arguments: CommandLine.arguments)
-            try FileManager.default.createDirectory(at: directory, withIntermediateDirectories: true)
+            if !toolRunReview {
+                try FileManager.default.createDirectory(at: directory, withIntermediateDirectories: true)
+            }
+            let toolRunReference: ToolRunDiagnosticFixture.Reference?
+            if plan.toolRuns {
+                let reference = try JSONDecoder().decode(ToolRunDiagnosticFixture.Reference.self, from: ToolRunDiagnosticFixture.referenceData())
+                let guest = Bundle.main.resourceURL!.appendingPathComponent("Guest")
+                result["tool_run_guest_manifest_sha256"] = try ToolRunDiagnosticFixture.verifiedManifest(at: guest, reference: reference)
+                toolRunReference = reference
+            } else {
+                toolRunReference = nil
+            }
             result["native_window_rendered"] = try capture(to: directory.appendingPathComponent("native-launch.png"))
             await environment.start()
             for _ in 0..<1500 {
@@ -123,6 +141,20 @@ import Foundation
                 mentionIDs = try await NativeMentionDiagnostics.run(session: login, directory: directory)
                 result["native_citation_populated_pages"] = true
             } else { mentionIDs = [] }
+            if let reference = toolRunReference {
+                let client = AuthenticatedBackendClient(session: login)
+                let service = ToolRunService(client: client)
+                let initial = try await service.list()
+                guard initial.total == 0, initial.commands.isEmpty else {
+                    throw RuntimeError.integrity("fresh tool-run review required")
+                }
+                try await ToolRunDiagnosticFixture.seed(client: client, reference: reference)
+                let populated = try await service.list()
+                guard populated.total == 54, populated.commands.count == 50 else {
+                    throw RuntimeError.integrity("tool-run review seed count")
+                }
+                result["tool_run_fixture_rows"] = populated.total
+            }
             try await Task.sleep(for: .milliseconds(300))
             result["authenticated_content_snapshot"] = try capture(to: directory.appendingPathComponent("native-authenticated.png"))
             if CommandLine.arguments.contains("--native-review") {
