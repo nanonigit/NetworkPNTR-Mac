@@ -800,3 +800,5 @@ paths for the four hashed Python sources and
 list. Wait for `tool-run-lock-held`, then refresh and select Account.
 
 LLM call history proceeds from the three read contracts to selection and pagination state, then native screen and mutation work. Use synthetic records to compare filters, legacy rows without raw bodies, raw text, failures and cancellation on the browser and native VM before closing the feature gate.
+
+The read-only native screen now exposes the pinned list columns, task picker, pagination, and lazy row detail. It uses an explicit Apply Filters action and opens request and response in a native sheet. The raw switch is disabled when both raw bodies are absent. The pinned browser source supplied the workflow. The Lazyweb search surfaced an adjacent observability dashboard. Native table and sheet behavior followed the existing Tool Runs pattern. The feature remains in progress through recording, deletion, and paired fixture acceptance.

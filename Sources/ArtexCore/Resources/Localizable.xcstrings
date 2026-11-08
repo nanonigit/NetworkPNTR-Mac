@@ -1,6 +1,182 @@
 {
   "sourceLanguage": "en",
   "strings": {
+      "llmRecord.ui.session": {
+        "localizations": {
+          "en": {
+            "stringUnit": {
+              "state": "translated",
+              "value": "Session"
+            }
+          },
+          "ja": {
+            "stringUnit": {
+              "state": "translated",
+              "value": "セッション"
+            }
+          }
+        }
+      },
+      "llmRecord.ui.task": {
+        "localizations": {
+          "en": {
+            "stringUnit": {
+              "state": "translated",
+              "value": "Task"
+            }
+          },
+          "ja": {
+            "stringUnit": {
+              "state": "translated",
+              "value": "タスク"
+            }
+          }
+        }
+      },
+      "llmRecord.ui.allTasks": {
+        "localizations": {
+          "en": {
+            "stringUnit": {
+              "state": "translated",
+              "value": "All Tasks"
+            }
+          },
+          "ja": {
+            "stringUnit": {
+              "state": "translated",
+              "value": "すべてのタスク"
+            }
+          }
+        }
+      },
+      "llmRecord.ui.profile": {
+        "localizations": {
+          "en": {
+            "stringUnit": {
+              "state": "translated",
+              "value": "Profile"
+            }
+          },
+          "ja": {
+            "stringUnit": {
+              "state": "translated",
+              "value": "プロファイル"
+            }
+          }
+        }
+      },
+      "llmRecord.ui.latency": {
+        "localizations": {
+          "en": {
+            "stringUnit": {
+              "state": "translated",
+              "value": "Latency (ms)"
+            }
+          },
+          "ja": {
+            "stringUnit": {
+              "state": "translated",
+              "value": "所要時間（ms）"
+            }
+          }
+        }
+      },
+      "llmRecord.ui.tokens": {
+        "localizations": {
+          "en": {
+            "stringUnit": {
+              "state": "translated",
+              "value": "Input / Output Tokens"
+            }
+          },
+          "ja": {
+            "stringUnit": {
+              "state": "translated",
+              "value": "入力／出力トークン"
+            }
+          }
+        }
+      },
+      "llmRecord.ui.empty": {
+        "localizations": {
+          "en": {
+            "stringUnit": {
+              "state": "translated",
+              "value": "No LLM call records."
+            }
+          },
+          "ja": {
+            "stringUnit": {
+              "state": "translated",
+              "value": "LLM呼び出し履歴がありません。"
+            }
+          }
+        }
+      },
+      "llmRecord.ui.raw": {
+        "localizations": {
+          "en": {
+            "stringUnit": {
+              "state": "translated",
+              "value": "Raw Payloads"
+            }
+          },
+          "ja": {
+            "stringUnit": {
+              "state": "translated",
+              "value": "生の本文"
+            }
+          }
+        }
+      },
+      "llmRecord.ui.request": {
+        "localizations": {
+          "en": {
+            "stringUnit": {
+              "state": "translated",
+              "value": "Request"
+            }
+          },
+          "ja": {
+            "stringUnit": {
+              "state": "translated",
+              "value": "リクエスト"
+            }
+          }
+        }
+      },
+      "llmRecord.ui.response": {
+        "localizations": {
+          "en": {
+            "stringUnit": {
+              "state": "translated",
+              "value": "Response"
+            }
+          },
+          "ja": {
+            "stringUnit": {
+              "state": "translated",
+              "value": "レスポンス"
+            }
+          }
+        }
+      },
+      "llmRecord.ui.login": {
+        "localizations": {
+          "en": {
+            "stringUnit": {
+              "state": "translated",
+              "value": "Sign in to view LLM call history."
+            }
+          },
+          "ja": {
+            "stringUnit": {
+              "state": "translated",
+              "value": "LLM呼び出し履歴を表示するにはログインしてください。"
+            }
+          }
+        }
+      },
       "toolRun.ui.share": {
         "localizations": {
           "en": {

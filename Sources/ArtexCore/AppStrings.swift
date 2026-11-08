@@ -1,6 +1,17 @@
 import Foundation
 
 public enum AppStringKey: String, CaseIterable, Sendable {
+    case llmRecordSession = "llmRecord.ui.session"
+    case llmRecordTask = "llmRecord.ui.task"
+    case llmRecordAllTasks = "llmRecord.ui.allTasks"
+    case llmRecordProfile = "llmRecord.ui.profile"
+    case llmRecordLatency = "llmRecord.ui.latency"
+    case llmRecordTokens = "llmRecord.ui.tokens"
+    case llmRecordEmpty = "llmRecord.ui.empty"
+    case llmRecordRaw = "llmRecord.ui.raw"
+    case llmRecordRequest = "llmRecord.ui.request"
+    case llmRecordResponse = "llmRecord.ui.response"
+    case llmRecordLogin = "llmRecord.ui.login"
     case toolRunShare = "toolRun.ui.share"
     case toolRunSummary = "toolRun.ui.summary"
     case toolRunSummaryScope = "toolRun.ui.summaryScope"

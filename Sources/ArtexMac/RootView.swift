@@ -69,6 +69,13 @@ struct RootView: View {
                 ContentUnavailableView(s(.loginRequired), systemImage: "person.crop.circle",
                                        description: Text(s(.toolRunLogin)))
             }
+            else if selection == "llm-records", let session = environment.authentication, session.phase == .authenticated {
+                LLMRecordView(session: session).id(ObjectIdentifier(session))
+            }
+            else if selection == "llm-records" {
+                ContentUnavailableView(s(.loginRequired), systemImage: "person.crop.circle",
+                                       description: Text(s(.llmRecordLogin)))
+            }
             else if selection == "traffic", let session = environment.authentication, session.phase == .authenticated {
                 trafficContent(session)
             }

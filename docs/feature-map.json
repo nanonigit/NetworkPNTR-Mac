@@ -108,10 +108,10 @@
         "Verify mutations, persistence, cancellation and keyboard access"
       ],
       "evidence": [
-        "Tests/ArtexCoreTests/LLMRecordServiceTests.swift"
+        "Tests/ArtexCoreTests/LLMRecordServiceTests.swift",
+        "Tests/ArtexCoreTests/LLMRecordStoreTests.swift"
       ],
       "remainingGates": [
-        "Native history screen, selection and pagination",
         "Recording preference and confirmed task-scoped deletion",
         "Browser and isolated VM fixtures, visual and keyboard acceptance"
       ]

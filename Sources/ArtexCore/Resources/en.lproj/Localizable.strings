@@ -1302,6 +1302,28 @@
 	<string>Thinking switch</string>
 	<key>llm.ui.unsaved</key>
 	<string>You have unsaved changes</string>
+	<key>llmRecord.ui.allTasks</key>
+	<string>All Tasks</string>
+	<key>llmRecord.ui.empty</key>
+	<string>No LLM call records.</string>
+	<key>llmRecord.ui.latency</key>
+	<string>Latency (ms)</string>
+	<key>llmRecord.ui.login</key>
+	<string>Sign in to view LLM call history.</string>
+	<key>llmRecord.ui.profile</key>
+	<string>Profile</string>
+	<key>llmRecord.ui.raw</key>
+	<string>Raw Payloads</string>
+	<key>llmRecord.ui.request</key>
+	<string>Request</string>
+	<key>llmRecord.ui.response</key>
+	<string>Response</string>
+	<key>llmRecord.ui.session</key>
+	<string>Session</string>
+	<key>llmRecord.ui.task</key>
+	<string>Task</string>
+	<key>llmRecord.ui.tokens</key>
+	<string>Input / Output Tokens</string>
 	<key>menu.about</key>
 	<string>About {app}</string>
 	<key>menu.appHelp</key>

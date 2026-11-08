@@ -1,6 +1,6 @@
 import Foundation
 
-public struct LLMRecordFilter: Sendable {
+public struct LLMRecordFilter: Equatable, Sendable {
     public let model: String
     public let session: String
     public let task: String
@@ -9,6 +9,12 @@ public struct LLMRecordFilter: Sendable {
         self.model = model
         self.session = ChatText.trim(session)
         self.task = task
+    }
+
+    public static func == (lhs: Self, rhs: Self) -> Bool {
+        lhs.model.utf8.elementsEqual(rhs.model.utf8)
+            && lhs.session.utf8.elementsEqual(rhs.session.utf8)
+            && lhs.task.utf8.elementsEqual(rhs.task.utf8)
     }
 }
 
