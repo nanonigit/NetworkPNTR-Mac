@@ -1,3 +1,4 @@
+import AppKit
 import ArtexCore
 import Foundation
 import SwiftUI
@@ -71,7 +72,7 @@ import SwiftUI
             if let failure = store.tasks.failure { error(failure, label: .llmRecordTask) }
             if let failure = store.list.failure { error(failure, label: .llmRecords) }
             Table(rows, selection: $selectedID) {
-                TableColumn(s(.toolRunTime)) { row in timestamp(row.ts) }.width(min: 104, ideal: 142)
+                TableColumn(s(.toolRunTime)) { row in llmRecordTimestamp(row.ts, locale: locale) }.width(min: 104, ideal: 142)
                 TableColumn(s(.llmRecordTask)) { row in literal(row.taskId) }.width(min: 52, ideal: 74)
                 TableColumn(s(.toolRunWorker)) { row in literal(row.worker) }.width(min: 55, ideal: 75)
                 TableColumn(s(.llmRecordProfile)) { row in literal(row.profileName) }.width(min: 55, ideal: 86)
@@ -160,15 +161,15 @@ import SwiftUI
         }
     }
 
-    private func timestamp(_ value: String) -> Text {
-        let date = (try? Date(value, strategy: Date.ISO8601FormatStyle(includingFractionalSeconds: true)))
-            ?? (try? Date(value, strategy: Date.ISO8601FormatStyle()))
-        guard let date else { return literal(value) }
-        return Text(date, format: .dateTime.month(.twoDigits).day(.twoDigits).hour().minute().second().locale(locale))
-    }
-
     private func literal(_ value: String) -> Text { Text(verbatim: value.isEmpty ? "—" : value) }
     private func s(_ key: AppStringKey) -> String { AppStrings.text(key, language: language) }
+}
+
+private func llmRecordTimestamp(_ value: String, locale: Locale) -> Text {
+    let date = (try? Date(value, strategy: Date.ISO8601FormatStyle(includingFractionalSeconds: true)))
+        ?? (try? Date(value, strategy: Date.ISO8601FormatStyle()))
+    guard let date else { return Text(verbatim: value.isEmpty ? "—" : value) }
+    return Text(date, format: .dateTime.month(.twoDigits).day(.twoDigits).hour().minute().second().locale(locale))
 }
 
 private extension LLMRecordTask {
@@ -203,6 +204,17 @@ private extension LLMRecordTask {
                 Text(s(row.status == "ok" ? .toolRunSucceeded : .toolRunFailed))
                     .foregroundStyle(row.status == "ok" ? Color.primary : Color.red)
             }
+            HStack(spacing: 16) {
+                LabeledContent { llmRecordTimestamp(row.ts, locale: language.locale) } label: {
+                    Text(s(.toolRunTime))
+                }
+                LabeledContent {
+                    Text(row.latencyMs, format: .number.locale(language.locale))
+                } label: {
+                    Text(s(.llmRecordLatency))
+                }
+            }
+            .foregroundStyle(.secondary)
             Text(verbatim: row.sessionId).textSelection(.enabled)
             if let message = row.error, !message.isEmpty {
                 Text(verbatim: message).foregroundStyle(.red).textSelection(.enabled)
@@ -215,9 +227,9 @@ private extension LLMRecordTask {
                 ))
                 .disabled(!hasRaw)
                 HStack(alignment: .top, spacing: 12) {
-                    payload(.llmRecordRequest, showRaw ? detail.rawRequest : detail.requestBody)
+                    payload(.llmRecordRequest, copyLabel: .llmRecordCopyRequest, showRaw ? detail.rawRequest : detail.requestBody)
                     Divider()
-                    payload(.llmRecordResponse, showRaw ? detail.rawResponse : detail.responseBody)
+                    payload(.llmRecordResponse, copyLabel: .llmRecordCopyResponse, showRaw ? detail.rawResponse : detail.responseBody)
                 }
             } else if let failure = state.failure {
                 Text(failure.text(language: language)).foregroundStyle(.red)
@@ -230,9 +242,19 @@ private extension LLMRecordTask {
         .task { await store.loadDetail(id: row.id, into: state) }
     }
 
-    private func payload(_ label: AppStringKey, _ value: String?) -> some View {
+    private func payload(_ label: AppStringKey, copyLabel: AppStringKey, _ value: String?) -> some View {
         VStack(alignment: .leading, spacing: 4) {
-            Text(s(label)).font(.headline)
+            HStack {
+                Text(s(label)).font(.headline)
+                Button(s(copyLabel), systemImage: "doc.on.doc") {
+                    guard let value, !value.isEmpty else { return }
+                    NSPasteboard.general.clearContents()
+                    NSPasteboard.general.setString(value, forType: .string)
+                }
+                .labelStyle(.iconOnly)
+                .help(s(copyLabel))
+                .disabled(value?.isEmpty != false)
+            }
             ScrollView {
                 Text(verbatim: value.flatMap { $0.isEmpty ? nil : $0 } ?? "—")
                     .font(.system(.body, design: .monospaced)).textSelection(.enabled)

@@ -1304,6 +1304,10 @@
 	<string>未保存の変更があります</string>
 	<key>llmRecord.ui.allTasks</key>
 	<string>すべてのタスク</string>
+	<key>llmRecord.ui.copyRequest</key>
+	<string>リクエストをコピー</string>
+	<key>llmRecord.ui.copyResponse</key>
+	<string>レスポンスをコピー</string>
 	<key>llmRecord.ui.deletePrompt</key>
 	<string>タスク #{task} のLLM呼び出し履歴をすべて削除しますか？</string>
 	<key>llmRecord.ui.deleteTask</key>

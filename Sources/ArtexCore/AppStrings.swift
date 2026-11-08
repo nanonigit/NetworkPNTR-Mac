@@ -12,6 +12,8 @@ public enum AppStringKey: String, CaseIterable, Sendable {
     case llmRecordLatency = "llmRecord.ui.latency"
     case llmRecordTokens = "llmRecord.ui.tokens"
     case llmRecordEmpty = "llmRecord.ui.empty"
+    case llmRecordCopyRequest = "llmRecord.ui.copyRequest"
+    case llmRecordCopyResponse = "llmRecord.ui.copyResponse"
     case llmRecordRaw = "llmRecord.ui.raw"
     case llmRecordRequest = "llmRecord.ui.request"
     case llmRecordResponse = "llmRecord.ui.response"

@@ -150,7 +150,7 @@
           "en": {
             "stringUnit": {
               "state": "translated",
-              "value": "Input / Output Tokens"
+              "value": "Tokens"
             }
           },
           "ja": {
@@ -189,6 +189,38 @@
             "stringUnit": {
               "state": "translated",
               "value": "生の本文"
+            }
+          }
+        }
+      },
+      "llmRecord.ui.copyRequest": {
+        "localizations": {
+          "en": {
+            "stringUnit": {
+              "state": "translated",
+              "value": "Copy Request"
+            }
+          },
+          "ja": {
+            "stringUnit": {
+              "state": "translated",
+              "value": "リクエストをコピー"
+            }
+          }
+        }
+      },
+      "llmRecord.ui.copyResponse": {
+        "localizations": {
+          "en": {
+            "stringUnit": {
+              "state": "translated",
+              "value": "Copy Response"
+            }
+          },
+          "ja": {
+            "stringUnit": {
+              "state": "translated",
+              "value": "レスポンスをコピー"
             }
           }
         }

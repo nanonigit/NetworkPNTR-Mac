@@ -1,0 +1,27 @@
+{
+  "macBaseCommit": "e2a28f09f622be8bd4ac7a619dfa1e95719684fa",
+  "signedDebugWithLocalFixture": true,
+  "guestManifestSHA256": "9c38d268d350e7ab4e265ca32d686c529d8e09e5facfc2c69581f31589b768d8",
+  "fixtureRows": 4,
+  "englishDefaultWindow": {
+    "tokensHeadingFullyVisible": true,
+    "detailTimestampVisible": true,
+    "latencyMillisecondsVisible": 1234
+  },
+  "clipboardExactMatches": [
+    "parsed request",
+    "parsed response",
+    "raw request",
+    "raw response including trailing newlines"
+  ],
+  "emptyPayloadCopyButtonsDisabled": true,
+  "keyboard": {
+    "startingFocus": "Model field",
+    "tabsToTable": 4,
+    "downSelectsFirstRow": true,
+    "returnOpenedRecordID": 9104,
+    "escapeClosesDetail": true
+  },
+  "swiftTestsPassed": 726,
+  "temporaryDisksAndKeychainRemoved": true
+}

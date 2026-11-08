@@ -1304,6 +1304,10 @@
 	<string>You have unsaved changes</string>
 	<key>llmRecord.ui.allTasks</key>
 	<string>All Tasks</string>
+	<key>llmRecord.ui.copyRequest</key>
+	<string>Copy Request</string>
+	<key>llmRecord.ui.copyResponse</key>
+	<string>Copy Response</string>
 	<key>llmRecord.ui.deletePrompt</key>
 	<string>Delete all recorded LLM calls for task #{task}?</string>
 	<key>llmRecord.ui.deleteTask</key>
@@ -1331,7 +1335,7 @@
 	<key>llmRecord.ui.task</key>
 	<string>Task</string>
 	<key>llmRecord.ui.tokens</key>
-	<string>Input / Output Tokens</string>
+	<string>Tokens</string>
 	<key>menu.about</key>
 	<string>About {app}</string>
 	<key>menu.appHelp</key>
