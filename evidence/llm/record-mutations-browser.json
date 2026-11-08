@@ -33,13 +33,13 @@
   "browserContainerRemoved": true,
   "containerRemoved": true,
   "referenceParentImage": "sha256:735d063ffd4290be40a870c4c77f6a6f9ad16ae306262e2e21e3865cd9c2b91d",
-  "referenceImage": "sha256:abfbc4bd2f57461a1eaadf0898aefdcea58bc91997bb55bd21fe01d9416f016c",
+  "referenceImage": "sha256:5d9a060ddd1ed03b30628391e475d61bcd7999f74c489761abdc3d1b1c865fd0",
   "sourceSHA256": {
     "check_network.py": "4bc167e71c655d31eda1872f11ad4b8a90b201994834a63c82194a3fa317ee2e",
     "findings_seed_guest.py": "ff65b9603ddd06704a6ace53398554f14479c5825ec0da573bc775f52036b70f",
     "chat_upload_contract_fixture.py": "ffb8383c24b4d64675f5426880e4841b1e97b94fbc186fee336258adee1b64ba",
-    "localLLMFixtureAdaptedFromToolRunFixture": "754b6b99968420eb5aa5b05ebd50bbef9f39076cf0e240d3b6c94a586a0f1f35",
-    "localLLMOracleAdaptedFromToolRunOracle": "63c3d5fae1f1624734c6d940af135f8b14ecfca548c836548b76c6e93bd73d41"
+    "localLLMFixtureAdaptedFromToolRunFixture": "dc02717308bd5e4a2e64487ea2692f338e03d883915ff6f976e18e22ae4f4c85",
+    "localLLMOracleAdaptedFromToolRunOracle": "c331dd60e3da60eebaf568aa65a2eb3b4f7057efefb2b0ac9e9b0feed998e89a"
   },
   "scope": "Pinned browser UI with synthetic PostgreSQL rows; native UI comparison pending."
 }
