@@ -100,12 +100,20 @@
       "title": "LLM records",
       "browserPath": "/function/llm-records",
       "icon": "Radio",
-      "nativeStatus": "pending",
+      "nativeStatus": "in_progress",
       "phase": 4,
       "acceptance": [
         "Compare equivalent fixture data and visible controls",
         "Compare success, empty, validation and server-error states",
         "Verify mutations, persistence, cancellation and keyboard access"
+      ],
+      "evidence": [
+        "Tests/ArtexCoreTests/LLMRecordServiceTests.swift"
+      ],
+      "remainingGates": [
+        "Native history screen, selection and pagination",
+        "Recording preference and confirmed task-scoped deletion",
+        "Browser and isolated VM fixtures, visual and keyboard acceptance"
       ]
     },
     {

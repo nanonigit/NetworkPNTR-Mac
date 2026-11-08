@@ -180,3 +180,5 @@ Require exploration ID and keyword filtering, pagination, literal
 input/output inspection and unpaginated per-tool counts under the same
 filters. Compare equivalent synthetic data through the actual native
 and browser screens before acceptance.
+
+LLM call history must match the pinned browser for paginated metadata, model/session/task filters, task counts, and on-demand normalized and raw request/response inspection. The complete workflow includes reading and updating the recording preference and confirmed deletion scoped to the selected task. Compare success, empty, validation, failure, cancellation and keyboard behavior with equivalent synthetic data.

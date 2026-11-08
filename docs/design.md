@@ -159,3 +159,5 @@ input preview, detail and separate summary. Lazyweb's Front audit-log
 reference informed the placement of filters above the table and the
 status column. Mac applies filters on Enter or Apply Filters and shows
 read failures separately from empty results.
+
+LLM call history reads `GET /api/llm/records`, `GET /api/llm/records/tasks`, and `GET /api/llm/records/{id}` through the authenticated VM transport. The list starts at page zero and offers 25, 50 and 100 rows. The model and task filters are exact values and the session filter is trimmed before the backend substring match. Decode the numeric record ID as Int64. Fetch the optional bodies only when a row is selected and keep the source text intact. The existing finite transport imposes its 4 MiB response bound. In the UI phase, scope detail results to their selected row and present transport errors separately from empty results. Read back the recording preference after an update. Require confirmation and readback for task deletion.

@@ -798,3 +798,5 @@ paths for the four hashed Python sources and
 `evidence/tool-runs/pinned-browser-api.json`. Start the lock using
 `tool-run-cancellation-start` after the ready marker and the initial
 list. Wait for `tool-run-lock-held`, then refresh and select Account.
+
+LLM call history proceeds from the three read contracts to selection and pagination state, then native screen and mutation work. Use synthetic records to compare filters, legacy rows without raw bodies, raw text, failures and cancellation on the browser and native VM before closing the feature gate.
