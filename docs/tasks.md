@@ -739,4 +739,13 @@ temporary Keychain item and stopped the VM cooperatively.
 Use `--native-diagnostics NEW_PRIVATE_DIRECTORY --native-review --no-llm-review --tool-runs-review`
 with a DEBUG bundle carrying the reviewed guest. Write the fixed
 `native-review-finish` marker to end the disposable review.
-Live server-error presentation and side-by-side visual review remain open.
+The rendered list-error comparison is complete. The [pinned browser](../evidence/tool-runs/pinned-browser-error-ui.json)
+displayed its empty state for a targeted HTTP 500 injected by Chromium
+and recovered to six matching records. The [Mac app](../evidence/tool-runs/native-error-ui.json)
+displayed a localized HTTP 500 error from the isolated backend and
+recovered to 54 records using Refresh. The fault fixture can be run by
+adding `--tool-runs-failure-review` to the DEBUG review invocation.
+Wait for `tool-run-failure-ready`, inspect the list, then write
+`tool-run-failure-restore` in the private review directory. The
+`native-review-ready.json` marker confirms restoration before Refresh.
+Side-by-side visual review remains open.

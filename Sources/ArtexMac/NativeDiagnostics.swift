@@ -16,6 +16,7 @@ import Foundation
         }
         var result: [String: Any] = ["ui_click_workflow_verified": false, "visual_acceptance": "pending external native automation"]
         var userBodyIDs: [Int64] = []
+        var faultToRestore: ToolRunDiagnosticFixture.Reference?
         do {
             let plan = try NativeReviewPlan(arguments: CommandLine.arguments)
             if !toolRunReview {
@@ -154,6 +155,25 @@ import Foundation
                     throw RuntimeError.integrity("tool-run review seed count")
                 }
                 result["tool_run_fixture_rows"] = populated.total
+                if plan.toolRunFailure {
+                    faultToRestore = reference
+                    try await ToolRunDiagnosticFixture.setHistoryUnavailable(true, client: client, reference: reference)
+                    do {
+                        _ = try await service.list()
+                        throw RuntimeError.integrity("tool-run failure did not reach the API")
+                    } catch BackendAPIError.status(500) {
+                        result["tool_run_failure_status"] = 500
+                    }
+                    try Data().write(to: directory.appendingPathComponent("tool-run-failure-ready"))
+                    try await waitForReviewMarker(directory.appendingPathComponent("tool-run-failure-restore"))
+                    try await ToolRunDiagnosticFixture.setHistoryUnavailable(false, client: client, reference: reference)
+                    let restored = try await service.list()
+                    guard restored.total == 54, restored.commands.count == 50 else {
+                        throw RuntimeError.integrity("tool-run review recovery")
+                    }
+                    faultToRestore = nil
+                    result["tool_run_recovery_rows"] = restored.total
+                }
             }
             try await Task.sleep(for: .milliseconds(300))
             result["authenticated_content_snapshot"] = try capture(to: directory.appendingPathComponent("native-authenticated.png"))
@@ -162,11 +182,7 @@ import Foundation
                 // The fixed completion marker cannot execute commands or access the guest.
                 try JSONSerialization.data(withJSONObject: ["ready": true, "fixture_only": true], options: [.sortedKeys]).write(to: directory.appendingPathComponent("native-review-ready.json"))
                 let finish = directory.appendingPathComponent("native-review-finish")
-                for _ in 0..<900 {
-                    if FileManager.default.fileExists(atPath: finish.path) { break }
-                    try await Task.sleep(for: .seconds(1))
-                }
-                guard FileManager.default.fileExists(atPath: finish.path) else { throw RuntimeError.timeout("external native fixture review") }
+                try await waitForReviewMarker(finish)
             }
             if !userBodyIDs.isEmpty {
                 try await NativeUserBodyDiagnostics.cleanup(client: AuthenticatedBackendClient(session: login), ids: userBodyIDs)
@@ -193,6 +209,14 @@ import Foundation
             result["cooperative_stop_during_boot"] = true
         } catch {
             result["diagnostics_failed"] = true
+            if let reference = faultToRestore, let session = environment.authentication, session.phase == .authenticated {
+                let restore = Task { @MainActor in
+                    let client = AuthenticatedBackendClient(session: session)
+                    try await ToolRunDiagnosticFixture.setHistoryUnavailable(false, client: client, reference: reference)
+                    return try await ToolRunService(client: client).list().total == 54
+                }
+                result["tool_run_fault_cleanup_restored"] = (try? await restore.value) == true
+            }
             if !userBodyIDs.isEmpty {
                 let client: (any BackendJSONTransport)?
                 if let session = environment.authentication, session.phase == .authenticated {
@@ -211,6 +235,15 @@ import Foundation
         }
         if !environment.controller.hasMachine {
             NSApp.terminate(nil)
+        }
+    }
+    private static func waitForReviewMarker(_ marker: URL) async throws {
+        for _ in 0..<900 {
+            if FileManager.default.fileExists(atPath: marker.path) { return }
+            try await Task.sleep(for: .seconds(1))
+        }
+        guard FileManager.default.fileExists(atPath: marker.path) else {
+            throw RuntimeError.timeout("external native fixture review")
         }
     }
     private static func verifySkillFixture(session: AuthenticationSession, expectedVisible: Bool, remove: Bool) async throws {

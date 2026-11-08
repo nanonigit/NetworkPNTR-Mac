@@ -1,0 +1,19 @@
+{
+  "browserErrorReferenceSHA256": "5faccd9df61a99472fd860eff67edb2e2637995ed2c6f916d6ad156e172b5cc4",
+  "guestManifestSHA256": "9c38d268d350e7ab4e265ca32d686c529d8e09e5facfc2c69581f31589b768d8",
+  "reviewedExecutableSHA256": "03728a998d3211e19b4d39f10e6622b73bd5c6e10854992620c6b6e286ce9bf4",
+  "nativeLanguage": "ja",
+  "backendStatus": 500,
+  "renderedError": "実行環境との通信に失敗しました（HTTP 500）。",
+  "emptyStateDisplayedDuringFailure": false,
+  "recoveryAction": "更新",
+  "recoveredTotal": 54,
+  "keychainFixtureRemoved": true,
+  "cooperativeVMStop": true,
+  "guardedFixtureRerun": {
+    "executableSHA256": "6910bfd68109d14712b24ad02d76d4cb297192a03fbe1fc06921706e6c2be051",
+    "backendStatus": 500,
+    "recoveredTotal": 54,
+    "cooperativeVMStop": true
+  }
+}

@@ -85,10 +85,12 @@
         "evidence/tool-runs/pinned-browser-api.json",
         "evidence/tool-runs/native-api-comparison.json",
         "evidence/tool-runs/pinned-browser-ui.json",
-        "evidence/tool-runs/native-ui-comparison.json"
+        "evidence/tool-runs/native-ui-comparison.json",
+        "evidence/tool-runs/pinned-browser-error-ui.json",
+        "evidence/tool-runs/native-error-ui.json"
       ],
       "remainingGates": [
-        "Live server-error presentation and side-by-side visual review"
+        "Side-by-side visual review"
       ]
     },
     {

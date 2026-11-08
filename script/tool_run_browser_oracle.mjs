@@ -26,9 +26,11 @@ try {
   await waitFor(() => socket.readyState === WebSocket.OPEN);
   const pending = new Map();
   let next = 0;
+  let onPaused;
   socket.addEventListener('message', event => {
     const reply = JSON.parse(event.data);
     pending.get(reply.id)?.(reply);
+    if (reply.method === 'Fetch.requestPaused') onPaused?.(reply.params);
   });
   async function send(method, params = {}) {
     const id = ++next;
@@ -100,9 +102,51 @@ try {
   await js("document.querySelectorAll('input[placeholder]')[1].select()");
   await send('Input.insertText', { text: '9999' });
   await wait("document.querySelector('tbody')?.innerText.includes('No tool execution records')");
+  stage = 'server error setup';
+  let fulfillment;
+  let interceptionError = false;
+  onPaused = ({ requestId, request }) => {
+    const url = new URL(request.url);
+    const matches = request.method === 'GET' && url.origin === origin && url.pathname === '/api/commands'
+      && url.searchParams.get('task') === '8801' && url.searchParams.get('q') === "日本語+ O'Neil"
+      && url.searchParams.get('page') === '0' && url.searchParams.get('size') === '50';
+    if (matches && !fulfillment) {
+      fulfillment = send('Fetch.fulfillRequest', {
+          requestId, responseCode: 500,
+          responseHeaders: [{ name: 'Content-Type', value: 'application/json' }],
+          body: Buffer.from('{"error":"Synthetic list failure"}').toString('base64'),
+        }).then(() => true, () => false);
+    } else {
+      send('Fetch.continueRequest', { requestId }).catch(() => { interceptionError = true; });
+    }
+  };
+  await send('Fetch.enable', { patterns: [{ urlPattern: origin + '/api/commands?*', requestStage: 'Request' }] });
+
+  async function replaceExploration(value) {
+    await js("document.querySelectorAll('input[placeholder]')[1].select()");
+    await send('Input.insertText', { text: value });
+  }
+
+  await replaceExploration('8802');
+  await wait("document.querySelectorAll('tbody tr').length===5");
+  stage = 'server error rendering';
+  await replaceExploration('8801');
+  assert.equal(await waitFor(() => fulfillment && { promise: fulfillment }).then(result => result.promise), true);
+  await wait("document.querySelector('tbody')?.innerText.includes('No tool execution records')");
+  assert.equal(interceptionError, false);
+  assert.equal(await js("document.body.innerText.includes('Synthetic list failure')"), false);
+  await send('Fetch.disable');
+  onPaused = undefined;
+
+  stage = 'server error recovery';
+  await replaceExploration('8802');
+  await wait("document.querySelectorAll('tbody tr').length===5");
+  await replaceExploration('8801');
+  await wait("document.querySelectorAll('tbody tr').length===6 && [...document.querySelectorAll('tbody tr')].every(e=>e.innerText.includes('#8801'))");
   console.log(JSON.stringify({
     columns, detail: details, pageRows: [50, 4], summary, combinedRows: 5,
     emptyFilterVisible: true, escapeClosesDialogs: true, tabMovesBetweenFilters: true,
+    listFailure: { injectedStatus: 500, emptyStateDisplayed: true, recoveredRows: 6 },
   }));
 } catch {
   console.error('Tool run browser failed at ' + stage);

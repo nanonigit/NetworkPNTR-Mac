@@ -15,6 +15,17 @@ import Foundation
     }
 
     public static func seed(client: any BackendJSONTransport, reference: Reference) async throws {
+        try await invoke(.seed, client: client, reference: reference)
+    }
+
+    public static func setHistoryUnavailable(_ unavailable: Bool, client: any BackendJSONTransport,
+                                             reference: Reference) async throws {
+        try await invoke(unavailable ? .interrupt : .restore, client: client, reference: reference)
+    }
+
+    private enum Action: String { case seed, interrupt, restore }
+
+    private static func invoke(_ action: Action, client: any BackendJSONTransport, reference: Reference) async throws {
         let modules = ["chat_upload_contract_fixture", "check_network", "findings_seed_guest", "tool_run_fixture"]
         var sources: [String: String] = [:]
         for name in modules {
@@ -29,7 +40,7 @@ import Foundation
         let bundle = try JSONEncoder().encode(sources)
         guard bundle.count <= 48 * 1024 else { throw RuntimeError.integrity("tool-run source size") }
         let code = """
-        import base64,json,os,sys,types
+        import base64,json,os,subprocess,sys,types
         os.environ['ARTEX_FINDINGS_FIXTURE']='1'
         os.environ['ARTEX_TOOL_RUN_FIXTURE']='1'
         sources=json.loads(base64.b64decode('\(bundle.base64EncodedString())'))
@@ -37,8 +48,43 @@ import Foundation
             module=types.ModuleType(name)
             sys.modules[name]=module
             exec(compile(sources[name],name+'.py','exec'),module.__dict__)
-        sys.modules['tool_run_fixture'].seed()
-        print('tool-run-seeded')
+        action='\(action.rawValue)'
+        if action == 'seed':
+            sys.modules['tool_run_fixture'].seed()
+        else:
+            network=sys.modules['check_network']
+            if not network.is_isolated(network.inspect()):
+                raise RuntimeError('tool-run fault requires offline isolation')
+            env=sys.modules['findings_seed_guest'].validate_environment()
+            source,target=('activity','tool_run_fixture_hidden_activity') if action == 'interrupt' else ('tool_run_fixture_hidden_activity','activity')
+            sql=f'''BEGIN;
+        SET LOCAL lock_timeout = '2s';
+        SET LOCAL statement_timeout = '5s';
+        DO $$
+        DECLARE
+            fixture_table text := '{source}';
+            run_count bigint;
+            foreign_rows boolean;
+        BEGIN
+            IF '{action}' = 'restore' AND to_regclass('public.' || fixture_table) IS NULL THEN
+                fixture_table := 'activity';
+            END IF;
+            EXECUTE format('LOCK TABLE public.%I IN ACCESS EXCLUSIVE MODE', fixture_table);
+            EXECUTE format('SELECT count(*) FILTER (WHERE kind = %L), COALESCE(bool_or(tool_use_id IS NULL OR tool_use_id !~ %L),false) FROM public.%I',
+                           'tool_use', '^tool-history-fixture-[0-9]+$', fixture_table)
+              INTO run_count, foreign_rows;
+            IF run_count <> 54 OR foreign_rows THEN
+                RAISE EXCEPTION 'tool-run fault requires only the fixed fixture';
+            END IF;
+            IF fixture_table <> '{target}' THEN
+                EXECUTE format('ALTER TABLE public.%I RENAME TO %I', fixture_table, '{target}');
+            END IF;
+        END; $$;
+        COMMIT;'''
+            subprocess.run(['/usr/libexec/postgresql16/psql','-X','--no-password','-q','-v','ON_ERROR_STOP=1'],
+                           input=sql.encode(),env=env,stdout=subprocess.DEVNULL,stderr=subprocess.DEVNULL,
+                           timeout=15,check=True)
+        print('tool-run-' + action)
         """
         struct Script: Encodable { let code: String; let timeoutMs = 20_000 }
         struct Request: Encodable { let kind = "script"; let exec: Script; let params: [String: String] = [:] }
@@ -46,11 +92,11 @@ import Foundation
         let response = try await client.send(method: "POST", path: "/api/tools/custom/test",
             body: BackendJSONCoding.encode(Request(exec: Script(code: code))), bearer: nil)
         guard response.status == 200, response.body.count <= 64 * 1024 else {
-            throw RuntimeError.integrity("tool-run seed response")
+            throw RuntimeError.integrity("tool-run fixture response")
         }
         let proof = try BackendJSONCoding.decode(Reply.self, from: response.body)
-        guard !proof.isError, proof.output.trimmingCharacters(in: .whitespacesAndNewlines) == "tool-run-seeded" else {
-            throw RuntimeError.integrity("tool-run seed witness")
+        guard !proof.isError, proof.output.trimmingCharacters(in: .whitespacesAndNewlines) == "tool-run-\(action.rawValue)" else {
+            throw RuntimeError.integrity("tool-run fixture witness")
         }
     }
 

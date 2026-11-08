@@ -392,4 +392,11 @@ Escapeで詳細と集計を閉じ、終了時に一時キーチェーン項目�
 検証済みゲストを含むDEBUGバンドルを
 `--native-diagnostics NEW_PRIVATE_DIRECTORY --native-review --no-llm-review --tool-runs-review`
 で起動し、`native-review-finish` マーカーで終了できる。
-サーバー障害時の実画面と、両画面を並べた見た目の比較は未完了。
+一覧取得の障害時も実画面を照合した。[固定ブラウザ版](../evidence/tool-runs/pinned-browser-error-ui.json)は
+ChromiumからHTTP 500を注入すると空表示になり、再取得で6件に復旧した。
+[Mac版](../evidence/tool-runs/native-error-ui.json)は隔離バックエンドの実際のHTTP 500を
+日本語のエラーとして表示し、「更新」で54件に復旧した。DEBUG版の起動オプションに
+`--tool-runs-failure-review` を追加すると再実行できる。`tool-run-failure-ready` を確認後に
+一覧を開き、検証ディレクトリへ `tool-run-failure-restore` を書き込む。
+`native-review-ready.json` ができたら「更新」で復旧を確認する。
+両画面を並べた見た目の比較は未完了。

@@ -11,6 +11,10 @@ final class NativeReviewPlanTests: XCTestCase {
         XCTAssertThrowsError(try NativeReviewPlan(arguments: ["--native-review", flag]))
         let args = ["--native-review", "--no-llm-review", flag]
         XCTAssertTrue(try NativeReviewPlan(arguments: args).toolRuns)
+        let fault = "--tool-runs-failure-review"
+        XCTAssertThrowsError(try NativeReviewPlan(arguments: [fault]))
+        XCTAssertFalse(try NativeReviewPlan(arguments: args).toolRunFailure)
+        XCTAssertTrue(try NativeReviewPlan(arguments: args + [fault]).toolRunFailure)
         XCTAssertThrowsError(try NativeReviewPlan(arguments: args + ["--dashboard-diagnostics"]))
     }
 
