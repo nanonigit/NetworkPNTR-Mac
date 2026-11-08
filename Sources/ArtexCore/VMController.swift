@@ -213,12 +213,20 @@ import Virtualization
             }
         }
     }
+    #if DEBUG
+    @ObservationIgnored private var diagnosticToolRunReads: Set<UUID> = []
+    public var diagnosticToolRunReadsInFlight: Int { diagnosticToolRunReads.count }
+    #endif
+
     /// Bounded HTTP exchange for backend acceptance probes. Streaming UI integration is a separate pending gate.
     public func probeBackend(request: Data, provisioning: GuestProvisioning, rejectTransport: Bool = false) async throws -> Data {
         try Task.checkCancellation()
         guard guestReady, state == .running else { throw RuntimeError.integrity("backend not ready") }
         let identifier = try await connectBackend()
         defer {
+            #if DEBUG
+            diagnosticToolRunReads.remove(identifier)
+            #endif
             backendReads.removeValue(forKey: identifier)?.finish()
             backendConnections.removeValue(forKey: identifier)?.close()
         }
@@ -230,6 +238,11 @@ import Virtualization
         guard descriptor >= 0 else { throw POSIXError(.EIO) }
         let socket = BackendUploadSocket(owning: descriptor)
         backendReads[identifier] = socket
+        #if DEBUG
+        if request.starts(with: "GET /api/commands?".utf8) {
+            diagnosticToolRunReads.insert(identifier)
+        }
+        #endif
         let credential = rejectTransport ? String(repeating: "0", count: 64) : provisioning.transportToken
         let bytes = Data(("ARTEX_VSOCK_1 " + credential + "\n").utf8) + request
         let response = try await BackendSocketExchange.exchange(socket: socket, request: bytes)

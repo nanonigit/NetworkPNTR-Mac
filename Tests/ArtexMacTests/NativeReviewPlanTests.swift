@@ -15,6 +15,10 @@ final class NativeReviewPlanTests: XCTestCase {
         XCTAssertThrowsError(try NativeReviewPlan(arguments: [fault]))
         XCTAssertFalse(try NativeReviewPlan(arguments: args).toolRunFailure)
         XCTAssertTrue(try NativeReviewPlan(arguments: args + [fault]).toolRunFailure)
+        let cancellation = "--tool-runs-cancellation-review"
+        XCTAssertThrowsError(try NativeReviewPlan(arguments: [cancellation]))
+        XCTAssertTrue(try NativeReviewPlan(arguments: args + [cancellation]).toolRunCancellation)
+        XCTAssertThrowsError(try NativeReviewPlan(arguments: args + [cancellation, fault]))
         XCTAssertThrowsError(try NativeReviewPlan(arguments: args + ["--dashboard-diagnostics"]))
     }
 

@@ -12,12 +12,14 @@ struct NativeReviewPlan {
     let skillVisibility: Bool
     let toolRuns: Bool
     let toolRunFailure: Bool
+    let toolRunCancellation: Bool
     init(arguments: [String]) throws {
         let flags = Set(arguments)
         toolRuns = flags.contains("--tool-runs-review")
         toolRunFailure = flags.contains("--tool-runs-failure-review")
-        if toolRunFailure && !toolRuns {
-            throw RuntimeError.integrity("tool-run failure requires its review fixture")
+        toolRunCancellation = flags.contains("--tool-runs-cancellation-review")
+        if ((toolRunFailure || toolRunCancellation) && !toolRuns) || (toolRunFailure && toolRunCancellation) {
+            throw RuntimeError.integrity("tool-run failure and cancellation require separate review fixtures")
         }
         skillVisibility = flags.contains("--skill-visibility-diagnostics")
         let explicitNoLLM = flags.contains("--no-llm-review")

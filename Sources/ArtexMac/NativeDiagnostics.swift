@@ -155,6 +155,13 @@ import Foundation
                     throw RuntimeError.integrity("tool-run review seed count")
                 }
                 result["tool_run_fixture_rows"] = populated.total
+                if plan.toolRunCancellation {
+                    try Data().write(to: directory.appendingPathComponent("tool-run-cancellation-ready"))
+                    try await waitForReviewMarker(directory.appendingPathComponent("tool-run-cancellation-start"))
+                    try await verifyToolRunDeparture(environment: environment, client: client,
+                                                     reference: reference, directory: directory)
+                    result["tool_run_departure_cancelled_while_guest_locked"] = true
+                }
                 if plan.toolRunFailure {
                     faultToRestore = reference
                     try await ToolRunDiagnosticFixture.setHistoryUnavailable(true, client: client, reference: reference)
@@ -237,6 +244,39 @@ import Foundation
             NSApp.terminate(nil)
         }
     }
+    private static func verifyToolRunDeparture(environment: DesktopRuntime, client: AuthenticatedBackendClient,
+                                                reference: ToolRunDiagnosticFixture.Reference, directory: URL) async throws {
+        let runtime = environment.controller
+        let hold = Task { try await ToolRunDiagnosticFixture.holdHistoryReads(client: client, reference: reference) }
+        defer { hold.cancel() }
+        for waiting in [false, true] {
+            var witnessed = false
+            for _ in 0..<(waiting ? 160 : 50) {
+                if (!waiting || runtime.diagnosticToolRunReadsInFlight == 1),
+                   try await ToolRunDiagnosticFixture.historyReadWitness(waiting: waiting, client: client, reference: reference) {
+                    witnessed = true
+                    break
+                }
+                try await Task.sleep(for: .milliseconds(100))
+            }
+            guard witnessed else { throw RuntimeError.integrity("tool-run departure lock witness") }
+            try Data().write(to: directory.appendingPathComponent(waiting ? "tool-run-read-blocked" : "tool-run-lock-held"))
+        }
+        for _ in 0..<60 {
+            if runtime.diagnosticToolRunReadsInFlight == 0 { break }
+            try await Task.sleep(for: .milliseconds(100))
+        }
+        guard runtime.diagnosticToolRunReadsInFlight == 0,
+              try await ToolRunDiagnosticFixture.historyReadWitness(waiting: false, client: client, reference: reference) else {
+            throw RuntimeError.integrity("tool-run read did not cancel before guest lock release")
+        }
+        try Data().write(to: directory.appendingPathComponent("tool-run-read-cancelled"))
+        try await hold.value
+        guard try await ToolRunService(client: client).list().total == 54 else {
+            throw RuntimeError.integrity("tool-run departure recovery")
+        }
+    }
+
     private static func waitForReviewMarker(_ marker: URL) async throws {
         for _ in 0..<900 {
             if FileManager.default.fileExists(atPath: marker.path) { return }

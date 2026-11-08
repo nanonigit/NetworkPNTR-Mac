@@ -1,0 +1,16 @@
+{
+  "guestManifestSHA256": "9c38d268d350e7ab4e265ca32d686c529d8e09e5facfc2c69581f31589b768d8",
+  "reviewedExecutableSHA256": "a18653387594c0bad0bf0813760a3e43539190ba99d5f160377cc90faa6cf660",
+  "fixtureRows": 54,
+  "nativeLanguage": "ja",
+  "actions": [
+    "更新",
+    "アカウント",
+    "ツール実行"
+  ],
+  "toolRunListObservedWaiting": true,
+  "toolRunListExchangeEndedWhileGuestLockHeld": true,
+  "rowsVisibleAfterReturn": 54,
+  "cooperativeVMStop": true,
+  "keychainFixtureRemoved": true
+}

@@ -90,11 +90,10 @@
         "evidence/tool-runs/native-error-ui.json",
         "evidence/tool-runs/visual-comparison.json",
         "evidence/tool-runs/filter-controls-comparison.json",
-        "evidence/tool-runs/native-transport-cancellation.json"
+        "evidence/tool-runs/native-transport-cancellation.json",
+        "evidence/tool-runs/native-screen-departure.json"
       ],
-      "remainingGates": [
-        "Native in-flight cancellation on screen departure"
-      ]
+      "remainingGates": []
     },
     {
       "id": "llm-records",

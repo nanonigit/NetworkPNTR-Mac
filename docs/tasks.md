@@ -697,7 +697,7 @@ runs, missing results, non-ASCII input and empty/error states. Verify
 that changing the page does not change the aggregate. Then validate
 native list, detail and summary with actual keyboard and visible
 browser comparisons. The authenticated native screen is implemented.
-Keep the catalog item in progress through native in-flight cancellation on screen departure.
+Native in-flight cancellation on screen departure is recorded below.
 
 The pinned backend API oracle passed on a fresh offline reference
 container with 54 synthetic runs. It checked 30 list responses and
@@ -774,7 +774,7 @@ Correcting the draft and pressing Return shows the same 26 records.
 In Chromium, an older request was held, the newer filter rendered
 its empty result, and the older real response then completed with
 six records. The empty result remained visible at the post-response
-observation. Native screen-departure cancellation remains open.
+observation.
 
 Finite JSON calls now shut down their owned vsock descriptor when
 the caller cancels. VM stop also interrupts these sockets without
@@ -784,5 +784,17 @@ the peer is silent, and checks peer EOF. The signed Tool Runs probe
 also cancels a real list call after PostgreSQL reports a lock waiter.
 The caller receives cancellation while the fixture lock is still
 held. After release, the probe reads 54 records and repeats the six
-reference comparisons. The SwiftUI departure gesture still needs
-a fresh verification run.
+reference comparisons. The [native screen trial](../evidence/tool-runs/native-screen-departure.json)
+then refreshed the list and selected Account. The list exchange ended
+while the guest lock was still held. Returning after lock release
+showed 54 records again. This observation measures the Mac-side
+exchange. PostgreSQL query completion after disconnect was outside
+the trial.
+
+For this trial, add `--tool-runs-cancellation-review` to the native
+review arguments. The signed DEBUG bundle can carry the pinned fixture
+under `Contents/Resources/ToolRunFixture` with the original relative
+paths for the four hashed Python sources and
+`evidence/tool-runs/pinned-browser-api.json`. Start the lock using
+`tool-run-cancellation-start` after the ready marker and the initial
+list. Wait for `tool-run-lock-held`, then refresh and select Account.

@@ -11,7 +11,11 @@ import Foundation
     }
 
     private static func sourceRoot() -> URL {
-        URL(fileURLWithPath: #filePath).deletingLastPathComponent().deletingLastPathComponent().deletingLastPathComponent()
+        if let bundled = Bundle.main.resourceURL?.appendingPathComponent("ToolRunFixture"),
+           FileManager.default.fileExists(atPath: bundled.path) {
+            return bundled
+        }
+        return URL(fileURLWithPath: #filePath).deletingLastPathComponent().deletingLastPathComponent().deletingLastPathComponent()
     }
 
     public static func seed(client: any BackendJSONTransport, reference: Reference) async throws {
@@ -77,7 +81,7 @@ import Foundation
             source,target=('activity','tool_run_fixture_hidden_activity') if action in ('interrupt','hold') else ('tool_run_fixture_hidden_activity','activity')
             sql=f'''BEGIN;
         SET LOCAL lock_timeout = '2s';
-        SET LOCAL statement_timeout = '{'15s' if action == 'hold' else '5s'}';
+        SET LOCAL statement_timeout = '{'24s' if action == 'hold' else '5s'}';
         DO $$
         DECLARE
             fixture_table text := '{source}';
@@ -95,7 +99,7 @@ import Foundation
                 RAISE EXCEPTION 'tool-run fault requires only the fixed fixture';
             END IF;
             IF '{action}' = 'hold' THEN
-                PERFORM pg_sleep(12);
+                PERFORM pg_sleep(21);
             ELSIF fixture_table <> '{target}' THEN
                 EXECUTE format('ALTER TABLE public.%I RENAME TO %I', fixture_table, '{target}');
             END IF;
@@ -103,10 +107,10 @@ import Foundation
         COMMIT;'''
             subprocess.run(psql,
                            input=sql.encode(),env=env,stdout=subprocess.DEVNULL,stderr=subprocess.DEVNULL,
-                           timeout=17,check=True)
+                           timeout=25,check=True)
         print('tool-run-' + action)
         """
-        struct Script: Encodable { let code: String; let timeoutMs = 20_000 }
+        struct Script: Encodable { let code: String; let timeoutMs = 27_000 }
         struct Request: Encodable { let kind = "script"; let exec: Script; let params: [String: String] = [:] }
         struct Reply: Decodable { let output: String; let isError: Bool }
         let response = try await client.send(method: "POST", path: "/api/tools/custom/test",
