@@ -113,10 +113,12 @@
         "evidence/llm/record-mutations-native-ui.json",
         "evidence/llm/record-details-comparison.json",
         "evidence/llm/record-detail-recovery.json",
-        "evidence/llm/record-list-comparison.json"
+        "evidence/llm/record-list-comparison.json",
+        "evidence/llm/record-visual-keyboard.json"
       ],
       "remainingGates": [
-        "Remaining visual and keyboard acceptance beyond the exercised filters and cancellation controls"
+        "Native per-pane copy, detail time and latency, and readable token heading",
+        "Keyboard-only focus entry to the native table"
       ]
     },
     {
