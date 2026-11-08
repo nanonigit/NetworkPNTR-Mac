@@ -50,6 +50,35 @@ import Foundation
         return snapshots
     }
 
+    private static func verifyCancellation(client: AuthenticatedBackendClient,
+                                           reference: ToolRunDiagnosticFixture.Reference) async throws {
+        func awaitWitness(waiting: Bool) async throws {
+            for _ in 0..<20 {
+                if try await ToolRunDiagnosticFixture.historyReadWitness(waiting: waiting, client: client, reference: reference) { return }
+                try await Task.sleep(for: .milliseconds(100))
+            }
+            throw RuntimeError.integrity("tool-run cancellation lock witness")
+        }
+        let hold = Task { try await ToolRunDiagnosticFixture.holdHistoryReads(client: client, reference: reference) }
+        defer { hold.cancel() }
+        try await awaitWitness(waiting: false)
+        let read = Task { try await ToolRunService(client: client).list() }
+        defer { read.cancel() }
+        try await awaitWitness(waiting: true)
+        read.cancel()
+        do {
+            _ = try await read.value
+            throw RuntimeError.integrity("tool-run cancelled read returned successfully")
+        } catch is CancellationError {}
+        guard try await ToolRunDiagnosticFixture.historyReadWitness(waiting: false, client: client, reference: reference) else {
+            throw RuntimeError.integrity("tool-run read did not cancel before guest lock release")
+        }
+        try await hold.value
+        guard try await ToolRunService(client: client).list().total == 54 else {
+            throw RuntimeError.integrity("tool-run cancellation recovery")
+        }
+    }
+
     private static func exercise(artifacts: URL, output: URL) async {
         let controller = VMController()
         var stage = "prepare"
@@ -94,6 +123,8 @@ import Foundation
             }
             stage = "seed"
             try await ToolRunDiagnosticFixture.seed(client: client, reference: reference)
+            stage = "cancellation"
+            try await verifyCancellation(client: client, reference: reference)
             stage = "snapshots"
             let observed = try await snapshots(service: service)
             stage = "shutdown"
@@ -108,7 +139,7 @@ import Foundation
                 "sourceCommit": reference.sourceCommit, "referenceSHA256": ArtifactIntegrity.sha256(referenceData),
                 "guestManifestSHA256": manifestSHA256,
                 "protectedStatuses": [401, 401], "freshEmpty": true, "cooperativeStop": true,
-                "isolated": true, "snapshots": observed
+                "isolated": true, "cancelledWhileGuestLockHeld": true, "snapshots": observed
             ]
             let data = try JSONSerialization.data(withJSONObject: result, options: [.prettyPrinted, .sortedKeys])
             try data.write(to: output.appendingPathComponent("tool-runs-vm.json"), options: .atomic)

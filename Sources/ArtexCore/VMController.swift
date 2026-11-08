@@ -23,6 +23,7 @@ import Virtualization
     @ObservationIgnored private var poller: Task<Void, Never>?
     @ObservationIgnored private var logURL: URL?
     @ObservationIgnored private var backendConnections: [UUID: VZVirtioSocketConnection] = [:]
+    @ObservationIgnored private var backendReads: [UUID: BackendUploadSocket] = [:]
     @ObservationIgnored private var backendUploads: [UUID: BackendUploadSocket] = [:]
     @ObservationIgnored private var cloudEgressAuthorized = false
     private var cloudEgressListener: CloudEgressVMListener?
@@ -214,18 +215,26 @@ import Virtualization
     }
     /// Bounded HTTP exchange for backend acceptance probes. Streaming UI integration is a separate pending gate.
     public func probeBackend(request: Data, provisioning: GuestProvisioning, rejectTransport: Bool = false) async throws -> Data {
+        try Task.checkCancellation()
         guard guestReady, state == .running else { throw RuntimeError.integrity("backend not ready") }
         let identifier = try await connectBackend()
-        defer { backendConnections.removeValue(forKey: identifier)?.close() }
-        guard let connection = backendConnections[identifier] else { throw RuntimeError.integrity("closed backend connection") }
-        let descriptor = dup(connection.fileDescriptor)
+        defer {
+            backendReads.removeValue(forKey: identifier)?.finish()
+            backendConnections.removeValue(forKey: identifier)?.close()
+        }
+        try Task.checkCancellation()
+        guard guestReady, state == .running, let connection = backendConnections[identifier] else {
+            throw CancellationError()
+        }
+        let descriptor = fcntl(connection.fileDescriptor, F_DUPFD_CLOEXEC, 0)
         guard descriptor >= 0 else { throw POSIXError(.EIO) }
+        let socket = BackendUploadSocket(owning: descriptor)
+        backendReads[identifier] = socket
         let credential = rejectTransport ? String(repeating: "0", count: 64) : provisioning.transportToken
         let bytes = Data(("ARTEX_VSOCK_1 " + credential + "\n").utf8) + request
-        return try await Task.detached {
-            defer { Darwin.close(descriptor) }
-            return try BackendSocketExchange.exchange(descriptor: descriptor, request: bytes)
-        }.value
+        let response = try await BackendSocketExchange.exchange(socket: socket, request: bytes)
+        guard guestReady, state == .running, backendReads[identifier] === socket else { throw CancellationError() }
+        return response
     }
     /// Dedicated multipart exchange; payload files never become a shared VM directory.
     func uploadBackend(plan: ChatMultipartPlan, header: Data, provisioning: GuestProvisioning, progress: BackendUploadProgressHandler? = nil) async throws -> BackendHTTPResponse {
@@ -347,6 +356,7 @@ import Virtualization
     }
     @discardableResult private func cancelBackendUploads() -> Int {
         evidenceEpoch = UUID()
+        for socket in backendReads.values { socket.cancel() }
         return backendUploads.values.reduce(0) { count, socket in count + (socket.cancel() ? 1 : 0) }
     }
     private func connectBackend() async throws -> UUID {
@@ -383,7 +393,7 @@ import Virtualization
     private func releaseResources() {
         disableCloudEgress()
         runtimeFeatures = GuestRuntimeFeatures()
-        cancelBackendUploads(); backendUploads.removeAll()
+        cancelBackendUploads(); backendUploads.removeAll(); backendReads.removeAll()
         for continuation in pendingConnections.values { continuation.resume(throwing: RuntimeError.integrity("VM connection closed")) }
         pendingConnections.removeAll()
         for connection in backendConnections.values { connection.close() }

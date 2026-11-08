@@ -4,6 +4,27 @@ import Foundation
 /// Finite JSON exchange on a VZ-owned descriptor duplicated by the caller.
 /// Readiness must be polled: VZ sockets can be nonblocking even with SO_RCVTIMEO.
 enum BackendSocketExchange {
+    static func exchange(socket: BackendUploadSocket, request: Data) async throws -> Data {
+        try await withTaskCancellationHandler {
+            try Task.checkCancellation()
+            let response: Data
+            do {
+                response = try await Task.detached {
+                    defer { socket.finish() }
+                    return try exchange(descriptor: socket.checkedDescriptor(), request: request)
+                }.value
+            } catch {
+                // Shutdown can surface as an I/O error before the caller resumes.
+                try Task.checkCancellation()
+                try socket.validateCompletion()
+                throw error
+            }
+            try Task.checkCancellation()
+            try socket.validateCompletion()
+            return response
+        } onCancel: { socket.cancel() }
+    }
+
     static func exchange(descriptor: Int32, request: Data) throws -> Data {
         let deadline = ContinuousClock.now.advanced(by: .seconds(30))
         func wait(_ events: Int16) throws {

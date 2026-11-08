@@ -89,7 +89,8 @@
         "evidence/tool-runs/pinned-browser-error-ui.json",
         "evidence/tool-runs/native-error-ui.json",
         "evidence/tool-runs/visual-comparison.json",
-        "evidence/tool-runs/filter-controls-comparison.json"
+        "evidence/tool-runs/filter-controls-comparison.json",
+        "evidence/tool-runs/native-transport-cancellation.json"
       ],
       "remainingGates": [
         "Native in-flight cancellation on screen departure"

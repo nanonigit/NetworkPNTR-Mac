@@ -15,17 +15,25 @@ import Foundation
     }
 
     public static func seed(client: any BackendJSONTransport, reference: Reference) async throws {
-        try await invoke(.seed, client: client, reference: reference)
+        _ = try await invoke(.seed, client: client, reference: reference)
     }
 
     public static func setHistoryUnavailable(_ unavailable: Bool, client: any BackendJSONTransport,
                                              reference: Reference) async throws {
-        try await invoke(unavailable ? .interrupt : .restore, client: client, reference: reference)
+        _ = try await invoke(unavailable ? .interrupt : .restore, client: client, reference: reference)
     }
 
-    private enum Action: String { case seed, interrupt, restore }
+    public static func holdHistoryReads(client: any BackendJSONTransport, reference: Reference) async throws {
+        _ = try await invoke(.hold, client: client, reference: reference)
+    }
 
-    private static func invoke(_ action: Action, client: any BackendJSONTransport, reference: Reference) async throws {
+    public static func historyReadWitness(waiting: Bool, client: any BackendJSONTransport, reference: Reference) async throws -> Bool {
+        try await invoke(waiting ? .waiting : .locked, client: client, reference: reference)
+    }
+
+    private enum Action: String { case seed, interrupt, restore, hold, locked, waiting }
+
+    private static func invoke(_ action: Action, client: any BackendJSONTransport, reference: Reference) async throws -> Bool {
         let modules = ["chat_upload_contract_fixture", "check_network", "findings_seed_guest", "tool_run_fixture"]
         var sources: [String: String] = [:]
         for name in modules {
@@ -56,10 +64,20 @@ import Foundation
             if not network.is_isolated(network.inspect()):
                 raise RuntimeError('tool-run fault requires offline isolation')
             env=sys.modules['findings_seed_guest'].validate_environment()
-            source,target=('activity','tool_run_fixture_hidden_activity') if action == 'interrupt' else ('tool_run_fixture_hidden_activity','activity')
+            psql=['/usr/libexec/postgresql16/psql','-X','--no-password','-qAt','-v','ON_ERROR_STOP=1']
+            if action in ('locked','waiting'):
+                condition = "granted" if action == 'locked' else "NOT granted"
+                sql=f"SELECT EXISTS (SELECT 1 FROM pg_locks WHERE relation = 'public.activity'::regclass AND {condition} AND mode = '{'AccessExclusiveLock' if action == 'locked' else 'AccessShareLock'}');"
+                value=subprocess.run(psql,input=sql.encode(),env=env,stdout=subprocess.PIPE,
+                                     stderr=subprocess.DEVNULL,timeout=3,check=True).stdout.strip()
+                if value not in (b't',b'f'):
+                    raise RuntimeError('invalid tool history lock witness')
+                print('tool-run-' + action + '-' + value.decode())
+                sys.exit(0)
+            source,target=('activity','tool_run_fixture_hidden_activity') if action in ('interrupt','hold') else ('tool_run_fixture_hidden_activity','activity')
             sql=f'''BEGIN;
         SET LOCAL lock_timeout = '2s';
-        SET LOCAL statement_timeout = '5s';
+        SET LOCAL statement_timeout = '{'15s' if action == 'hold' else '5s'}';
         DO $$
         DECLARE
             fixture_table text := '{source}';
@@ -76,14 +94,16 @@ import Foundation
             IF run_count <> 54 OR foreign_rows THEN
                 RAISE EXCEPTION 'tool-run fault requires only the fixed fixture';
             END IF;
-            IF fixture_table <> '{target}' THEN
+            IF '{action}' = 'hold' THEN
+                PERFORM pg_sleep(12);
+            ELSIF fixture_table <> '{target}' THEN
                 EXECUTE format('ALTER TABLE public.%I RENAME TO %I', fixture_table, '{target}');
             END IF;
         END; $$;
         COMMIT;'''
-            subprocess.run(['/usr/libexec/postgresql16/psql','-X','--no-password','-q','-v','ON_ERROR_STOP=1'],
+            subprocess.run(psql,
                            input=sql.encode(),env=env,stdout=subprocess.DEVNULL,stderr=subprocess.DEVNULL,
-                           timeout=15,check=True)
+                           timeout=17,check=True)
         print('tool-run-' + action)
         """
         struct Script: Encodable { let code: String; let timeoutMs = 20_000 }
@@ -95,9 +115,16 @@ import Foundation
             throw RuntimeError.integrity("tool-run fixture response")
         }
         let proof = try BackendJSONCoding.decode(Reply.self, from: response.body)
-        guard !proof.isError, proof.output.trimmingCharacters(in: .whitespacesAndNewlines) == "tool-run-\(action.rawValue)" else {
-            throw RuntimeError.integrity("tool-run fixture witness")
+        let witness = proof.output.trimmingCharacters(in: .whitespacesAndNewlines)
+        let expected = "tool-run-\(action.rawValue)"
+        guard !proof.isError else { throw RuntimeError.integrity("tool-run fixture witness") }
+        if action == .locked || action == .waiting {
+            if witness == expected + "-t" { return true }
+            if witness == expected + "-f" { return false }
+        } else if witness == expected {
+            return true
         }
+        throw RuntimeError.integrity("tool-run fixture witness")
     }
 
     public static func referenceData() throws -> Data {

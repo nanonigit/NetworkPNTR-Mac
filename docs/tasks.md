@@ -775,3 +775,14 @@ In Chromium, an older request was held, the newer filter rendered
 its empty result, and the older real response then completed with
 six records. The empty result remained visible at the post-response
 observation. Native screen-departure cancellation remains open.
+
+Finite JSON calls now shut down their owned vsock descriptor when
+the caller cancels. VM stop also interrupts these sockets without
+adding them to the file-transfer interruption count. The socketpair
+regression waits for the peer to receive a request, cancels while
+the peer is silent, and checks peer EOF. The signed Tool Runs probe
+also cancels a real list call after PostgreSQL reports a lock waiter.
+The caller receives cancellation while the fixture lock is still
+held. After release, the probe reads 54 records and repeats the six
+reference comparisons. The SwiftUI departure gesture still needs
+a fresh verification run.
