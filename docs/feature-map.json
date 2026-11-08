@@ -109,10 +109,14 @@
       ],
       "evidence": [
         "Tests/ArtexCoreTests/LLMRecordServiceTests.swift",
-        "Tests/ArtexCoreTests/LLMRecordStoreTests.swift"
+        "Tests/ArtexCoreTests/LLMRecordStoreTests.swift",
+        "evidence/llm/record-mutations-native-ui.json",
+        "evidence/llm/record-details-comparison.json",
+        "evidence/llm/record-detail-recovery.json"
       ],
       "remainingGates": [
-        "Browser and isolated VM fixtures, visual and keyboard acceptance"
+        "Paired list pagination, model and session filters, empty and failure states",
+        "Recording persistence across restart and remaining visual and keyboard acceptance"
       ]
     },
     {
