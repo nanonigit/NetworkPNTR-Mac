@@ -78,9 +78,12 @@
         "Compare success, empty, validation and server-error states",
         "Verify literal input/output inspection, cancellation and keyboard access"
       ],
-      "evidence": ["Tests/ArtexCoreTests/ToolRunServiceTests.swift"],
+      "evidence": [
+        "Tests/ArtexCoreTests/ToolRunServiceTests.swift",
+        "Tests/ArtexCoreTests/ToolRunStoreTests.swift"
+      ],
       "remainingGates": [
-        "Filter generation ownership and populated guest/browser API comparison",
+        "Populated guest/browser API comparison",
         "Native list, detail, summary and keyboard/visual acceptance"
       ]
     },
