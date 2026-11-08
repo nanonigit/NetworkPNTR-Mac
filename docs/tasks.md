@@ -697,7 +697,7 @@ runs, missing results, non-ASCII input and empty/error states. Verify
 that changing the page does not change the aggregate. Then validate
 native list, detail and summary with actual keyboard and visible
 browser comparisons. The authenticated native screen is implemented.
-Keep the catalog item in progress through live invalid-filter and cancellation checks.
+Keep the catalog item in progress through native in-flight cancellation on screen departure.
 
 The pinned backend API oracle passed on a fresh offline reference
 container with 54 synthetic runs. It checked 30 list responses and
@@ -765,3 +765,13 @@ The revised Mac build was checked in Japanese with external native
 automation. It showed `1–50 / 54` and `51–54 / 54`, and the summary
 opened from page 2 showed `33.3%` for each tool. See the
 [visual comparison receipt](../evidence/tool-runs/visual-comparison.json).
+
+The [filter control receipt](../evidence/tool-runs/filter-controls-comparison.json)
+records the difference for `8802x`. The browser strips the letter and
+automatically shows 26 records. The Mac keeps the draft, explains
+the numeric requirement and retains the 54-record list after Return.
+Correcting the draft and pressing Return shows the same 26 records.
+In Chromium, an older request was held, the newer filter rendered
+its empty result, and the older real response then completed with
+six records. The empty result remained visible at the post-response
+observation. Native screen-departure cancellation remains open.

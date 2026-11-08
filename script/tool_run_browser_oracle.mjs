@@ -27,10 +27,12 @@ try {
   const pending = new Map();
   let next = 0;
   let onPaused;
+  let onLoadingFinished;
   socket.addEventListener('message', event => {
     const reply = JSON.parse(event.data);
     pending.get(reply.id)?.(reply);
     if (reply.method === 'Fetch.requestPaused') onPaused?.(reply.params);
+    if (reply.method === 'Network.loadingFinished') onLoadingFinished?.(reply.params);
   });
   async function send(method, params = {}) {
     const id = ++next;
@@ -143,9 +145,62 @@ try {
   await wait("document.querySelectorAll('tbody tr').length===5");
   await replaceExploration('8801');
   await wait("document.querySelectorAll('tbody tr').length===6 && [...document.querySelectorAll('tbody tr')].every(e=>e.innerText.includes('#8801'))");
+  stage = 'invalid exploration input';
+  await js("document.querySelectorAll('input[placeholder]')[0].select()");
+  await key('Backspace', 'Backspace', 8);
+  await wait("document.querySelectorAll('tbody tr').length===28");
+  await replaceExploration('8802x');
+  await wait("document.querySelectorAll('input[placeholder]')[1].value==='8802' && document.querySelectorAll('tbody tr').length===26 && [...document.querySelectorAll('tbody tr')].every(e=>e.innerText.includes('#8802'))");
+
+  stage = 'late list response';
+  await js("document.querySelectorAll('input[placeholder]')[0].focus()");
+  await send('Input.insertText', { text: "日本語+ O'Neil" });
+  await wait("document.querySelectorAll('tbody tr').length===5");
+  let held;
+  let oldResponseFinished = false;
+  onLoadingFinished = ({ requestId }) => {
+    if (held?.networkId === requestId) oldResponseFinished = true;
+  };
+  onPaused = event => {
+    const url = new URL(event.request.url);
+    if (!held && event.request.method === 'GET' && url.origin === origin && url.pathname === '/api/commands'
+        && url.searchParams.get('task') === '8801' && url.searchParams.get('q') === "日本語+ O'Neil"
+        && url.searchParams.get('page') === '0' && url.searchParams.get('size') === '50') {
+      held = event;
+    } else {
+      send('Fetch.continueRequest', { requestId: event.requestId }).catch(() => { interceptionError = true; });
+    }
+  };
+  await send('Network.enable');
+  await send('Fetch.enable', { patterns: [{ urlPattern: origin + '/api/commands?*', requestStage: 'Request' }] });
+  await replaceExploration('8801');
+  const oldRequest = await waitFor(() => held);
+  assert.ok(oldRequest.networkId);
+  await replaceExploration('9999');
+  await wait("document.querySelector('tbody')?.innerText.includes('No tool execution records')");
+  await send('Fetch.continueRequest', { requestId: oldRequest.requestId });
+  await waitFor(() => oldResponseFinished);
+  const oldBody = await send('Network.getResponseBody', { requestId: oldRequest.networkId });
+  const oldPage = JSON.parse(oldBody.base64Encoded ? Buffer.from(oldBody.body, 'base64').toString('utf8') : oldBody.body);
+  assert.equal(oldPage.total, 6);
+  assert.equal(oldPage.commands.length, 6);
+  assert.ok(oldPage.commands.every(row => row.exploration_id === 8801));
+  const frame = await send('Runtime.evaluate', {
+    expression: "new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve)))",
+    awaitPromise: true,
+  });
+  assert.ok(!frame.exceptionDetails);
+  assert.ok(await js("document.querySelector('tbody')?.innerText.includes('No tool execution records')"));
+  assert.equal(interceptionError, false);
+  await send('Fetch.disable');
+  await send('Network.disable');
+  onPaused = undefined;
+  onLoadingFinished = undefined;
   console.log(JSON.stringify({
     columns, detail: details, pageRows: [50, 4], summary, combinedRows: 5,
     emptyFilterVisible: true, escapeClosesDialogs: true, tabMovesBetweenFilters: true,
+    lateListResponse: { oldRequestFinished: true, oldResponseRows: 6, newerEmptyStateRetained: true },
+    invalidExploration: { typed: '8802x', effectiveValue: '8802', matchedRows: 26 },
     listFailure: { injectedStatus: 500, emptyStateDisplayed: true, recoveredRows: 6 },
   }));
 } catch {

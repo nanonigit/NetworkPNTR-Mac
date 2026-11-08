@@ -88,10 +88,11 @@
         "evidence/tool-runs/native-ui-comparison.json",
         "evidence/tool-runs/pinned-browser-error-ui.json",
         "evidence/tool-runs/native-error-ui.json",
-        "evidence/tool-runs/visual-comparison.json"
+        "evidence/tool-runs/visual-comparison.json",
+        "evidence/tool-runs/filter-controls-comparison.json"
       ],
       "remainingGates": [
-        "Live invalid-filter and in-flight cancellation checks"
+        "Native in-flight cancellation on screen departure"
       ]
     },
     {
