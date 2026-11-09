@@ -834,3 +834,7 @@ Assets read service. The pinned backend returned 25, 1 and 0 rows across three o
 The signed native VM returned the same asset pages, total, counts and DSL outcomes as the pinned reference. Both asset endpoints returned 401 before login. The pinned browser opens on Company. Root domain pagination, DSL page reset and the empty IP tab were observed with the same fixture. These observations guide the SwiftUI tabs. [VM and browser UI receipt](../evidence/assets/read-vm-and-browser-ui.json)
 
 The signed Mac app matched the pinned browser for the initial Company tab, 25 + 1 root-domain rows, the DSL search reset to page one, and the empty IP tab. The app stopped the disposable VM and removed its session key. Company management, asset deletion, DSL suggestions, populated states in the other tabs, and Japanese screen acceptance remain open. [Native UI comparison](../evidence/assets/read-native-ui.json)
+
+Asset deletion service phase. Compare the request and count receipt against the pinned handler. Exercise exact ID encoding, invalid input, partial and invalid receipts, and HTTP failure at the Swift transport boundary. Follow with disposable guest and browser mutation tests, then native UI confirmation, refresh and selection checks.
+
+The isolated pinned browser backend returned 1 for single deletion, 2 for a three-ID request containing a previously deleted asset, 0 for an absent asset, and HTTP 400 for an empty list. Readback confirmed the other 23 assets and the updated total. [Reference deletion receipt](../evidence/assets/delete-reference.json)

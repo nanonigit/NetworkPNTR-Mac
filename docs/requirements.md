@@ -182,3 +182,7 @@ filters. Compare equivalent synthetic data through the actual native
 and browser screens before acceptance.
 
 LLM call history must match the pinned browser for paginated metadata, model/session/task filters, task counts, and on-demand normalized and raw request/response inspection. The complete workflow includes reading and updating the recording preference and confirmed deletion scoped to the selected task. Compare success, empty, validation, failure, cancellation and keyboard behavior with equivalent synthetic data.
+
+### Asset deletion
+
+Match the pinned browser's single and bulk asset deletion. Use the server's actual deletion count, including zero or a partial count when a selected asset is already absent. Confirmation, refresh and a paired browser and Mac workflow comparison are required for UI acceptance.

@@ -165,3 +165,7 @@ LLM call history reads `GET /api/llm/records`, `GET /api/llm/records/tasks`, and
 The history recording switch sends only `llm_record` in `PUT /api/settings` and displays the value returned by a fresh GET. Task deletion sends the exact confirmed identifier to `DELETE /api/llm/records?task=…`. Reject identifiers the backend would change by trimming. Refresh the list and task counts after each deletion attempt because an error may follow a committed write.
 
 The Assets screen reads six inventory types from the pinned `GET /api/assets` contract and reads counts separately from `GET /api/assets/counts`. The browser uses offsets and 25, 50, 100 and 200 rows. Preserve the search expression as a single encoded DSL query parameter and let the guest validate its grammar. Keep optional row fields and identifiers typed. Company management, deletion, and the SwiftUI comparison follow the read service.
+
+### Asset deletion boundary
+
+Send positive, distinct 64-bit asset IDs to the authenticated guest in the pinned DELETE JSON format. Bound request size and validate that the confirmed deletion count is between zero and the number of IDs sent. The service sends once. The later UI must reconcile with fresh reads after an interrupted request, which may have been applied by the guest. Test the body, partial receipt and invalid receipt at the transport boundary before wiring confirmation and selection.

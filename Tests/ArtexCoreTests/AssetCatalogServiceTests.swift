@@ -101,4 +101,42 @@ final class AssetCatalogServiceTests: XCTestCase {
         XCTAssertNil(store.page.value)
     }
 
+    @MainActor func testDeletesExactIDsOnceAndAcceptsPartialReceipt() async throws {
+        let client = ChatTestTransport()
+        let service = AssetCatalogService(client: client)
+        let ids: [Int64] = [5, 9_007_199_254_740_993]
+        try client.enqueue(["deleted": 1])
+        let deleted = try await service.deleteAssets(ids: ids)
+        XCTAssertEqual(deleted, 1)
+        XCTAssertEqual(client.calls.count, 1)
+        let call = try XCTUnwrap(client.calls.first)
+        XCTAssertEqual(call.method, "DELETE")
+        XCTAssertEqual(call.path, "/api/assets")
+        let body = try XCTUnwrap(call.body)
+        XCTAssertEqual(try JSONDecoder().decode([String: [Int64]].self, from: body), ["ids": ids])
+    }
+
+    @MainActor func testDeleteRejectsInvalidIDsAndImpossibleReceiptWithoutRetry() async throws {
+        let client = ChatTestTransport()
+        let service = AssetCatalogService(client: client)
+        for ids: [Int64] in [[], [0], [1, 1]] {
+            do {
+                _ = try await service.deleteAssets(ids: ids)
+                XCTFail("Invalid IDs were accepted")
+            } catch AssetCatalogQueryError.invalidQuery {}
+        }
+        XCTAssertTrue(client.calls.isEmpty)
+        try client.enqueue(["deleted": 2])
+        do {
+            _ = try await service.deleteAssets(ids: [1])
+            XCTFail("Impossible deletion count was accepted")
+        } catch BackendAPIError.invalidResponse {}
+        try client.enqueue(["error": "fixture"], status: 503)
+        do {
+            _ = try await service.deleteAssets(ids: [1])
+            XCTFail("HTTP failure was accepted")
+        } catch BackendAPIError.status(503) {}
+        XCTAssertEqual(client.calls.count, 2)
+    }
+
 }

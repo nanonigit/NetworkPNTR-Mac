@@ -94,7 +94,7 @@ public enum AssetCatalogQueryError: Error, Sendable {
             query.queryItems?.append(.init(name: "dsl", value: expression))
         }
         guard let encoded = query.percentEncodedQuery else { throw AssetCatalogQueryError.invalidQuery }
-        let result: AssetCatalogPage = try await read("/api/assets?" + encoded.replacingOccurrences(of: "+", with: "%2B"))
+        let result: AssetCatalogPage = try await request("/api/assets?" + encoded.replacingOccurrences(of: "+", with: "%2B"))
         guard result.count == result.assets.count, result.count <= size, result.total >= Int64(result.count),
               result.assets.allSatisfy({ $0.id > 0 && $0.type == type }),
               Set(result.assets.map(\.id)).count == result.count else {
@@ -104,13 +104,13 @@ public enum AssetCatalogQueryError: Error, Sendable {
     }
 
     public func counts() async throws -> [String: Int64] {
-        let result: [String: Int64] = try await read("/api/assets/counts")
+        let result: [String: Int64] = try await request("/api/assets/counts")
         guard result.values.allSatisfy({ $0 >= 0 }) else { throw BackendAPIError.invalidResponse }
         return result
     }
 
     public func companies() async throws -> [AssetCatalogCompany] {
-        let result: [AssetCatalogCompany]? = try await read("/api/companies")
+        let result: [AssetCatalogCompany]? = try await request("/api/companies")
         let companies = result ?? []
         guard companies.allSatisfy({ $0.id > 0 && $0.assetCount >= 0 }),
               Set(companies.map(\.id)).count == companies.count else {
@@ -119,10 +119,28 @@ public enum AssetCatalogQueryError: Error, Sendable {
         return companies
     }
 
-    private func read<T: Decodable>(_ path: String) async throws -> T {
+    public func deleteAssets(ids: [Int64]) async throws -> Int64 {
+        guard !ids.isEmpty, ids.allSatisfy({ $0 > 0 }), Set(ids).count == ids.count else {
+            throw AssetCatalogQueryError.invalidQuery
+        }
+        let body = try BackendJSONCoding.encode(DeleteRequest(ids: ids))
+        guard body.count <= 64 * 1024 else { throw AssetCatalogQueryError.invalidQuery }
+        let receipt: DeleteReceipt = try await request("/api/assets", method: "DELETE", body: body)
+        guard receipt.deleted >= 0, receipt.deleted <= Int64(ids.count) else {
+            throw BackendAPIError.invalidResponse
+        }
+        return receipt.deleted
+    }
+
+    private struct DeleteRequest: Encodable { let ids: [Int64] }
+    private struct DeleteReceipt: Decodable { let deleted: Int64 }
+
+    private func request<T: Decodable>(
+        _ path: String, method: String = "GET", body: Data? = nil
+    ) async throws -> T {
         try Task.checkCancellation()
         guard path.utf8.count <= 8192 else { throw AssetCatalogQueryError.invalidQuery }
-        let response = try await client.send(method: "GET", path: path, body: nil, bearer: nil)
+        let response = try await client.send(method: method, path: path, body: body, bearer: nil)
         try Task.checkCancellation()
         guard (200..<300).contains(response.status) else { throw BackendAPIError.status(response.status) }
         guard response.status == 200, response.body.count <= 4 * 1024 * 1024 else {
