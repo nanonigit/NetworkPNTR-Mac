@@ -186,3 +186,7 @@ LLM call history must match the pinned browser for paginated metadata, model/ses
 ### Asset deletion
 
 Match the pinned browser's single and bulk asset deletion. Use the server's actual deletion count, including zero or a partial count when a selected asset is already absent. Confirmation, refresh and a paired browser and Mac workflow comparison are required for UI acceptance.
+
+### Company scope management
+
+Match company creation, scope addition and replacement, and company deletion with the browser's choice to retain or delete attributed assets. Preserve the server's rule counts, errors, and warnings. Compare the resulting attribution and company list on the same synthetic fixture.

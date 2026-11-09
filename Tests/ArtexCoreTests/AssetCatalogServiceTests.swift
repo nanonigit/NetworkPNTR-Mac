@@ -156,4 +156,44 @@ final class AssetCatalogServiceTests: XCTestCase {
         XCTAssertEqual(client.calls.map(\.method), ["DELETE", "GET"])
     }
 
+    @MainActor func testCreatesCompanyWithStructuredScopeAndPreservesConflict() async throws {
+        let client = ChatTestTransport()
+        let service = AssetCatalogService(client: client)
+        let scope = [CompanyScopeInput(kind: .domain, value: "*.example.test")]
+        try client.enqueue(["id": 7, "created": true, "scope_added": 1, "scope_skipped": 0, "scope_invalid": 0], status: 201)
+        let created = try await service.createCompany(name: " Fixture ", scope: scope)
+        XCTAssertEqual(created.id, 7)
+        let call = try XCTUnwrap(client.calls.first)
+        XCTAssertEqual(call.method, "POST")
+        XCTAssertEqual(call.path, "/api/companies")
+        let json = try JSONSerialization.jsonObject(with: XCTUnwrap(call.body)) as? [String: Any]
+        XCTAssertEqual(json?["name"] as? String, "Fixture")
+        XCTAssertEqual(json?["scope"] as? [[String: String]], [["kind": "domain", "value": "*.example.test"]])
+        try client.enqueue(["error": "fixture conflict"], status: 409)
+        do {
+            _ = try await service.createCompany(name: "Fixture", scope: scope)
+            XCTFail("Duplicate name should report conflict")
+        } catch BackendAPIError.status(409) {}
+        XCTAssertEqual(client.calls.count, 2)
+    }
+
+    @MainActor func testClearsScopeAndPreservesDeleteAssetChoice() async throws {
+        let client = ChatTestTransport()
+        let service = AssetCatalogService(client: client)
+        try client.enqueue(["added": 0, "skipped": 0, "invalid": 0, "warnings": ["fixture"]])
+        let receipt = try await service.writeCompanyScope(id: 7, scope: [], replace: true)
+        XCTAssertEqual(receipt.warnings, ["fixture"])
+        XCTAssertEqual(client.calls[0].path, "/api/companies/7/scope")
+        let replacement = try JSONSerialization.jsonObject(with: XCTUnwrap(client.calls[0].body)) as? [String: Any]
+        XCTAssertEqual(replacement?["reset"] as? Bool, true)
+        XCTAssertEqual(replacement?["scope"] as? [[String: String]], [])
+        try client.enqueue(["deleted": 1, "assets_deleted": 0])
+        let deleted = try await service.deleteCompany(id: 7, deleteAssets: false)
+        XCTAssertEqual(deleted, 0)
+        XCTAssertEqual(client.calls[1].method, "DELETE")
+        XCTAssertEqual(client.calls[1].path, "/api/companies/7")
+        let deletion = try JSONDecoder().decode([String: Bool].self, from: XCTUnwrap(client.calls[1].body))
+        XCTAssertEqual(deletion, ["delete_assets": false])
+    }
+
 }

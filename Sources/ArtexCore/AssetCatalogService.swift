@@ -69,6 +69,37 @@ public struct AssetCatalogCompany: Decodable, Identifiable, Sendable {
     public let scope: [ScopeRule]?
 }
 
+public struct CompanyScopeInput: Encodable, Sendable {
+    public enum Kind: String, CaseIterable, Encodable, Sendable {
+        case domain, ip, cidr, icp, keyword
+    }
+
+    public let kind: Kind
+    public let value: String
+
+    public init(kind: Kind, value: String) {
+        self.kind = kind
+        self.value = value
+    }
+}
+
+public struct CompanyCreationReceipt: Decodable, Sendable {
+    public let id: Int64
+    public let created: Bool
+    public let scopeAdded: Int
+    public let scopeSkipped: Int
+    public let scopeInvalid: Int
+    public let scopeErrors: [String]?
+}
+
+public struct CompanyScopeReceipt: Decodable, Sendable {
+    public let added: Int
+    public let skipped: Int
+    public let invalid: Int
+    public let errors: [String]?
+    public let warnings: [String]?
+}
+
 public enum AssetCatalogQueryError: Error, Sendable {
     case invalidQuery
 }
@@ -119,6 +150,74 @@ public enum AssetCatalogQueryError: Error, Sendable {
         return companies
     }
 
+    public func createCompany(name: String, scope: [CompanyScopeInput]) async throws -> CompanyCreationReceipt {
+        let name = ChatText.trim(name)
+        guard !name.isEmpty else { throw AssetCatalogQueryError.invalidQuery }
+        let body = try companyBody(CreateCompanyRequest(name: name, scope: scope), scope: scope)
+        let receipt: CompanyCreationReceipt = try await request(
+            "/api/companies", method: "POST", body: body, expectedStatus: 201
+        )
+        guard receipt.created, receipt.id > 0,
+              validRuleCounts([receipt.scopeAdded, receipt.scopeSkipped, receipt.scopeInvalid], submitted: scope.count)
+        else { throw BackendAPIError.invalidResponse }
+        return receipt
+    }
+
+    public func writeCompanyScope(
+        id: Int64, scope: [CompanyScopeInput], reason: String = "", replace: Bool
+    ) async throws -> CompanyScopeReceipt {
+        guard id > 0 else { throw AssetCatalogQueryError.invalidQuery }
+        let body = try companyBody(WriteScopeRequest(scope: scope, reason: reason, reset: replace ? true : nil), scope: scope)
+        let receipt: CompanyScopeReceipt = try await request("/api/companies/\(id)/scope", method: "POST", body: body)
+        guard validRuleCounts([receipt.added, receipt.skipped, receipt.invalid], submitted: scope.count),
+              !replace || (receipt.invalid == 0 && receipt.skipped == 0)
+        else { throw BackendAPIError.invalidResponse }
+        return receipt
+    }
+
+    public func deleteCompany(id: Int64, deleteAssets: Bool) async throws -> Int64 {
+        guard id > 0 else { throw AssetCatalogQueryError.invalidQuery }
+        let body = try BackendJSONCoding.encode(DeleteCompanyRequest(deleteAssets: deleteAssets))
+        let receipt: DeleteCompanyReceipt = try await request("/api/companies/\(id)", method: "DELETE", body: body)
+        guard receipt.deleted == 1, receipt.assetsDeleted >= 0, deleteAssets || receipt.assetsDeleted == 0 else {
+            throw BackendAPIError.invalidResponse
+        }
+        return receipt.assetsDeleted
+    }
+
+    private func companyBody<T: Encodable>(_ request: T, scope: [CompanyScopeInput]) throws -> Data {
+        guard scope.allSatisfy({ $0.value.unicodeScalars.count <= 1_024 }) else {
+            throw AssetCatalogQueryError.invalidQuery
+        }
+        let body = try BackendJSONCoding.encode(request)
+        guard body.count <= 2 * 1024 * 1024 else { throw AssetCatalogQueryError.invalidQuery }
+        return body
+    }
+
+    private func validRuleCounts(_ counts: [Int], submitted: Int) -> Bool {
+        var remaining = submitted
+        for count in counts {
+            guard (0...remaining).contains(count) else { return false }
+            remaining -= count
+        }
+        return true
+    }
+
+    private struct CreateCompanyRequest: Encodable {
+        let name: String
+        let scope: [CompanyScopeInput]
+    }
+    private struct WriteScopeRequest: Encodable {
+        let scope: [CompanyScopeInput]
+        let reason: String
+        let reset: Bool?
+    }
+    private struct DeleteCompanyRequest: Encodable { let deleteAssets: Bool }
+    private struct DeleteCompanyReceipt: Decodable {
+        let deleted: Int
+        let assetsDeleted: Int64
+    }
+
     public func deleteAssets(ids: [Int64]) async throws -> Int64 {
         guard !ids.isEmpty, ids.allSatisfy({ $0 > 0 }), Set(ids).count == ids.count else {
             throw AssetCatalogQueryError.invalidQuery
@@ -136,14 +235,14 @@ public enum AssetCatalogQueryError: Error, Sendable {
     private struct DeleteReceipt: Decodable { let deleted: Int64 }
 
     private func request<T: Decodable>(
-        _ path: String, method: String = "GET", body: Data? = nil
+        _ path: String, method: String = "GET", body: Data? = nil, expectedStatus: Int = 200
     ) async throws -> T {
         try Task.checkCancellation()
         guard path.utf8.count <= 8192 else { throw AssetCatalogQueryError.invalidQuery }
         let response = try await client.send(method: method, path: path, body: body, bearer: nil)
         try Task.checkCancellation()
         guard (200..<300).contains(response.status) else { throw BackendAPIError.status(response.status) }
-        guard response.status == 200, response.body.count <= 4 * 1024 * 1024 else {
+        guard response.status == expectedStatus, response.body.count <= 4 * 1024 * 1024 else {
             throw BackendAPIError.invalidResponse
         }
         return try BackendJSONCoding.decode(T.self, from: response.body)
