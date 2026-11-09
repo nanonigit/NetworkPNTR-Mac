@@ -298,6 +298,64 @@
 	<string>Save wrap-up settings</string>
 	<key>agent.wrapUp.saved</key>
 	<string>Wrap-up settings saved.</string>
+	<key>assetCatalog.ui.app</key>
+	<string>App</string>
+	<key>assetCatalog.ui.auth</key>
+	<string>Authentication</string>
+	<key>assetCatalog.ui.boundDomains</key>
+	<string>Bound domains</string>
+	<key>assetCatalog.ui.category</key>
+	<string>Category</string>
+	<key>assetCatalog.ui.company</key>
+	<string>Company</string>
+	<key>assetCatalog.ui.count</key>
+	<string>Assets</string>
+	<key>assetCatalog.ui.domain</key>
+	<string>Domain</string>
+	<key>assetCatalog.ui.empty</key>
+	<string>No data</string>
+	<key>assetCatalog.ui.endpoint</key>
+	<string>Endpoint</string>
+	<key>assetCatalog.ui.login</key>
+	<string>Sign in to view assets.</string>
+	<key>assetCatalog.ui.method</key>
+	<string>Method</string>
+	<key>assetCatalog.ui.name</key>
+	<string>Name</string>
+	<key>assetCatalog.ui.openPorts</key>
+	<string>Open ports</string>
+	<key>assetCatalog.ui.owner</key>
+	<string>Company</string>
+	<key>assetCatalog.ui.parameters</key>
+	<string>Parameters</string>
+	<key>assetCatalog.ui.port</key>
+	<string>Port</string>
+	<key>assetCatalog.ui.readOnly</key>
+	<string>Asset and company changes are pending.</string>
+	<key>assetCatalog.ui.recordType</key>
+	<string>Record type</string>
+	<key>assetCatalog.ui.recordValue</key>
+	<string>Record value</string>
+	<key>assetCatalog.ui.rootDomain</key>
+	<string>Root domain</string>
+	<key>assetCatalog.ui.scope</key>
+	<string>Scope</string>
+	<key>assetCatalog.ui.search</key>
+	<string>Asset DSL search</string>
+	<key>assetCatalog.ui.segment</key>
+	<string>C segment</string>
+	<key>assetCatalog.ui.service</key>
+	<string>Service</string>
+	<key>assetCatalog.ui.statusCode</key>
+	<string>Status code</string>
+	<key>assetCatalog.ui.subdomain</key>
+	<string>Subdomain</string>
+	<key>assetCatalog.ui.technologies</key>
+	<string>Technologies</string>
+	<key>assetCatalog.ui.title</key>
+	<string>Page title</string>
+	<key>assetCatalog.ui.unassigned</key>
+	<string>Unassigned</string>
 	<key>auth.acceptTerms</key>
 	<string>Agree</string>
 	<key>auth.agree</key>

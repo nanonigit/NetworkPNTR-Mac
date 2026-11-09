@@ -76,6 +76,13 @@ struct RootView: View {
                 ContentUnavailableView(s(.loginRequired), systemImage: "person.crop.circle",
                                        description: Text(s(.llmRecordLogin)))
             }
+            else if selection == "assets", let session = environment.authentication, session.phase == .authenticated {
+                AssetCatalogView(session: session).id(ObjectIdentifier(session))
+            }
+            else if selection == "assets" {
+                ContentUnavailableView(s(.loginRequired), systemImage: "person.crop.circle",
+                                       description: Text(s(.assetCatalogLogin)))
+            }
             else if selection == "traffic", let session = environment.authentication, session.phase == .authenticated {
                 trafficContent(session)
             }

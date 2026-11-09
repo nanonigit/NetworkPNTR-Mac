@@ -1,6 +1,470 @@
 {
   "sourceLanguage": "en",
   "strings": {
+      "assetCatalog.ui.company": {
+        "localizations": {
+          "en": {
+            "stringUnit": {
+              "state": "translated",
+              "value": "Company"
+            }
+          },
+          "ja": {
+            "stringUnit": {
+              "state": "translated",
+              "value": "会社"
+            }
+          }
+        }
+      },
+      "assetCatalog.ui.rootDomain": {
+        "localizations": {
+          "en": {
+            "stringUnit": {
+              "state": "translated",
+              "value": "Root domain"
+            }
+          },
+          "ja": {
+            "stringUnit": {
+              "state": "translated",
+              "value": "ルートドメイン"
+            }
+          }
+        }
+      },
+      "assetCatalog.ui.subdomain": {
+        "localizations": {
+          "en": {
+            "stringUnit": {
+              "state": "translated",
+              "value": "Subdomain"
+            }
+          },
+          "ja": {
+            "stringUnit": {
+              "state": "translated",
+              "value": "サブドメイン"
+            }
+          }
+        }
+      },
+      "assetCatalog.ui.app": {
+        "localizations": {
+          "en": {
+            "stringUnit": {
+              "state": "translated",
+              "value": "App"
+            }
+          },
+          "ja": {
+            "stringUnit": {
+              "state": "translated",
+              "value": "アプリ"
+            }
+          }
+        }
+      },
+      "assetCatalog.ui.service": {
+        "localizations": {
+          "en": {
+            "stringUnit": {
+              "state": "translated",
+              "value": "Service"
+            }
+          },
+          "ja": {
+            "stringUnit": {
+              "state": "translated",
+              "value": "サービス"
+            }
+          }
+        }
+      },
+      "assetCatalog.ui.endpoint": {
+        "localizations": {
+          "en": {
+            "stringUnit": {
+              "state": "translated",
+              "value": "Endpoint"
+            }
+          },
+          "ja": {
+            "stringUnit": {
+              "state": "translated",
+              "value": "エンドポイント"
+            }
+          }
+        }
+      },
+      "assetCatalog.ui.search": {
+        "localizations": {
+          "en": {
+            "stringUnit": {
+              "state": "translated",
+              "value": "Asset DSL search"
+            }
+          },
+          "ja": {
+            "stringUnit": {
+              "state": "translated",
+              "value": "資産のDSL検索"
+            }
+          }
+        }
+      },
+      "assetCatalog.ui.empty": {
+        "localizations": {
+          "en": {
+            "stringUnit": {
+              "state": "translated",
+              "value": "No data"
+            }
+          },
+          "ja": {
+            "stringUnit": {
+              "state": "translated",
+              "value": "データがありません"
+            }
+          }
+        }
+      },
+      "assetCatalog.ui.login": {
+        "localizations": {
+          "en": {
+            "stringUnit": {
+              "state": "translated",
+              "value": "Sign in to view assets."
+            }
+          },
+          "ja": {
+            "stringUnit": {
+              "state": "translated",
+              "value": "資産を表示するにはログインしてください。"
+            }
+          }
+        }
+      },
+      "assetCatalog.ui.name": {
+        "localizations": {
+          "en": {
+            "stringUnit": {
+              "state": "translated",
+              "value": "Name"
+            }
+          },
+          "ja": {
+            "stringUnit": {
+              "state": "translated",
+              "value": "名前"
+            }
+          }
+        }
+      },
+      "assetCatalog.ui.count": {
+        "localizations": {
+          "en": {
+            "stringUnit": {
+              "state": "translated",
+              "value": "Assets"
+            }
+          },
+          "ja": {
+            "stringUnit": {
+              "state": "translated",
+              "value": "資産数"
+            }
+          }
+        }
+      },
+      "assetCatalog.ui.scope": {
+        "localizations": {
+          "en": {
+            "stringUnit": {
+              "state": "translated",
+              "value": "Scope"
+            }
+          },
+          "ja": {
+            "stringUnit": {
+              "state": "translated",
+              "value": "スコープ"
+            }
+          }
+        }
+      },
+      "assetCatalog.ui.domain": {
+        "localizations": {
+          "en": {
+            "stringUnit": {
+              "state": "translated",
+              "value": "Domain"
+            }
+          },
+          "ja": {
+            "stringUnit": {
+              "state": "translated",
+              "value": "ドメイン"
+            }
+          }
+        }
+      },
+      "assetCatalog.ui.owner": {
+        "localizations": {
+          "en": {
+            "stringUnit": {
+              "state": "translated",
+              "value": "Company"
+            }
+          },
+          "ja": {
+            "stringUnit": {
+              "state": "translated",
+              "value": "所有会社"
+            }
+          }
+        }
+      },
+      "assetCatalog.ui.unassigned": {
+        "localizations": {
+          "en": {
+            "stringUnit": {
+              "state": "translated",
+              "value": "Unassigned"
+            }
+          },
+          "ja": {
+            "stringUnit": {
+              "state": "translated",
+              "value": "未割当"
+            }
+          }
+        }
+      },
+      "assetCatalog.ui.segment": {
+        "localizations": {
+          "en": {
+            "stringUnit": {
+              "state": "translated",
+              "value": "C segment"
+            }
+          },
+          "ja": {
+            "stringUnit": {
+              "state": "translated",
+              "value": "Cセグメント"
+            }
+          }
+        }
+      },
+      "assetCatalog.ui.boundDomains": {
+        "localizations": {
+          "en": {
+            "stringUnit": {
+              "state": "translated",
+              "value": "Bound domains"
+            }
+          },
+          "ja": {
+            "stringUnit": {
+              "state": "translated",
+              "value": "関連ドメイン"
+            }
+          }
+        }
+      },
+      "assetCatalog.ui.openPorts": {
+        "localizations": {
+          "en": {
+            "stringUnit": {
+              "state": "translated",
+              "value": "Open ports"
+            }
+          },
+          "ja": {
+            "stringUnit": {
+              "state": "translated",
+              "value": "開放ポート"
+            }
+          }
+        }
+      },
+      "assetCatalog.ui.recordType": {
+        "localizations": {
+          "en": {
+            "stringUnit": {
+              "state": "translated",
+              "value": "Record type"
+            }
+          },
+          "ja": {
+            "stringUnit": {
+              "state": "translated",
+              "value": "レコード種別"
+            }
+          }
+        }
+      },
+      "assetCatalog.ui.recordValue": {
+        "localizations": {
+          "en": {
+            "stringUnit": {
+              "state": "translated",
+              "value": "Record value"
+            }
+          },
+          "ja": {
+            "stringUnit": {
+              "state": "translated",
+              "value": "レコード値"
+            }
+          }
+        }
+      },
+      "assetCatalog.ui.category": {
+        "localizations": {
+          "en": {
+            "stringUnit": {
+              "state": "translated",
+              "value": "Category"
+            }
+          },
+          "ja": {
+            "stringUnit": {
+              "state": "translated",
+              "value": "カテゴリ"
+            }
+          }
+        }
+      },
+      "assetCatalog.ui.port": {
+        "localizations": {
+          "en": {
+            "stringUnit": {
+              "state": "translated",
+              "value": "Port"
+            }
+          },
+          "ja": {
+            "stringUnit": {
+              "state": "translated",
+              "value": "ポート"
+            }
+          }
+        }
+      },
+      "assetCatalog.ui.statusCode": {
+        "localizations": {
+          "en": {
+            "stringUnit": {
+              "state": "translated",
+              "value": "Status code"
+            }
+          },
+          "ja": {
+            "stringUnit": {
+              "state": "translated",
+              "value": "ステータスコード"
+            }
+          }
+        }
+      },
+      "assetCatalog.ui.title": {
+        "localizations": {
+          "en": {
+            "stringUnit": {
+              "state": "translated",
+              "value": "Page title"
+            }
+          },
+          "ja": {
+            "stringUnit": {
+              "state": "translated",
+              "value": "ページタイトル"
+            }
+          }
+        }
+      },
+      "assetCatalog.ui.technologies": {
+        "localizations": {
+          "en": {
+            "stringUnit": {
+              "state": "translated",
+              "value": "Technologies"
+            }
+          },
+          "ja": {
+            "stringUnit": {
+              "state": "translated",
+              "value": "技術"
+            }
+          }
+        }
+      },
+      "assetCatalog.ui.auth": {
+        "localizations": {
+          "en": {
+            "stringUnit": {
+              "state": "translated",
+              "value": "Authentication"
+            }
+          },
+          "ja": {
+            "stringUnit": {
+              "state": "translated",
+              "value": "認証"
+            }
+          }
+        }
+      },
+      "assetCatalog.ui.method": {
+        "localizations": {
+          "en": {
+            "stringUnit": {
+              "state": "translated",
+              "value": "Method"
+            }
+          },
+          "ja": {
+            "stringUnit": {
+              "state": "translated",
+              "value": "メソッド"
+            }
+          }
+        }
+      },
+      "assetCatalog.ui.parameters": {
+        "localizations": {
+          "en": {
+            "stringUnit": {
+              "state": "translated",
+              "value": "Parameters"
+            }
+          },
+          "ja": {
+            "stringUnit": {
+              "state": "translated",
+              "value": "パラメーター"
+            }
+          }
+        }
+      },
+      "assetCatalog.ui.readOnly": {
+        "localizations": {
+          "en": {
+            "stringUnit": {
+              "state": "translated",
+              "value": "Asset and company changes are pending."
+            }
+          },
+          "ja": {
+            "stringUnit": {
+              "state": "translated",
+              "value": "資産と会社の変更操作は移植中です。"
+            }
+          }
+        }
+      },
       "llmRecord.ui.recording": {
         "localizations": {
           "en": {

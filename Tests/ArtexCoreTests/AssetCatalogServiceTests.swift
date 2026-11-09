@@ -61,4 +61,44 @@ final class AssetCatalogServiceTests: XCTestCase {
         XCTAssertEqual(counts, ["root_domain": 1, "endpoint": 0])
         XCTAssertEqual(client.calls.last?.path, "/api/assets/counts")
     }
+
+    @MainActor func testCompanyListAcceptsNullAndDecodesScopeSummaries() async throws {
+        let client = ChatTestTransport()
+        let service = AssetCatalogService(client: client)
+        client.replies.append(.init(status: 200, body: Data("null".utf8)))
+        let empty = try await service.companies()
+        XCTAssertTrue(empty.isEmpty)
+        try client.enqueue([[
+            "id": 8200, "name": "Fixture", "asset_count": 3,
+            "scope": [["raw": "*.example.test"]]
+        ]])
+        let companies = try await service.companies()
+        XCTAssertEqual(companies.first?.scope?.first?.raw, "*.example.test")
+        XCTAssertEqual(companies.first?.assetCount, 3)
+    }
+
+    @MainActor func testChangingSearchResetsPageAndRejectsOldResults() async throws {
+        let client = ChatTestTransport()
+        let store = AssetCatalogStore(service: AssetCatalogService(client: client))
+        XCTAssertNil(store.query.type)
+        store.select(.rootDomain)
+        store.setPage(1)
+        let old = store.query
+        client.handler = { call in
+            if call.path.contains("offset=50") {
+                store.search(#"domain="fixture.example.test""#)
+                return try ChatTestTransport.response(["assets": [], "count": 0, "total": 54])
+            }
+            return try ChatTestTransport.response(["assets": [], "count": 0, "total": 0])
+        }
+        await store.refreshPage(old)
+        XCTAssertEqual(store.query.page, 0)
+        XCTAssertNil(store.page.value)
+        await store.refreshPage(store.query)
+        XCTAssertEqual(store.page.value?.total, 0)
+        store.select(.ip)
+        XCTAssertTrue(store.query.dsl.isEmpty)
+        XCTAssertNil(store.page.value)
+    }
+
 }

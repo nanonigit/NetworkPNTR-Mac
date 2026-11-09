@@ -58,6 +58,17 @@ public struct AssetCatalogPage: Decodable, Sendable {
     public let assets: [AssetCatalogRow]
 }
 
+public struct AssetCatalogCompany: Decodable, Identifiable, Sendable {
+    public struct ScopeRule: Decodable, Sendable {
+        public let raw: String
+    }
+
+    public let id: Int64
+    public let name: String
+    public let assetCount: Int64
+    public let scope: [ScopeRule]?
+}
+
 public enum AssetCatalogQueryError: Error, Sendable {
     case invalidQuery
 }
@@ -96,6 +107,16 @@ public enum AssetCatalogQueryError: Error, Sendable {
         let result: [String: Int64] = try await read("/api/assets/counts")
         guard result.values.allSatisfy({ $0 >= 0 }) else { throw BackendAPIError.invalidResponse }
         return result
+    }
+
+    public func companies() async throws -> [AssetCatalogCompany] {
+        let result: [AssetCatalogCompany]? = try await read("/api/companies")
+        let companies = result ?? []
+        guard companies.allSatisfy({ $0.id > 0 && $0.assetCount >= 0 }),
+              Set(companies.map(\.id)).count == companies.count else {
+            throw BackendAPIError.invalidResponse
+        }
+        return companies
     }
 
     private func read<T: Decodable>(_ path: String) async throws -> T {

@@ -298,6 +298,64 @@
 	<string>終了処理の設定を保存</string>
 	<key>agent.wrapUp.saved</key>
 	<string>終了処理の設定を保存しました。</string>
+	<key>assetCatalog.ui.app</key>
+	<string>アプリ</string>
+	<key>assetCatalog.ui.auth</key>
+	<string>認証</string>
+	<key>assetCatalog.ui.boundDomains</key>
+	<string>関連ドメイン</string>
+	<key>assetCatalog.ui.category</key>
+	<string>カテゴリ</string>
+	<key>assetCatalog.ui.company</key>
+	<string>会社</string>
+	<key>assetCatalog.ui.count</key>
+	<string>資産数</string>
+	<key>assetCatalog.ui.domain</key>
+	<string>ドメイン</string>
+	<key>assetCatalog.ui.empty</key>
+	<string>データがありません</string>
+	<key>assetCatalog.ui.endpoint</key>
+	<string>エンドポイント</string>
+	<key>assetCatalog.ui.login</key>
+	<string>資産を表示するにはログインしてください。</string>
+	<key>assetCatalog.ui.method</key>
+	<string>メソッド</string>
+	<key>assetCatalog.ui.name</key>
+	<string>名前</string>
+	<key>assetCatalog.ui.openPorts</key>
+	<string>開放ポート</string>
+	<key>assetCatalog.ui.owner</key>
+	<string>所有会社</string>
+	<key>assetCatalog.ui.parameters</key>
+	<string>パラメーター</string>
+	<key>assetCatalog.ui.port</key>
+	<string>ポート</string>
+	<key>assetCatalog.ui.readOnly</key>
+	<string>資産と会社の変更操作は移植中です。</string>
+	<key>assetCatalog.ui.recordType</key>
+	<string>レコード種別</string>
+	<key>assetCatalog.ui.recordValue</key>
+	<string>レコード値</string>
+	<key>assetCatalog.ui.rootDomain</key>
+	<string>ルートドメイン</string>
+	<key>assetCatalog.ui.scope</key>
+	<string>スコープ</string>
+	<key>assetCatalog.ui.search</key>
+	<string>資産のDSL検索</string>
+	<key>assetCatalog.ui.segment</key>
+	<string>Cセグメント</string>
+	<key>assetCatalog.ui.service</key>
+	<string>サービス</string>
+	<key>assetCatalog.ui.statusCode</key>
+	<string>ステータスコード</string>
+	<key>assetCatalog.ui.subdomain</key>
+	<string>サブドメイン</string>
+	<key>assetCatalog.ui.technologies</key>
+	<string>技術</string>
+	<key>assetCatalog.ui.title</key>
+	<string>ページタイトル</string>
+	<key>assetCatalog.ui.unassigned</key>
+	<string>未割当</string>
 	<key>auth.acceptTerms</key>
 	<string>同意する</string>
 	<key>auth.agree</key>

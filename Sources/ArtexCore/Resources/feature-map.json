@@ -140,10 +140,11 @@
       "evidence": [
         "Tests/ArtexCoreTests/AssetCatalogServiceTests.swift",
         "evidence/assets/read-reference.json",
-        "evidence/assets/read-vm-and-browser-ui.json"
+        "evidence/assets/read-vm-and-browser-ui.json",
+        "evidence/assets/read-native-ui.json"
       ],
       "remainingGates": [
-        "SwiftUI asset tabs and paired screen comparison",
+        "Populated asset tabs, DSL suggestions and error states in both languages",
         "Company scope workflows and asset deletion"
       ]
     },
