@@ -142,7 +142,8 @@
         "evidence/assets/read-reference.json",
         "evidence/assets/read-vm-and-browser-ui.json",
         "evidence/assets/read-native-ui.json",
-        "evidence/assets/delete-reference.json"
+        "evidence/assets/delete-reference.json",
+        "evidence/assets/delete-vm-and-browser-ui.json"
       ],
       "remainingGates": [
         "Populated asset tabs, DSL suggestions and error states in both languages",
