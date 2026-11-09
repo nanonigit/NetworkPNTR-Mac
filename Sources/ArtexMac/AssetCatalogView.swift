@@ -3,14 +3,18 @@ import SwiftUI
 
 @MainActor struct AssetCatalogView: View {
     @Environment(\.locale) private var locale
+    private let service: AssetCatalogService
     @State private var store: AssetCatalogStore
     @State private var draft = ""
     @State private var reload = 0
     @State private var selected: Set<Int64> = []
     @State private var pendingDeletion: [Int64] = []
+    @State private var companyAction: CompanyEditorAction?
+    @State private var companyResult: CompanyEditorResult?
 
     init(session: AuthenticationSession) {
         let service = AssetCatalogService(client: AuthenticatedBackendClient(session: session))
+        self.service = service
         _store = State(initialValue: AssetCatalogStore(service: service))
     }
 
@@ -30,11 +34,18 @@ import SwiftUI
                         pendingDeletion = selected.sorted()
                     }
                 }
+                Button(s(.companyAdd)) { companyAction = .create }
                 Button(s(.toolRunRefresh)) { reload += 1 }
                     .disabled(store.page.isLoading || store.companies.isLoading || store.counts.isLoading)
             }
-            if store.query.type == nil {
-                Text(s(.assetCatalogCompanyPending)).foregroundStyle(.secondary)
+            if let result = companyResult {
+                Text(companyResultText(result)).foregroundStyle(.secondary)
+                if !result.warnings.isEmpty {
+                    Text(s(.companyScopeWarning)).foregroundStyle(.orange)
+                    ForEach(result.warnings.indices, id: \.self) { index in
+                        Text(verbatim: result.warnings[index]).foregroundStyle(.secondary)
+                    }
+                }
             }
             if let count = store.deletedCount {
                 Text(countLabel(.assetCatalogDeleted, count)).foregroundStyle(.secondary)
@@ -77,6 +88,12 @@ import SwiftUI
         } message: { ids in
             Text(countLabel(.assetCatalogDeleteBody, Int64(ids.count)))
         }
+        .sheet(item: $companyAction) { action in
+            CompanyEditor(action: action, service: service, refresh: {
+                store.invalidateCatalog()
+                reload += 1
+            }, completed: { companyResult = $0 })
+        }
         .padding()
         .navigationTitle(s(.assets))
         .task(id: request) {
@@ -98,6 +115,16 @@ import SwiftUI
                 TableColumn(s(.assetCatalogScope)) { company in
                     literal(company.scope?.map(\.raw).joined(separator: ", "))
                 }
+                TableColumn(s(.companyActions)) { company in
+                    HStack {
+                        Button(s(.companyReplace)) { companyAction = .replace(company) }
+                        Button(s(.companyAppend)) { companyAction = .append(company) }
+                        Button(s(.companyDelete), role: .destructive) { companyAction = .delete(company) }
+                    }
+                    .buttonStyle(.borderless)
+                    .disabled(store.companies.isStale)
+                }
+                .width(min: 210, ideal: 235)
             }
             .overlay {
                 if store.companies.isLoading { ProgressView() }
@@ -247,6 +274,16 @@ import SwiftUI
 
     private func countLabel(_ key: AppStringKey, _ count: Int64) -> String {
         s(key).replacingOccurrences(of: "{count}", with: count.formatted(.number.locale(locale)))
+    }
+
+    private func companyResultText(_ result: CompanyEditorResult) -> String {
+        var text = s(result.message)
+        let values = ["added": Int64(result.added), "invalid": Int64(result.invalid),
+                      "skipped": Int64(result.skipped), "assets": result.assets]
+        for (key, value) in values {
+            text = text.replacingOccurrences(of: "{\(key)}", with: value.formatted(.number.locale(locale)))
+        }
+        return text
     }
 
     private var language: AppLanguage { .preferred(in: [locale.identifier]) }

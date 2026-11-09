@@ -449,18 +449,322 @@
           }
         }
       },
-      "assetCatalog.ui.companyPending": {
+      "company.ui.add": {
         "localizations": {
           "en": {
             "stringUnit": {
               "state": "translated",
-              "value": "Company management is pending."
+              "value": "Add company"
             }
           },
           "ja": {
             "stringUnit": {
               "state": "translated",
-              "value": "会社管理は移植中です。"
+              "value": "会社を追加"
+            }
+          }
+        }
+      },
+      "company.ui.append": {
+        "localizations": {
+          "en": {
+            "stringUnit": {
+              "state": "translated",
+              "value": "Append scope"
+            }
+          },
+          "ja": {
+            "stringUnit": {
+              "state": "translated",
+              "value": "スコープを追加"
+            }
+          }
+        }
+      },
+      "company.ui.replace": {
+        "localizations": {
+          "en": {
+            "stringUnit": {
+              "state": "translated",
+              "value": "Edit scope"
+            }
+          },
+          "ja": {
+            "stringUnit": {
+              "state": "translated",
+              "value": "スコープを編集"
+            }
+          }
+        }
+      },
+      "company.ui.delete": {
+        "localizations": {
+          "en": {
+            "stringUnit": {
+              "state": "translated",
+              "value": "Delete company"
+            }
+          },
+          "ja": {
+            "stringUnit": {
+              "state": "translated",
+              "value": "会社を削除"
+            }
+          }
+        }
+      },
+      "company.ui.deleteHelp": {
+        "localizations": {
+          "en": {
+            "stringUnit": {
+              "state": "translated",
+              "value": "Permanently delete this company and its scope rules? Attributed assets are kept unless you select the option below."
+            }
+          },
+          "ja": {
+            "stringUnit": {
+              "state": "translated",
+              "value": "会社とスコープを完全に削除しますか？ 下の項目を選ばない限り、帰属資産は保持されます。"
+            }
+          }
+        }
+      },
+      "company.ui.deleteAssets": {
+        "localizations": {
+          "en": {
+            "stringUnit": {
+              "state": "translated",
+              "value": "Also delete attributed assets"
+            }
+          },
+          "ja": {
+            "stringUnit": {
+              "state": "translated",
+              "value": "帰属資産も削除する"
+            }
+          }
+        }
+      },
+      "company.ui.name": {
+        "localizations": {
+          "en": {
+            "stringUnit": {
+              "state": "translated",
+              "value": "Company name"
+            }
+          },
+          "ja": {
+            "stringUnit": {
+              "state": "translated",
+              "value": "会社名"
+            }
+          }
+        }
+      },
+      "company.ui.replaceHelp": {
+        "localizations": {
+          "en": {
+            "stringUnit": {
+              "state": "translated",
+              "value": "Saving replaces the entire existing scope. An empty scope removes all rules."
+            }
+          },
+          "ja": {
+            "stringUnit": {
+              "state": "translated",
+              "value": "保存すると既存のスコープをすべて置換します。空欄で保存すると全ルールを解除します。"
+            }
+          }
+        }
+      },
+      "company.ui.reason": {
+        "localizations": {
+          "en": {
+            "stringUnit": {
+              "state": "translated",
+              "value": "Attribution rationale (optional)"
+            }
+          },
+          "ja": {
+            "stringUnit": {
+              "state": "translated",
+              "value": "帰属の根拠（任意）"
+            }
+          }
+        }
+      },
+      "company.ui.save": {
+        "localizations": {
+          "en": {
+            "stringUnit": {
+              "state": "translated",
+              "value": "Save"
+            }
+          },
+          "ja": {
+            "stringUnit": {
+              "state": "translated",
+              "value": "保存"
+            }
+          }
+        }
+      },
+      "company.ui.scopeHelp": {
+        "localizations": {
+          "en": {
+            "stringUnit": {
+              "state": "translated",
+              "value": "Enter one domain, IP, CIDR, ICP registration, or keyword per line. Keywords are agent hints."
+            }
+          },
+          "ja": {
+            "stringUnit": {
+              "state": "translated",
+              "value": "ドメイン、IP、CIDR、ICP登録、またはキーワードを1行ずつ入力します。キーワードはエージェントのヒントに使われます。"
+            }
+          }
+        }
+      },
+      "company.ui.invalidLines": {
+        "localizations": {
+          "en": {
+            "stringUnit": {
+              "state": "translated",
+              "value": "Review these scope lines: {lines}"
+            }
+          },
+          "ja": {
+            "stringUnit": {
+              "state": "translated",
+              "value": "スコープの次の行を確認してください。{lines}"
+            }
+          }
+        }
+      },
+      "company.ui.created": {
+        "localizations": {
+          "en": {
+            "stringUnit": {
+              "state": "translated",
+              "value": "Company created. Added {added}, skipped {skipped}, invalid {invalid}."
+            }
+          },
+          "ja": {
+            "stringUnit": {
+              "state": "translated",
+              "value": "会社を作成しました。追加{added}件、スキップ{skipped}件、無効{invalid}件です。"
+            }
+          }
+        }
+      },
+      "company.ui.scopeSaved": {
+        "localizations": {
+          "en": {
+            "stringUnit": {
+              "state": "translated",
+              "value": "Scope saved. Added {added}, skipped {skipped}, invalid {invalid}."
+            }
+          },
+          "ja": {
+            "stringUnit": {
+              "state": "translated",
+              "value": "スコープを保存しました。追加{added}件、スキップ{skipped}件、無効{invalid}件です。"
+            }
+          }
+        }
+      },
+      "company.ui.deleted": {
+        "localizations": {
+          "en": {
+            "stringUnit": {
+              "state": "translated",
+              "value": "Company deleted. Assets deleted: {assets}."
+            }
+          },
+          "ja": {
+            "stringUnit": {
+              "state": "translated",
+              "value": "会社を削除しました。削除した資産は{assets}件です。"
+            }
+          }
+        }
+      },
+      "company.ui.duplicate": {
+        "localizations": {
+          "en": {
+            "stringUnit": {
+              "state": "translated",
+              "value": "A company with this name already exists."
+            }
+          },
+          "ja": {
+            "stringUnit": {
+              "state": "translated",
+              "value": "同じ名前の会社が既に存在します。"
+            }
+          }
+        }
+      },
+      "company.ui.rejected": {
+        "localizations": {
+          "en": {
+            "stringUnit": {
+              "state": "translated",
+              "value": "The company change was rejected. Review the entered values."
+            }
+          },
+          "ja": {
+            "stringUnit": {
+              "state": "translated",
+              "value": "会社の変更が拒否されました。入力内容を確認してください。"
+            }
+          }
+        }
+      },
+      "company.ui.unconfirmed": {
+        "localizations": {
+          "en": {
+            "stringUnit": {
+              "state": "translated",
+              "value": "The result could not be confirmed. Close this form and check the refreshed list before trying again."
+            }
+          },
+          "ja": {
+            "stringUnit": {
+              "state": "translated",
+              "value": "変更結果を確認できませんでした。この画面を閉じ、再取得後の一覧を確認してください。"
+            }
+          }
+        }
+      },
+      "company.ui.scopeWarning": {
+        "localizations": {
+          "en": {
+            "stringUnit": {
+              "state": "translated",
+              "value": "Existing asset data may affect attribution."
+            }
+          },
+          "ja": {
+            "stringUnit": {
+              "state": "translated",
+              "value": "既存の資産データが帰属に影響する可能性があります。"
+            }
+          }
+        }
+      },
+      "company.ui.actions": {
+        "localizations": {
+          "en": {
+            "stringUnit": {
+              "state": "translated",
+              "value": "Actions"
+            }
+          },
+          "ja": {
+            "stringUnit": {
+              "state": "translated",
+              "value": "操作"
             }
           }
         }

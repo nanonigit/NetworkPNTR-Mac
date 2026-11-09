@@ -308,8 +308,6 @@
 	<string>カテゴリ</string>
 	<key>assetCatalog.ui.company</key>
 	<string>会社</string>
-	<key>assetCatalog.ui.companyPending</key>
-	<string>会社管理は移植中です。</string>
 	<key>assetCatalog.ui.count</key>
 	<string>資産数</string>
 	<key>assetCatalog.ui.delete</key>
@@ -614,6 +612,46 @@
 	<string>アップロード中…</string>
 	<key>chat.You</key>
 	<string>あなた</string>
+	<key>company.ui.actions</key>
+	<string>操作</string>
+	<key>company.ui.add</key>
+	<string>会社を追加</string>
+	<key>company.ui.append</key>
+	<string>スコープを追加</string>
+	<key>company.ui.created</key>
+	<string>会社を作成しました。追加{added}件、スキップ{skipped}件、無効{invalid}件です。</string>
+	<key>company.ui.delete</key>
+	<string>会社を削除</string>
+	<key>company.ui.deleteAssets</key>
+	<string>帰属資産も削除する</string>
+	<key>company.ui.deleteHelp</key>
+	<string>会社とスコープを完全に削除しますか？ 下の項目を選ばない限り、帰属資産は保持されます。</string>
+	<key>company.ui.deleted</key>
+	<string>会社を削除しました。削除した資産は{assets}件です。</string>
+	<key>company.ui.duplicate</key>
+	<string>同じ名前の会社が既に存在します。</string>
+	<key>company.ui.invalidLines</key>
+	<string>スコープの次の行を確認してください。{lines}</string>
+	<key>company.ui.name</key>
+	<string>会社名</string>
+	<key>company.ui.reason</key>
+	<string>帰属の根拠（任意）</string>
+	<key>company.ui.rejected</key>
+	<string>会社の変更が拒否されました。入力内容を確認してください。</string>
+	<key>company.ui.replace</key>
+	<string>スコープを編集</string>
+	<key>company.ui.replaceHelp</key>
+	<string>保存すると既存のスコープをすべて置換します。空欄で保存すると全ルールを解除します。</string>
+	<key>company.ui.save</key>
+	<string>保存</string>
+	<key>company.ui.scopeHelp</key>
+	<string>ドメイン、IP、CIDR、ICP登録、またはキーワードを1行ずつ入力します。キーワードはエージェントのヒントに使われます。</string>
+	<key>company.ui.scopeSaved</key>
+	<string>スコープを保存しました。追加{added}件、スキップ{skipped}件、無効{invalid}件です。</string>
+	<key>company.ui.scopeWarning</key>
+	<string>既存の資産データが帰属に影響する可能性があります。</string>
+	<key>company.ui.unconfirmed</key>
+	<string>変更結果を確認できませんでした。この画面を閉じ、再取得後の一覧を確認してください。</string>
 	<key>dashboard.status.engine.exploring</key>
 	<string>探索中</string>
 	<key>dashboard.status.engine.idle</key>

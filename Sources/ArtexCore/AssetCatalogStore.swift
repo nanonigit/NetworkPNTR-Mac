@@ -75,6 +75,10 @@ import Observation
         } catch {
             deletionUnconfirmed = true
         }
+        invalidateCatalog()
+    }
+
+    public func invalidateCatalog() {
         page.invalidate(clear: true)
         companies.invalidate()
         counts.invalidate()

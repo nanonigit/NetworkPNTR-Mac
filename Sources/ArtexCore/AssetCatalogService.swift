@@ -61,6 +61,7 @@ public struct AssetCatalogPage: Decodable, Sendable {
 public struct AssetCatalogCompany: Decodable, Identifiable, Sendable {
     public struct ScopeRule: Decodable, Sendable {
         public let raw: String
+        public let kind: CompanyScopeInput.Kind?
     }
 
     public let id: Int64
@@ -70,7 +71,7 @@ public struct AssetCatalogCompany: Decodable, Identifiable, Sendable {
 }
 
 public struct CompanyScopeInput: Encodable, Sendable {
-    public enum Kind: String, CaseIterable, Encodable, Sendable {
+    public enum Kind: String, CaseIterable, Codable, Sendable {
         case domain, ip, cidr, icp, keyword
     }
 

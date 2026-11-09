@@ -1,0 +1,23 @@
+{
+  "browserSourceCommit": "e75ae371ad777ffd1eecdd28d2781a6519b05591",
+  "guestManifestSHA256": "9c38d268d350e7ab4e265ca32d686c529d8e09e5facfc2c69581f31589b768d8",
+  "browserComparisonSHA256": "6d83edda008e70f587ec2ad6c865be07ec92e1a54bd03fff1d57643c8046015d",
+  "nativeDiagnosticSHA256": "4c3c8e9bacd3c7d75036a11210f937f17ceb2b206966bdb97a00db853ec35a38",
+  "nativeUI": {
+    "signedDebugApp": true,
+    "language": "ja",
+    "contentWidthPoints": 980,
+    "createdWithScope": true,
+    "appendedScope": true,
+    "editorPrefilled": true,
+    "invalidLineBlockedSave": true,
+    "clearedScope": true,
+    "retainSelectedByDefault": true,
+    "assetRetained": true,
+    "assetDeletedWhenSelected": true,
+    "remainingAssets": 25
+  },
+  "cooperativeStop": true,
+  "temporaryKeychainItemRemoved": true,
+  "temporaryDiskRemoved": true
+}

@@ -308,8 +308,6 @@
 	<string>Category</string>
 	<key>assetCatalog.ui.company</key>
 	<string>Company</string>
-	<key>assetCatalog.ui.companyPending</key>
-	<string>Company management is pending.</string>
 	<key>assetCatalog.ui.count</key>
 	<string>Assets</string>
 	<key>assetCatalog.ui.delete</key>
@@ -614,6 +612,46 @@
 	<string>Uploading…</string>
 	<key>chat.You</key>
 	<string>You</string>
+	<key>company.ui.actions</key>
+	<string>Actions</string>
+	<key>company.ui.add</key>
+	<string>Add company</string>
+	<key>company.ui.append</key>
+	<string>Append scope</string>
+	<key>company.ui.created</key>
+	<string>Company created. Added {added}, skipped {skipped}, invalid {invalid}.</string>
+	<key>company.ui.delete</key>
+	<string>Delete company</string>
+	<key>company.ui.deleteAssets</key>
+	<string>Also delete attributed assets</string>
+	<key>company.ui.deleteHelp</key>
+	<string>Permanently delete this company and its scope rules? Attributed assets are kept unless you select the option below.</string>
+	<key>company.ui.deleted</key>
+	<string>Company deleted. Assets deleted: {assets}.</string>
+	<key>company.ui.duplicate</key>
+	<string>A company with this name already exists.</string>
+	<key>company.ui.invalidLines</key>
+	<string>Review these scope lines: {lines}</string>
+	<key>company.ui.name</key>
+	<string>Company name</string>
+	<key>company.ui.reason</key>
+	<string>Attribution rationale (optional)</string>
+	<key>company.ui.rejected</key>
+	<string>The company change was rejected. Review the entered values.</string>
+	<key>company.ui.replace</key>
+	<string>Edit scope</string>
+	<key>company.ui.replaceHelp</key>
+	<string>Saving replaces the entire existing scope. An empty scope removes all rules.</string>
+	<key>company.ui.save</key>
+	<string>Save</string>
+	<key>company.ui.scopeHelp</key>
+	<string>Enter one domain, IP, CIDR, ICP registration, or keyword per line. Keywords are agent hints.</string>
+	<key>company.ui.scopeSaved</key>
+	<string>Scope saved. Added {added}, skipped {skipped}, invalid {invalid}.</string>
+	<key>company.ui.scopeWarning</key>
+	<string>Existing asset data may affect attribution.</string>
+	<key>company.ui.unconfirmed</key>
+	<string>The result could not be confirmed. Close this form and check the refreshed list before trying again.</string>
 	<key>dashboard.status.engine.exploring</key>
 	<string>Exploring</string>
 	<key>dashboard.status.engine.idle</key>
