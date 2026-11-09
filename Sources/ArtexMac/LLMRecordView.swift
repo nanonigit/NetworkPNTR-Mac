@@ -226,10 +226,12 @@ private extension LLMRecordTask {
                     get: { showRaw }, set: { prefersRaw = $0 }
                 ))
                 .disabled(!hasRaw)
+                let request = LLMRecordPresentation.jsonBody(showRaw ? detail.rawRequest : detail.requestBody)
+                let response = showRaw ? detail.rawResponse : LLMRecordPresentation.jsonBody(detail.responseBody)
                 HStack(alignment: .top, spacing: 12) {
-                    payload(.llmRecordRequest, copyLabel: .llmRecordCopyRequest, showRaw ? detail.rawRequest : detail.requestBody)
+                    payload(.llmRecordRequest, copyLabel: .llmRecordCopyRequest, request)
                     Divider()
-                    payload(.llmRecordResponse, copyLabel: .llmRecordCopyResponse, showRaw ? detail.rawResponse : detail.responseBody)
+                    payload(.llmRecordResponse, copyLabel: .llmRecordCopyResponse, response)
                 }
             } else if let failure = state.failure {
                 Text(failure.text(language: language)).foregroundStyle(.red)

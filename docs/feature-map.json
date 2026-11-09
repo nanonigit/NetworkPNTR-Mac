@@ -116,10 +116,11 @@
         "evidence/llm/record-list-comparison.json",
         "evidence/llm/record-visual-keyboard.json",
         "evidence/llm/record-copy-keyboard.json",
-        "evidence/llm/record-clipboard-minimum-width.json"
+        "evidence/llm/record-clipboard-minimum-width.json",
+        "evidence/llm/record-json-clipboard.json"
       ],
       "remainingGates": [
-        "Compare JSON formatting and copy, and verify latency and status readability at minimum width"
+        "Verify latency and status readability at minimum width"
       ]
     },
     {
