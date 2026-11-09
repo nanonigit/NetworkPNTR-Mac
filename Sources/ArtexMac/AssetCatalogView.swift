@@ -89,7 +89,7 @@ import SwiftUI
             Text(countLabel(.assetCatalogDeleteBody, Int64(ids.count)))
         }
         .sheet(item: $companyAction) { action in
-            CompanyEditor(action: action, service: service, refresh: {
+            CompanyEditor(action: action, locale: locale, service: service, refresh: {
                 store.invalidateCatalog()
                 reload += 1
             }, completed: { companyResult = $0 })

@@ -36,9 +36,9 @@ struct CompanyEditorResult {
 }
 
 @MainActor struct CompanyEditor: View {
-    @Environment(\.locale) private var locale
     @Environment(\.dismiss) private var dismiss
     let action: CompanyEditorAction
+    let locale: Locale
     let service: AssetCatalogService
     let refresh: () -> Void
     let completed: (CompanyEditorResult) -> Void
@@ -50,9 +50,10 @@ struct CompanyEditorResult {
     @State private var busy = false
     @State private var failure: AppStringKey?
 
-    init(action: CompanyEditorAction, service: AssetCatalogService, refresh: @escaping () -> Void,
+    init(action: CompanyEditorAction, locale: Locale, service: AssetCatalogService, refresh: @escaping () -> Void,
          completed: @escaping (CompanyEditorResult) -> Void) {
         self.action = action
+        self.locale = locale
         self.service = service
         self.refresh = refresh
         self.completed = completed

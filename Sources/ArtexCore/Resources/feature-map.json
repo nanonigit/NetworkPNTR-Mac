@@ -147,7 +147,8 @@
         "evidence/assets/delete-native-ui.json",
         "evidence/assets/company-reference.json",
         "evidence/assets/company-vm.json",
-        "evidence/assets/company-native-ui.json"
+        "evidence/assets/company-native-ui.json",
+        "evidence/assets/company-locale-conflict-ui.json"
       ],
       "remainingGates": [
         "Populated asset tabs, DSL suggestions and error states in both languages",
