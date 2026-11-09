@@ -1,0 +1,24 @@
+{
+  "browserSourceCommit": "e75ae371ad777ffd1eecdd28d2781a6519b05591",
+  "referenceBackendSHA256": "0ebad83ddda276b03b415d64ce30af44e7a587860f3b660c12563462a0ac5e80",
+  "fixtureSHA256": "ae7b17b7288ccaea1793afe4e45ba409511b43bb9438158bfd77be9a1b5a16b8",
+  "scope": "Pinned browser backend with synthetic root domains",
+  "results": {
+    "pageCounts": [
+      25,
+      1,
+      0
+    ],
+    "total": 26,
+    "countsRootDomain": 26,
+    "dslMatchedId": 9026,
+    "invalidDSLStatus": 400
+  },
+  "network": {
+    "network_interfaces": "erspan0,gre0,gretap0,ip6_vti0,ip6gre0,ip6tnl0,ip_vti0,lo,sit0,tunl0",
+    "network_hardware_devices": 0,
+    "network_nonloopback_up": 0,
+    "network_external_routes": 0
+  },
+  "containerRemoved": true
+}

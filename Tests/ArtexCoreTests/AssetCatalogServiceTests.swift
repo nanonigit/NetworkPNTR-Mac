@@ -1,0 +1,64 @@
+import Foundation
+import XCTest
+@testable import ArtexCore
+
+final class AssetCatalogServiceTests: XCTestCase {
+    @MainActor func testListPreservesDSLAndDecodesOptionalFieldsAndLargeIdentifiers() async throws {
+        let client = ChatTestTransport()
+        let service = AssetCatalogService(client: client)
+        let dsl = #"ip="198.51.100.1" || domain="日本語+ & ? # %""#
+        try client.enqueue([
+            "count": 1, "total": 26,
+            "assets": [[
+                "id": Int64(9_007_199_254_740_993), "type": "ip", "last_seen": "2026-10-22T10:00:00Z",
+                "task_ids": NSNull(), "ip": "198.51.100.1", "open_ports": [["port": 443, "service": "https"]]
+            ]]
+        ])
+        let result = try await service.list(type: .ip, dsl: " \(dsl) ", page: 1, size: 25)
+        XCTAssertEqual(result.assets.first?.id, 9_007_199_254_740_993)
+        XCTAssertEqual(result.assets.first?.openPorts?.first?.port, 443)
+        XCTAssertNil(result.assets.first?.taskIds)
+        XCTAssertEqual(result.total, 26)
+        let path = try XCTUnwrap(client.calls.first?.path)
+        XCTAssertTrue(path.contains("%2B"))
+        XCTAssertEqual(URLComponents(string: path)?.queryItems, [
+            .init(name: "type", value: "ip"), .init(name: "limit", value: "25"),
+            .init(name: "offset", value: "25"), .init(name: "dsl", value: dsl)
+        ])
+    }
+
+    @MainActor func testAcceptsEmptyPageWithTotalAndRejectsInconsistentReceipts() async throws {
+        let client = ChatTestTransport()
+        let service = AssetCatalogService(client: client)
+        try client.enqueue(["count": 0, "total": 7, "assets": []])
+        let page = try await service.list(type: .service, page: 5)
+        XCTAssertTrue(page.assets.isEmpty)
+        XCTAssertEqual(page.total, 7)
+        try client.enqueue(["count": 1, "total": 1, "assets": []])
+        do {
+            _ = try await service.list(type: .service)
+            XCTFail("Expected invalid response")
+        } catch BackendAPIError.invalidResponse {}
+    }
+
+    @MainActor func testValidatesPagingLocallyAndPreservesBackendErrorStatus() async throws {
+        let client = ChatTestTransport()
+        let service = AssetCatalogService(client: client)
+        do {
+            _ = try await service.list(type: .endpoint, page: .max, size: 200)
+            XCTFail("Expected invalid query")
+        } catch AssetCatalogQueryError.invalidQuery {}
+        XCTAssertTrue(client.calls.isEmpty)
+
+        try client.enqueue(["error": "invalid expression"], status: 400)
+        do {
+            _ = try await service.list(type: .endpoint, dsl: "(")
+            XCTFail("Expected backend validation error")
+        } catch BackendAPIError.status(400) {}
+
+        try client.enqueue(["root_domain": 1, "endpoint": 0])
+        let counts = try await service.counts()
+        XCTAssertEqual(counts, ["root_domain": 1, "endpoint": 0])
+        XCTAssertEqual(client.calls.last?.path, "/api/assets/counts")
+    }
+}
