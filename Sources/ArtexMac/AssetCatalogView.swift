@@ -136,8 +136,8 @@ import SwiftUI
     private func assetContent(_ type: AssetCatalogType) -> some View {
         let rows = store.page.value?.assets ?? []
         return VStack(alignment: .leading, spacing: 8) {
-            TextField(s(.assetCatalogSearch), text: $draft)
-                .textFieldStyle(.roundedBorder)
+            AssetDSLSearchField(text: $draft)
+                .id(type)
                 .onChange(of: draft) { _, value in store.search(value) }
             if let failure = store.page.failure { error(failure) }
             if type == .rootDomain, let failure = store.companies.failure { error(failure) }

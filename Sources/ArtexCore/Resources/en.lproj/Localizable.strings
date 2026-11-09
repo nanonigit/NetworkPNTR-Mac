@@ -298,6 +298,66 @@
 	<string>Save wrap-up settings</string>
 	<key>agent.wrapUp.saved</key>
 	<string>Wrap-up settings saved.</string>
+	<key>assetCatalog.dsl.field.app_icp</key>
+	<string>App ICP registration</string>
+	<key>assetCatalog.dsl.field.app_name</key>
+	<string>App name</string>
+	<key>assetCatalog.dsl.field.bundle_id</key>
+	<string>App Bundle ID</string>
+	<key>assetCatalog.dsl.field.category</key>
+	<string>App category</string>
+	<key>assetCatalog.dsl.field.company_id</key>
+	<string>Owning company ID (integer)</string>
+	<key>assetCatalog.dsl.field.domain</key>
+	<string>Domain (root / subdomain / service domain)</string>
+	<key>assetCatalog.dsl.field.icp</key>
+	<string>ICP registration number</string>
+	<key>assetCatalog.dsl.field.ip</key>
+	<string>IPv4/IPv6 address</string>
+	<key>assetCatalog.dsl.field.method</key>
+	<string>HTTP method GET/POST/PUT/…</string>
+	<key>assetCatalog.dsl.field.page_title</key>
+	<string>Page title (HTTP service)</string>
+	<key>assetCatalog.dsl.field.port</key>
+	<string>Port number (integer)</string>
+	<key>assetCatalog.dsl.field.record_type</key>
+	<string>DNS record type A/CNAME/MX/…</string>
+	<key>assetCatalog.dsl.field.root_domain</key>
+	<string>Root domain</string>
+	<key>assetCatalog.dsl.field.service_name</key>
+	<string>Service name (non-HTTP services)</string>
+	<key>assetCatalog.dsl.field.service_type</key>
+	<string>Service type: http | other</string>
+	<key>assetCatalog.dsl.field.status_code</key>
+	<string>HTTP status code (integer)</string>
+	<key>assetCatalog.dsl.field.task_id</key>
+	<string>Source task ID (integer)</string>
+	<key>assetCatalog.dsl.field.technology</key>
+	<string>Technology fingerprint (array field)</string>
+	<key>assetCatalog.dsl.field.url</key>
+	<string>Full URL (service / endpoint)</string>
+	<key>assetCatalog.dsl.logic.and</key>
+	<string>AND (both conditions met)</string>
+	<key>assetCatalog.dsl.logic.or</key>
+	<string>OR (either condition met)</string>
+	<key>assetCatalog.dsl.op.eq</key>
+	<string>Equals</string>
+	<key>assetCatalog.dsl.op.exact</key>
+	<string>Exact match</string>
+	<key>assetCatalog.dsl.op.exclude</key>
+	<string>Exclude</string>
+	<key>assetCatalog.dsl.op.fuzzy</key>
+	<string>Partial match</string>
+	<key>assetCatalog.dsl.op.gt</key>
+	<string>Greater than</string>
+	<key>assetCatalog.dsl.op.gte</key>
+	<string>Greater than or equal</string>
+	<key>assetCatalog.dsl.op.lt</key>
+	<string>Less than</string>
+	<key>assetCatalog.dsl.op.lte</key>
+	<string>Less than or equal</string>
+	<key>assetCatalog.dsl.op.ne</key>
+	<string>Not equal</string>
 	<key>assetCatalog.ui.app</key>
 	<string>App</string>
 	<key>assetCatalog.ui.auth</key>

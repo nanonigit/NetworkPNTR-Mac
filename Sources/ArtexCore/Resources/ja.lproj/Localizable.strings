@@ -298,6 +298,66 @@
 	<string>終了処理の設定を保存</string>
 	<key>agent.wrapUp.saved</key>
 	<string>終了処理の設定を保存しました。</string>
+	<key>assetCatalog.dsl.field.app_icp</key>
+	<string>アプリの ICP 登録</string>
+	<key>assetCatalog.dsl.field.app_name</key>
+	<string>アプリ名</string>
+	<key>assetCatalog.dsl.field.bundle_id</key>
+	<string>アプリの Bundle ID</string>
+	<key>assetCatalog.dsl.field.category</key>
+	<string>アプリのカテゴリ</string>
+	<key>assetCatalog.dsl.field.company_id</key>
+	<string>所属企業 ID（整数）</string>
+	<key>assetCatalog.dsl.field.domain</key>
+	<string>ドメイン（ルートドメイン/サブドメイン/サービスドメイン）</string>
+	<key>assetCatalog.dsl.field.icp</key>
+	<string>ICP 登録番号</string>
+	<key>assetCatalog.dsl.field.ip</key>
+	<string>IPv4/IPv6 アドレス</string>
+	<key>assetCatalog.dsl.field.method</key>
+	<string>HTTP メソッド GET/POST/PUT/…</string>
+	<key>assetCatalog.dsl.field.page_title</key>
+	<string>ページタイトル（HTTP サービス）</string>
+	<key>assetCatalog.dsl.field.port</key>
+	<string>ポート番号（整数）</string>
+	<key>assetCatalog.dsl.field.record_type</key>
+	<string>DNS レコードタイプ A/CNAME/MX/…</string>
+	<key>assetCatalog.dsl.field.root_domain</key>
+	<string>ルートドメイン</string>
+	<key>assetCatalog.dsl.field.service_name</key>
+	<string>サービス名（HTTP 以外のサービス）</string>
+	<key>assetCatalog.dsl.field.service_type</key>
+	<string>サービスタイプ: http | other</string>
+	<key>assetCatalog.dsl.field.status_code</key>
+	<string>HTTP ステータスコード（整数）</string>
+	<key>assetCatalog.dsl.field.task_id</key>
+	<string>出所のタスク ID（整数）</string>
+	<key>assetCatalog.dsl.field.technology</key>
+	<string>技術フィンガープリント（配列フィールド）</string>
+	<key>assetCatalog.dsl.field.url</key>
+	<string>完全な URL（サービス/エンドポイント）</string>
+	<key>assetCatalog.dsl.logic.and</key>
+	<string>かつ（両方の条件を満たす）</string>
+	<key>assetCatalog.dsl.logic.or</key>
+	<string>または（どちらかを満たす）</string>
+	<key>assetCatalog.dsl.op.eq</key>
+	<string>等しい</string>
+	<key>assetCatalog.dsl.op.exact</key>
+	<string>完全一致</string>
+	<key>assetCatalog.dsl.op.exclude</key>
+	<string>除外</string>
+	<key>assetCatalog.dsl.op.fuzzy</key>
+	<string>部分一致</string>
+	<key>assetCatalog.dsl.op.gt</key>
+	<string>より大きい</string>
+	<key>assetCatalog.dsl.op.gte</key>
+	<string>以上</string>
+	<key>assetCatalog.dsl.op.lt</key>
+	<string>未満</string>
+	<key>assetCatalog.dsl.op.lte</key>
+	<string>以下</string>
+	<key>assetCatalog.dsl.op.ne</key>
+	<string>等しくない</string>
 	<key>assetCatalog.ui.app</key>
 	<string>アプリ</string>
 	<key>assetCatalog.ui.auth</key>

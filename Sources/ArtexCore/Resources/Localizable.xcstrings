@@ -97,6 +97,486 @@
           }
         }
       },
+      "assetCatalog.dsl.field.domain": {
+        "localizations": {
+          "en": {
+            "stringUnit": {
+              "state": "translated",
+              "value": "Domain (root / subdomain / service domain)"
+            }
+          },
+          "ja": {
+            "stringUnit": {
+              "state": "translated",
+              "value": "ドメイン（ルートドメイン/サブドメイン/サービスドメイン）"
+            }
+          }
+        }
+      },
+      "assetCatalog.dsl.field.ip": {
+        "localizations": {
+          "en": {
+            "stringUnit": {
+              "state": "translated",
+              "value": "IPv4/IPv6 address"
+            }
+          },
+          "ja": {
+            "stringUnit": {
+              "state": "translated",
+              "value": "IPv4/IPv6 アドレス"
+            }
+          }
+        }
+      },
+      "assetCatalog.dsl.field.url": {
+        "localizations": {
+          "en": {
+            "stringUnit": {
+              "state": "translated",
+              "value": "Full URL (service / endpoint)"
+            }
+          },
+          "ja": {
+            "stringUnit": {
+              "state": "translated",
+              "value": "完全な URL（サービス/エンドポイント）"
+            }
+          }
+        }
+      },
+      "assetCatalog.dsl.field.root_domain": {
+        "localizations": {
+          "en": {
+            "stringUnit": {
+              "state": "translated",
+              "value": "Root domain"
+            }
+          },
+          "ja": {
+            "stringUnit": {
+              "state": "translated",
+              "value": "ルートドメイン"
+            }
+          }
+        }
+      },
+      "assetCatalog.dsl.field.page_title": {
+        "localizations": {
+          "en": {
+            "stringUnit": {
+              "state": "translated",
+              "value": "Page title (HTTP service)"
+            }
+          },
+          "ja": {
+            "stringUnit": {
+              "state": "translated",
+              "value": "ページタイトル（HTTP サービス）"
+            }
+          }
+        }
+      },
+      "assetCatalog.dsl.field.icp": {
+        "localizations": {
+          "en": {
+            "stringUnit": {
+              "state": "translated",
+              "value": "ICP registration number"
+            }
+          },
+          "ja": {
+            "stringUnit": {
+              "state": "translated",
+              "value": "ICP 登録番号"
+            }
+          }
+        }
+      },
+      "assetCatalog.dsl.field.service_name": {
+        "localizations": {
+          "en": {
+            "stringUnit": {
+              "state": "translated",
+              "value": "Service name (non-HTTP services)"
+            }
+          },
+          "ja": {
+            "stringUnit": {
+              "state": "translated",
+              "value": "サービス名（HTTP 以外のサービス）"
+            }
+          }
+        }
+      },
+      "assetCatalog.dsl.field.app_name": {
+        "localizations": {
+          "en": {
+            "stringUnit": {
+              "state": "translated",
+              "value": "App name"
+            }
+          },
+          "ja": {
+            "stringUnit": {
+              "state": "translated",
+              "value": "アプリ名"
+            }
+          }
+        }
+      },
+      "assetCatalog.dsl.field.bundle_id": {
+        "localizations": {
+          "en": {
+            "stringUnit": {
+              "state": "translated",
+              "value": "App Bundle ID"
+            }
+          },
+          "ja": {
+            "stringUnit": {
+              "state": "translated",
+              "value": "アプリの Bundle ID"
+            }
+          }
+        }
+      },
+      "assetCatalog.dsl.field.category": {
+        "localizations": {
+          "en": {
+            "stringUnit": {
+              "state": "translated",
+              "value": "App category"
+            }
+          },
+          "ja": {
+            "stringUnit": {
+              "state": "translated",
+              "value": "アプリのカテゴリ"
+            }
+          }
+        }
+      },
+      "assetCatalog.dsl.field.app_icp": {
+        "localizations": {
+          "en": {
+            "stringUnit": {
+              "state": "translated",
+              "value": "App ICP registration"
+            }
+          },
+          "ja": {
+            "stringUnit": {
+              "state": "translated",
+              "value": "アプリの ICP 登録"
+            }
+          }
+        }
+      },
+      "assetCatalog.dsl.field.method": {
+        "localizations": {
+          "en": {
+            "stringUnit": {
+              "state": "translated",
+              "value": "HTTP method GET/POST/PUT/…"
+            }
+          },
+          "ja": {
+            "stringUnit": {
+              "state": "translated",
+              "value": "HTTP メソッド GET/POST/PUT/…"
+            }
+          }
+        }
+      },
+      "assetCatalog.dsl.field.service_type": {
+        "localizations": {
+          "en": {
+            "stringUnit": {
+              "state": "translated",
+              "value": "Service type: http | other"
+            }
+          },
+          "ja": {
+            "stringUnit": {
+              "state": "translated",
+              "value": "サービスタイプ: http | other"
+            }
+          }
+        }
+      },
+      "assetCatalog.dsl.field.record_type": {
+        "localizations": {
+          "en": {
+            "stringUnit": {
+              "state": "translated",
+              "value": "DNS record type A/CNAME/MX/…"
+            }
+          },
+          "ja": {
+            "stringUnit": {
+              "state": "translated",
+              "value": "DNS レコードタイプ A/CNAME/MX/…"
+            }
+          }
+        }
+      },
+      "assetCatalog.dsl.field.technology": {
+        "localizations": {
+          "en": {
+            "stringUnit": {
+              "state": "translated",
+              "value": "Technology fingerprint (array field)"
+            }
+          },
+          "ja": {
+            "stringUnit": {
+              "state": "translated",
+              "value": "技術フィンガープリント（配列フィールド）"
+            }
+          }
+        }
+      },
+      "assetCatalog.dsl.field.port": {
+        "localizations": {
+          "en": {
+            "stringUnit": {
+              "state": "translated",
+              "value": "Port number (integer)"
+            }
+          },
+          "ja": {
+            "stringUnit": {
+              "state": "translated",
+              "value": "ポート番号（整数）"
+            }
+          }
+        }
+      },
+      "assetCatalog.dsl.field.status_code": {
+        "localizations": {
+          "en": {
+            "stringUnit": {
+              "state": "translated",
+              "value": "HTTP status code (integer)"
+            }
+          },
+          "ja": {
+            "stringUnit": {
+              "state": "translated",
+              "value": "HTTP ステータスコード（整数）"
+            }
+          }
+        }
+      },
+      "assetCatalog.dsl.field.company_id": {
+        "localizations": {
+          "en": {
+            "stringUnit": {
+              "state": "translated",
+              "value": "Owning company ID (integer)"
+            }
+          },
+          "ja": {
+            "stringUnit": {
+              "state": "translated",
+              "value": "所属企業 ID（整数）"
+            }
+          }
+        }
+      },
+      "assetCatalog.dsl.field.task_id": {
+        "localizations": {
+          "en": {
+            "stringUnit": {
+              "state": "translated",
+              "value": "Source task ID (integer)"
+            }
+          },
+          "ja": {
+            "stringUnit": {
+              "state": "translated",
+              "value": "出所のタスク ID（整数）"
+            }
+          }
+        }
+      },
+      "assetCatalog.dsl.op.fuzzy": {
+        "localizations": {
+          "en": {
+            "stringUnit": {
+              "state": "translated",
+              "value": "Partial match"
+            }
+          },
+          "ja": {
+            "stringUnit": {
+              "state": "translated",
+              "value": "部分一致"
+            }
+          }
+        }
+      },
+      "assetCatalog.dsl.op.exact": {
+        "localizations": {
+          "en": {
+            "stringUnit": {
+              "state": "translated",
+              "value": "Exact match"
+            }
+          },
+          "ja": {
+            "stringUnit": {
+              "state": "translated",
+              "value": "完全一致"
+            }
+          }
+        }
+      },
+      "assetCatalog.dsl.op.exclude": {
+        "localizations": {
+          "en": {
+            "stringUnit": {
+              "state": "translated",
+              "value": "Exclude"
+            }
+          },
+          "ja": {
+            "stringUnit": {
+              "state": "translated",
+              "value": "除外"
+            }
+          }
+        }
+      },
+      "assetCatalog.dsl.op.eq": {
+        "localizations": {
+          "en": {
+            "stringUnit": {
+              "state": "translated",
+              "value": "Equals"
+            }
+          },
+          "ja": {
+            "stringUnit": {
+              "state": "translated",
+              "value": "等しい"
+            }
+          }
+        }
+      },
+      "assetCatalog.dsl.op.ne": {
+        "localizations": {
+          "en": {
+            "stringUnit": {
+              "state": "translated",
+              "value": "Not equal"
+            }
+          },
+          "ja": {
+            "stringUnit": {
+              "state": "translated",
+              "value": "等しくない"
+            }
+          }
+        }
+      },
+      "assetCatalog.dsl.op.gt": {
+        "localizations": {
+          "en": {
+            "stringUnit": {
+              "state": "translated",
+              "value": "Greater than"
+            }
+          },
+          "ja": {
+            "stringUnit": {
+              "state": "translated",
+              "value": "より大きい"
+            }
+          }
+        }
+      },
+      "assetCatalog.dsl.op.gte": {
+        "localizations": {
+          "en": {
+            "stringUnit": {
+              "state": "translated",
+              "value": "Greater than or equal"
+            }
+          },
+          "ja": {
+            "stringUnit": {
+              "state": "translated",
+              "value": "以上"
+            }
+          }
+        }
+      },
+      "assetCatalog.dsl.op.lt": {
+        "localizations": {
+          "en": {
+            "stringUnit": {
+              "state": "translated",
+              "value": "Less than"
+            }
+          },
+          "ja": {
+            "stringUnit": {
+              "state": "translated",
+              "value": "未満"
+            }
+          }
+        }
+      },
+      "assetCatalog.dsl.op.lte": {
+        "localizations": {
+          "en": {
+            "stringUnit": {
+              "state": "translated",
+              "value": "Less than or equal"
+            }
+          },
+          "ja": {
+            "stringUnit": {
+              "state": "translated",
+              "value": "以下"
+            }
+          }
+        }
+      },
+      "assetCatalog.dsl.logic.and": {
+        "localizations": {
+          "en": {
+            "stringUnit": {
+              "state": "translated",
+              "value": "AND (both conditions met)"
+            }
+          },
+          "ja": {
+            "stringUnit": {
+              "state": "translated",
+              "value": "かつ（両方の条件を満たす）"
+            }
+          }
+        }
+      },
+      "assetCatalog.dsl.logic.or": {
+        "localizations": {
+          "en": {
+            "stringUnit": {
+              "state": "translated",
+              "value": "OR (either condition met)"
+            }
+          },
+          "ja": {
+            "stringUnit": {
+              "state": "translated",
+              "value": "または（どちらかを満たす）"
+            }
+          }
+        }
+      },
       "assetCatalog.ui.search": {
         "localizations": {
           "en": {
