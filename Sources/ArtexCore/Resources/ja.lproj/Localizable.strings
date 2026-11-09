@@ -336,6 +336,8 @@
 	<string>技術フィンガープリント（配列フィールド）</string>
 	<key>assetCatalog.dsl.field.url</key>
 	<string>完全な URL（サービス/エンドポイント）</string>
+	<key>assetCatalog.dsl.invalidExpression</key>
+	<string>DSLの式が正しくありません。フィールド、演算子、引用符、括弧を確認してください。</string>
 	<key>assetCatalog.dsl.logic.and</key>
 	<string>かつ（両方の条件を満たす）</string>
 	<key>assetCatalog.dsl.logic.or</key>

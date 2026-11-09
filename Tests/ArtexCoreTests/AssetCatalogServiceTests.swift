@@ -196,4 +196,30 @@ final class AssetCatalogServiceTests: XCTestCase {
         XCTAssertEqual(deletion, ["delete_assets": false])
     }
 
+    @MainActor func testDSLValidationIsLocalizedAndCorrectionClearsFailure() async throws {
+        let client = ChatTestTransport()
+        let store = AssetCatalogStore(service: AssetCatalogService(client: client))
+        store.select(.rootDomain)
+        store.search("(")
+        try client.enqueue(["error": "fixture parser details"], status: 400)
+        await store.refreshPage(store.query)
+        XCTAssertNil(store.page.value)
+        for language in [AppLanguage.english, .japanese] {
+            XCTAssertEqual(store.page.failure?.text(language: language),
+                           AppStrings.text(.assetDSLInvalidExpression, language: language))
+        }
+
+        store.search(#"domain=="fixture.example.test""#)
+        try client.enqueue(["count": 0, "total": 0, "assets": []])
+        await store.refreshPage(store.query)
+        XCTAssertNil(store.page.failure)
+        XCTAssertEqual(store.page.value?.total, 0)
+
+        store.search("")
+        try client.enqueue(["error": "fixture unrelated bad request"], status: 400)
+        await store.refreshPage(store.query)
+        XCTAssertEqual(store.page.failure?.text(language: .english),
+                       AppErrorText.text(BackendAPIError.status(400), language: .english))
+    }
+
 }

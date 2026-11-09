@@ -577,6 +577,22 @@
           }
         }
       },
+      "assetCatalog.dsl.invalidExpression": {
+        "localizations": {
+          "en": {
+            "stringUnit": {
+              "state": "translated",
+              "value": "Invalid DSL expression. Check the fields, operators, quotes, and parentheses."
+            }
+          },
+          "ja": {
+            "stringUnit": {
+              "state": "translated",
+              "value": "DSLの式が正しくありません。フィールド、演算子、引用符、括弧を確認してください。"
+            }
+          }
+        }
+      },
       "assetCatalog.ui.search": {
         "localizations": {
           "en": {

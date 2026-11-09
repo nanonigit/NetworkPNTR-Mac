@@ -149,10 +149,11 @@
         "evidence/assets/company-vm.json",
         "evidence/assets/company-native-ui.json",
         "evidence/assets/company-locale-conflict-ui.json",
-        "evidence/assets/dsl-suggestions-ui.json"
+        "evidence/assets/dsl-suggestions-ui.json",
+        "evidence/assets/dsl-error-ui.json"
       ],
       "remainingGates": [
-        "Populated asset tabs and DSL error states in both languages",
+        "Populated asset tabs and non-validation server-error states",
         "Company and asset deletion keyboard, VoiceOver, and server-error verification"
       ]
     },

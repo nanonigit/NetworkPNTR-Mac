@@ -336,6 +336,8 @@
 	<string>Technology fingerprint (array field)</string>
 	<key>assetCatalog.dsl.field.url</key>
 	<string>Full URL (service / endpoint)</string>
+	<key>assetCatalog.dsl.invalidExpression</key>
+	<string>Invalid DSL expression. Check the fields, operators, quotes, and parentheses.</string>
 	<key>assetCatalog.dsl.logic.and</key>
 	<string>AND (both conditions met)</string>
 	<key>assetCatalog.dsl.logic.or</key>

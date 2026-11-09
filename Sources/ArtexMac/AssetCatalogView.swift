@@ -136,10 +136,9 @@ import SwiftUI
     private func assetContent(_ type: AssetCatalogType) -> some View {
         let rows = store.page.value?.assets ?? []
         return VStack(alignment: .leading, spacing: 8) {
-            AssetDSLSearchField(text: $draft)
+            AssetDSLSearchField(text: $draft, failure: store.page.failure)
                 .id(type)
                 .onChange(of: draft) { _, value in store.search(value) }
-            if let failure = store.page.failure { error(failure) }
             if type == .rootDomain, let failure = store.companies.failure { error(failure) }
             Table(rows) {
                 TableColumn(s(.assetCatalogSelect)) { row in

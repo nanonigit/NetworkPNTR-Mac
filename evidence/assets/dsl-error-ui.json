@@ -1,0 +1,32 @@
+{
+  "reproducedAtCommit": "30c2a69dd350d9707a0212d1384ab96683d16f5a",
+  "browserSourceCommit": "e75ae371ad777ffd1eecdd28d2781a6519b05591",
+  "guestManifestSHA256": "9c38d268d350e7ab4e265ca32d686c529d8e09e5facfc2c69581f31589b768d8",
+  "browserUI": {
+    "invalidQueryVisible": true,
+    "invalidQueryMessage": "DSL 语法错误：表达式不完整",
+    "correctionClearedError": true,
+    "correctedRows": 1,
+    "language": "en"
+  },
+  "browserUIReceiptSHA256": "aae32b6dec5c1e8bf93cafb298771425217750b0a1764f8d5bc88520708e8ff5",
+  "browserOracleSHA256": "947c38c3d7c8d307c387e9f37518fdbb2ccb1875e2a6d8c138ebf788538ddc19",
+  "nativeBefore": {
+    "genericHTTP400Visible": true,
+    "language": "ja",
+    "nativeDiagnosticSHA256": "4c3c8e9bacd3c7d75036a11210f937f17ceb2b206966bdb97a00db853ec35a38"
+  },
+  "nativeAfter": {
+    "errorHiddenWhileSuggestionsVisible": true,
+    "invalidQueryLanguages": [
+      "ja",
+      "en"
+    ],
+    "correctionClearedError": true,
+    "correctedRows": 1,
+    "nativeDiagnosticSHA256": "4c3c8e9bacd3c7d75036a11210f937f17ceb2b206966bdb97a00db853ec35a38"
+  },
+  "temporaryBrowserContainersRemoved": true,
+  "bothNativeVMsStopped": true,
+  "temporaryNativeDisksRemoved": true
+}

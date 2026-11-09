@@ -4,6 +4,7 @@ import SwiftUI
 @MainActor struct AssetDSLSearchField: View {
     @Environment(\.locale) private var locale
     @Binding var text: String
+    var failure: AppErrorMessage?
     @FocusState private var focused: Bool
     @State private var selection: TextSelection?
     @State private var highlighted = 0
@@ -52,6 +53,10 @@ import SwiftUI
                 }
                 .background(.background, in: RoundedRectangle(cornerRadius: 6))
                 .overlay { RoundedRectangle(cornerRadius: 6).strokeBorder(.quaternary) }
+            }
+            if let failure, suggestions.isEmpty || text.isEmpty {
+                Text(failure.text(language: .preferred(in: [locale.identifier])))
+                    .foregroundStyle(.red)
             }
         }
     }

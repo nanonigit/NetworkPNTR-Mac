@@ -103,6 +103,7 @@ public struct CompanyScopeReceipt: Decodable, Sendable {
 
 public enum AssetCatalogQueryError: Error, Sendable {
     case invalidQuery
+    case invalidDSL
 }
 
 @MainActor public final class AssetCatalogService {

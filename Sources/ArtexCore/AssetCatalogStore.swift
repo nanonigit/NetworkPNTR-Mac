@@ -58,7 +58,11 @@ import Observation
     public func refreshPage(_ request: Query) async {
         guard request == query, let type = request.type else { return }
         guard await page.refresh({
-            try await service.list(type: type, dsl: request.dsl, page: request.page, size: request.size)
+            do {
+                return try await service.list(type: type, dsl: request.dsl, page: request.page, size: request.size)
+            } catch BackendAPIError.status(400) where !request.dsl.isEmpty {
+                throw AssetCatalogQueryError.invalidDSL
+            }
         }), request == query, let total = page.value?.total else { return }
         let lastPage = total == 0 ? 0 : (total - 1) / Int64(request.size)
         if request.page > lastPage { setPage(lastPage) }

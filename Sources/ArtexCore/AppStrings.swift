@@ -37,6 +37,7 @@ public enum AppStringKey: String, CaseIterable, Sendable {
     case assetDSLOpLte = "assetCatalog.dsl.op.lte"
     case assetDSLLogicAnd = "assetCatalog.dsl.logic.and"
     case assetDSLLogicOr = "assetCatalog.dsl.logic.or"
+    case assetDSLInvalidExpression = "assetCatalog.dsl.invalidExpression"
     case assetCatalogSearch = "assetCatalog.ui.search"
     case assetCatalogEmpty = "assetCatalog.ui.empty"
     case assetCatalogLogin = "assetCatalog.ui.login"
