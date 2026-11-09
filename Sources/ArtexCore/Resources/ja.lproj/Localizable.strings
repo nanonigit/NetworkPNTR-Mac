@@ -1318,6 +1318,8 @@
 	<string>LLM呼び出し履歴がありません。</string>
 	<key>llmRecord.ui.latency</key>
 	<string>所要時間（ms）</string>
+	<key>llmRecord.ui.latencyColumn</key>
+	<string>応答時間</string>
 	<key>llmRecord.ui.login</key>
 	<string>LLM呼び出し履歴を表示するにはログインしてください。</string>
 	<key>llmRecord.ui.profile</key>
@@ -1332,6 +1334,10 @@
 	<string>レスポンス</string>
 	<key>llmRecord.ui.session</key>
 	<string>セッション</string>
+	<key>llmRecord.ui.statusError</key>
+	<string>失敗</string>
+	<key>llmRecord.ui.statusOK</key>
+	<string>成功</string>
 	<key>llmRecord.ui.task</key>
 	<string>タスク</string>
 	<key>llmRecord.ui.tokens</key>

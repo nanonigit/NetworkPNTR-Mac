@@ -145,6 +145,54 @@
           }
         }
       },
+      "llmRecord.ui.latencyColumn": {
+        "localizations": {
+          "en": {
+            "stringUnit": {
+              "state": "translated",
+              "value": "Latency"
+            }
+          },
+          "ja": {
+            "stringUnit": {
+              "state": "translated",
+              "value": "応答時間"
+            }
+          }
+        }
+      },
+      "llmRecord.ui.statusOK": {
+        "localizations": {
+          "en": {
+            "stringUnit": {
+              "state": "translated",
+              "value": "OK"
+            }
+          },
+          "ja": {
+            "stringUnit": {
+              "state": "translated",
+              "value": "成功"
+            }
+          }
+        }
+      },
+      "llmRecord.ui.statusError": {
+        "localizations": {
+          "en": {
+            "stringUnit": {
+              "state": "translated",
+              "value": "Error"
+            }
+          },
+          "ja": {
+            "stringUnit": {
+              "state": "translated",
+              "value": "失敗"
+            }
+          }
+        }
+      },
       "llmRecord.ui.tokens": {
         "localizations": {
           "en": {

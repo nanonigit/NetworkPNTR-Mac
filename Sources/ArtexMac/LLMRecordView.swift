@@ -77,12 +77,14 @@ import SwiftUI
                 TableColumn(s(.toolRunWorker)) { row in literal(row.worker) }.width(min: 55, ideal: 57)
                 TableColumn(s(.llmRecordProfile)) { row in literal(row.profileName) }.width(min: 55, ideal: 60)
                 TableColumn(s(.llmUIModel)) { row in literal(row.model) }.width(min: 84, ideal: 92)
-                TableColumn(s(.llmRecordLatency)) { row in Text(row.latencyMs, format: .number) }.width(min: 62, ideal: 68)
+                TableColumn(s(.llmRecordLatencyColumn)) { row in
+                    Text(verbatim: "\(row.latencyMs.formatted(.number.locale(locale))) ms")
+                }.width(min: 62, ideal: 68)
                 TableColumn(s(.llmRecordTokens)) { row in
                     Text("\(row.inputTokens, format: .number) / \(row.outputTokens, format: .number)")
                 }.width(min: 52, ideal: 58)
                 TableColumn(s(.toolRunStatus)) { row in
-                    Text(s(row.status == "ok" ? .toolRunSucceeded : .toolRunFailed))
+                    Text(s(row.status == "ok" ? .llmRecordStatusOK : .llmRecordStatusError))
                         .foregroundStyle(row.status == "ok" ? Color.primary : Color.red)
                 }.width(min: 60, ideal: 68)
             }

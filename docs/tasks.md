@@ -824,3 +824,5 @@ Mac history now shows detail time and latency, copies the displayed request or r
 The pinned browser and Mac copied matching plain-text and SSE payloads, including trailing newlines. The revised columns expose Tokens and Status at 980 points. Latency and longer status values still truncate. JSON formatting and clipboard presentation remain open. [Comparison receipt](../evidence/llm/record-clipboard-minimum-width.json)
 
 The signed Mac fixture and pinned browser produced matching clipboard content for the three formatted JSON panes and raw SSE. Mac changes JSON whitespace only and retains key order, repeated keys, numeric spelling and escapes. Oversized formatting falls back to the source. [JSON receipt](../evidence/llm/record-json-clipboard.json)
+
+At 980 points with the sidebar visible, Mac renders Latency and Status in English and Japanese. The pinned browser showed OK and Error for the same records. Mac keeps exact milliseconds while the browser rounds durations of at least one second. In Japanese the task picker, Profile and Tokens still show ellipses. [Compact comparison](../evidence/llm/record-compact-timing-status.json)
