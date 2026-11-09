@@ -308,8 +308,24 @@
 	<string>Category</string>
 	<key>assetCatalog.ui.company</key>
 	<string>Company</string>
+	<key>assetCatalog.ui.companyPending</key>
+	<string>Company management is pending.</string>
 	<key>assetCatalog.ui.count</key>
 	<string>Assets</string>
+	<key>assetCatalog.ui.delete</key>
+	<string>Delete</string>
+	<key>assetCatalog.ui.deleteBody</key>
+	<string>Permanently delete {count} asset records? This action cannot be undone.</string>
+	<key>assetCatalog.ui.deleteSelected</key>
+	<string>Delete selected ({count})</string>
+	<key>assetCatalog.ui.deleteTitle</key>
+	<string>Confirm asset deletion</string>
+	<key>assetCatalog.ui.deleteUnconfirmed</key>
+	<string>The deletion result could not be confirmed. Check the refreshed asset list.</string>
+	<key>assetCatalog.ui.deleted</key>
+	<string>Deleted assets: {count}</string>
+	<key>assetCatalog.ui.deselectPage</key>
+	<string>Deselect this page</string>
 	<key>assetCatalog.ui.domain</key>
 	<string>Domain</string>
 	<key>assetCatalog.ui.empty</key>
@@ -330,8 +346,6 @@
 	<string>Parameters</string>
 	<key>assetCatalog.ui.port</key>
 	<string>Port</string>
-	<key>assetCatalog.ui.readOnly</key>
-	<string>Asset and company changes are pending.</string>
 	<key>assetCatalog.ui.recordType</key>
 	<string>Record type</string>
 	<key>assetCatalog.ui.recordValue</key>
@@ -344,6 +358,10 @@
 	<string>Asset DSL search</string>
 	<key>assetCatalog.ui.segment</key>
 	<string>C segment</string>
+	<key>assetCatalog.ui.select</key>
+	<string>Select</string>
+	<key>assetCatalog.ui.selectPage</key>
+	<string>Select this page</string>
 	<key>assetCatalog.ui.service</key>
 	<string>Service</string>
 	<key>assetCatalog.ui.statusCode</key>

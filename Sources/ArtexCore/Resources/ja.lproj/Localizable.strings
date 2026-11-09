@@ -308,8 +308,24 @@
 	<string>カテゴリ</string>
 	<key>assetCatalog.ui.company</key>
 	<string>会社</string>
+	<key>assetCatalog.ui.companyPending</key>
+	<string>会社管理は移植中です。</string>
 	<key>assetCatalog.ui.count</key>
 	<string>資産数</string>
+	<key>assetCatalog.ui.delete</key>
+	<string>削除</string>
+	<key>assetCatalog.ui.deleteBody</key>
+	<string>資産{count}件を完全に削除しますか？ この操作は取り消せません。</string>
+	<key>assetCatalog.ui.deleteSelected</key>
+	<string>選択した{count}件を削除</string>
+	<key>assetCatalog.ui.deleteTitle</key>
+	<string>資産削除の確認</string>
+	<key>assetCatalog.ui.deleteUnconfirmed</key>
+	<string>削除結果を確認できませんでした。再取得後の資産一覧を確認してください。</string>
+	<key>assetCatalog.ui.deleted</key>
+	<string>削除した資産は{count}件です。</string>
+	<key>assetCatalog.ui.deselectPage</key>
+	<string>このページの選択を解除</string>
 	<key>assetCatalog.ui.domain</key>
 	<string>ドメイン</string>
 	<key>assetCatalog.ui.empty</key>
@@ -330,8 +346,6 @@
 	<string>パラメーター</string>
 	<key>assetCatalog.ui.port</key>
 	<string>ポート</string>
-	<key>assetCatalog.ui.readOnly</key>
-	<string>資産と会社の変更操作は移植中です。</string>
 	<key>assetCatalog.ui.recordType</key>
 	<string>レコード種別</string>
 	<key>assetCatalog.ui.recordValue</key>
@@ -344,6 +358,10 @@
 	<string>資産のDSL検索</string>
 	<key>assetCatalog.ui.segment</key>
 	<string>Cセグメント</string>
+	<key>assetCatalog.ui.select</key>
+	<string>選択</string>
+	<key>assetCatalog.ui.selectPage</key>
+	<string>このページを選択</string>
 	<key>assetCatalog.ui.service</key>
 	<string>サービス</string>
 	<key>assetCatalog.ui.statusCode</key>

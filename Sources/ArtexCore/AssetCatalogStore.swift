@@ -14,6 +14,9 @@ import Observation
     }
 
     public private(set) var query = Query()
+    public private(set) var isDeleting = false
+    public private(set) var deletedCount: Int64?
+    public private(set) var deletionUnconfirmed = false
     public let page = FindingReadState<AssetCatalogPage>()
     public let companies = FindingReadState<[AssetCatalogCompany]>()
     public let counts = FindingReadState<[String: Int64]>()
@@ -54,9 +57,27 @@ import Observation
 
     public func refreshPage(_ request: Query) async {
         guard request == query, let type = request.type else { return }
-        await page.refresh {
+        guard await page.refresh({
             try await service.list(type: type, dsl: request.dsl, page: request.page, size: request.size)
+        }), request == query, let total = page.value?.total else { return }
+        let lastPage = total == 0 ? 0 : (total - 1) / Int64(request.size)
+        if request.page > lastPage { setPage(lastPage) }
+    }
+
+    public func deleteAssets(ids: [Int64]) async {
+        guard !isDeleting, query.type != nil, !ids.isEmpty else { return }
+        isDeleting = true
+        deletedCount = nil
+        deletionUnconfirmed = false
+        defer { isDeleting = false }
+        do {
+            deletedCount = try await service.deleteAssets(ids: ids)
+        } catch {
+            deletionUnconfirmed = true
         }
+        page.invalidate(clear: true)
+        companies.invalidate()
+        counts.invalidate()
     }
 
     public func refreshCompanies() async { await companies.refresh { try await service.companies() } }

@@ -169,3 +169,5 @@ The Assets screen reads six inventory types from the pinned `GET /api/assets` co
 ### Asset deletion boundary
 
 Send positive, distinct 64-bit asset IDs to the authenticated guest in the pinned DELETE JSON format. Bound request size and validate that the confirmed deletion count is between zero and the number of IDs sent. The service sends once. The later UI must reconcile with fresh reads after an interrupted request, which may have been applied by the guest. Test the body, partial receipt and invalid receipt at the transport boundary before wiring confirmation and selection.
+
+The asset table uses explicit row selection, a page selection control, and an individual delete action. Selection remains across pages in the same asset tab. The confirmation captures the selected IDs and states the number of records and the permanence of the operation. The design follows the pinned browser behavior and uses the separation between selection and destructive confirmation seen in Lazyweb's Confluence example. The Mac view reports the server count, refreshes after every dispatched attempt, and clamps the page if the last page disappears.

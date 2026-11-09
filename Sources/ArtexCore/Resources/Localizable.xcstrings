@@ -449,18 +449,162 @@
           }
         }
       },
-      "assetCatalog.ui.readOnly": {
+      "assetCatalog.ui.companyPending": {
         "localizations": {
           "en": {
             "stringUnit": {
               "state": "translated",
-              "value": "Asset and company changes are pending."
+              "value": "Company management is pending."
             }
           },
           "ja": {
             "stringUnit": {
               "state": "translated",
-              "value": "資産と会社の変更操作は移植中です。"
+              "value": "会社管理は移植中です。"
+            }
+          }
+        }
+      },
+      "assetCatalog.ui.select": {
+        "localizations": {
+          "en": {
+            "stringUnit": {
+              "state": "translated",
+              "value": "Select"
+            }
+          },
+          "ja": {
+            "stringUnit": {
+              "state": "translated",
+              "value": "選択"
+            }
+          }
+        }
+      },
+      "assetCatalog.ui.delete": {
+        "localizations": {
+          "en": {
+            "stringUnit": {
+              "state": "translated",
+              "value": "Delete"
+            }
+          },
+          "ja": {
+            "stringUnit": {
+              "state": "translated",
+              "value": "削除"
+            }
+          }
+        }
+      },
+      "assetCatalog.ui.deleteSelected": {
+        "localizations": {
+          "en": {
+            "stringUnit": {
+              "state": "translated",
+              "value": "Delete selected ({count})"
+            }
+          },
+          "ja": {
+            "stringUnit": {
+              "state": "translated",
+              "value": "選択した{count}件を削除"
+            }
+          }
+        }
+      },
+      "assetCatalog.ui.deleteTitle": {
+        "localizations": {
+          "en": {
+            "stringUnit": {
+              "state": "translated",
+              "value": "Confirm asset deletion"
+            }
+          },
+          "ja": {
+            "stringUnit": {
+              "state": "translated",
+              "value": "資産削除の確認"
+            }
+          }
+        }
+      },
+      "assetCatalog.ui.deleteBody": {
+        "localizations": {
+          "en": {
+            "stringUnit": {
+              "state": "translated",
+              "value": "Permanently delete {count} asset records? This action cannot be undone."
+            }
+          },
+          "ja": {
+            "stringUnit": {
+              "state": "translated",
+              "value": "資産{count}件を完全に削除しますか？ この操作は取り消せません。"
+            }
+          }
+        }
+      },
+      "assetCatalog.ui.deleted": {
+        "localizations": {
+          "en": {
+            "stringUnit": {
+              "state": "translated",
+              "value": "Deleted assets: {count}"
+            }
+          },
+          "ja": {
+            "stringUnit": {
+              "state": "translated",
+              "value": "削除した資産は{count}件です。"
+            }
+          }
+        }
+      },
+      "assetCatalog.ui.deleteUnconfirmed": {
+        "localizations": {
+          "en": {
+            "stringUnit": {
+              "state": "translated",
+              "value": "The deletion result could not be confirmed. Check the refreshed asset list."
+            }
+          },
+          "ja": {
+            "stringUnit": {
+              "state": "translated",
+              "value": "削除結果を確認できませんでした。再取得後の資産一覧を確認してください。"
+            }
+          }
+        }
+      },
+      "assetCatalog.ui.selectPage": {
+        "localizations": {
+          "en": {
+            "stringUnit": {
+              "state": "translated",
+              "value": "Select this page"
+            }
+          },
+          "ja": {
+            "stringUnit": {
+              "state": "translated",
+              "value": "このページを選択"
+            }
+          }
+        }
+      },
+      "assetCatalog.ui.deselectPage": {
+        "localizations": {
+          "en": {
+            "stringUnit": {
+              "state": "translated",
+              "value": "Deselect this page"
+            }
+          },
+          "ja": {
+            "stringUnit": {
+              "state": "translated",
+              "value": "このページの選択を解除"
             }
           }
         }

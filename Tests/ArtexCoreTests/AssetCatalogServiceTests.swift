@@ -139,4 +139,21 @@ final class AssetCatalogServiceTests: XCTestCase {
         XCTAssertEqual(client.calls.count, 2)
     }
 
+    @MainActor func testDeleteInvalidatesPageAndRefreshClampsRemovedLastPage() async throws {
+        let client = ChatTestTransport()
+        let store = AssetCatalogStore(service: AssetCatalogService(client: client))
+        store.select(.rootDomain)
+        store.setSize(25)
+        store.setPage(1)
+        try client.enqueue(["deleted": 1])
+        await store.deleteAssets(ids: [26])
+        XCTAssertEqual(store.deletedCount, 1)
+        XCTAssertTrue(store.page.isStale)
+        try client.enqueue(["count": 0, "total": 25, "assets": []])
+        await store.refreshPage(store.query)
+        XCTAssertEqual(store.query.page, 0)
+        XCTAssertNil(store.page.value)
+        XCTAssertEqual(client.calls.map(\.method), ["DELETE", "GET"])
+    }
+
 }

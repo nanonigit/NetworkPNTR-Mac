@@ -6,6 +6,8 @@ import SwiftUI
     @State private var store: AssetCatalogStore
     @State private var draft = ""
     @State private var reload = 0
+    @State private var selected: Set<Int64> = []
+    @State private var pendingDeletion: [Int64] = []
 
     init(session: AuthenticationSession) {
         let service = AssetCatalogService(client: AuthenticatedBackendClient(session: session))
@@ -23,10 +25,25 @@ import SwiftUI
             HStack {
                 Text(s(.assets)).font(.largeTitle.bold())
                 Spacer()
+                if !selected.isEmpty {
+                    Button(countLabel(.assetCatalogDeleteSelected, Int64(selected.count)), role: .destructive) {
+                        pendingDeletion = selected.sorted()
+                    }
+                }
                 Button(s(.toolRunRefresh)) { reload += 1 }
+                    .disabled(store.page.isLoading || store.companies.isLoading || store.counts.isLoading)
             }
-            Text(s(.assetCatalogReadOnly)).foregroundStyle(.secondary)
+            if store.query.type == nil {
+                Text(s(.assetCatalogCompanyPending)).foregroundStyle(.secondary)
+            }
+            if let count = store.deletedCount {
+                Text(countLabel(.assetCatalogDeleted, count)).foregroundStyle(.secondary)
+            }
+            if store.deletionUnconfirmed {
+                Text(s(.assetCatalogDeleteUnconfirmed)).foregroundStyle(.red)
+            }
             Picker(s(.assets), selection: Binding(get: { store.query.type }, set: { type in
+                selected.removeAll()
                 draft = ""
                 store.select(type)
             })) {
@@ -42,6 +59,23 @@ import SwiftUI
             } else {
                 companyContent
             }
+        }
+        .disabled(store.isDeleting)
+        .alert(s(.assetCatalogDeleteTitle), isPresented: Binding(
+            get: { !pendingDeletion.isEmpty },
+            set: { if !$0 { pendingDeletion.removeAll() } }
+        ), presenting: pendingDeletion) { ids in
+            Button(s(.findingUICancel), role: .cancel) {}
+            Button(s(.assetCatalogDelete), role: .destructive) {
+                pendingDeletion.removeAll()
+                selected.removeAll()
+                Task {
+                    await store.deleteAssets(ids: ids)
+                    reload += 1
+                }
+            }
+        } message: { ids in
+            Text(countLabel(.assetCatalogDeleteBody, Int64(ids.count)))
         }
         .padding()
         .navigationTitle(s(.assets))
@@ -81,9 +115,27 @@ import SwiftUI
             if let failure = store.page.failure { error(failure) }
             if type == .rootDomain, let failure = store.companies.failure { error(failure) }
             Table(rows) {
+                TableColumn(s(.assetCatalogSelect)) { row in
+                    Toggle(s(.assetCatalogSelect), isOn: Binding(
+                        get: { selected.contains(row.id) },
+                        set: { if $0 { selected.insert(row.id) } else { selected.remove(row.id) } }
+                    ))
+                    .labelsHidden()
+                }
+                .width(54)
                 TableColumnForEach(columns(type)) { column in
                     TableColumn(column.title) { row in literal(column.value(row)) }
                 }
+                TableColumn(s(.assetCatalogDelete)) { row in
+                    Button {
+                        pendingDeletion = [row.id]
+                    } label: {
+                        Image(systemName: "trash")
+                    }
+                    .buttonStyle(.borderless)
+                    .accessibilityLabel(s(.assetCatalogDelete))
+                }
+                .width(62)
             }
             .id(type)
             .overlay {
@@ -99,6 +151,13 @@ import SwiftUI
                     let range = ToolRunPresentation.pageRange(page: store.query.page, size: store.query.size, count: rows.count)
                     Text("\(range.first, format: .number)–\(range.last, format: .number) / \(page.total, format: .number)")
                         .monospacedDigit()
+                }
+                if !rows.isEmpty, !store.page.isStale {
+                    let ids = Set(rows.map(\.id))
+                    let allSelected = ids.isSubset(of: selected)
+                    Button(s(allSelected ? .assetCatalogDeselectPage : .assetCatalogSelectPage)) {
+                        if allSelected { selected.subtract(ids) } else { selected.formUnion(ids) }
+                    }
                 }
                 Spacer()
                 Button(s(.toolRunPrevious)) { store.setPage(store.query.page - 1) }
@@ -184,6 +243,10 @@ import SwiftUI
 
     private func error(_ failure: AppErrorMessage) -> some View {
         Text(failure.text(language: language)).foregroundStyle(.red)
+    }
+
+    private func countLabel(_ key: AppStringKey, _ count: Int64) -> String {
+        s(key).replacingOccurrences(of: "{count}", with: count.formatted(.number.locale(locale)))
     }
 
     private var language: AppLanguage { .preferred(in: [locale.identifier]) }
