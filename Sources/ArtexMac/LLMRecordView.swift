@@ -72,19 +72,19 @@ import SwiftUI
             if let failure = store.tasks.failure { error(failure, label: .llmRecordTask) }
             if let failure = store.list.failure { error(failure, label: .llmRecords) }
             Table(rows, selection: $selectedID) {
-                TableColumn(s(.toolRunTime)) { row in llmRecordTimestamp(row.ts, locale: locale) }.width(min: 104, ideal: 142)
-                TableColumn(s(.llmRecordTask)) { row in literal(row.taskId) }.width(min: 52, ideal: 74)
-                TableColumn(s(.toolRunWorker)) { row in literal(row.worker) }.width(min: 55, ideal: 75)
-                TableColumn(s(.llmRecordProfile)) { row in literal(row.profileName) }.width(min: 55, ideal: 86)
-                TableColumn(s(.llmUIModel)) { row in literal(row.model) }
-                TableColumn(s(.llmRecordLatency)) { row in Text(row.latencyMs, format: .number) }.width(min: 62, ideal: 90)
+                TableColumn(s(.toolRunTime)) { row in llmRecordTimestamp(row.ts, locale: locale) }.width(min: 104, ideal: 122)
+                TableColumn(s(.llmRecordTask)) { row in literal(row.taskId) }.width(min: 52, ideal: 58)
+                TableColumn(s(.toolRunWorker)) { row in literal(row.worker) }.width(min: 55, ideal: 57)
+                TableColumn(s(.llmRecordProfile)) { row in literal(row.profileName) }.width(min: 55, ideal: 60)
+                TableColumn(s(.llmUIModel)) { row in literal(row.model) }.width(min: 84, ideal: 92)
+                TableColumn(s(.llmRecordLatency)) { row in Text(row.latencyMs, format: .number) }.width(min: 62, ideal: 68)
                 TableColumn(s(.llmRecordTokens)) { row in
                     Text("\(row.inputTokens, format: .number) / \(row.outputTokens, format: .number)")
-                }.width(min: 75, ideal: 102)
+                }.width(min: 52, ideal: 58)
                 TableColumn(s(.toolRunStatus)) { row in
                     Text(s(row.status == "ok" ? .toolRunSucceeded : .toolRunFailed))
                         .foregroundStyle(row.status == "ok" ? Color.primary : Color.red)
-                }.width(min: 60, ideal: 80)
+                }.width(min: 60, ideal: 68)
             }
             .contextMenu(forSelectionType: Int64.self) { ids in
                 if let row = rows.first(where: { ids.contains($0.id) }) {

@@ -115,10 +115,11 @@
         "evidence/llm/record-detail-recovery.json",
         "evidence/llm/record-list-comparison.json",
         "evidence/llm/record-visual-keyboard.json",
-        "evidence/llm/record-copy-keyboard.json"
+        "evidence/llm/record-copy-keyboard.json",
+        "evidence/llm/record-clipboard-minimum-width.json"
       ],
       "remainingGates": [
-        "Compare exact copy values in the pinned browser and verify the token heading at minimum window width"
+        "Compare JSON formatting and copy, and verify latency and status readability at minimum width"
       ]
     },
     {
