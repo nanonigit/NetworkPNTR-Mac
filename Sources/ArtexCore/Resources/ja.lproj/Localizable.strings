@@ -1303,7 +1303,7 @@
 	<key>llm.ui.unsaved</key>
 	<string>未保存の変更があります</string>
 	<key>llmRecord.ui.allTasks</key>
-	<string>すべてのタスク</string>
+	<string>全タスク</string>
 	<key>llmRecord.ui.copyRequest</key>
 	<string>リクエストをコピー</string>
 	<key>llmRecord.ui.copyResponse</key>
@@ -1341,7 +1341,7 @@
 	<key>llmRecord.ui.task</key>
 	<string>タスク</string>
 	<key>llmRecord.ui.tokens</key>
-	<string>入力／出力トークン</string>
+	<string>トークン</string>
 	<key>menu.about</key>
 	<string>{app}について</string>
 	<key>menu.appHelp</key>

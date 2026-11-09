@@ -108,7 +108,7 @@
           "ja": {
             "stringUnit": {
               "state": "translated",
-              "value": "すべてのタスク"
+              "value": "全タスク"
             }
           }
         }
@@ -204,7 +204,7 @@
           "ja": {
             "stringUnit": {
               "state": "translated",
-              "value": "入力／出力トークン"
+              "value": "トークン"
             }
           }
         }

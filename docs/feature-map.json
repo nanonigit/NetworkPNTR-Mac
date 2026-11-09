@@ -118,10 +118,11 @@
         "evidence/llm/record-copy-keyboard.json",
         "evidence/llm/record-clipboard-minimum-width.json",
         "evidence/llm/record-json-clipboard.json",
-        "evidence/llm/record-compact-timing-status.json"
+        "evidence/llm/record-compact-timing-status.json",
+        "evidence/llm/record-compact-language-switch.json"
       ],
       "remainingGates": [
-        "Verify Japanese task picker, profile and token label readability at minimum width"
+        "Release-build verification with production guest"
       ]
     },
     {

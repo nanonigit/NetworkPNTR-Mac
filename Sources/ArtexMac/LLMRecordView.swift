@@ -72,10 +72,10 @@ import SwiftUI
             if let failure = store.tasks.failure { error(failure, label: .llmRecordTask) }
             if let failure = store.list.failure { error(failure, label: .llmRecords) }
             Table(rows, selection: $selectedID) {
-                TableColumn(s(.toolRunTime)) { row in llmRecordTimestamp(row.ts, locale: locale) }.width(min: 104, ideal: 122)
+                TableColumn(s(.toolRunTime)) { row in llmRecordTimestamp(row.ts, locale: locale) }.width(min: 104, ideal: language == .japanese ? 104 : 122)
                 TableColumn(s(.llmRecordTask)) { row in literal(row.taskId) }.width(min: 52, ideal: 58)
                 TableColumn(s(.toolRunWorker)) { row in literal(row.worker) }.width(min: 55, ideal: 57)
-                TableColumn(s(.llmRecordProfile)) { row in literal(row.profileName) }.width(min: 55, ideal: 60)
+                TableColumn(s(.llmRecordProfile)) { row in literal(row.profileName) }.width(min: 55, ideal: language == .japanese ? 78 : 60)
                 TableColumn(s(.llmUIModel)) { row in literal(row.model) }.width(min: 84, ideal: 92)
                 TableColumn(s(.llmRecordLatencyColumn)) { row in
                     Text(verbatim: "\(row.latencyMs.formatted(.number.locale(locale))) ms")
@@ -102,6 +102,7 @@ import SwiftUI
                     Text(s(.llmRecordEmpty)).foregroundStyle(.secondary)
                 }
             }
+            .id(language)
             HStack {
                 Button(s(.toolRunDetails)) { detail = rows.first { $0.id == selectedID } }
                     .disabled(selectedID == nil || store.list.isLoading || store.isMutating)

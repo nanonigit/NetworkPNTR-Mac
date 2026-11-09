@@ -1,0 +1,36 @@
+{
+  "macBaseCommit": "808ff56c7c3d7d6cda4cbed97a21ed7412b04c14",
+  "browserSourceCommit": "e75ae371ad777ffd1eecdd28d2781a6519b05591",
+  "fixtureSHA256": "ad940a59752224ca050347830cd60754d1c1a8f50428792c698f8b9b1b77df9e",
+  "browser": {
+    "columns": [
+      "時刻",
+      "タスク",
+      "Worker",
+      "Profile",
+      "Model",
+      "レイテンシ",
+      "Tokens",
+      "状態"
+    ],
+    "taskPicker": "タスクを選択…",
+    "language": "ja"
+  },
+  "native": {
+    "signedDebugFixture": true,
+    "contentWidthPoints": 980,
+    "sidebarOpen": true,
+    "languageSequence": [
+      "en",
+      "ja",
+      "en"
+    ],
+    "japaneseLabelsFullyVisible": [
+      "全タスク",
+      "プロファイル",
+      "トークン"
+    ],
+    "englishTimestampFullyVisibleAfterSwitch": true,
+    "temporaryDisksAndKeychainRemoved": true
+  }
+}
