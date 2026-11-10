@@ -270,4 +270,32 @@ final class AssetCatalogServiceTests: XCTestCase {
         XCTAssertEqual(client.calls.first?.path, client.calls.last?.path)
     }
 
+    @MainActor func testUnconfirmedDeletionRefreshesWithoutResendingMutation() async throws {
+        let client = ChatTestTransport()
+        let store = AssetCatalogStore(service: AssetCatalogService(client: client))
+        store.select(.rootDomain)
+        func page(_ ids: [Int]) -> [String: Any] {
+            ["count": ids.count, "total": ids.count, "assets": ids.map {
+                ["id": $0, "type": "root_domain", "last_seen": "2026-10-22T10:00:00Z"]
+            }]
+        }
+
+        try client.enqueue(page([9026, 9025]))
+        await store.refreshPage(store.query)
+        XCTAssertEqual(store.page.value?.assets.map(\.id), [9026, 9025])
+
+        try client.enqueue(["error": "Synthetic asset delete receipt lost"], status: 500)
+        await store.deleteAssets(ids: [9026])
+        XCTAssertTrue(store.deletionUnconfirmed)
+        XCTAssertNil(store.deletedCount)
+        XCTAssertNil(store.page.value)
+        XCTAssertTrue(store.page.isStale)
+
+        try client.enqueue(page([9025]))
+        await store.refreshPage(store.query)
+        XCTAssertEqual(store.page.value?.assets.map(\.id), [9025])
+        XCTAssertTrue(store.deletionUnconfirmed)
+        XCTAssertEqual(client.calls.map(\.method), ["GET", "DELETE", "GET"])
+    }
+
 }
