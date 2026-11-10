@@ -4,6 +4,7 @@ public enum AppStringKey: String, CaseIterable, Sendable {
     case assetCatalogCompany = "assetCatalog.ui.company"
     case assetCatalogRootDomain = "assetCatalog.ui.rootDomain"
     case assetCatalogSubdomain = "assetCatalog.ui.subdomain"
+    case assetCatalogApplication = "assetCatalog.ui.application"
     case assetCatalogApp = "assetCatalog.ui.app"
     case assetCatalogService = "assetCatalog.ui.service"
     case assetCatalogEndpoint = "assetCatalog.ui.endpoint"

@@ -50,6 +50,15 @@ public struct AssetCatalogRow: Decodable, Identifiable, Sendable {
     public let method: String?
     public let params: [ParameterSummary]?
     public let lastSeen: String
+
+    public var httpServiceDestination: URL? {
+        guard type == .service, serviceType == "http", let url,
+              let target = URL(string: url, encodingInvalidCharacters: false),
+              let scheme = target.scheme?.lowercased(), scheme == "http" || scheme == "https",
+              let host = target.host, !host.isEmpty,
+              target.user == nil, target.password == nil else { return nil }
+        return target
+    }
 }
 
 public struct AssetCatalogPage: Decodable, Sendable {

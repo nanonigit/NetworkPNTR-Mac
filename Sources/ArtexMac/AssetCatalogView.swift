@@ -150,7 +150,14 @@ import SwiftUI
                 }
                 .width(54)
                 TableColumnForEach(columns(type)) { column in
-                    TableColumn(column.title) { row in literal(column.value(row)) }
+                    TableColumn(column.title) { row in
+                        if let url = column.destination?(row) {
+                            Link(destination: url) { literal(column.value(row)) }
+                                .help(url.absoluteString)
+                        } else {
+                            literal(column.value(row))
+                        }
+                    }
                 }
                 TableColumn(s(.assetCatalogDelete)) { row in
                     Button {
@@ -196,6 +203,7 @@ import SwiftUI
 
     private struct Column: Identifiable {
         let title: String
+        var destination: ((AssetCatalogRow) -> URL?)?
         let value: (AssetCatalogRow) -> String?
         var id: String { title }
     }
@@ -216,7 +224,8 @@ import SwiftUI
                     .init(title: s(.assetCatalogBoundDomains)) { $0.boundDomains?.joined(separator: ", ") },
                     .init(title: s(.assetCatalogOpenPorts)) { row in
                         row.openPorts?.map { port in
-                            [String(port.port), port.service].compactMap { $0 }.joined(separator: " ")
+                            [String(port.port), port.service.flatMap { $0.isEmpty ? nil : $0 }]
+                                .compactMap { $0 }.joined(separator: "/")
                         }.joined(separator: ", ")
                     }]
         case .subdomain:
@@ -228,7 +237,10 @@ import SwiftUI
                     .init(title: s(.assetCatalogCategory), value: \.category), .init(title: "ICP", value: \.appIcp)]
         case .service:
             return [.init(title: s(.assetCatalogService)) { $0.serviceName ?? $0.serviceType },
-                    .init(title: domain.title) { $0.domain ?? $0.url }, ip,
+                    .init(title: domain.title, destination: { $0.httpServiceDestination }) { row in
+                        if let domain = row.domain, !domain.isEmpty { return domain }
+                        return row.serviceType == "http" ? row.url : nil
+                    }, ip,
                     .init(title: s(.assetCatalogPort)) { $0.port.map(String.init) },
                     .init(title: s(.assetCatalogStatusCode)) { $0.statusCode.map(String.init) },
                     .init(title: s(.assetCatalogTitle), value: \.pageTitle),
@@ -250,7 +262,7 @@ import SwiftUI
         case .rootDomain: s(.assetCatalogRootDomain)
         case .ip: "IP"
         case .subdomain: s(.assetCatalogSubdomain)
-        case .app: s(.assetCatalogApp)
+        case .app: s(.assetCatalogApplication)
         case .service: s(.assetCatalogService)
         case .endpoint: s(.assetCatalogEndpoint)
         }

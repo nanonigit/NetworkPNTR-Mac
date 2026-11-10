@@ -222,4 +222,23 @@ final class AssetCatalogServiceTests: XCTestCase {
                        AppErrorText.text(BackendAPIError.status(400), language: .english))
     }
 
+    @MainActor func testServiceLinkRequiresHTTPServiceWithAbsoluteWebURL() throws {
+        func destination(_ url: String, serviceType: String = "http", type: String = "service") throws -> URL? {
+            let response = try ChatTestTransport.response([
+                "id": 1, "type": type, "service_type": serviceType, "url": url,
+                "last_seen": "2026-10-22T10:00:00Z"
+            ])
+            return try BackendJSONCoding.decode(AssetCatalogRow.self, from: response.body).httpServiceDestination
+        }
+        XCTAssertEqual(try destination("https://example.test/status?q=1")?.absoluteString,
+                       "https://example.test/status?q=1")
+        XCTAssertNotNil(try destination("http://192.0.2.17:8080/"))
+        for unsafe in ["file:///tmp/report", "javascript:alert(1)", "/status", "https://",
+                       "https://name:secret@example.test/", "https://example.test/a b"] {
+            XCTAssertNil(try destination(unsafe), unsafe)
+        }
+        XCTAssertNil(try destination("https://example.test", serviceType: "other"))
+        XCTAssertNil(try destination("https://example.test", type: "endpoint"))
+    }
+
 }

@@ -362,6 +362,8 @@
 	<string>Not equal</string>
 	<key>assetCatalog.ui.app</key>
 	<string>App</string>
+	<key>assetCatalog.ui.application</key>
+	<string>Application</string>
 	<key>assetCatalog.ui.auth</key>
 	<string>Authentication</string>
 	<key>assetCatalog.ui.boundDomains</key>

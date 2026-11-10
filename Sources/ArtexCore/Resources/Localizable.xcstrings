@@ -49,6 +49,12 @@
           }
         }
       },
+      "assetCatalog.ui.application": {
+        "localizations": {
+          "en": {"stringUnit": {"state": "translated", "value": "Application"}},
+          "ja": {"stringUnit": {"state": "translated", "value": "アプリ"}}
+        }
+      },
       "assetCatalog.ui.app": {
         "localizations": {
           "en": {

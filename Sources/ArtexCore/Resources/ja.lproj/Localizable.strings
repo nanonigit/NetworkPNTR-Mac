@@ -362,6 +362,8 @@
 	<string>等しくない</string>
 	<key>assetCatalog.ui.app</key>
 	<string>アプリ</string>
+	<key>assetCatalog.ui.application</key>
+	<string>アプリ</string>
 	<key>assetCatalog.ui.auth</key>
 	<string>認証</string>
 	<key>assetCatalog.ui.boundDomains</key>
