@@ -152,10 +152,11 @@
         "evidence/assets/dsl-suggestions-ui.json",
         "evidence/assets/dsl-error-ui.json",
         "evidence/assets/populated-tabs-ui.json",
-        "evidence/assets/service-link-ui.json"
+        "evidence/assets/service-link-ui.json",
+        "evidence/assets/search-server-error-ui.json"
       ],
       "remainingGates": [
-        "Remaining asset fixtures and non-validation server-error states",
+        "Remaining asset fixtures and error states outside filtered reads",
         "Company and asset deletion keyboard, VoiceOver, and server-error verification"
       ]
     },

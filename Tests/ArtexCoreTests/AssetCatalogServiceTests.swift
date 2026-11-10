@@ -241,4 +241,33 @@ final class AssetCatalogServiceTests: XCTestCase {
         XCTAssertNil(try destination("https://example.test", type: "endpoint"))
     }
 
+    @MainActor func testServerFailureStaysDistinctFromEmptyResultsAndRefreshesSameQuery() async throws {
+        let client = ChatTestTransport()
+        let store = AssetCatalogStore(service: AssetCatalogService(client: client))
+        store.select(.rootDomain)
+        store.search(#"domain=="fixture-26.example.test""#)
+        let query = store.query
+
+        try client.enqueue(["error": "Synthetic asset list failure"], status: 500)
+        await store.refreshPage(query)
+        XCTAssertNil(store.page.value)
+        XCTAssertTrue(store.page.isStale)
+        XCTAssertEqual(store.page.failure?.text(language: .english),
+                       AppErrorText.text(BackendAPIError.status(500), language: .english))
+
+        try client.enqueue([
+            "count": 1, "total": 1, "assets": [[
+                "id": 9026, "type": "root_domain", "domain": "fixture-26.example.test",
+                "last_seen": "2026-10-22T10:00:00Z"
+            ]]
+        ])
+        await store.refreshPage(store.query)
+        XCTAssertEqual(store.query, query)
+        XCTAssertNil(store.page.failure)
+        XCTAssertFalse(store.page.isStale)
+        XCTAssertEqual(store.page.value?.assets.map(\.id), [9026])
+        XCTAssertEqual(client.calls.count, 2)
+        XCTAssertEqual(client.calls.first?.path, client.calls.last?.path)
+    }
+
 }
