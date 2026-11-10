@@ -157,11 +157,12 @@
         "evidence/assets/delete-response-loss-ui.json",
         "evidence/assets/delete-keyboard-ui.json",
         "evidence/assets/delete-keyboard-confirm-ui.json",
-        "evidence/assets/company-keyboard-ui.json"
+        "evidence/assets/company-keyboard-ui.json",
+        "evidence/assets/company-keyboard-save-ui.json"
       ],
       "remainingGates": [
         "Remaining asset fixtures and error states outside filtered reads",
-        "Company keyboard save and delete confirmation, company server errors, and VoiceOver for company and asset deletion"
+        "Company server errors and VoiceOver for company and asset deletion"
       ]
     },
     {
