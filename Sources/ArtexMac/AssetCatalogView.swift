@@ -9,6 +9,7 @@ import SwiftUI
     @State private var reload = 0
     @State private var selected: Set<Int64> = []
     @State private var pendingDeletion: [Int64] = []
+    @State private var selectedCompanyID: Int64?
     @State private var companyAction: CompanyEditorAction?
     @State private var companyResult: CompanyEditorResult?
 
@@ -107,22 +108,18 @@ import SwiftUI
     }
 
     private var companyContent: some View {
-        VStack(alignment: .leading) {
+        let companies = store.companies.value ?? []
+        return VStack(alignment: .leading) {
             if let failure = store.companies.failure { error(failure) }
-            Table(store.companies.value ?? []) {
+            Table(companies, selection: $selectedCompanyID) {
                 TableColumn(s(.assetCatalogName)) { company in literal(company.name) }
                 TableColumn(s(.assetCatalogCount)) { company in Text(company.assetCount, format: .number) }
                 TableColumn(s(.assetCatalogScope)) { company in
                     literal(company.scope?.map(\.raw).joined(separator: ", "))
                 }
                 TableColumn(s(.companyActions)) { company in
-                    HStack {
-                        Button(s(.companyReplace)) { companyAction = .replace(company) }
-                        Button(s(.companyAppend)) { companyAction = .append(company) }
-                        Button(s(.companyDelete), role: .destructive) { companyAction = .delete(company) }
-                    }
-                    .buttonStyle(.borderless)
-                    .disabled(store.companies.isStale)
+                    companyActions(company)
+                        .buttonStyle(.borderless)
                 }
                 .width(min: 210, ideal: 235)
             }
@@ -130,7 +127,23 @@ import SwiftUI
                 if store.companies.isLoading { ProgressView() }
                 else if store.companies.value?.isEmpty == true, !store.companies.isStale { empty }
             }
+            if let company = companies.first(where: { $0.id == selectedCompanyID }) {
+                HStack {
+                    Text(verbatim: company.name).lineLimit(1).foregroundStyle(.secondary)
+                    Spacer()
+                    companyActions(company)
+                }
+            }
         }
+    }
+
+    private func companyActions(_ company: AssetCatalogCompany) -> some View {
+        HStack {
+            Button(s(.companyReplace)) { companyAction = .replace(company) }
+            Button(s(.companyAppend)) { companyAction = .append(company) }
+            Button(s(.companyDelete), role: .destructive) { companyAction = .delete(company) }
+        }
+        .disabled(store.companies.isStale)
     }
 
     private func assetContent(_ type: AssetCatalogType) -> some View {
