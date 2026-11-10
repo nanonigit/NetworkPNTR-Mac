@@ -140,7 +140,7 @@ import SwiftUI
                 .id(type)
                 .onChange(of: draft) { _, value in store.search(value) }
             if type == .rootDomain, let failure = store.companies.failure { error(failure) }
-            Table(rows) {
+            Table(rows, selection: visibleSelection(rows)) {
                 TableColumn(s(.assetCatalogSelect)) { row in
                     Toggle(s(.assetCatalogSelect), isOn: Binding(
                         get: { selected.contains(row.id) },
@@ -171,6 +171,10 @@ import SwiftUI
                 .width(62)
             }
             .id(type)
+            .onDeleteCommand {
+                guard !selected.isEmpty, !store.page.isStale, !store.isDeleting else { return }
+                pendingDeletion = selected.sorted()
+            }
             .overlay {
                 if store.page.isLoading { ProgressView() }
                 else if store.page.value?.total == 0, !store.page.isStale { empty }
@@ -199,6 +203,14 @@ import SwiftUI
                     .disabled(!store.hasNext || store.page.isLoading)
             }
         }
+    }
+
+    private func visibleSelection(_ rows: [AssetCatalogRow]) -> Binding<Set<Int64>> {
+        let visibleIDs = Set(rows.map(\.id))
+        return Binding(
+            get: { selected.intersection(visibleIDs) },
+            set: { selected = selected.subtracting(visibleIDs).union($0.intersection(visibleIDs)) }
+        )
     }
 
     private struct Column: Identifiable {
