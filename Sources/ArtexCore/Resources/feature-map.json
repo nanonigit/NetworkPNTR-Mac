@@ -155,7 +155,8 @@
         "evidence/assets/service-link-ui.json",
         "evidence/assets/search-server-error-ui.json",
         "evidence/assets/delete-response-loss-ui.json",
-        "evidence/assets/delete-keyboard-ui.json"
+        "evidence/assets/delete-keyboard-ui.json",
+        "evidence/assets/delete-keyboard-confirm-ui.json"
       ],
       "remainingGates": [
         "Remaining asset fixtures and error states outside filtered reads",
