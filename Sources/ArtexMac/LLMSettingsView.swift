@@ -22,30 +22,35 @@ import SwiftUI
                         .foregroundStyle(.secondary)
                 }
                 Spacer()
-                Button(s(.llmUIRotation), systemImage: "bolt") { rotationOpen = true }
-                Menu {
-                    ForEach(LLMCloudProvider.allCases, id: \.self) { provider in
-                        Button(providerName(provider)) { editor = .newProfile(provider: provider) }
+                if selectedTab != 2 {
+                    Button(s(.llmUIRotation), systemImage: "bolt") { rotationOpen = true }
+                    Menu {
+                        ForEach(LLMCloudProvider.allCases, id: \.self) { provider in
+                            Button(providerName(provider)) { editor = .newProfile(provider: provider) }
+                        }
+                        Divider()
+                        Button(s(.llmUICustomConfiguration)) { editor = .newProfile() }
+                    } label: {
+                        Label(s(.llmUINew), systemImage: "plus")
                     }
-                    Divider()
-                    Button(s(.llmUICustomConfiguration)) { editor = .newProfile() }
-                } label: {
-                    Label(s(.llmUINew), systemImage: "plus")
+                    .accessibilityIdentifier("llm-new-profile-menu")
+                    Button { Task { await store.load() } } label: { Image(systemName: "arrow.clockwise") }.help(s(.llmUIReload))
                 }
-                .accessibilityIdentifier("llm-new-profile-menu")
-                Button { Task { await store.load() } } label: { Image(systemName: "arrow.clockwise") }.help(s(.llmUIReload))
-            }.disabled(busy)
-            if let error = (localError ?? store.failure)?.text(language: language) {
-                Label(error, systemImage: "exclamationmark.triangle").foregroundStyle(.red).textSelection(.enabled)
-                if store.hasLoaded { Text(s(.llmUIStale)).font(.caption).foregroundStyle(.secondary) }
+            }.disabled(busy && selectedTab != 2)
+            if selectedTab != 2 {
+                if let error = (localError ?? store.failure)?.text(language: language) {
+                    Label(error, systemImage: "exclamationmark.triangle").foregroundStyle(.red).textSelection(.enabled)
+                    if store.hasLoaded { Text(s(.llmUIStale)).font(.caption).foregroundStyle(.secondary) }
+                }
+                LLMRecoveryView(store: store)
+                if let key = store.noticeKey { Text(AppStrings.text(key, language: language)).font(.callout).foregroundStyle(.green) }
+                if busy { ProgressView(store.isMutating ? s(.llmUISaving) : s(.llmUILoading)).controlSize(.small) }
             }
-            LLMRecoveryView(store: store)
-            if let key = store.noticeKey { Text(AppStrings.text(key, language: language)).font(.callout).foregroundStyle(.green) }
-            if busy { ProgressView(store.isMutating ? s(.llmUISaving) : s(.llmUILoading)).controlSize(.small) }
             Picker(s(.llmUIDisplay), selection: $selectedTab) {
                 Text(s(.llmUIProfiles)).tag(0)
+                Text(s(.llmLocalTab)).tag(2)
                 Text(s(.llmUIRetryTab)).tag(1)
-            }.pickerStyle(.segmented).frame(maxWidth: 360)
+            }.pickerStyle(.segmented).frame(maxWidth: 530)
             if selectedTab == 0 {
                 ScrollView {
                     if store.hasLoaded && store.profiles.isEmpty {
@@ -56,6 +61,8 @@ import SwiftUI
                         }.padding(.bottom)
                     }
                 }
+            } else if selectedTab == 2 {
+                LLMLocalModelsView()
             } else { LLMRetryView(store: store) }
         }
         .padding(28)

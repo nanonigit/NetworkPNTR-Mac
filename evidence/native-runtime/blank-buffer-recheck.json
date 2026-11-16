@@ -1,0 +1,42 @@
+{
+  "date": "2026-11-16",
+  "scope": "Two sequential fresh-disk preflights of the existing reusable-buffer candidate",
+  "artifactSHA256": {
+    "kernel": "8e57308787c420cb42e4c4ea80e6def6438a52232692c010dc4609bb9bf21879",
+    "initramfs": "88de8582409a9ad861a69035f056e65953b36803fbc77b391e0a9deb77e335ba",
+    "systemDisk": "dc383e2d3b43ec87b5b6bd4ab301807ad42f56b37d5bfbbff9f3d465af4748ad"
+  },
+  "manifestSHA256": "7ab7cb7f5620f8470e73a1e7a9a6ee634e09905382b9564bff997cd3504e52c0",
+  "checkerSourceSHA256": "578e4c158512262b62a43889c76f6141c588b60ba45bb6c809f8117671a3d964",
+  "runs": [
+    {
+      "bootAttempts": 1,
+      "cooperativeStop": true,
+      "credentialLogCheckPassed": true,
+      "diagnostics": [],
+      "formatStageObserved": true,
+      "freshAuth": true,
+      "isolationVerified": true,
+      "logAuditComplete": true,
+      "machineStopped": true,
+      "passed": true,
+      "protectedStatus": 401,
+      "reachedReady": true
+    },
+    {
+      "bootAttempts": 1,
+      "cooperativeStop": true,
+      "credentialLogCheckPassed": true,
+      "diagnostics": [],
+      "formatStageObserved": true,
+      "freshAuth": true,
+      "isolationVerified": true,
+      "logAuditComplete": true,
+      "machineStopped": true,
+      "passed": true,
+      "protectedStatus": 401,
+      "reachedReady": true
+    }
+  ],
+  "acceptance": "Candidate evidence only. Earlier kernel faults remain unresolved and the default app guest has not been replaced."
+}

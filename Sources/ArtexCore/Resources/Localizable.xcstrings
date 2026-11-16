@@ -7708,6 +7708,230 @@
         }
       }
     },
+    "llm.local.tab": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Local models"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ローカルモデル"
+          }
+        }
+      }
+    },
+    "llm.local.description": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Browse models on this Mac and test local inference. This view does not change the active agent model."
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "このMacのモデルを確認し、ローカル推論を試せます。エージェントの使用モデルはこの画面では切り替わりません。"
+          }
+        }
+      }
+    },
+    "llm.local.empty": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "No local models are installed"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "インストール済みのローカルモデルがありません"
+          }
+        }
+      }
+    },
+    "llm.local.model": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Model"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "モデル"
+          }
+        }
+      }
+    },
+    "llm.local.quantization": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Quantization"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "量子化"
+          }
+        }
+      }
+    },
+    "llm.local.maximumContext": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Model context limit"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "モデルのコンテキスト上限"
+          }
+        }
+      }
+    },
+    "llm.local.loadedContext": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Loaded context length"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ロード時のコンテキスト長"
+          }
+        }
+      }
+    },
+    "llm.local.gpuMemory": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Model GPU allocation"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "モデルのGPU割り当て"
+          }
+        }
+      }
+    },
+    "llm.local.metadataUnavailable": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Model details could not be loaded."
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "モデルの詳細を取得できませんでした。"
+          }
+        }
+      }
+    },
+    "llm.local.test": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Test local inference"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ローカル推論をテスト"
+          }
+        }
+      }
+    },
+    "llm.local.tokens": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tokens (input / output)"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "トークン数（入力／出力）"
+          }
+        }
+      }
+    },
+    "llm.local.responseTime": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Response time (s)"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "応答時間（秒）"
+          }
+        }
+      }
+    },
+    "llm.local.cloudEnabled": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Disable Ollama cloud features, then reload."
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ollamaのクラウド機能を無効にしてから再読み込みしてください。"
+          }
+        }
+      }
+    },
+    "llm.local.unavailable": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Could not complete the Ollama request. Check that the local runtime is running and supports local-only status."
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ollamaへの要求に失敗しました。ランタイムが起動し、ローカル専用状態を確認できるバージョンか確認してください。"
+          }
+        }
+      }
+    },
     "llm.ui.profiles": {
       "localizations": {
         "en": {

@@ -155,3 +155,13 @@ disposable fixed browser backend. The change in review timing and
 fixture contents limits the comparison. The earlier timeout remains
 part of the release evidence.
 [Cloud9 startup-stop receipt](../../evidence/native-runtime/cloud9-start-stop-control.json)
+
+## Local-model integration check on 2026-11-10
+
+On Apple M2, macOS 27.2, three signed diagnostic runs stopped after the persistent disk zero check and before login. The current app failed with both guest bundles. The source-built kernel reported an Oops in `mmu_notifier_invalidate_range_start`; the default bundle reported an undefined instruction. The previous app binary with the same default guest also reported an undefined instruction at that stage. These observations place the failure before any LLM settings interaction. The kernel cause remains open. The runtime now carries the controller's startup failure forward directly so a detected kernel Oops is presented as a kernel error. [Normalized runs](../../evidence/llm/ollama-integrated-boot-verification.json)
+
+A fourth run using the default bundle booted, restarted, and authenticated. The signed native settings screen displayed the fixture profile, completed a local test inference, and opened the retry tab. The successful run did not exercise the corrected error path and does not explain the earlier intermittent boot failures.
+
+## Reusable-buffer candidate recheck on 2026-11-16
+
+Two sequential fresh-state preflights of the existing reusable-buffer candidate passed. Each reached the format stage and backend readiness, reported fresh authentication, returned 401 from the protected API, confirmed isolation, stopped cooperatively and passed the stopped-log audit. The kernel, initramfs and system-disk bytes matched their manifest hashes. Six blank-disk guard unit tests also passed. These runs establish repeatable candidate evidence on this occasion. The earlier faults remain unresolved and default guest promotion remains open. [Recheck receipt](../../evidence/native-runtime/blank-buffer-recheck.json)

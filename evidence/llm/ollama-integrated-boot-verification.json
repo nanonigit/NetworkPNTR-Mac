@@ -1,0 +1,63 @@
+{
+  "date": "2026-11-10",
+  "machine": "Apple M2, 16 GB, macOS 27.2",
+  "baseline": {
+    "source_commit": "e75ae371ad777ffd1eecdd28d2781a6519b05591",
+    "navigation_features": 21,
+    "page_routes": 27,
+    "api_handlers": 243,
+    "inventory_matches": true,
+    "llm_tab_ids_in_source": [
+      "profiles",
+      "retry"
+    ]
+  },
+  "runs": [
+    {
+      "host_build": "current signed debug app",
+      "guest_artifacts": "cloud-preview bundle, source-built 6.12.114-artex",
+      "last_stage": "state_zero_check",
+      "diagnostic": "Fatal kernel Oops in mmu_notifier_invalidate_range_start",
+      "login_reached": false
+    },
+    {
+      "host_build": "current signed debug app",
+      "guest_artifacts": "default diagnostic bundle",
+      "last_stage": "state_zero_check",
+      "diagnostic": "Kernel Oops, undefined instruction followed by paging request failure",
+      "login_reached": false
+    },
+    {
+      "host_build": "previous signed debug binary from default app bundle",
+      "guest_artifacts": "same default diagnostic bundle",
+      "last_stage": "state_zero_check",
+      "diagnostic": "Kernel Oops, undefined instruction",
+      "login_reached": false
+    }
+  ],
+  "scope": "Three failed private-state boots and one successful follow-up. The pinned browser source and existing control inventory were compared with the native tabs; the browser workflow was not replayed in this run.",
+  "root_cause": "Unconfirmed. Reproduction with the previous host binary rules out the new local model view as a necessary condition.",
+  "successful_followup": {
+    "host_build": "current signed debug app with startup error presentation fix",
+    "guest_artifacts": "default diagnostic bundle",
+    "fresh_guest_ready": true,
+    "authenticated": true,
+    "vm_network_devices": 0,
+    "vm_shared_mounts": 0,
+    "profile_tab_fixture_visible": true,
+    "local_tab_model": "qwen3:0.6b",
+    "retry_tab_visible": true,
+    "locale": "ja",
+    "input_tokens": 16,
+    "output_tokens": 128,
+    "output_tokens_per_second": 97.0,
+    "response_seconds": 2.72,
+    "context_length": 2048,
+    "ollama_chat_http_status": 200
+  },
+  "tests": {
+    "total": 1149,
+    "skipped": 1,
+    "failures": 0
+  }
+}

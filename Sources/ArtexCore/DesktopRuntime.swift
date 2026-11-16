@@ -54,7 +54,14 @@ public struct ManagedRuntimePaths: Sendable {
                 try await Task.sleep(for: .milliseconds(100))
             }
             guard generation == operation else { return }
-            guard controller.guestReady else { throw RuntimeError.timeout(controller.lastError ?? "ARTEX backend startup") }
+            guard controller.guestReady else {
+                if let runtimeFailure = controller.failure {
+                    error = controller.lastError
+                    failure = runtimeFailure
+                    return
+                }
+                throw RuntimeError.timeout("ARTEX backend startup")
+            }
             if cloudEgress { try controller.enableCloudEgress() }
             let session = AuthenticationSession(client: BackendJSONClient(runtime: controller, provisioning: provisioning), vault: vault, setupToken: provisioning.setupToken)
             authentication = session

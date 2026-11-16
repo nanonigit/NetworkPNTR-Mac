@@ -190,3 +190,7 @@ Match the pinned browser's single and bulk asset deletion. Use the server's actu
 ### Company scope management
 
 Match company creation, scope addition and replacement, and company deletion with the browser's choice to retain or delete attributed assets. Preserve the server's rule counts, errors, and warnings. Compare the resulting attribution and company list on the same synthetic fixture.
+
+### Local models on Apple Silicon
+
+Select local and cloud models in the existing LLM settings. Discover installed models, format, quantization, and capabilities from runtime APIs. Show the active model, input and output tokens, generation rate, response time, and errors when reported. Distinguish model file size, loaded memory, GPU allocation, model context limit, and actual context allocation.

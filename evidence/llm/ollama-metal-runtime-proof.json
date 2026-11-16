@@ -1,0 +1,118 @@
+{
+  "date": "2026-11-10",
+  "scope": "standalone host runtime and Swift response decoding",
+  "machine": {
+    "chip": "Apple M2",
+    "unified_memory_gib": 16,
+    "os": "macOS 27.2",
+    "accelerator": "Metal",
+    "gpu_layers_offloaded": 29,
+    "total_layers": 29
+  },
+  "runtime": {
+    "version": "0.40.16",
+    "archive_sha256": "a743717494315da7cd352982b805f6b992d4b4452ca117fd5fbf86c4ee46fca0",
+    "endpoint": "http://127.0.0.1:11434",
+    "cloud": {
+      "disabled": true,
+      "source": "env"
+    }
+  },
+  "model": {
+    "name": "qwen3:0.6b",
+    "digest": "7df6b6e09427a769808717c0a93cadc4ae99ed4eb8bf5ca557c90846becea435",
+    "installed_bytes": 522653767,
+    "format": "gguf",
+    "quantization": "Q4_K_M"
+  },
+  "reported_capabilities": [
+    "completion",
+    "tools",
+    "thinking"
+  ],
+  "maximum_context": 40960,
+  "measurements": [
+    {
+      "context_length": 2048,
+      "runtime_model_bytes": 580669931,
+      "gpu_model_bytes": 580669931,
+      "input_tokens": 28,
+      "output_tokens": 52,
+      "total_nanoseconds": 1739764541,
+      "generation_nanoseconds": 432530000,
+      "load_nanoseconds": 1041424291,
+      "output_tokens_per_second": 120.22287471389268
+    },
+    {
+      "context_length": 8192,
+      "runtime_model_bytes": 1348321935,
+      "gpu_model_bytes": 1348321935,
+      "input_tokens": 28,
+      "output_tokens": 52,
+      "total_nanoseconds": 1330235708,
+      "generation_nanoseconds": 488498000,
+      "load_nanoseconds": 796888000,
+      "output_tokens_per_second": 106.44874697542262
+    }
+  ],
+  "limitations": [
+    "one synthetic request per context setting",
+    "GPU allocation is runtime-reported and is not system-wide memory pressure",
+    "tool capability was reported by the API; tool calls, VM inference and UI were not exercised"
+  ],
+  "swift_text_client": {
+    "local_runtime_chat_posts": 1,
+    "cloud_enabled_runtime_chat_posts": 0,
+    "uninstalled_model_rejected": true,
+    "completed_assistant_response": true,
+    "reported_output_tokens": 631,
+    "reported_output_tokens_per_second": 87.64128685187636
+  },
+  "swiftui_local_view": {
+    "scope": "isolated harness hosting the production local models view",
+    "offline_error_visible": true,
+    "reload_recovered": true,
+    "locale_labels": [
+      "en",
+      "ja"
+    ],
+    "model": "qwen3:0.6b",
+    "quantization": "Q4_K_M",
+    "context_limit": 40960,
+    "loaded_context": 2048,
+    "displayed_gpu_allocation": "553.8 MB",
+    "displayed_input_tokens": 16,
+    "displayed_output_tokens": 122,
+    "displayed_tokens_per_second": 76.1,
+    "displayed_response_seconds": 3.14,
+    "pinned_browser_baseline": "e75ae371ad777ffd1eecdd28d2781a6519b05591",
+    "browser_comparison": "Compared existing tab structure using pinned browser control inventory; integrated screen interaction remains open."
+  },
+  "context_guard_recheck": {
+    "date": "2026-11-16",
+    "fixture_model_limit": 1024,
+    "requested_context": 2048,
+    "observed_http_paths": [
+      "/api/tags",
+      "/api/show"
+    ],
+    "conversation_request_sent": false,
+    "live_ollama_reply_received": true,
+    "live_output_tokens": 357,
+    "live_output_tokens_per_second": 47.387910667018694,
+    "scope": "Context verification and standalone native client, without VM inference"
+  },
+  "lifecycle_regression": {
+    "date": "2026-11-16",
+    "scope": "Production request state used by SwiftUI tasks",
+    "explicit_request_dispatched_once": true,
+    "task_reappearance_does_not_replay": true,
+    "cancellation_clears_busy": true,
+    "cancellation_at_busy_publication_prevents_dispatch": true,
+    "explicit_retry_succeeds": true,
+    "suite_total": 1153,
+    "suite_skipped": 1,
+    "suite_failures": 0,
+    "native_view_reappearance_interaction": "pending"
+  }
+}

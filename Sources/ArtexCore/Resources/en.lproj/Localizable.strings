@@ -1242,6 +1242,34 @@
 	<string>A request may already have changed the server. Refresh and check the finding before acknowledging. Acknowledgement only unlocks further edits; it does not verify or retry the change.</string>
 	<key>finding.validation</key>
 	<string>Check the finding identifier and edited fields.</string>
+	<key>llm.local.cloudEnabled</key>
+	<string>Disable Ollama cloud features, then reload.</string>
+	<key>llm.local.description</key>
+	<string>Browse models on this Mac and test local inference. This view does not change the active agent model.</string>
+	<key>llm.local.empty</key>
+	<string>No local models are installed</string>
+	<key>llm.local.gpuMemory</key>
+	<string>Model GPU allocation</string>
+	<key>llm.local.loadedContext</key>
+	<string>Loaded context length</string>
+	<key>llm.local.maximumContext</key>
+	<string>Model context limit</string>
+	<key>llm.local.metadataUnavailable</key>
+	<string>Model details could not be loaded.</string>
+	<key>llm.local.model</key>
+	<string>Model</string>
+	<key>llm.local.quantization</key>
+	<string>Quantization</string>
+	<key>llm.local.responseTime</key>
+	<string>Response time (s)</string>
+	<key>llm.local.tab</key>
+	<string>Local models</string>
+	<key>llm.local.test</key>
+	<string>Test local inference</string>
+	<key>llm.local.tokens</key>
+	<string>Tokens (input / output)</string>
+	<key>llm.local.unavailable</key>
+	<string>Could not complete the Ollama request. Check that the local runtime is running and supports local-only status.</string>
 	<key>llm.noticeActivated</key>
 	<string>Active model configuration changed.</string>
 	<key>llm.noticeDeleted</key>

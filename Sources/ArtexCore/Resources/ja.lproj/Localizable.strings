@@ -1242,6 +1242,34 @@
 	<string>サーバーでは変更が行われている可能性があります。更新して結果を確認してください。確認解除は再編集を可能にするだけで、変更の成功確認や再送は行いません。</string>
 	<key>finding.validation</key>
 	<string>発見事項の識別子と編集内容を確認してください。</string>
+	<key>llm.local.cloudEnabled</key>
+	<string>Ollamaのクラウド機能を無効にしてから再読み込みしてください。</string>
+	<key>llm.local.description</key>
+	<string>このMacのモデルを確認し、ローカル推論を試せます。エージェントの使用モデルはこの画面では切り替わりません。</string>
+	<key>llm.local.empty</key>
+	<string>インストール済みのローカルモデルがありません</string>
+	<key>llm.local.gpuMemory</key>
+	<string>モデルのGPU割り当て</string>
+	<key>llm.local.loadedContext</key>
+	<string>ロード時のコンテキスト長</string>
+	<key>llm.local.maximumContext</key>
+	<string>モデルのコンテキスト上限</string>
+	<key>llm.local.metadataUnavailable</key>
+	<string>モデルの詳細を取得できませんでした。</string>
+	<key>llm.local.model</key>
+	<string>モデル</string>
+	<key>llm.local.quantization</key>
+	<string>量子化</string>
+	<key>llm.local.responseTime</key>
+	<string>応答時間（秒）</string>
+	<key>llm.local.tab</key>
+	<string>ローカルモデル</string>
+	<key>llm.local.test</key>
+	<string>ローカル推論をテスト</string>
+	<key>llm.local.tokens</key>
+	<string>トークン数（入力／出力）</string>
+	<key>llm.local.unavailable</key>
+	<string>Ollamaへの要求に失敗しました。ランタイムが起動し、ローカル専用状態を確認できるバージョンか確認してください。</string>
 	<key>llm.noticeActivated</key>
 	<string>有効なモデル設定を変更しました。</string>
 	<key>llm.noticeDeleted</key>

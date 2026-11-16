@@ -876,3 +876,18 @@ The asset delete confirmation opened with Cancel focused in the fixed browser an
 The company table originally took focus without offering a keyboard path to its inline buttons. In the signed Mac build, Tab enters the table, Down selects the company, and Tab reaches Edit scope, Append scope, and Delete company below the table. Space opened Edit scope with the existing rule. After typing a different rule, Escape returned focus to Edit scope and preserved the original. The fixed browser also opened Edit with Space and preserved the rule after Escape. [Company keyboard comparison](../evidence/assets/company-keyboard-ui.json)
 
 Company scope replacement and deletion were completed with the keyboard in the fixed browser and signed Mac app. On Mac, Control-Tab left the multiline scope editor, Tab reached Save, and Space activated it. Tab and Space then confirmed company deletion with the asset-deletion checkbox off. Both environments retained 26 assets and showed the previously attributed asset as unassigned. [Keyboard save and deletion comparison](../evidence/assets/company-keyboard-save-ui.json)
+
+Local inference phases cover metadata and metric contracts, fixed-endpoint runtime verification, isolated VM inference integration, then the shared cloud/local settings and telemetry UI. Compare each phase with the existing browser behavior and verify real Metal execution, model capability checks, context and memory reporting, and tool-call compatibility separately.
+
+### Local inference acceptance tracking
+
+- [x] Decode installed/running model metadata, quantization, architecture context limits and completed-generation metrics.
+- [x] Verify a pinned Ollama runtime using Metal on Apple M2 and compare two context sizes.
+- [x] Exercise local inference from the signed app settings and retain separate evidence for failed guest boots.
+- [x] Verify context-limit rejection before conversation submission using an HTTP fixture and confirm a live runtime still replies.
+- [x] Lifecycle state regression tests pass for one dispatch per explicit test, task reappearance and cancellation at admission.
+- [ ] Verify unavailable/oversized responses and cancellation during an actual inference.
+- [ ] Connect the dedicated VM to local inference with bounded requests, lifecycle cancellation and no arbitrary host destination.
+- [ ] Activate a local profile for the existing agent and switch back to a cloud profile in the same settings workflow.
+- [ ] Compare the workflow with the pinned browser, including errors, streaming and persistence.
+- [ ] Validate representative model families through their runtime capabilities and actual inference. A reported tools capability alone does not prove tool-call compatibility.
