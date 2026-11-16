@@ -1,0 +1,50 @@
+{
+  "activeLocalExchanges": 0,
+  "canceledLocalExchanges": 2,
+  "canceledWhileStreaming": 2,
+  "cancellationCheck": true,
+  "completedLocalExchanges": 1,
+  "credentialLogCheckPassed": true,
+  "finishedLocalStreams": 3,
+  "generatedLocalExchanges": 3,
+  "isolationVerified": true,
+  "logAuditComplete": true,
+  "machineStopped": true,
+  "manifestSHA256": "7ab7cb7f5620f8470e73a1e7a9a6ee634e09905382b9564bff997cd3504e52c0",
+  "model": "qwen3:0.6b",
+  "passed": true,
+  "scope": "Disposable guest existing agent through diagnostic local inference broker",
+  "stage": "complete",
+  "verifiedContextLength": 8192,
+  "date": "2026-11-16",
+  "runtime": {
+    "version": "0.40.16",
+    "cloudDisabled": true,
+    "accelerator": "Metal",
+    "chip": "Apple M2",
+    "unifiedMemoryGiB": 16
+  },
+  "checks": {
+    "chatStopDuringGeneratedStream": true,
+    "vmStopDuringGeneratedStream": true,
+    "runtimeCancelTaskCount": 2,
+    "runtimeIdleAfterEachCancel": true
+  },
+  "limitations": [
+    "Diagnostic broker only; production cloud/local profile selection remains pending",
+    "No tool-call compatibility or browser/native UI parity claimed"
+  ],
+  "sourceSHA256": {
+    "Sources/ArtexCore/OllamaCatalog.swift": "e5737fdc95a7c6343731cb55a2896f7e1839b5e5195d7ff48c615955236e6a61",
+    "Sources/ArtexCore/OllamaGuestFixture.swift": "20f4fc5f4e1c286cb524c7190f30fa3959cc40e5abbbfdbdef395a285e411cbc",
+    "Sources/VMProbe/OllamaGuestProbe.swift": "6ba2226120bf242fc97c5fdfc7cd8502ac48b4f2a32a44bd52b52100692acfd1",
+    "Tests/ArtexCoreTests/OllamaCatalogTests.swift": "faf7049bff521434e5a6c3f1be52e0601f6dd097701cc91a8c5004542447c892"
+  },
+  "regressionTests": {
+    "total": 1160,
+    "skipped": 1,
+    "failures": 0,
+    "deadlineExclusion": true,
+    "postStreamExclusion": true
+  }
+}

@@ -167,6 +167,8 @@ debug用の試験は、固定したゲストマニフェストと既存のOpenAI
 
 署名済みDebug版の試験コマンドは `VMProbe --local-inference REVIEWED_GUEST NEW_PRIVATE_OUTPUT INSTALLED_MODEL`。検証用Ollamaは `OLLAMA_NO_CLOUD=1`、`OLLAMA_HOST=127.0.0.1:11434`、`OLLAMA_CONTEXT_LENGTH=8192` で起動する。マニフェストSHA256は `7ab7cb7f5620f8470e73a1e7a9a6ee634e09905382b9564bff997cd3504e52c0` のみを受け付け、対象外はVM作成前に拒否する。
 
+生成中のチャット停止とVM停止は、末尾に `--cancellation` を追加して確認する。完了した要求1件、生成中に停止した要求2件、実行中0件と停止後ログ全体の監査を必須にする。SSEの終端マーカーまたはEOFで生成の観測を終了し、その後のメタデータ取得中のキャンセルを生成停止として扱わない。期限切れも利用者による停止には数えない。 [停止の検証記録](../evidence/llm/local-agent-cancellation.json)
+
 ### API Reconのスキル上書き
 
 `guest/skill-overrides/api-recon/SKILL.md` にブラウザ版の適用済み上書きファイルをそのまま取り込む。固定ブラウザ版はコード比較の基準として保持する。`prepare_backend.py` は同梱スキル抽出後に修正版を適用する。`skill_overrides.py` は検証済みランタイムから新しいゲストを作成し、名前を固定したローカルDockerビルダー、ネットワーク無効、ホスト共有なしで構築する。元のOSディスク・バックエンドのハッシュと抽出したスキルの実バイトを確認し、スキルとレシピのハッシュを新しいマニフェストへ記録する。`build_and_run.sh` はアプリを置き換える前に古いスキル宣言を拒否する。クラウド用ゲストの新しいマニフェストはSwift側にも個別に固定する。既知の修正版説明文は日英で表示し、利用者が編集した説明文は原文を表示する。

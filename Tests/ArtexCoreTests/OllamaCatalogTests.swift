@@ -11,6 +11,7 @@ private final class OllamaFixtureProtocol: URLProtocol, @unchecked Sendable {
         var headers: [String: String] = [:]
         var hold = false
         var redirect = false
+        var keepOpen = false
     }
     struct State: Sendable {
         let generation = UUID()
@@ -42,7 +43,7 @@ private final class OllamaFixtureProtocol: URLProtocol, @unchecked Sendable {
         }
         client?.urlProtocol(self, didReceive: response, cacheStoragePolicy: .notAllowed)
         client?.urlProtocol(self, didLoad: next.body)
-        client?.urlProtocolDidFinishLoading(self)
+        if !next.keepOpen { client?.urlProtocolDidFinishLoading(self) }
     }
     override func stopLoading() {
         Self.state.withLock {
@@ -53,6 +54,100 @@ private final class OllamaFixtureProtocol: URLProtocol, @unchecked Sendable {
 
 final class OllamaCatalogTests: XCTestCase {
     #if DEBUG
+    func testDeadlineCancellationDoesNotCountAsExplicitGenerationStop() async throws {
+        func json(_ path: String, _ body: String) -> OllamaFixtureProtocol.Response {
+            .init(path: path, status: 200, body: Data(body.utf8))
+        }
+        let partial = "data: {\"choices\":[{\"delta\":{\"content\":\"still generating\"}}]}\n\n"
+        let keepalive = String(repeating: ": " + String(repeating: "x", count: 1_020) + "\n\n", count: 32)
+        OllamaFixtureProtocol.state.withLock {
+            $0 = .init(responses: [
+                json("/api/tags", #"{"models":[{"name":"fixture"}]}"#),
+                json("/api/show", #"{"model_info":{"general.architecture":"fixture","fixture.context_length":16384}}"#),
+                json("/api/status", #"{"cloud":{"disabled":true}}"#),
+                .init(path: "/v1/chat/completions", status: 200, body: Data((partial + keepalive).utf8),
+                      headers: ["Content-Type": "text/event-stream"], keepOpen: true)
+            ])
+        }
+        let fixture = OllamaGuestFixture(
+            model: "fixture", runtime: OllamaCatalog(protocolClasses: [OllamaFixtureProtocol.self])
+        )
+        let body = Data(#"{"model":"fixture","messages":[{"role":"user","content":"synthetic"}],"stream":true}"#.utf8)
+        let request = try CloudEgressRequest(route: .openAIChat, apiKey: OllamaGuestFixture.key, body: body, streaming: true)
+        let cancellation = CloudEgressCancellation()
+        let exchange = Task.detached {
+            try fixture.exchange(request, cancellation: cancellation, deadline: ContinuousClock.now + .seconds(2)) { _ in }
+        }
+        defer { cancellation.cancel(); exchange.cancel() }
+        do {
+            try await exchange.value
+            XCTFail("Deadline exchange completed")
+        } catch CloudEgressTransportError.transferFailed {}
+        let snapshot = fixture.snapshot
+        XCTAssertEqual(snapshot.generated, 1)
+        XCTAssertEqual(snapshot.active, 0)
+        XCTAssertEqual(snapshot.canceledWhileStreaming, 0)
+        XCTAssertFalse(cancellation.isCancelled)
+    }
+
+    func testCancellationAfterStreamEndsIsNotCountedAsGenerationCancellation() async throws {
+        func json(_ path: String, _ body: String) -> OllamaFixtureProtocol.Response {
+            .init(path: path, status: 200, body: Data(body.utf8))
+        }
+        let stream = "data: {\"choices\":[{\"delta\":{\"content\":\"OK\"}}]}\n\ndata: [DONE]\n\n"
+        OllamaFixtureProtocol.state.withLock {
+            $0 = .init(responses: [
+                json("/api/tags", #"{"models":[{"name":"fixture"}]}"#),
+                json("/api/show", #"{"model_info":{"general.architecture":"fixture","fixture.context_length":16384}}"#),
+                json("/api/status", #"{"cloud":{"disabled":true}}"#),
+                json("/v1/chat/completions", stream),
+                .init(path: "/api/ps", status: 200, body: Data(), hold: true)
+            ])
+        }
+        let fixture = OllamaGuestFixture(
+            model: "fixture", runtime: OllamaCatalog(protocolClasses: [OllamaFixtureProtocol.self])
+        )
+        let body = Data(#"{"model":"fixture","messages":[{"role":"user","content":"synthetic"}],"stream":true}"#.utf8)
+        let request = try CloudEgressRequest(
+            route: .openAIChat, apiKey: OllamaGuestFixture.key, body: body, streaming: true
+        )
+        let cancellation = CloudEgressCancellation()
+        let exchange = Task.detached {
+            try fixture.exchange(request, cancellation: cancellation, deadline: ContinuousClock.now + .seconds(10)) { _ in }
+        }
+        defer { cancellation.cancel(); exchange.cancel() }
+        for _ in 0..<2_000 {
+            if OllamaFixtureProtocol.state.withLock({ $0.paths.last == "/api/ps" }) { break }
+            try await Task.sleep(for: .milliseconds(1))
+        }
+        XCTAssertEqual(OllamaFixtureProtocol.state.withLock { $0.paths.last }, "/api/ps")
+        let before = fixture.snapshot
+        XCTAssertEqual(before.generated, 1)
+        XCTAssertEqual(before.streamFinished, 1)
+        XCTAssertEqual(before.active, 1)
+        cancellation.cancel()
+        do {
+            try await exchange.value
+            XCTFail("Canceled exchange completed")
+        } catch CloudEgressTransportError.transferFailed {}
+        let after = fixture.snapshot
+        XCTAssertEqual(after.canceled, 1)
+        XCTAssertEqual(after.canceledWhileStreaming, 0)
+        XCTAssertEqual(after.active, 0)
+    }
+
+    func testStreamWitnessRequiresGeneratedTextAndHandlesFragmentedUTF8() throws {
+        var witness = OllamaStreamWitness()
+        XCTAssertFalse(try witness.consume(Data("data: {\"choices\":[{\"delta\":{\"role\":\"assistant\",\"content\":\"\"}}]}\n\n".utf8)))
+        let bytes = Data("data: {\"choices\":[{\"delta\":{\"reasoning_content\":\"日本語\"}}]}\n\n".utf8)
+        let split = try XCTUnwrap(bytes.range(of: Data("日".utf8))).lowerBound + 1
+        XCTAssertFalse(try witness.consume(bytes.prefix(split)))
+        XCTAssertTrue(try witness.consume(bytes.suffix(from: split)))
+        XCTAssertFalse(try witness.consume(bytes))
+        var oversized = OllamaStreamWitness()
+        XCTAssertThrowsError(try oversized.consume(Data(repeating: 32, count: 65_537)))
+    }
+
     func testGuestFixturePreservesStreamAndRequiresPinnedModelAndLoadedContext() async throws {
         let runtime = OllamaCatalog(protocolClasses: [OllamaFixtureProtocol.self])
         func json(_ path: String, _ body: String) -> OllamaFixtureProtocol.Response {

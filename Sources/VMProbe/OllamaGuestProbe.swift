@@ -5,7 +5,8 @@ import Foundation
 @MainActor enum OllamaGuestProbe {
     static func run(_ args: [String]) async {
         #if DEBUG
-        guard args.count == 3 else { exit(2) }
+        let cancellationCheck = args.count == 4 && args[3] == "--cancellation"
+        guard args.count == 3 || cancellationCheck else { exit(2) }
         let artifacts = URL(fileURLWithPath: args[0])
         let output = URL(fileURLWithPath: args[1])
         let model = args[2]
@@ -15,9 +16,16 @@ import Foundation
         var prepared = false
         var passed = false
         func writeReport(_ accepted: Bool, audit: GuestBootLogAudit? = nil) throws {
+            let snapshot = fixture.snapshot
             let report: [String: Any] = [
                 "passed": accepted, "stage": stage, "model": model,
-                "completedLocalExchanges": fixture.requestCount,
+                "completedLocalExchanges": snapshot.completed,
+                "generatedLocalExchanges": snapshot.generated,
+                "canceledLocalExchanges": snapshot.canceled,
+                "canceledWhileStreaming": snapshot.canceledWhileStreaming,
+                "finishedLocalStreams": snapshot.streamFinished,
+                "activeLocalExchanges": snapshot.active,
+                "cancellationCheck": cancellationCheck,
                 "machineStopped": !controller.hasMachine,
                 "manifestSHA256": reviewedManifestDigest,
                 "verifiedContextLength": accepted ? OllamaGuestFixture.contextLength : 0,
@@ -97,8 +105,30 @@ import Foundation
                 try await Task.sleep(for: .milliseconds(100))
             }
             guard received, fixture.requestCount > 0 else { throw RuntimeError.timeout("local agent response") }
+            if cancellationCheck {
+                stage = "chat-stop-during-generation"
+                let canceled = try await chat.create(agentKey: "mainagent", title: "Cancel local model proof", profileID: profileID)
+                let longPrompt = "Count from 1 to 10000, writing one number per line. Do not summarize or call tools."
+                try await chat.send(id: canceled.id, message: longPrompt)
+                try await waitForGeneration(fixture, count: 2)
+                guard try await chat.stop(id: canceled.id) == .stopping else {
+                    throw RuntimeError.integrity("local inference must still be running at stop")
+                }
+                try await waitForCancellation(fixture, count: 1)
+                var settled = false
+                for _ in 0..<100 {
+                    if try await !chat.history(id: canceled.id).running { settled = true; break }
+                    try await Task.sleep(for: .milliseconds(100))
+                }
+                guard settled else { throw RuntimeError.timeout("stopped local chat") }
+                stage = "vm-stop-during-generation"
+                let interrupted = try await chat.create(agentKey: "mainagent", title: "VM stop local model proof", profileID: profileID)
+                try await chat.send(id: interrupted.id, message: longPrompt)
+                try await waitForGeneration(fixture, count: 3)
+            }
             stage = "stop"
             try await controller.stop()
+            if cancellationCheck { try await waitForCancellation(fixture, count: 2) }
             guard !controller.hasMachine else { throw RuntimeError.integrity("local inference VM shutdown") }
             try requireReviewedManifest(artifacts)
             let tokens = [provisioning.transportToken, provisioning.setupToken, password, OllamaGuestFixture.key] + [try vault.load()].compactMap { $0 }
@@ -120,6 +150,32 @@ import Foundation
 
     #if DEBUG
     private static let reviewedManifestDigest = "7ab7cb7f5620f8470e73a1e7a9a6ee634e09905382b9564bff997cd3504e52c0"
+
+    private static func waitForGeneration(_ fixture: OllamaGuestFixture, count: Int) async throws {
+        for _ in 0..<1_200 {
+            let snapshot = fixture.snapshot
+            if snapshot.generated >= count {
+                guard snapshot.generated == count, snapshot.active == 1, snapshot.completed == 1,
+                      snapshot.streamFinished == count - 1, snapshot.canceled == count - 2 else {
+                    throw RuntimeError.integrity("generation already completed before cancellation")
+                }
+                return
+            }
+            try await Task.sleep(for: .milliseconds(100))
+        }
+        throw RuntimeError.timeout("local generation witness")
+    }
+
+    private static func waitForCancellation(_ fixture: OllamaGuestFixture, count: Int) async throws {
+        for _ in 0..<500 {
+            let snapshot = fixture.snapshot
+            guard snapshot.completed == 1 else { throw RuntimeError.integrity("canceled inference completed") }
+            if snapshot.canceled == count, snapshot.canceledWhileStreaming == count,
+               snapshot.streamFinished == count + 1, snapshot.active == 0 { return }
+            try await Task.sleep(for: .milliseconds(20))
+        }
+        throw RuntimeError.timeout("local inference cancellation drain")
+    }
 
     private static func requireReviewedManifest(_ artifacts: URL) throws {
         let data = try Data(contentsOf: artifacts.appendingPathComponent("manifest.json"))

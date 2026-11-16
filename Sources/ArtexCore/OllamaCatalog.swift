@@ -98,6 +98,7 @@ public final class OllamaCatalog: Sendable {
     /// The caller pins a local model and supplies no destination or credentials.
     func exchangeGuestFixture(
         model: String, body: Data,
+        streamFinished: @escaping @Sendable () -> Void = {},
         receive: @escaping @Sendable (CloudEgressResponseEvent) throws -> Void
     ) async throws {
         guard body.count <= OllamaTextRequest.bodyLimit,
@@ -137,6 +138,7 @@ public final class OllamaCatalog: Sendable {
             }
         }
         if !chunk.isEmpty { try receive(.body(chunk)) }
+        streamFinished()
         try Task.checkCancellation()
         let loaded = try await running()
         guard loaded.models.contains(where: {

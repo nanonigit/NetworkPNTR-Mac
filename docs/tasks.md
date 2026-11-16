@@ -887,7 +887,7 @@ Local inference phases cover metadata and metric contracts, fixed-endpoint runti
 - [x] Verify context-limit rejection before conversation submission using an HTTP fixture and confirm a live runtime still replies.
 - [x] Lifecycle state regression tests pass for one dispatch per explicit test, task reappearance and cancellation at admission.
 - [x] Verify unavailable/oversized responses, redirect refusal and cancellation before/during a held URLSession request.
-- [ ] Verify cancellation during an actual Metal inference and VM shutdown.
+- [x] Verify cancellation during an actual Metal inference and VM shutdown.
 - [x] Exercise the existing guest agent through a diagnostic local broker, preserving SSE and verifying the pinned guest, loaded context and stopped-log audit.
 - [ ] Connect the dedicated VM to local inference with bounded requests, lifecycle cancellation and no arbitrary host destination.
 - [ ] Activate a local profile for the existing agent and switch back to a cloud profile in the same settings workflow.
@@ -911,3 +911,5 @@ All MCP implementation and acceptance gates remain open. Direct app operation an
 - [ ] Verify useful scoped operations with zero ARTEX LLM profiles, no provider credentials and no local runtime, including restart and retry.
 - [ ] Assert zero internal model calls/LLM records and zero cloud/local inference requests in external-AI mode, including configured-provider fallback and agent-trigger negative cases.
 - [ ] Verify explicit ARTEX-agent delegation selects its configured model and reports its separate usage; compare both execution modes through the native GUI and MCP.
+
+The signed diagnostic guest verified chat stop and VM shutdown while generated SSE text was still arriving from Metal inference. Both canceled the host exchange, the runtime recorded two cancel operations and idle slots, and no exchange remained active. The stopped guest passed isolation and credential-log audits. This closes the diagnostic cancellation gate; production local-profile integration remains open. [Cancellation receipt](../evidence/llm/local-agent-cancellation.json)
