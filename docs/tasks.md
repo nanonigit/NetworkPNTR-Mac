@@ -895,3 +895,19 @@ Local inference phases cover metadata and metric contracts, fixed-endpoint runti
 - [ ] Validate representative model families through their runtime capabilities and actual inference. A reported tools capability alone does not prove tool-call compatibility.
 
 API Recon authorization update. The bundled skill matches the browser deployment override exactly. Fresh builds apply it and packaging rejects stale skill declarations. Both local app bundles are updated and signature/integrity checks pass. A signed Cloud Preview guest returned the exact skill through its authenticated API and passed the stopped-log isolation/credential audit. The default guest's fresh boot did not reach readiness, so its API readback remains unverified. Six focused Swift and five Python tests pass. [Update receipt](../evidence/skills/api-recon-update.json)
+
+### Inbound MCP and dual operation
+
+- [ ] Specify tool schemas and the GUI/API/MCP capability matrix, beginning with agent discovery, task creation/start/status/results and stop.
+- [ ] Implement the bundled local stdio helper and app-owned IPC broker with client authorization, revocation and generation-bound requests.
+- [ ] Connect existing authenticated services, long-running task IDs and idempotent mutations to the shared native runtime.
+- [ ] Verify MCP-started tasks in the GUI and GUI-started tasks through MCP, including progress, stop, results and persisted state after restart.
+- [ ] Compare the same synthetic task workflows against the pinned browser; test invalid input, lost authorization, retries, cancellation, concurrent GUI/MCP operations and app/VM shutdown.
+- [ ] Verify installation and client registration from a packaged app on a clean Mac, and publish connection instructions with the GitHub release.
+
+All MCP implementation and acceptance gates remain open. Direct app operation and MCP operation are both required by the completion goal.
+
+- [ ] Specify external-AI versus ARTEX-agent execution ownership in tool schemas, task state and GUI presentation.
+- [ ] Verify useful scoped operations with zero ARTEX LLM profiles, no provider credentials and no local runtime, including restart and retry.
+- [ ] Assert zero internal model calls/LLM records and zero cloud/local inference requests in external-AI mode, including configured-provider fallback and agent-trigger negative cases.
+- [ ] Verify explicit ARTEX-agent delegation selects its configured model and reports its separate usage; compare both execution modes through the native GUI and MCP.
