@@ -11,7 +11,7 @@
   "hostShares": 0,
   "kernelSHA256": "8e57308787c420cb42e4c4ea80e6def6438a52232692c010dc4609bb9bf21879",
   "initramfsSHA256": "88de8582409a9ad861a69035f056e65953b36803fbc77b391e0a9deb77e335ba",
-  "systemDiskSHA256": "76219b4acfe5df97c86cf22c90d21ddd431d98701662698c521882a7f59f82f6",
+  "systemDiskSHA256": "038be14f065fe303af4b330f05daf8983db81d0454d42156a85bb0c52e88f247",
   "bootMode": "rootDisk",
   "cpuCount": 1,
   "kernelPackage": {
@@ -27,7 +27,7 @@
     },
     "recipeSHA256": "43bb1338577b1a68723ac9ca750abed1df5e93e1598b588f72cf6e6d5f69dcca"
   },
-  "guestRuntimeImage": "sha256:8724fa485ea1bf610c8e505192ce6669f8c034bf14543b70bb4b56fb2040e38b",
+  "guestRuntimeImage": "sha256:3708fe4fd9bce0b021ed0df51699a156ec5083feb48cece76b8fe206d08cdda3",
   "guestRuntimeSourceCommit": "37b8f53f42976f9a412ec266e85e184ae7a49318",
   "guestRuntimeRecipeSHA256": "c0b2cac340199e72c6b73444b201ceba71d26ccad05d2e4496e9b9e3d2bbd419",
   "guestRuntimeParentImage": "sha256:444ded029e1089fc41be33fa399e81ad029e73c5eaf9b2d4413efc021d2a2c5a",
@@ -65,10 +65,10 @@
   "skillOverrides": {
     "api-recon": {
       "file": "api-recon/SKILL.md",
-      "sha256": "39c278b982e2afb47eee455b609131b191f7ae5763ffffe511cef4e072281a55"
+      "sha256": "e63385072097d1ab69f020ae83615c53575132559b802a55b43a18d5ef1849bc"
     }
   },
-  "skillOverrideParentImage": "sha256:1ec1b09f2c5dc5906cbb458c8ed88f9f946a37c6894d0015d1b031f2ef2ba1be",
-  "skillOverrideParentManifestSHA256": "42c47caf03c835c974eee569f8be041b234d3f96b7d7931585e410e146f73c70",
-  "skillOverrideRecipeSHA256": "2e3681b01ed91189993fa9ae492eb2400fa0e546c7fe646f7f401d47c7df91c4"
+  "skillOverrideParentImage": "sha256:8724fa485ea1bf610c8e505192ce6669f8c034bf14543b70bb4b56fb2040e38b",
+  "skillOverrideParentManifestSHA256": "c99639692b0c63cd05a95ee3ad742e4e806a08ca6bf1fec08d497b5723a015f6",
+  "skillOverrideRecipeSHA256": "f89302c3331b8da7175335a37d70d725ba72b96669bce81b29bc346de7e0fe04"
 }

@@ -1,0 +1,61 @@
+{
+  "date": "2026-11-16",
+  "sourceBaseCommit": "85674d6",
+  "source": "Browser deployment override deployment/skills/api-recon/SKILL.md",
+  "apiReconSHA256": "e63385072097d1ab69f020ae83615c53575132559b802a55b43a18d5ef1849bc",
+  "sameAsBrowserOverride": true,
+  "consentBoundaries": [
+    "Specific operation, target and expected impact for destructive/business-affecting tests",
+    "Information type, purpose, minimum scope and storage/recipient before secret or personal values are recorded, including automatic output",
+    "Propose stub/mock/auth substitution with session impact and restoration; obtain permission before replacement",
+    "Explain added domains and reasons, obtain permission, verify current browser/account session before operation"
+  ],
+  "tests": {
+    "swiftTotal": 1160,
+    "swiftSkipped": 1,
+    "swiftFailures": 0,
+    "pythonFocused": 5,
+    "pythonFailures": 0,
+    "localizationExportPassed": true,
+    "codeReview": "No blockers found"
+  },
+  "cloudPreviewReadback": {
+    "apiReconSHA256": "e63385072097d1ab69f020ae83615c53575132559b802a55b43a18d5ef1849bc",
+    "authenticatedReadStatus": 200,
+    "credentialLogCheckPassed": true,
+    "isolationVerified": true,
+    "logAuditComplete": true,
+    "machineStopped": true,
+    "manifestSHA256": "fe0053523608ba436f261ff41d142fe2ceca779571958ca1d19aa2ddaa54f332",
+    "passed": true,
+    "protectedStatus": 401,
+    "sameAsBrowserOverride": true
+  },
+  "apps": {
+    "ARTEX Mac.app": {
+      "manifestSHA256": "85978daf1b28bb55929d46ea156a857958dc7d4fcf54a0bac045f0832f13588e",
+      "binarySHA256": "1567c11c7a5c7ab7946145539ca98515ef65ff30e00e877fd56fd7204cfa2a5d",
+      "signatureVerified": true,
+      "installedInLocalDist": true
+    },
+    "ARTEX Mac Cloud Preview.app": {
+      "manifestSHA256": "fe0053523608ba436f261ff41d142fe2ceca779571958ca1d19aa2ddaa54f332",
+      "binarySHA256": "a285be3c117d6978fa73f8fe87b8faee4305e4149aa140518e69f533d0de035d",
+      "signatureVerified": true,
+      "installedInLocalDist": true
+    }
+  },
+  "scope": "Instruction update only; no external-target vulnerability test or real user account login performed",
+  "defaultReadback": {
+    "apiReconSHA256": "e63385072097d1ab69f020ae83615c53575132559b802a55b43a18d5ef1849bc",
+    "authenticatedReadStatus": 200,
+    "credentialLogCheckPassed": true,
+    "isolationVerified": true,
+    "logAuditComplete": true,
+    "machineStopped": true,
+    "manifestSHA256": "85978daf1b28bb55929d46ea156a857958dc7d4fcf54a0bac045f0832f13588e",
+    "passed": true,
+    "protectedStatus": 401,
+    "sameAsBrowserOverride": true
+  }
+}

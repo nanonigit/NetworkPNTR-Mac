@@ -913,3 +913,7 @@ All MCP implementation and acceptance gates remain open. Direct app operation an
 - [ ] Verify explicit ARTEX-agent delegation selects its configured model and reports its separate usage; compare both execution modes through the native GUI and MCP.
 
 The signed diagnostic guest verified chat stop and VM shutdown while generated SSE text was still arriving from Metal inference. Both canceled the host exchange, the runtime recorded two cancel operations and idle slots, and no exchange remained active. The stopped guest passed isolation and credential-log audits. This closes the diagnostic cancellation gate; production local-profile integration remains open. [Cancellation receipt](../evidence/llm/local-agent-cancellation.json)
+
+API Recon consent-policy update: copy the latest applied browser override exactly, verify all four permission boundaries and related runtime instructions, rebuild both bundled guests, pin the new cloud manifest, sign both apps and verify authenticated skill readback in disposable guests. [Consent update receipt](../evidence/skills/api-recon-consent-update.json)
+
+Both refreshed app bundles passed signature verification and their disposable VMs returned the exact reviewed skill through the authenticated API. Unauthenticated reads returned 401; both stopped VMs passed isolation and credential-log audits. All 1,160 Swift tests passed with one skip, and five focused Python tests passed.

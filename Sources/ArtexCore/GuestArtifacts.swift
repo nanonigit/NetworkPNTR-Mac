@@ -71,7 +71,7 @@ public struct GuestArtifacts: Codable, Sendable {
     }
 
     package static let cloudEgressManifestSHA256 = "42c47caf03c835c974eee569f8be041b234d3f96b7d7931585e410e146f73c70"
-    package static let apiReconSkillManifestSHA256 = "c99639692b0c63cd05a95ee3ad742e4e806a08ca6bf1fec08d497b5723a015f6"
+    package static let apiReconSkillManifestSHA256 = "fe0053523608ba436f261ff41d142fe2ceca779571958ca1d19aa2ddaa54f332"
 
     static func requireCloudEgressManifest(_ data: Data) throws {
         guard data.count <= 64 * 1024,
