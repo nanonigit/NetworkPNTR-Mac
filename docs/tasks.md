@@ -886,7 +886,8 @@ Local inference phases cover metadata and metric contracts, fixed-endpoint runti
 - [x] Exercise local inference from the signed app settings and retain separate evidence for failed guest boots.
 - [x] Verify context-limit rejection before conversation submission using an HTTP fixture and confirm a live runtime still replies.
 - [x] Lifecycle state regression tests pass for one dispatch per explicit test, task reappearance and cancellation at admission.
-- [ ] Verify unavailable/oversized responses and cancellation during an actual inference.
+- [x] Verify unavailable/oversized responses, redirect refusal and cancellation before/during a held URLSession request.
+- [ ] Verify cancellation during an actual Metal inference and VM shutdown.
 - [ ] Connect the dedicated VM to local inference with bounded requests, lifecycle cancellation and no arbitrary host destination.
 - [ ] Activate a local profile for the existing agent and switch back to a cloud profile in the same settings workflow.
 - [ ] Compare the workflow with the pinned browser, including errors, streaming and persistence.

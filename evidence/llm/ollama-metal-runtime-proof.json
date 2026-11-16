@@ -114,5 +114,25 @@
     "suite_skipped": 1,
     "suite_failures": 0,
     "native_view_reappearance_interaction": "pending"
+  },
+  "transport_regression": {
+    "date": "2026-11-16",
+    "test": "OllamaCatalogTests.testLocalBoundaryRejectsCloudStatusRedirectAndOversizedResponses",
+    "passed": true,
+    "cases": [
+      "unavailable runtime fails",
+      "cloud enabled prevents conversation submission",
+      "redirect callback does not dispatch foreign request",
+      "declared response above 4 MiB rejected",
+      "actual response above 4 MiB rejected",
+      "already canceled task sends no request",
+      "canceling held request calls transport stop"
+    ],
+    "transport": "URLProtocol fixture through production URLSession client",
+    "actual_metal_inference_cancellation": "pending",
+    "redirect_allowed_negative_control_failed": true,
+    "restored_refusal_positive_control_passed": true,
+    "focused_tests_passed": 9,
+    "stop_callback_scoped_to_fixture_generation": true
   }
 }

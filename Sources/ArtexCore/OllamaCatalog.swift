@@ -26,8 +26,13 @@ public final class OllamaCatalog: Sendable {
 
     private let session: URLSession
 
-    public init() {
+    public convenience init() {
+        self.init(protocolClasses: nil)
+    }
+
+    init(protocolClasses: [AnyClass]?) {
         let configuration = URLSessionConfiguration.ephemeral
+        if let protocolClasses { configuration.protocolClasses = protocolClasses }
         configuration.connectionProxyDictionary = [:]
         configuration.httpShouldSetCookies = false
         configuration.httpCookieStorage = nil
@@ -91,6 +96,7 @@ public final class OllamaCatalog: Sendable {
     private func read<T: Decodable>(
         path: String, body: Data? = nil, timeout: TimeInterval = 5
     ) async throws -> T {
+        try Task.checkCancellation()
         guard let url = URL(string: "http://127.0.0.1:11434" + path) else { throw Failure.unavailable }
         var request = URLRequest(url: url, timeoutInterval: timeout)
         if let body {
