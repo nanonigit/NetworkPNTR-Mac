@@ -2,6 +2,17 @@ import XCTest
 @testable import ArtexCore
 
 final class AgentVisibilityEditorTests: XCTestCase {
+    func testAuthorizedAPIReconDescriptionUsesEnglishAndJapanese() {
+        let resource = AgentVisibilityResource(id: .skill("api-recon"), name: "api-recon",
+            detail: "在授权范围内发现网站 API、分析参数并验证漏洞、请求修改及访问控制。")
+        XCTAssertEqual(resource.displayDetail(language: .english),
+            "Discover APIs and validate vulnerabilities, request changes, and access controls within the authorized scope.")
+        XCTAssertEqual(resource.displayDetail(language: .japanese),
+            "許可された範囲でAPIを調査し、脆弱性・リクエスト変更・アクセス制御を検証します。")
+        let edited = AgentVisibilityResource(id: resource.id, name: resource.name, detail: resource.detail! + " custom")
+        XCTAssertEqual(edited.displayDetail(language: .japanese), edited.detail)
+    }
+
     func testKnownSkillDescriptionsResolveBothLocalesAndPreserveAuthoredText() {
         let apiDefault = "收集网站API接口时调用该skill。"
         let apiRecon = AgentVisibilityResource(id: .skill("api-recon"), name: "api-recon", detail: apiDefault)

@@ -1,0 +1,49 @@
+{
+  "date": "2026-11-16",
+  "sourceBaseCommit": "ec65f245b6e9cd111f6732ada8275013dbd51cb6",
+  "source": "Browser deployment override deployment/skills/api-recon/SKILL.md",
+  "apiReconSHA256": "39c278b982e2afb47eee455b609131b191f7ae5763ffffe511cef4e072281a55",
+  "sameAsBrowserOverride": true,
+  "buildSource": "Committed source plus this task changes in an isolated build directory",
+  "buildExecution": "Explicit desktop-linux local Unix context and validated named Docker driver builder; offline build without host mounts",
+  "apps": {
+    "ARTEX Mac.app": {
+      "manifestSHA256": "8fbdbdc32d15ce71ae7ad415c77c2f12fb424a20b5340e45503fc332ed94f5a5",
+      "binarySHA256": "c7af2940f60ac774460628c5561d27a158b6ed1bd60feb75edb04af87607a482",
+      "apiReconSHA256": "39c278b982e2afb47eee455b609131b191f7ae5763ffffe511cef4e072281a55",
+      "signatureVerified": true
+    },
+    "ARTEX Mac Cloud Preview.app": {
+      "manifestSHA256": "c99639692b0c63cd05a95ee3ad742e4e806a08ca6bf1fec08d497b5723a015f6",
+      "binarySHA256": "a3b212a89a9fd3edbcc15b09107e479f0474fce25903111124018792626e7c2a",
+      "apiReconSHA256": "39c278b982e2afb47eee455b609131b191f7ae5763ffffe511cef4e072281a55",
+      "signatureVerified": true
+    }
+  },
+  "cloudPreviewReadback": {
+    "apiReconSHA256": "39c278b982e2afb47eee455b609131b191f7ae5763ffffe511cef4e072281a55",
+    "authenticatedReadStatus": 200,
+    "credentialLogCheckPassed": true,
+    "isolationVerified": true,
+    "logAuditComplete": true,
+    "machineStopped": true,
+    "manifestSHA256": "c99639692b0c63cd05a95ee3ad742e4e806a08ca6bf1fec08d497b5723a015f6",
+    "passed": true,
+    "protectedStatus": 401,
+    "sameAsBrowserOverride": true
+  },
+  "defaultFreshVMReadback": {
+    "passed": false,
+    "stage": "boot",
+    "lastStageMarker": "state_zero_check",
+    "skillReadReached": false,
+    "probeExitCode": 1,
+    "reason": "Guest readiness was not reached; the cause remains unconfirmed"
+  },
+  "tests": {
+    "swiftFocused": 6,
+    "pythonFocused": 5,
+    "failures": 0
+  },
+  "scope": "Bundled instruction update and localized resource description; no external target or real-login security test performed"
+}

@@ -194,3 +194,5 @@ Match company creation, scope addition and replacement, and company deletion wit
 ### Local models on Apple Silicon
 
 Select local and cloud models in the existing LLM settings. Discover installed models, format, quantization, and capabilities from runtime APIs. Show the active model, input and output tokens, generation rate, response time, and errors when reported. Distinguish model file size, loaded memory, GPU allocation, model context limit, and actual context allocation.
+
+The bundled API Recon skill must retain the browser deployment's authorized-testing update. It permits validation, request modification and access-control checks on owned or explicitly authorized targets, permits authorized real sessions, and uses mock responses only for enumeration without a real session. Package the reviewed file as a tracked skill override and reject stale guest declarations during app packaging.

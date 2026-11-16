@@ -893,3 +893,5 @@ Local inference phases cover metadata and metric contracts, fixed-endpoint runti
 - [ ] Activate a local profile for the existing agent and switch back to a cloud profile in the same settings workflow.
 - [ ] Compare the workflow with the pinned browser, including errors, streaming and persistence.
 - [ ] Validate representative model families through their runtime capabilities and actual inference. A reported tools capability alone does not prove tool-call compatibility.
+
+API Recon authorization update. The bundled skill matches the browser deployment override exactly. Fresh builds apply it and packaging rejects stale skill declarations. Both local app bundles are updated and signature/integrity checks pass. A signed Cloud Preview guest returned the exact skill through its authenticated API and passed the stopped-log isolation/credential audit. The default guest's fresh boot did not reach readiness, so its API readback remains unverified. Six focused Swift and five Python tests pass. [Update receipt](../evidence/skills/api-recon-update.json)

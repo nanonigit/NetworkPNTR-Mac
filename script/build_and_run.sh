@@ -10,6 +10,7 @@ if [[ ! -f "$GUEST_BUILD_DIR/manifest.json" ]]; then
   echo 'Build the pinned backend guest first: python3 script/prepare_backend.py --source /path/to/pinned/artex-global' >&2
   exit 1
 fi
+python3 "$ROOT_DIR/script/skill_overrides.py" --verify "$GUEST_BUILD_DIR/manifest.json"
 if pgrep -x ArtexMac >/dev/null; then
   echo 'Quit ARTEX Mac normally before replacing its bundle so its VM can flush and stop.' >&2
   exit 1

@@ -20,6 +20,9 @@ public struct AgentVisibilityResource: Identifiable, Sendable {
         let translation: AppStringKey
         switch id {
         case .skill("api-recon"):
+            if detail == "在授权范围内发现网站 API、分析参数并验证漏洞、请求修改及访问控制。" {
+                return AppStrings.text(.agentSkillAPIReconAuthorizedDescription, language: language)
+            }
             original = "收集网站API接口时调用该skill。"
             translation = .agentSkillAPIReconDescription
         case .skill("playwright-cli"):

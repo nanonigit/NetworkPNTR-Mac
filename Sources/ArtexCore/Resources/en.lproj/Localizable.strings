@@ -178,6 +178,8 @@
 	<string>Picks up a single intent and executes it, writing discovered facts / vulnerabilities back to the knowledge graph before stopping.</string>
 	<key>agent.seed.worker.name</key>
 	<string>Execution</string>
+	<key>agent.skill.apiReconAuthorizedDescription</key>
+	<string>Discover APIs and validate vulnerabilities, request changes, and access controls within the authorized scope.</string>
 	<key>agent.skill.apiReconDescription</key>
 	<string>Use this skill to discover a website’s API endpoints.</string>
 	<key>agent.skill.playwrightDescription</key>

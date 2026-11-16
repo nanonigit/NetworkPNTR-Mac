@@ -2669,6 +2669,22 @@
         }
       }
     },
+    "agent.skill.apiReconAuthorizedDescription": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Discover APIs and validate vulnerabilities, request changes, and access controls within the authorized scope."
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "許可された範囲でAPIを調査し、脆弱性・リクエスト変更・アクセス制御を検証します。"
+          }
+        }
+      }
+    },
     "agent.skill.apiReconDescription": {
       "localizations": {
         "en": {

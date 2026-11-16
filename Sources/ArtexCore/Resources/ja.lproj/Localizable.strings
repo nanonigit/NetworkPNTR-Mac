@@ -178,6 +178,8 @@
 	<string>インテントを 1 つ受け取って実行し、発見した事実・脆弱性をナレッジグラフに記録して停止します。</string>
 	<key>agent.seed.worker.name</key>
 	<string>実行</string>
+	<key>agent.skill.apiReconAuthorizedDescription</key>
+	<string>許可された範囲でAPIを調査し、脆弱性・リクエスト変更・アクセス制御を検証します。</string>
 	<key>agent.skill.apiReconDescription</key>
 	<string>WebサイトのAPIエンドポイントを調べるスキルです。</string>
 	<key>agent.skill.playwrightDescription</key>

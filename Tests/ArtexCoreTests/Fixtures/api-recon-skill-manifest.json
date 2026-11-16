@@ -1,0 +1,74 @@
+{
+  "architecture": "arm64",
+  "kernel": "Image",
+  "initramfs": "initramfs.cpio.gz",
+  "systemDisk": "system.ext4",
+  "sourceCommit": "e75ae371ad777ffd1eecdd28d2781a6519b05591",
+  "backendImage": "sha256:19edc6cb844e40f2403c394ede4378d6490b69bdc16d9fdeb361e9b323e3784b",
+  "backendSHA256": "1e2181300baff0130483d22e95607940a4b41efdd0402c8b7df8e86ed09e5745",
+  "packageLockSHA256": "619e4e6c33cc2a1e2fce48e28ac138cd2020fbfc74d5c71b6500a6eec8c9a5aa",
+  "networkDevices": 0,
+  "hostShares": 0,
+  "kernelSHA256": "8e57308787c420cb42e4c4ea80e6def6438a52232692c010dc4609bb9bf21879",
+  "initramfsSHA256": "88de8582409a9ad861a69035f056e65953b36803fbc77b391e0a9deb77e335ba",
+  "systemDiskSHA256": "76219b4acfe5df97c86cf22c90d21ddd431d98701662698c521882a7f59f82f6",
+  "bootMode": "rootDisk",
+  "cpuCount": 1,
+  "kernelPackage": {
+    "source": {
+      "url": "https://cdn.kernel.org/pub/linux/kernel/v6.x/linux-6.12.114.tar.xz",
+      "sha256": "7a8589912bd7a8adb07fed074283652cf482a35facef8954554654f0154b4af3",
+      "maximum_bytes": 268435456
+    },
+    "configuration": {
+      "url": "https://raw.githubusercontent.com/linuxkit/linuxkit/f935f6b18cad69f08c1830b432d7dab90bf67614/kernel/6.12.x/config-aarch64",
+      "sha256": "53280e08ae286156a31049c90ab8b2077db93c0366a8a9e6bb4b3fa7c02f65fe",
+      "maximum_bytes": 1048576
+    },
+    "recipeSHA256": "43bb1338577b1a68723ac9ca750abed1df5e93e1598b588f72cf6e6d5f69dcca"
+  },
+  "guestRuntimeImage": "sha256:8724fa485ea1bf610c8e505192ce6669f8c034bf14543b70bb4b56fb2040e38b",
+  "guestRuntimeSourceCommit": "37b8f53f42976f9a412ec266e85e184ae7a49318",
+  "guestRuntimeRecipeSHA256": "c0b2cac340199e72c6b73444b201ceba71d26ccad05d2e4496e9b9e3d2bbd419",
+  "guestRuntimeParentImage": "sha256:444ded029e1089fc41be33fa399e81ad029e73c5eaf9b2d4413efc021d2a2c5a",
+  "guestRuntimeSourceSHA256": {
+    "Dockerfile.guest": "c0b2cac340199e72c6b73444b201ceba71d26ccad05d2e4496e9b9e3d2bbd419",
+    "backend-init": "dc6a66b15e0ecc67de52e3e03b1282420d6ecdebe60b55a3ff6e3fce85dd4d25",
+    "artex": "1e2181300baff0130483d22e95607940a4b41efdd0402c8b7df8e86ed09e5745",
+    "skillSeedPatch": "39485cd500621eab6484c7e829925dbc917e451d6f3e52e87f1bb7e8314e07f5",
+    "toolBindingPatch": "dd04d395fd399c3294bcb895d2b5b5c82b923e9910c430a056cd27570b8149c9",
+    "toolBindingSource": "81eb3363b38853bc8793365a076ef1631e1f2e1b2ed148644ac2cc9928cb4e89"
+  },
+  "captureListener": "127.0.0.1:8788",
+  "guestRuntimeParentProfileManifestSHA256": "5bc88b952a14bfe695d091e384e666a2fa24a68a4eb97cea40e77dac18b6b290",
+  "guestRuntimeInheritedSourceSHA256": {
+    "backend.Dockerfile": "bc2553a80922c4893a8b0fd5a8206197aee10b4d8ebe6ca9d7afd05d5109a104",
+    "backend-init": "890142e11d08d7f58763a33da0e675dd70a36a6ab2e207eab0179d7c558301ac",
+    "vsock_relay.py": "4995c4551fac64e15d0be14f211689937edbab3d91e72abc373b81558fd1f1d2",
+    "check_blank_disk.py": "cc1776fae8120feca24d11dbf0ad94143715572f1d5e398898ca6607aa993b1d",
+    "check_network.py": "4bc167e71c655d31eda1872f11ad4b8a90b201994834a63c82194a3fa317ee2e",
+    "summarize_failure.py": "a68c74cd4a84447a9b6b5531e3ef3e31b5d372d9c6175cc6f72379af3047124d",
+    "backend-packages.lock": "619e4e6c33cc2a1e2fce48e28ac138cd2020fbfc74d5c71b6500a6eec8c9a5aa"
+  },
+  "managedBackend": {
+    "buildVersion": "artex-mac-e75ae371-cloud7",
+    "binarySHA256": "1e2181300baff0130483d22e95607940a4b41efdd0402c8b7df8e86ed09e5745",
+    "platform": "linux/arm64",
+    "deployed": false
+  },
+  "managedCapabilities": [
+    "traffic-blob-metadata-v1",
+    "regular-source-blob-stream-v1",
+    "cloud-tool-history-v1",
+    "cloud-vsock-fixture-v1"
+  ],
+  "skillOverrides": {
+    "api-recon": {
+      "file": "api-recon/SKILL.md",
+      "sha256": "39c278b982e2afb47eee455b609131b191f7ae5763ffffe511cef4e072281a55"
+    }
+  },
+  "skillOverrideParentImage": "sha256:1ec1b09f2c5dc5906cbb458c8ed88f9f946a37c6894d0015d1b031f2ef2ba1be",
+  "skillOverrideParentManifestSHA256": "42c47caf03c835c974eee569f8be041b234d3f96b7d7931585e410e146f73c70",
+  "skillOverrideRecipeSHA256": "2e3681b01ed91189993fa9ae492eb2400fa0e546c7fe646f7f401d47c7df91c4"
+}

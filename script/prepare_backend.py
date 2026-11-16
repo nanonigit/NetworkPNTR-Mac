@@ -10,6 +10,7 @@ import stat
 import subprocess
 import tarfile
 import prepare_guest
+import skill_overrides
 
 ROOT = Path(__file__).resolve().parents[1]
 SOURCE_COMMIT = 'e75ae371ad777ffd1eecdd28d2781a6519b05591'
@@ -17,6 +18,8 @@ BACKEND_IMAGE = 'sha256:46b3ce5d5f91cd05b9e3fd6834e33196be9626eb40d38e84b7fb398f
 
 
 def run(*args, **kwargs):
+    if args and args[0] == 'docker':
+        args = (*skill_overrides.DOCKER, *args[1:])
     return subprocess.run(args, check=True, **kwargs)
 
 
@@ -59,24 +62,27 @@ def main():
     dirty = subprocess.check_output(['git', '-C', str(args.source), 'status', '--porcelain'], text=True).strip()
     if head != SOURCE_COMMIT or dirty:
         raise SystemExit('Expected the clean pinned browser source; refusing a different build input')
-    inspection = json.loads(subprocess.check_output(['docker', 'image', 'inspect', BACKEND_IMAGE]))[0]
+    skill_overrides.require_local_builder()
+    inspection = json.loads(subprocess.check_output([*skill_overrides.DOCKER, 'image', 'inspect', BACKEND_IMAGE]))[0]
     if inspection['Architecture'] != 'arm64' or inspection['Config']['Labels'].get('org.opencontainers.image.revision') != SOURCE_COMMIT:
         raise SystemExit('Backend image provenance mismatch; rebuild the pinned browser deployment first')
     context = ROOT / '.build-cache/backend-context'
     context.mkdir(parents=True, exist_ok=True)
-    identifier = subprocess.check_output(['docker', 'create', BACKEND_IMAGE], text=True).strip()
+    identifier = subprocess.check_output([*skill_overrides.DOCKER, 'create', BACKEND_IMAGE], text=True).strip()
     try:
         run('docker', 'cp', identifier + ':/opt/artex/artex', str(context / 'artex'))
         shutil.rmtree(context / 'skills', ignore_errors=True)
         run('docker', 'cp', identifier + ':/opt/artex/skills', str(context / 'skills'))
     finally:
         run('docker', 'rm', identifier, stdout=subprocess.DEVNULL)
+    skill_overrides.apply_to_context(context / 'skills')
     for name in ['backend.Dockerfile', 'backend-init', 'vsock_relay.py', 'check_blank_disk.py', 'check_network.py', 'summarize_failure.py', 'backend-packages.lock']:
         shutil.copyfile(ROOT / 'guest' / name, context / name)
-    run('docker', 'build', '--platform', 'linux/arm64', '-f', str(context / 'backend.Dockerfile'), '-t', 'artex-mac-guest:phase2', str(context))
+    run('docker', 'buildx', 'build', '--builder', 'desktop-linux', '--load', '--platform', 'linux/arm64',
+        '-f', str(context / 'backend.Dockerfile'), '-t', 'artex-mac-guest:phase2', str(context))
     output = ROOT / 'guest/backend-artifacts'
     output.mkdir(parents=True, exist_ok=True)
-    identifier = subprocess.check_output(['docker', 'create', 'artex-mac-guest:phase2'], text=True).strip()
+    identifier = subprocess.check_output([*skill_overrides.DOCKER, 'create', 'artex-mac-guest:phase2'], text=True).strip()
     try:
         run('docker', 'cp', identifier + ':/system.ext4', str(output / 'system.ext4'))
         run('docker', 'cp', identifier + ':/rootfs/opt/artex-mac/packages.lock', str(output / 'packages.lock'))
@@ -90,6 +96,7 @@ def main():
                 'sourceCommit': SOURCE_COMMIT, 'backendImage': BACKEND_IMAGE,
                 'backendSHA256': digest(context / 'artex'), 'packageLockSHA256': digest(output / 'packages.lock'),
                 'networkDevices': 0, 'hostShares': 0}
+    manifest['skillOverrides'] = skill_overrides.declaration()
     for key in ['kernel', 'initramfs', 'systemDisk']:
         manifest[key + 'SHA256'] = digest(output / manifest[key])
     (output / 'manifest.json').write_text(json.dumps(manifest, indent=2) + '\n')
