@@ -44,6 +44,11 @@ import Virtualization
     }
 
     #if DEBUG
+    package func enableLocalInferenceFixture(_ fixture: OllamaGuestFixture) throws {
+        guard cloudEgressListener == nil else { throw RuntimeError.integrity("local fixture requires an unused listener") }
+        try enableCloudEgress(upstream: fixture.exchange)
+    }
+
     package func enableCloudEgress(fixture: CloudEgressVMFixture) throws {
         guard cloudEgressListener == nil else {
             throw RuntimeError.integrity("cloud egress fixture requires an unused listener")

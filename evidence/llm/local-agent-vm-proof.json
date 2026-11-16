@@ -1,0 +1,46 @@
+{
+  "completedLocalExchanges": 1,
+  "credentialLogCheckPassed": true,
+  "isolationVerified": true,
+  "logAuditComplete": true,
+  "machineStopped": true,
+  "manifestSHA256": "7ab7cb7f5620f8470e73a1e7a9a6ee634e09905382b9564bff997cd3504e52c0",
+  "model": "qwen3:0.6b",
+  "passed": true,
+  "scope": "Disposable guest existing agent through diagnostic local inference broker",
+  "stage": "complete",
+  "verifiedContextLength": 8192,
+  "date": "2026-11-16",
+  "runtime": {
+    "version": "0.40.16",
+    "cloudDisabled": true,
+    "accelerator": "Metal",
+    "chip": "Apple M2",
+    "unifiedMemoryGiB": 16
+  },
+  "existingAgent": "mainagent",
+  "requestEntry": "ChatService.send through authenticated dedicated VM backend",
+  "responseWitness": "Conversation completed with LOCAL_PROOF_OK in persisted result summary",
+  "streaming": true,
+  "sourceSHA256": {
+    "Sources/ArtexCore/OllamaGuestFixture.swift": "c9f30127697092b9633127be0cb4b76609af3a344c063267df79186768e2e2b6",
+    "Sources/ArtexCore/OllamaCatalog.swift": "20bd8cc571ec0c1c5082d4a4b4a3d240ac0062c641d48922f622b07822128e19",
+    "Sources/VMProbe/OllamaGuestProbe.swift": "8ee3577d79272d64f8bda1cd3f41e9e339fc17d7abbe20026f6abd34aa2d0af2"
+  },
+  "limitations": [
+    "Diagnostic broker and synthetic local key use the existing OpenAI wire route",
+    "Production provider identity and saved cloud/local switching remain pending",
+    "Loaded context checked after inference; runtime explicitly configured to 8192 for this proof",
+    "Tool execution, cancellation during generation, restart persistence and browser/native UI comparison remain pending"
+  ],
+  "regressionTests": {
+    "total": 1155,
+    "skipped": 1,
+    "failures": 0,
+    "guestStreamFixturePassed": true
+  },
+  "releaseCheck": {
+    "buildPassed": true,
+    "diagnosticEntryExitCode": 2
+  }
+}

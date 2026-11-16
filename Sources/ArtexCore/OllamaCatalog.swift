@@ -93,6 +93,59 @@ public final class OllamaCatalog: Sendable {
         }
     }
 
+    #if DEBUG
+    /// Diagnostic bridge for the guest's existing OpenAI-compatible provider.
+    /// The caller pins a local model and supplies no destination or credentials.
+    func exchangeGuestFixture(
+        model: String, body: Data,
+        receive: @escaping @Sendable (CloudEgressResponseEvent) throws -> Void
+    ) async throws {
+        guard body.count <= OllamaTextRequest.bodyLimit,
+              let object = try JSONSerialization.jsonObject(with: body) as? [String: Any],
+              object["model"] as? String == model,
+              let messages = object["messages"] as? [[String: Any]],
+              !messages.isEmpty, messages.count <= 128,
+              messages.allSatisfy({ $0["content"] == nil || $0["content"] is NSNull || $0["content"] is String }) else {
+            throw Failure.invalidChatRequest
+        }
+        let installed = try await installed()
+        guard installed.models.contains(where: { $0.name == model }) else { throw Failure.modelNotInstalled }
+        let metadata = try await metadata(forInstalledModel: model)
+        try metadata.validateContextLength(OllamaGuestFixture.contextLength)
+        if object["tools"] != nil, metadata.supportsTools != true { throw Failure.invalidChatRequest }
+        try await requireLocalOnly()
+        try Task.checkCancellation()
+        let streaming = object["stream"] as? Bool == true
+        var request = URLRequest(url: URL(string: "http://127.0.0.1:11434/v1/chat/completions")!, timeoutInterval: 120)
+        request.httpMethod = "POST"
+        request.httpBody = body
+        request.setValue("application/json", forHTTPHeaderField: "Content-Type")
+        let (bytes, response) = try await session.bytes(for: request)
+        guard let response = response as? HTTPURLResponse,
+              response.statusCode == 200 else { throw Failure.invalidChatResponse }
+        try receive(.head(status: 200, type: streaming ? .eventStream : .json))
+        var chunk = Data()
+        var total = 0
+        for try await byte in bytes {
+            try Task.checkCancellation()
+            total += 1
+            guard total <= 4 * 1_024 * 1_024 else { throw Failure.oversizedResponse }
+            chunk.append(byte)
+            if chunk.count == 1024 || byte == 10 {
+                try receive(.body(chunk))
+                chunk.removeAll(keepingCapacity: true)
+            }
+        }
+        if !chunk.isEmpty { try receive(.body(chunk)) }
+        try Task.checkCancellation()
+        let loaded = try await running()
+        guard loaded.models.contains(where: {
+            $0.name == model && $0.contextLength == OllamaGuestFixture.contextLength
+        }) else { throw Failure.unverifiedContextLength }
+        try receive(.end)
+    }
+    #endif
+
     private func read<T: Decodable>(
         path: String, body: Data? = nil, timeout: TimeInterval = 5
     ) async throws -> T {

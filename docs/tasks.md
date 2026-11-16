@@ -888,6 +888,7 @@ Local inference phases cover metadata and metric contracts, fixed-endpoint runti
 - [x] Lifecycle state regression tests pass for one dispatch per explicit test, task reappearance and cancellation at admission.
 - [x] Verify unavailable/oversized responses, redirect refusal and cancellation before/during a held URLSession request.
 - [ ] Verify cancellation during an actual Metal inference and VM shutdown.
+- [x] Exercise the existing guest agent through a diagnostic local broker, preserving SSE and verifying the pinned guest, loaded context and stopped-log audit.
 - [ ] Connect the dedicated VM to local inference with bounded requests, lifecycle cancellation and no arbitrary host destination.
 - [ ] Activate a local profile for the existing agent and switch back to a cloud profile in the same settings workflow.
 - [ ] Compare the workflow with the pinned browser, including errors, streaming and persistence.

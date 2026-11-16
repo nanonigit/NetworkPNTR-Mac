@@ -52,6 +52,55 @@ private final class OllamaFixtureProtocol: URLProtocol, @unchecked Sendable {
 }
 
 final class OllamaCatalogTests: XCTestCase {
+    #if DEBUG
+    func testGuestFixturePreservesStreamAndRequiresPinnedModelAndLoadedContext() async throws {
+        let runtime = OllamaCatalog(protocolClasses: [OllamaFixtureProtocol.self])
+        func json(_ path: String, _ body: String) -> OllamaFixtureProtocol.Response {
+            .init(path: path, status: 200, body: Data(body.utf8))
+        }
+        let body = Data(#"{"model":"fixture","messages":[{"role":"user","content":"synthetic"}],"stream":true}"#.utf8)
+        let stream = "data: {\"choices\":[{\"delta\":{\"content\":\"OK\"}}]}\n\ndata: [DONE]\n\n"
+        let responses = [
+            json("/api/tags", #"{"models":[{"name":"fixture"}]}"#),
+            json("/api/show", #"{"model_info":{"general.architecture":"fixture","fixture.context_length":16384}}"#),
+            json("/api/status", #"{"cloud":{"disabled":true}}"#),
+            json("/v1/chat/completions", stream),
+            json("/api/ps", #"{"models":[{"name":"fixture","context_length":8192}]}"#)
+        ]
+        OllamaFixtureProtocol.state.withLock { $0 = .init(responses: responses) }
+        let events = Mutex<[CloudEgressResponseEvent]>([])
+        try await runtime.exchangeGuestFixture(model: "fixture", body: body) { event in
+            events.withLock { $0.append(event) }
+        }
+        let received = events.withLock { $0 }
+        XCTAssertEqual(received.first, .head(status: 200, type: .eventStream))
+        XCTAssertEqual(received.last, .end)
+        let chunks = received.compactMap { event -> Data? in
+            if case .body(let data) = event { return data }
+            return nil
+        }
+        XCTAssertEqual(chunks.reduce(into: Data()) { $0.append($1) }, Data(stream.utf8))
+        OllamaFixtureProtocol.state.withLock { $0 = .init() }
+        do {
+            try await runtime.exchangeGuestFixture(model: "other", body: body) { _ in }
+            XCTFail("Unselected model accepted")
+        } catch OllamaCatalog.Failure.invalidChatRequest {}
+        XCTAssertTrue(OllamaFixtureProtocol.state.withLock { $0.paths.isEmpty })
+
+        var wrongContext = responses
+        wrongContext[4] = json("/api/ps", #"{"models":[{"name":"fixture","context_length":4096}]}"#)
+        OllamaFixtureProtocol.state.withLock { $0 = .init(responses: wrongContext) }
+        let ended = Mutex(false)
+        do {
+            try await runtime.exchangeGuestFixture(model: "fixture", body: body) { event in
+                if event == .end { ended.withLock { $0 = true } }
+            }
+            XCTFail("Unverified loaded context accepted")
+        } catch OllamaCatalog.Failure.unverifiedContextLength {}
+        XCTAssertFalse(ended.withLock { $0 })
+    }
+    #endif
+
     func testLocalBoundaryRejectsCloudStatusRedirectAndOversizedResponses() async throws {
         let runtime = OllamaCatalog(protocolClasses: [OllamaFixtureProtocol.self])
         func configure(_ responses: [OllamaFixtureProtocol.Response]) {
