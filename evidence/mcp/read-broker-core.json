@@ -1,0 +1,37 @@
+{
+  "date": "2026-11-16",
+  "scope": "Core app-owned read authorization boundary only",
+  "implemented": [
+    "Authenticated account and VM epoch binding",
+    "Opaque revocable in-memory grants",
+    "Agent metadata projection through typed native service",
+    "Exact task allowlist and typed status projection",
+    "Before-dispatch and after-response cancellation and revocation checks"
+  ],
+  "tests": {
+    "focused": 9,
+    "failures": 0,
+    "fullSwiftTotal": 1169,
+    "fullSwiftSkipped": 1,
+    "fullSwiftFailures": 0,
+    "productionSessionNoLLMProfile": true,
+    "revocationInsideOwnershipCallback": true,
+    "cancellationInsideOwnershipCallback": true,
+    "largeTaskIDAndTokenCounts": true
+  },
+  "review": "No remaining blockers after reentry fix",
+  "sourceSHA256": {
+    "Sources/ArtexCore/MCPReadBroker.swift": "63c9f88e89fc91817eb5bf5e868af876fb374bedbe0b8c55083630d0d40f6e59",
+    "Tests/ArtexCoreTests/MCPReadBrokerTests.swift": "b3a46776c58776d062ea7254552d154d6104c5baffcfc97a22de6b864425959f",
+    "docs/mcp-capabilities.md": "fefe8f37db55df3a76e17f8e12c5df31c86c92e42a713f0a3a64107d48771cad",
+    "docs/mcp-capabilities.ja.md": "9f0d373d1a6c8ed4336127aff85ff516cfa6d58486c133f4641c054362bfc700"
+  },
+  "pending": [
+    "stdio server and authenticated IPC helper",
+    "Native runtime broker ownership and approval UI",
+    "Isolated external-AI task execution without internal inference",
+    "MCP writes, idempotency and persistence",
+    "Live browser/native/MCP paired workflow comparison",
+    "Packaged installation and client registration"
+  ]
+}
