@@ -265,6 +265,10 @@ final class OllamaCatalogTests: XCTestCase {
             let canceled = error is CancellationError || (error as? URLError)?.code == .cancelled
             XCTAssertTrue(canceled)
         }
+        for _ in 0..<2_000 {
+            if OllamaFixtureProtocol.state.withLock({ $0.stops > 0 }) { break }
+            try await Task.sleep(for: .milliseconds(1))
+        }
         XCTAssertGreaterThan(OllamaFixtureProtocol.state.withLock { $0.stops }, 0)
     }
 }

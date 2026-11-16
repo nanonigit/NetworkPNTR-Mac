@@ -19,7 +19,7 @@ The separate backend acceptance guest now boots pinned ARTEX and PostgreSQL 16 w
 
 A separately source-built, hash-pinned Linux kernel candidate passed real VM recovery and signed native service/reference comparisons. Two fresh same-host builds produce identical kernel/config hashes; release reliability, cross-host/package reproducibility and UI parity remain open. See [source-kernel verification](docs/kernel-build-verification.md).
 
-## Build and test (Apple Silicon, macOS 15+, Xcode/Swift 6 toolchain, Python 3)
+## Build and test (Apple Silicon, macOS 15+, Xcode/Swift 6.1+ toolchain, Python 3)
 
 ```sh
 # Prepare the real backend first (developer-only Docker build):

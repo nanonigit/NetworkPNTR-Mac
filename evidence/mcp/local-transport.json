@@ -1,0 +1,119 @@
+{
+  "date": "2026-11-16",
+  "scope": "Local MCP stdio helper and private IPC with synthetic service fixtures; product UI and real VM acceptance remain pending",
+  "sdk": {
+    "version": "0.12.1",
+    "dispatcher": "App-owned finite dispatcher using official SDK message codecs",
+    "resolvedDependencies": [
+      {
+        "revision": "bb4b61273b5a976bb571859c17f903ebc3439df1",
+        "version": "1.6.0",
+        "identity": "eventsource"
+      },
+      {
+        "revision": "0442cb5a3f98ab802acb777929fdb446bda11a34",
+        "version": "1.3.1",
+        "identity": "swift-atomics"
+      },
+      {
+        "revision": "88754449ab766a739610b660e117762115fabc9c",
+        "version": "1.7.6",
+        "identity": "swift-collections"
+      },
+      {
+        "revision": "e3da04078777e6a1b72ce19981fbd6539b0847d8",
+        "version": "1.17.0",
+        "identity": "swift-log"
+      },
+      {
+        "revision": "2f58d8ef84438d6517fc78bcea2f8527e3c72936",
+        "version": "2.105.0",
+        "identity": "swift-nio"
+      },
+      {
+        "revision": "a0ae212ebf6eab5f754c3129608bc5557637e605",
+        "version": "0.12.1",
+        "identity": "swift-sdk"
+      },
+      {
+        "revision": "640e5755b5826f4437eaeedd366fd776737db62c",
+        "version": "1.9.0",
+        "identity": "swift-system"
+      }
+    ]
+  },
+  "limits": {
+    "inputLineBytes": 65536,
+    "queuedMessages": 32,
+    "pendingRequestIDs": 8,
+    "ipcRequestBytes": 16384,
+    "ipcResponseBytes": 1048576,
+    "stdioResponseBytes": 2097152,
+    "exchangeDeadlineSeconds": 10
+  },
+  "tests": {
+    "socket": 7,
+    "stdio": 11,
+    "fullSwiftTotal": 1187,
+    "fullSwiftSkipped": 1,
+    "fullSwiftFailures": 0,
+    "pythonDriverCompiled": true,
+    "localizationExportPassed": true
+  },
+  "actualSubprocessChecks": [
+    "Initialization and tool discovery",
+    "Thirteen pre-initialization rejections without backend dispatch",
+    "Agent metadata and exact Int64 task status through IPC",
+    "Invalid arguments and unpermitted task rejection",
+    "Thirteen cancellation cycles including possible cancellation before handler entry",
+    "Eight pending operations, ninth-request overload refusal, cancellation and recovery",
+    "Two hundred unfinished socket peers followed by authorized status read",
+    "Clean stdout JSON framing, empty stderr and clean EOF",
+    "Release helper passed the same initialization, cancellation, overload, abandoned-peer and final-read scenario"
+  ],
+  "backendRoutesObserved": [
+    "GET /api/agents",
+    "GET /api/tasks/9007199254740993"
+  ],
+  "internalInferenceRoutesObserved": [],
+  "sourceSHA256": {
+    "Package.swift": "adfc9ebe8e674901a31677b93ae36606e599b0d14ad63549d3a537de372491e9",
+    "Package.resolved": "a67b73a9c96ed3cd97717e853658751008deeda010075ac55fb5ad87b0ba0a3d",
+    "Sources/ArtexCore/MCPIPC.swift": "228ab1696f097029faa516276f0b11ef6bb7cc81f9a1d87ab2649cc33339c7b1",
+    "Sources/ArtexMCP/ArtexMCP.swift": "5be17320317a731e50786c281089b594d57dd63039f1a9672302e35446e956f7",
+    "Sources/ArtexMCP/BoundedStdioTransport.swift": "181dab166534bea2ea361ea7d9d1ae3668ccee80568e4460269221012e1eedc4",
+    "Sources/ArtexMCP/FiniteMCPServer.swift": "efddfa84c24b2d2a994ce84d21d92176a518bb6c4774cd6eb4382528121b55dc",
+    "Tests/ArtexCoreTests/MCPIPCTests.swift": "b97214255f1d2065c0a79f5df93da41ebfe72674963de93ad9e1d4ce5d4b7cfd",
+    "Tests/ArtexMCPTests/BoundedStdioTests.swift": "e00261f57a22bd8b24ea1992874d8b429339f81fec4ae6f61e0558d0deb2081c",
+    "Tests/ArtexCoreTests/OllamaCatalogTests.swift": "658dd1e224f8448b6a7942c9f71e6cabe44e5229d051f055abe13fcf35bd8957",
+    "script/test_mcp_stdio.py": "024b2a5db6946b266726b79202c3363044fcf0ed2beed4c6dd0365559ad8fd3b"
+  },
+  "review": "No remaining blockers after cancellation, credit, framing and connection backpressure fixes",
+  "failuresAddressed": [
+    "FIFO connection file could block open",
+    "Concurrent stop could remove replacement directory",
+    "Partial stdout failure could permit corrupt subsequent framing",
+    "Null request IDs bypassed admission",
+    "SDK suppressed cancellations without a public retirement hook",
+    "Credit wait blocked later control notifications",
+    "Blocking socket polling starved cooperative threads",
+    "Control notification burst exceeded initial queue size",
+    "AF_UNIX connection backlog could refuse post-cancellation reads",
+    "Ollama stopLoading callback witness required bounded asynchronous wait"
+  ],
+  "pending": [
+    "Product runtime startup and native client consent/revocation UI",
+    "Packaged helper signing and client registration",
+    "Real-VM and pinned-browser paired workflow comparison",
+    "External-AI isolated execution and task mutation ownership",
+    "MCP task writes, results, persistence and idempotency"
+  ],
+  "release": {
+    "buildPassed": true,
+    "binarySHA256": "2bf320465cf5aa0f60f00623030f69b28efbf15ed9356d29d8176789ebbc6387",
+    "missingArgumentsExitCode": 2,
+    "stdoutEmptyWithoutArguments": true,
+    "actualStdioSocketScenarioPassed": true,
+    "actualScenarioSeconds": 2.261
+  }
+}

@@ -26,7 +26,7 @@ LLM画面では実際のクリックで作成・編集・入力検証・Return�
 
 固定したソースから別途構築したLinuxカーネル候補で、実VMの復旧・署名済みアプリのサービス・ブラウザ版比較が成功しました。同じMac上の別コンテナによる2回の構築で、カーネルと設定のハッシュが一致しました。配布の信頼性、別環境・配布物全体の再現性とUI同等性は未完了です。[検証記録](docs/kernel-build-verification.ja.md)を参照してください。
 
-開発環境はApple Silicon/macOS 15以降、Xcode/Swift 6、Python 3です。
+開発環境はApple Silicon/macOS 15以降、Xcode/Swift 6.1以降、Python 3です。
 
 ```sh
 # 最初にバックエンドを準備（開発時だけDockerを使用）:
