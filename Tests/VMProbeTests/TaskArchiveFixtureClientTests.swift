@@ -1,5 +1,5 @@
 import XCTest
-@testable import ArtexCore
+@testable import NetworkPNTRCore
 @testable import VMProbe
 
 @MainActor private final class FixtureToolAPI: BackendJSONTransport {

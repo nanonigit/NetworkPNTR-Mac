@@ -22,7 +22,7 @@ class FindingFilterOracleTests(unittest.TestCase):
 
     def test_checked_in_function_cases_reexecute_without_network_or_full_checkout(self):
         import json
-        fixture = json.loads((ROOT / 'Tests/ArtexCoreTests/Fixtures/findings-browser-filters.json').read_text())
+        fixture = json.loads((ROOT / 'Tests/NetworkPNTRCoreTests/Fixtures/findings-browser-filters.json').read_text())
         self.assertEqual(oracle.execute_function(fixture['source_function'], fixture['cases']), fixture['cases'])
         source = ROOT.parent / 'artex-local/source/web/src/lib/api.ts'
         if source.exists():

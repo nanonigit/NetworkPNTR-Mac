@@ -25,15 +25,15 @@ class CloudEgressTransportTests(unittest.TestCase):
         cls.work = Path(temp.name)
         cls.binary = cls.work / "tls-fixture"
         subprocess.run([
-            "xcrun", "clang", "-Wall", "-Wextra", "-Werror", "-Wno-deprecated-declarations", "-DARTEX_CLOUD_TLS_FIXTURE",
-            "-I", str(ROOT / "Sources/ArtexCloudTLS/include"),
-            str(ROOT / "Sources/ArtexCloudTLS/ArtexCloudTLS.c"),
+            "xcrun", "clang", "-Wall", "-Wextra", "-Werror", "-Wno-deprecated-declarations", "-DNETWORKPNTR_CLOUD_TLS_FIXTURE",
+            "-I", str(ROOT / "Sources/NetworkPNTRCloudTLS/include"),
+            str(ROOT / "Sources/NetworkPNTRCloudTLS/NetworkPNTRCloudTLS.c"),
             str(ROOT / "Tests/GuestArtifactTests/fixtures/cloud_tls_client.c"),
             "-framework", "Security", "-framework", "CoreFoundation", "-o", str(cls.binary),
         ], check=True, capture_output=True, timeout=20)
         commands = [
             ["req", "-x509", "-newkey", "rsa:2048", "-nodes", "-days", "2",
-             "-subj", "/CN=ARTEX TLS fixture root", "-keyout", "ca.key", "-out", "ca.pem"],
+             "-subj", "/CN=NetworkPNTR TLS fixture root", "-keyout", "ca.key", "-out", "ca.pem"],
             ["req", "-newkey", "rsa:2048", "-nodes", "-subj", "/CN=egress.test",
              "-keyout", "server.key", "-out", "server.csr"],
             ["x509", "-req", "-in", "server.csr", "-CA", "ca.pem", "-CAkey", "ca.key",
@@ -190,7 +190,7 @@ class CloudEgressTransportTests(unittest.TestCase):
                 f"authorityInfoAccess=caIssuers;URI:{url}/issuer,OCSP;URI:{url}/status\n"
                 f"crlDistributionPoints=URI:{url}/revocation\n", encoding="ascii",
             )
-            openssl("req", "-newkey", "rsa:2048", "-nodes", "-subj", "/CN=ARTEX Fixture Intermediate",
+            openssl("req", "-newkey", "rsa:2048", "-nodes", "-subj", "/CN=NetworkPNTR Fixture Intermediate",
                     "-keyout", "intermediate.key", "-out", "intermediate.csr")
             openssl("x509", "-req", "-in", "intermediate.csr", "-CA", "ca.pem", "-CAkey", "ca.key",
                     "-CAcreateserial", "-days", "1", "-extfile", "intermediate.ext", "-out", "intermediate.pem")

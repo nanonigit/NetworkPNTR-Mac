@@ -1,5 +1,5 @@
 #if DEBUG
-import ArtexCore
+import NetworkPNTRCore
 import Foundation
 
 /// Fixed developer sources run only through the isolated guest's authenticated tool test route.

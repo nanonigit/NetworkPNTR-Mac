@@ -39,5 +39,5 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--check', action='store_true')
     arguments = parser.parse_args()
-    resources = Path(__file__).resolve().parents[1] / 'Sources/ArtexCore/Resources'
+    resources = Path(__file__).resolve().parents[1] / 'Sources/NetworkPNTRCore/Resources'
     export(resources / 'Localizable.xcstrings', resources, check=arguments.check)

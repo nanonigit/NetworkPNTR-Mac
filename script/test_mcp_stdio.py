@@ -41,38 +41,38 @@ def run(binary, connection):
     try:
         for request_id in [1, *range(20, 32)]:
             assert 'error' in request(request_id, 'tools/call',
-                                      {'name': 'artex_agents_list', 'arguments': {}})
+                                      {'name': 'networkpntr_agents_list', 'arguments': {}})
         initialized = request(2, 'initialize', {
             'protocolVersion': '2025-06-18', 'capabilities': {},
             'clientInfo': {'name': 'artex-disposable-test', 'version': '1.0'}})
-        assert initialized['result']['serverInfo']['name'] == 'ARTEX Mac'
+        assert initialized['result']['serverInfo']['name'] == 'NetworkPNTR Mac'
         send({'jsonrpc': '2.0', 'method': 'notifications/initialized'})
         tools = request(3, 'tools/list', {})['result']['tools']
-        assert {tool['name'] for tool in tools} == {'artex_agents_list', 'artex_task_status'}
+        assert {tool['name'] for tool in tools} == {'networkpntr_agents_list', 'networkpntr_task_status'}
         assert all(tool['annotations']['readOnlyHint'] for tool in tools)
-        result = request(4, 'tools/call', {'name': 'artex_agents_list', 'arguments': {}})['result']
+        result = request(4, 'tools/call', {'name': 'networkpntr_agents_list', 'arguments': {}})['result']
         assert not result.get('isError', False)
         agents = json.loads(result['content'][0]['text'])
         assert agents[0]['key'] == 'worker'
         assert set(agents[0]) == {'key', 'name', 'enabled'}
-        result = request(9, 'tools/call', {'name': 'artex_task_status', 'arguments': {'id': '9007199254740993'}})['result']
+        result = request(9, 'tools/call', {'name': 'networkpntr_task_status', 'arguments': {'id': '9007199254740993'}})['result']
         assert not result.get('isError', False)
         status = json.loads(result['content'][0]['text'])
         assert status['id'] == '9007199254740993'
         assert status['inputTokens'] == 9007199254740993
         assert set(status) == {'id', 'status', 'paused', 'queued', 'inputTokens', 'outputTokens'}
-        invalid = request(5, 'tools/call', {'name': 'artex_agents_list', 'arguments': {'url': 'https://example.invalid'}})
+        invalid = request(5, 'tools/call', {'name': 'networkpntr_agents_list', 'arguments': {'url': 'https://example.invalid'}})
         assert invalid['error']['code'] == -32602
-        denied = request(6, 'tools/call', {'name': 'artex_task_status', 'arguments': {'id': '7'}})['result']
+        denied = request(6, 'tools/call', {'name': 'networkpntr_task_status', 'arguments': {'id': '7'}})['result']
         assert denied['isError'] is True
-        invalid = request(7, 'tools/call', {'name': 'artex_task_status', 'arguments': {'id': '0007'}})
+        invalid = request(7, 'tools/call', {'name': 'networkpntr_task_status', 'arguments': {'id': '0007'}})
         assert invalid['error']['code'] == -32602
         invalid = request(8, 'tools/call', {'name': 'artex_agent_start', 'arguments': {}})
         assert invalid['error']['code'] == -32602
         for index in range(13):
             request_id = 200 + index
             send({'jsonrpc': '2.0', 'id': request_id, 'method': 'tools/call',
-                  'params': {'name': 'artex_agents_list', 'arguments': {}}})
+                  'params': {'name': 'networkpntr_agents_list', 'arguments': {}}})
             if index:
                 time.sleep(0.1)
             send({'jsonrpc': '2.0', 'method': 'notifications/cancelled',
@@ -80,7 +80,7 @@ def run(binary, connection):
             assert request(300 + index, 'ping', {})['result'] == {}
         for index in range(9):
             send({'jsonrpc': '2.0', 'id': 1000 + index, 'method': 'tools/call',
-                  'params': {'name': 'artex_agents_list', 'arguments': {}}})
+                  'params': {'name': 'networkpntr_agents_list', 'arguments': {}}})
         assert 'error' in reply(1008)
         for index in range(8):
             send({'jsonrpc': '2.0', 'method': 'notifications/cancelled',
@@ -107,7 +107,7 @@ def run(binary, connection):
                     if error.errno not in (errno.ECONNREFUSED, errno.EAGAIN) or time.monotonic() >= deadline:
                         raise
                     time.sleep(0.005)
-        result = request(400, 'tools/call', {'name': 'artex_task_status', 'arguments': {'id': '9007199254740993'}})['result']
+        result = request(400, 'tools/call', {'name': 'networkpntr_task_status', 'arguments': {'id': '9007199254740993'}})['result']
         assert json.loads(result['content'][0]['text'])['inputTokens'] == 9007199254740993
         child.stdin.close()
         assert child.wait(timeout=5) == 0

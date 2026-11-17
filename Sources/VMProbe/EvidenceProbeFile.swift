@@ -1,5 +1,5 @@
 #if DEBUG
-import ArtexCore
+import NetworkPNTRCore
 import CryptoKit
 import Darwin
 import Foundation

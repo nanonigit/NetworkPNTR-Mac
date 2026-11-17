@@ -1,0 +1,37 @@
+{
+  "date": "2026-11-17",
+  "product": "NetworkPNTR Mac",
+  "repository": "https://github.com/nanonigit/networkpntr-mac",
+  "repositoryVisibility": "private",
+  "localFolderName": "networkpntr-mac",
+  "apps": {
+    "NetworkPNTR Mac.app": {
+      "displayName": "NetworkPNTR Mac",
+      "signatureVerified": true,
+      "helperSignatureVerified": true,
+      "guestManifestPreserved": true,
+      "binarySHA256": "4dfe252df75f66a3ccba509a726d21002e5812dcd9c5f0d4d89d9684e90cbc8a"
+    },
+    "NetworkPNTR Mac Cloud Preview.app": {
+      "displayName": "NetworkPNTR Mac Cloud Preview",
+      "signatureVerified": true,
+      "helperSignatureVerified": true,
+      "guestManifestPreserved": true,
+      "binarySHA256": "b474dae04e8f37f883bb68918ad5a8409a35a9b1a312817a5cd62f48cd8ac087"
+    }
+  },
+  "tests": {
+    "swiftTotal": 1193,
+    "swiftSkipped": 1,
+    "swiftFailures": 0,
+    "python": 201,
+    "pythonFailures": 0,
+    "legacyProcessGuardPassed": true
+  },
+  "compatibility": [
+    "Existing bundle identifier, application-data directory and Keychain service preserved",
+    "Reviewed guest manifest bytes unchanged for both variants",
+    "Frozen authentication/wire markers and upstream legal provenance retained"
+  ],
+  "scope": "Product/repository naming and previously in-progress MCP consent source; full product migration remains in progress"
+}

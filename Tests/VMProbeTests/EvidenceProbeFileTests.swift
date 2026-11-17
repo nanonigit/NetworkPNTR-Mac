@@ -2,7 +2,7 @@ import CryptoKit
 import Darwin
 import Foundation
 import XCTest
-@testable import ArtexCore
+@testable import NetworkPNTRCore
 @testable import VMProbe
 
 @MainActor final class EvidenceProbeFileTests: XCTestCase {

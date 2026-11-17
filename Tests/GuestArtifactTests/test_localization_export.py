@@ -20,7 +20,7 @@ class LocalizationExportTests(unittest.TestCase):
 
     def testRealCatalogGeneratesOnlyTwoLocalesAndChecksCommittedBytes(self):
         module = self.module()
-        resources = ROOT / 'Sources/ArtexCore/Resources'
+        resources = ROOT / 'Sources/NetworkPNTRCore/Resources'
         module.export(resources / 'Localizable.xcstrings', resources, check=True)
         for code in ('en', 'ja'):
             values = plistlib.loads((resources / f'{code}.lproj/Localizable.strings').read_bytes())

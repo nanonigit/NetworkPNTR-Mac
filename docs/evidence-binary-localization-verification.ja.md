@@ -4,7 +4,7 @@
 
 新pure4試験はtextContent未実装でRED（6d547c4）、GREEN77f0a7c。新workspace統合78ef8d2でrequest／response両wire page・整合するsnapshot長／hash・raw header・追加page通信なし・英日light／dark offscreen構築時の通信なしを確認。対象28合格。全Swift837件は836合格・既存external AX1skip、Python179合格。baseline21／27／243・localizationも合格したがnative workflow parityは未完。
 
-変更2ファイル合計のLLVM行coverageは605/700（86.43%）：workspace335/338（99.11%）、view270/362（74.59%）。typed previewのinitializer／appendは実行region3/3・5/5。viewの残る操作／lifecycle closureはcoverage済みとせず、branch・製品全体・実画面受入の値でもない。最後のtargetだけの既定JSONでなく、ArtexMacTestsの計測object／profileを使用した。
+変更2ファイル合計のLLVM行coverageは605/700（86.43%）：workspace335/338（99.11%）、view270/362（74.59%）。typed previewのinitializer／appendは実行region3/3・5/5。viewの残る操作／lifecycle closureはcoverage済みとせず、branch・製品全体・実画面受入の値でもない。最後のtargetだけの既定JSONでなく、NetworkPNTRMacTestsの計測object／profileを使用した。
 
 local app buildの終了成功とstrict codesignを確認。staged bundleに新表示symbolが入り、guest manifest／kernel／initramfs／system hashは従来staged／default成果物と一致した。候補kernel／profileの標準昇格はしていない。app起動・別場所へのinstall、実UI／keyboard／VoiceOver／複数window／保存panel受入は未確認。source／bundle hash等はevidence/findings/binary-localization-verification.jsonに記録。release／kernel／全workflow／4社／harnessは継続。hosted CIは未検証で公開HEADに[skip ci]を付ける。
 

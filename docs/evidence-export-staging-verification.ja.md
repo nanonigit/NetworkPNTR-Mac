@@ -12,6 +12,6 @@
 
 Fishbone：ファイル名前空間変化、異常時／確定後の後始末経路、移動／置換試験不足、曖昧な完了結果。修正：inode／deviceを比較し、他のファイルを削除せず、残存時はcleanupRequiredまたはstagingCleanupComplete=false付き保存済み結果を返す。再発防止：3つの置換／移動試験と転送前競合、エラー本文除外、破損、キャンセル、時間切れ試験を保持。デストラクターだけでは明示的な後始末成功を証明しない。
 
-署名付きビルド終了。dist/ARTEX Mac.appのcodesign --verify --strict成功。この中間版のリモートCIは未検証。
+署名付きビルド終了。dist/NetworkPNTR Mac.appのcodesign --verify --strict成功。この中間版のリモートCIは未検証。
 
-リモート結果：[CI実行](https://github.com/nanonigit/artex-mac/actions/runs/40643534669)（6c9fcf3ee0a1be21effde26cea2be827283501af）はステップ開始前に停止。チェック122666966021は支払い／利用上限（Billing & plans）を理由として明示。ランナー混雑は別の補足通知。テスト失敗ではなく、CI成功でもない。同じ実行を繰り返さず、課金設定を自動変更しない。
+リモート結果：[CI実行](https://github.com/nanonigit/networkpntr-mac/actions/runs/40643534669)（6c9fcf3ee0a1be21effde26cea2be827283501af）はステップ開始前に停止。チェック122666966021は支払い／利用上限（Billing & plans）を理由として明示。ランナー混雑は別の補足通知。テスト失敗ではなく、CI成功でもない。同じ実行を繰り返さず、課金設定を自動変更しない。

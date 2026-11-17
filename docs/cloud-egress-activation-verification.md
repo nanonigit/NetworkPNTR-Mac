@@ -10,7 +10,7 @@ listener and satisfy the zero-NIC and no-share audit. The four-provider
 synthetic transport regression then runs on a separate state disk.
 
 The local ARM64 Release preview bundles the pinned guest and is ad-hoc
-signed. Launch it with `open -n "/path/to/ARTEX Mac Cloud Preview.app" --args
+signed. Launch it with `open -n "/path/to/NetworkPNTR Mac Cloud Preview.app" --args
 --cloud-egress`. The preview uses its own state and Keychain account. Without
 the argument, the regular app startup policy applies. The activation probe
 made no provider calls. Visual app launch, real API calls, provider controls

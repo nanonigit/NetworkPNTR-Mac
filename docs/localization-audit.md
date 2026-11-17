@@ -4,7 +4,7 @@ User requirement: final application supports en and ja only. Status: initial aud
 
 | Finding | Evidence | Required treatment |
 |---|---|---|
-| Native strings mostly hardcoded Japanese, sidebar feature names English | Sources/ArtexMac; actual A6/A7 screenshots | Localize app-owned strings via catalog; verify both locales, including accessibility |
+| Native strings mostly hardcoded Japanese, sidebar feature names English | Sources/NetworkPNTRMac; actual A6/A7 screenshots | Localize app-owned strings via catalog; verify both locales, including accessibility |
 | Chinese default Auto description | Fixed browser db/db.go:212; both A6/A7 native/browser AX | Translate known builtin default display; preserve edited/custom descriptions |
 | Korean default conversation title | Fixed browser server/conversations.go:56; A7 native/browser AX | Localized default presentation/new creation; preserve custom names and existing raw data |
 | Chinese generated terminal summaries and Korean error prefix | A6 actual persisted-body screenshots/AX | Audit backend-generated system templates and generation-language directive separately from historical model/user content |

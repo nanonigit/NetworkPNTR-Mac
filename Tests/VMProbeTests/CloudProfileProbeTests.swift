@@ -1,4 +1,4 @@
-import ArtexCore
+import NetworkPNTRCore
 import Foundation
 import XCTest
 @testable import VMProbe

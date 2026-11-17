@@ -12,7 +12,7 @@ Lazywebでは2026-10-22に `desktop login password settings` を検索し、Canv
 
 ## 分担・通信・認証情報
 
-ArtexCoreに有限長HTTP/JSONの境界、型付き認証API、認証状態、Keychain保存、アプリ用保存先と起動管理を分けます。VMControllerはVMとvsockを担当し、Linuxの準備完了と認証状態を区別します。選択中の画面はRootView、実行環境はアプリ全体が所有します。パスワードは入力画面だけで保持し、認証状態の変更・画面を閉じた時点で消去します。入力エラーではブラウザ版と同じく再入力を不要にします。JWTだけを専用Keychain項目に保存し、UserDefaultsやファイルには書きません。
+NetworkPNTRCoreに有限長HTTP/JSONの境界、型付き認証API、認証状態、Keychain保存、アプリ用保存先と起動管理を分けます。VMControllerはVMとvsockを担当し、Linuxの準備完了と認証状態を区別します。選択中の画面はRootView、実行環境はアプリ全体が所有します。パスワードは入力画面だけで保持し、認証状態の変更・画面を閉じた時点で消去します。入力エラーではブラウザ版と同じく再入力を不要にします。JWTだけを専用Keychain項目に保存し、UserDefaultsやファイルには書きません。
 
 まず認証済みvsock上で有限長JSON APIを接続します。Content-Length・切断終端・chunkedを上限付きで解析し、不正な形式を拒否します。SSE・WebSocket・バイナリー入出力・キャンセルの合格とはしません。全機能の移植というゴールは維持します。
 

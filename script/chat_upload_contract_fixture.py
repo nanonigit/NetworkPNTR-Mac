@@ -10,7 +10,7 @@ import time
 from urllib.parse import urlencode
 
 MAX_BODY = 128 * 1024 * 1024
-BOUNDARY = 'ArtexMac-' + '0' * 36
+BOUNDARY = 'NetworkPNTRMac-' + '0' * 36
 CHUNK = 65536
 
 

@@ -2,7 +2,7 @@
 
 ## Reproduce and collect
 
-After L4c localized native errors/notices, five LLM view files still contained fixed Japanese controls/help: settings/cards, profile editor/model picker, rotation, global retry, and numeric/retry form fields. Source inspection established the remaining gap; this checkpoint does not claim a new native UI reproduction. The reviewed matrix in `Tests/ArtexCoreTests/Fixtures/llm-ui-localization.json` defines108typed en/ja entries, including11parameterized templates.
+After L4c localized native errors/notices, five LLM view files still contained fixed Japanese controls/help: settings/cards, profile editor/model picker, rotation, global retry, and numeric/retry form fields. Source inspection established the remaining gap; this checkpoint does not claim a new native UI reproduction. The reviewed matrix in `Tests/NetworkPNTRCoreTests/Fixtures/llm-ui-localization.json` defines108typed en/ja entries, including11parameterized templates.
 
 `e377f16` is intended compile-time RED for missing AppStrings.formatted/render. The initial test setup used a nonexistent retry-policy initializer and was corrected to the existing mutable property API before the authoritative RED; that mistake is not a product failure. `c855245` passes the same3tests. Tests verify every catalog entry against the matrix, repeated/missing/unterminated tokens, opaque mixed-language model names containing template-looking text, and unchanged draft/retry encoding after display operations.
 

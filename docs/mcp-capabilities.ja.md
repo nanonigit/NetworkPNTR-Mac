@@ -4,8 +4,8 @@
 
 | ツール | 引数 | 権限 | 共有サービス | 推論への影響 |
 | --- | --- | --- | --- | --- |
-| `artex_agents_list` | 空オブジェクト。追加プロパティ不可 | エージェント一覧 | `AgentCatalogService.list`、GET `/api/agents` | 内部推論なし |
-| `artex_task_status` | 必須 `id`、正の10進文字列。追加プロパティ不可 | 状態参照と当該IDの許可リスト | `TaskService.detail`、GET `/api/tasks/{id}` | 既存状態を読むだけで推論を起動しない |
+| `networkpntr_agents_list` | 空オブジェクト。追加プロパティ不可 | エージェント一覧 | `AgentCatalogService.list`、GET `/api/agents` | 内部推論なし |
+| `networkpntr_task_status` | 必須 `id`、正の10進文字列。追加プロパティ不可 | 状態参照と当該IDの許可リスト | `TaskService.detail`、GET `/api/tasks/{id}` | 既存状態を読むだけで推論を起動しない |
 
 エージェント応答はキー・日英の表示名・有効状態だけを返す。タスク応答は文字列ID、状態、一時停止・待機状態、Int64の入出力トークン数を返す。プロトコル変換でJavaScriptの数値へ変換して精度を失わせない。プロンプト、コマンド出力、認証情報、プロバイダー設定は応答に含めない。トークン数は既存タスクの使用量であり、新規モデル呼び出しではない。
 
@@ -17,7 +17,7 @@
 
 プロトコル変換には[公式Swift SDK](https://github.com/modelcontextprotocol/swift-sdk/tree/0.12.1)を利用し、依存関係を確認・固定してから導入する。ローカル接続は[公式トランスポート仕様](https://modelcontextprotocol.io/specification/latest/basic/transports)のstdio方式とする。
 
-開発用確認は `swift test --disable-automatic-resolution --filter 'MCPIPC|BoundedStdio'`。合成サービスを用いた実Unixソケット・ヘルパープロセス試験で、2^53より大きいタスクIDとトークン数の保持も確認する。ヘルパーのコマンドは `ArtexMCP --connection-file PRIVATE_CONNECTION_FILE`。接続ファイルは利用者の許可後にアプリが発行する前提だが、GUIでの発行手順はまだない。ヘルパーは単一JSON-RPCメッセージを扱い、明示的null・不正ID・バッチを拒否し、SDKの処理開始前に未応答ID数を制限する。アプリ側の有限ディスパッチャーが公式SDKのメッセージ型を利用し、初期化前の要求をエラーで拒否して枠を解放する。SDKのサーバー受信ループは、キャンセル応答を省略した後の完了通知APIがないため利用しない。呼び出し元が切断すると参照処理をキャンセルし、終了後に次の接続を処理する。
+開発用確認は `swift test --disable-automatic-resolution --filter 'MCPIPC|BoundedStdio'`。合成サービスを用いた実Unixソケット・ヘルパープロセス試験で、2^53より大きいタスクIDとトークン数の保持も確認する。ヘルパーのコマンドは `NetworkPNTRMCP --connection-file PRIVATE_CONNECTION_FILE`。接続ファイルは利用者の許可後にアプリが発行する前提だが、GUIでの発行手順はまだない。ヘルパーは単一JSON-RPCメッセージを扱い、明示的null・不正ID・バッチを拒否し、SDKの処理開始前に未応答ID数を制限する。アプリ側の有限ディスパッチャーが公式SDKのメッセージ型を利用し、初期化前の要求をエラーで拒否して枠を解放する。SDKのサーバー受信ループは、キャンセル応答を省略した後の完了通知APIがないため利用しない。呼び出し元が切断すると参照処理をキャンセルし、終了後に次の接続を処理する。
 
 要求の寿命は13回の連続キャンセル、要求直後のキャンセル、8件実行中の9件目の拒否、その後のキャンセルと通常参照への復帰を試験する。過負荷の要求を制御通知の前で待機させない。応答を省略するキャンセルでも、処理終了後に要求ごとのUUIDで枠を解放し、古い後処理で新しい要求を失効させない。IPCと標準入力の待機はSwiftの実行スレッドを占有しない。要求IDは[基本仕様](https://modelcontextprotocol.io/specification/2025-06-18/basic)に従い、同一セッションで再利用しない。
 

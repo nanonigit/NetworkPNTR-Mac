@@ -22,6 +22,6 @@ pages = sorted(str(path.relative_to(args.source)) for path in (args.source / "we
 assert pages == sorted(item["source"] for item in inventory["routes"]), "Page omitted"
 endpoints = re.findall(r'mux.HandleFunc\("([^"]+)"', (args.source / "server/server.go").read_text())
 assert endpoints == inventory["endpoints"], "API handler omitted"
-copied = json.loads((root / "Sources/ArtexCore/Resources/feature-map.json").read_text())
+copied = json.loads((root / "Sources/NetworkPNTRCore/Resources/feature-map.json").read_text())
 assert copied == inventory, "Native catalog and tracked parity inventory differ"
 print(json.dumps({"baseline": revision, "navigation_features": len(actual), "page_routes": len(pages), "api_handlers": len(endpoints), "inventory_parity": True, "native_workflow_parity": "pending"}, indent=2))

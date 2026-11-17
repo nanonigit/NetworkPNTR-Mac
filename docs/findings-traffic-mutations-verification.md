@@ -16,7 +16,7 @@ Capture timestamps now use the same Unix-second semantics as frozen traffic.go/b
 - Offscreen action dialogs render in en/ja; current list/viewer regressions also cover light/dark. Fixed fake HTTP transport and held continuations prove request fields, version/order, cancellation, stale identities, uncertainty and metadata-read ownership. They do not prove backend mutation effects or persistence with real captured data.
 - Localization generation, shell syntax and frozen baseline inventory21 navigation/27 page routes/243 handlers are checked. Native workflow parity remains pending. No dependency was added; the project has no external SwiftPM package dependency requiring a package audit for this change.
 
-The local ARTEX Mac bundle was rebuilt successfully with script/build_and_run.sh --build-only; codesign --verify --strict passed after the build process terminated. This verifies the packaged local bundle, not installation, notarization, launch or guest-backed UI acceptance.
+The local NetworkPNTR Mac bundle was rebuilt successfully with script/build_and_run.sh --build-only; codesign --verify --strict passed after the build process terminated. This verifies the packaged local bundle, not installation, notarization, launch or guest-backed UI acceptance.
 
 ## Remaining acceptance
 

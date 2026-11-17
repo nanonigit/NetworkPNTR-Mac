@@ -1,5 +1,5 @@
 #if DEBUG
-import ArtexCore
+import NetworkPNTRCore
 import Foundation
 
 @MainActor enum SeededTriggerProbe {

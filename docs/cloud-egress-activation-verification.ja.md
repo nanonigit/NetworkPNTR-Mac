@@ -8,7 +8,7 @@
 4社の模擬通信の回帰試験を行った。
 
 固定したゲストを同梱した ARM64 Release のプレビューはアドホック署名済み。
-`open -n "/path/to/ARTEX Mac Cloud Preview.app" --args --cloud-egress` で起動する。
+`open -n "/path/to/NetworkPNTR Mac Cloud Preview.app" --args --cloud-egress` で起動する。
 プレビュー専用の状態と Keychain アカウントを使う。引数を省いた場合は通常の起動方針が
 適用される。起動検証ではプロバイダーに要求を送っていない。GUI の実起動、実 API、
 プロバイダー選択画面、固定ブラウザ版との比較は今後の検証項目。

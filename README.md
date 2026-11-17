@@ -1,6 +1,8 @@
-# ARTEX Mac
+# NetworkPNTR Mac
 
-Native SwiftUI macOS application with an app-managed isolated Linux VM. **Development milestone: isolated VM proof and partial native feature migration; not a complete ARTEX client.** LLM settings and the dashboard are implemented and under comparison; Chat core UI is also implemented with partial comparison. The first Tasks list/detail, creation, categories and bulk surfaces are wired to finite guest APIs, with unit/offscreen checks and separate catalog runtime comparison; Basic Findings list/group/asset/detail and triage controls are also wired with controlled/offscreen checks; 16 feature screens remain unimplemented. All 21 workflow acceptance gates are still open. The existing Docker browser instance is preserved independently.
+PNTR stands for penetration testing. NetworkPNTR Mac aims to help individuals and organizations find vulnerabilities and bugs in systems they own or are authorized to assess, and strengthen their own defenses.
+
+Native SwiftUI macOS application with an app-managed isolated Linux VM. **Development milestone: isolated VM proof and partial native feature migration; not a complete client.** LLM settings and the dashboard are implemented and under comparison; Chat core UI is also implemented with partial comparison. The first Tasks list/detail, creation, categories and bulk surfaces are wired to finite guest APIs, with unit/offscreen checks and separate catalog runtime comparison; Basic Findings list/group/asset/detail and triage controls are also wired with controlled/offscreen checks; 16 feature screens remain unimplemented. All 21 workflow acceptance gates are still open. The existing Docker browser instance is preserved independently.
 
 See [native Findings evidence](docs/findings-ui-verification.md) for basic controls, ownership regressions and remaining visual/runtime/advanced gates.
 
@@ -32,7 +34,7 @@ python3 script/check_baseline.py /path/to/pinned/artex-global
 ./script/test_backend.sh /path/to/pinned/artex-global
 ```
 
-The app is staged at `dist/ARTEX Mac.app`. Developer backend construction uses a pinned Linux build container and verifies boot-artifact hashes; Linux executables never run on macOS. The application runtime uses bundled guest artifacts and calls neither Docker, Python nor a manually launched server. It creates its own private persistent disk. Quit the app normally before replacing its bundle, allowing its VM to flush and stop. This is an investigation build, not a stable release.
+The app is staged at `dist/NetworkPNTR Mac.app`. Developer backend construction uses a pinned Linux build container and verifies boot-artifact hashes; Linux executables never run on macOS. The application runtime uses bundled guest artifacts and calls neither Docker, Python nor a manually launched server. It creates its own private persistent disk. Quit the app normally before replacing its bundle, allowing its VM to flush and stop. This is an investigation build, not a stable release.
 
 The runtime screen starts/stops the dedicated backend VM; the account screen uses actual ARTEX authentication. The LLM screen connects actual profile, rotation and retry services; see [LLM comparison evidence](docs/llm-settings-verification.md). The dashboard reads actual tasks, activity, findings, usage, assets and system status; its 12 nonempty token scenarios match a disposable pinned reference and independent browser calculations. See [dashboard evidence](docs/dashboard-verification.md). The parity screen tracks incomplete acceptance, and the remaining feature entries show explicit migration placeholders. No browser-version API key, password or data is imported. Keychain restoration has passed an isolated native service diagnostic, but repeated reliability, external native clicks, controlled cloud networking, all feature workflows and distribution signing/notarization remain open gates.
 
@@ -53,7 +55,7 @@ Latest attachment checkpoint: the full134,217,517-byte content SHA matches the s
 
 The toolbar switches the shared native shell between English and Japanese. Actual switching preserves the active chat draft, attachment card and selection; a new app process retains the chosen language. Feature interiors and backend output-language synchronization are still being migrated, so this is not complete bilingual support. See [verification](docs/localization-shell-verification.md).
 
-Edit `Sources/ArtexCore/Resources/Localizable.xcstrings` as the translation source, then run:
+Edit `Sources/NetworkPNTRCore/Resources/Localizable.xcstrings` as the translation source, then run:
 
 ```sh
 python3 script/export_localizations.py

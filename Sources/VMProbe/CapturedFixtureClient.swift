@@ -1,5 +1,5 @@
 #if DEBUG
-import ArtexCore
+import NetworkPNTRCore
 import Foundation
 
 /// Fixed diagnostic scripts execute inside a fresh guest, never on macOS.

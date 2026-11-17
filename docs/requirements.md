@@ -1,6 +1,6 @@
 # Requirements and completion goal
 
-Build a native macOS ARTEX application, a separate private repository `nanonigit/artex-mac`. On this Apple Silicon Mac, launch, operate, stop, update and recover ARTEX without browser, Docker Desktop, terminal commands or a manually started server. SwiftUI owns the user interface; autonomous shell execution and PostgreSQL run only in an app-managed Linux VM.
+Build a native macOS ARTEX application, a separate private repository `nanonigit/networkpntr-mac`. On this Apple Silicon Mac, launch, operate, stop, update and recover ARTEX without browser, Docker Desktop, terminal commands or a manually started server. SwiftUI owns the user interface; autonomous shell execution and PostgreSQL run only in an app-managed Linux VM.
 
 ## Release acceptance criteria
 
@@ -199,7 +199,7 @@ The bundled API Recon skill must retain the browser deployment's authorized-test
 
 ### Direct app operation and inbound MCP
 
-ARTEX Mac must support direct native GUI operation and operation by an external AI through an MCP server. Both entry points act on the same authenticated account, dedicated VM, task identities, persisted data and execution state. A task started through MCP is visible and controllable in the app; a task started in the app can be inspected and stopped through an authorized MCP connection.
+NetworkPNTR Mac must support direct native GUI operation and operation by an external AI through an MCP server. Both entry points act on the same authenticated account, dedicated VM, task identities, persisted data and execution state. A task started through MCP is visible and controllable in the app; a task started in the app can be inspected and stopped through an authorized MCP connection.
 
 The initial target is an MCP-capable AI client running on the same Mac, using an app-bundled stdio helper. GitHub manages source and release distribution; execution belongs to the running Mac app and its dedicated Linux VM. Connecting clients receive explicit, revocable capabilities and permitted target scope. The existing owned/authorized-target API Recon policy applies equally to GUI and MCP requests.
 

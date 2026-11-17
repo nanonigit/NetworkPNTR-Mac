@@ -46,7 +46,7 @@ assert call('POST', '/api/llm/models', negative)['ok'] is False
 assert call('POST', '/api/llm/test', dict(negative, streaming=True, thinking_type='', reasoning_effort='', session_header_key=''))['ok'] is False
 zero = {'attempts': 0, 'interval_ms': 0}
 retry = {'connect': {'attempts': -1, 'interval_ms': 0}, 'empty': {'attempts': 2, 'interval_ms': 1234}, 'stream': {'attempts': 1, 'interval_ms': 500}}
-a = {'name': 'Fixture OpenAI', 'model': 'fixture-no-request', 'format': 'openai', 'base_url': 'https://api.example.invalid/v1', 'proxy': '', 'api_key': 'fixture-non-live-credential-0000', 'rate_per_second': 2.5, 'rate_per_minute': 30, 'context_window_k': 64, 'priority': 3, 'pool_exclude': False, 'streaming': False, 'max_tokens': 256, 'max_tokens_field': 'max_completion_tokens', 'thinking_type': 'enabled', 'reasoning_effort': 'high', 'session_header_key': 'X-Artex-Session', 'retry': retry}
+a = {'name': 'Fixture OpenAI', 'model': 'fixture-no-request', 'format': 'openai', 'base_url': 'https://api.example.invalid/v1', 'proxy': '', 'api_key': 'fixture-non-live-credential-0000', 'rate_per_second': 2.5, 'rate_per_minute': 30, 'context_window_k': 64, 'priority': 3, 'pool_exclude': False, 'streaming': False, 'max_tokens': 256, 'max_tokens_field': 'max_completion_tokens', 'thinking_type': 'enabled', 'reasoning_effort': 'high', 'session_header_key': 'X-NetworkPNTR-Session', 'retry': retry}
 a_id = call('POST', '/api/llm/profiles', a)['id']
 b = {'name': 'Fixture Anthropic', 'model': 'fixture-anthropic', 'format': 'anthropic', 'streaming': True}
 b_id = call('POST', '/api/llm/profiles', b)['id']

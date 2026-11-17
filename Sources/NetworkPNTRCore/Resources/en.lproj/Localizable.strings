@@ -1,0 +1,2533 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>agent.catalog.builtin</key>
+	<string>Built-in</string>
+	<key>agent.catalog.count</key>
+	<string>{count} total</string>
+	<key>agent.catalog.custom</key>
+	<string>Custom</string>
+	<key>agent.catalog.disabled</key>
+	<string>Disabled</string>
+	<key>agent.catalog.empty</key>
+	<string>(no agents)</string>
+	<key>agent.catalog.listTitle</key>
+	<string>Agent list</string>
+	<key>agent.catalog.loadFailed</key>
+	<string>Unable to load agents</string>
+	<key>agent.catalog.loading</key>
+	<string>Loading agents…</string>
+	<key>agent.catalog.login</key>
+	<string>Sign in to view agents.</string>
+	<key>agent.catalog.noDescription</key>
+	<string>(no description)</string>
+	<key>agent.catalog.readOnly</key>
+	<string>View agents, their binding counts, and saved prompts.</string>
+	<key>agent.catalog.refresh</key>
+	<string>Reload agents</string>
+	<key>agent.catalog.skill</key>
+	<string>Skill</string>
+	<key>agent.catalog.tools</key>
+	<string>Tools</string>
+	<key>agent.detail.builtIn</key>
+	<string>Built-in default (read-only, for reference)</string>
+	<key>agent.detail.current</key>
+	<string>Current</string>
+	<key>agent.detail.discard</key>
+	<string>Discard changes</string>
+	<key>agent.detail.discardQuestion</key>
+	<string>Discard unsaved agent changes?</string>
+	<key>agent.detail.empty</key>
+	<string>(empty)</string>
+	<key>agent.detail.example</key>
+	<string>Example: {example}</string>
+	<key>agent.detail.failed</key>
+	<string>Unable to load agent details</string>
+	<key>agent.detail.invalidTemplate</key>
+	<string>The guest rejected the template. Check its syntax and variable names.</string>
+	<key>agent.detail.loadVersion</key>
+	<string>Load into editor</string>
+	<key>agent.detail.loading</key>
+	<string>Loading agent details…</string>
+	<key>agent.detail.noDefault</key>
+	<string>This agent has no built-in prompt to restore.</string>
+	<key>agent.detail.noVariables</key>
+	<string>(no variables)</string>
+	<key>agent.detail.noVersions</key>
+	<string>(no saved versions yet; using the built-in default)</string>
+	<key>agent.detail.note.default</key>
+	<string>Built-in default</string>
+	<key>agent.detail.note.restored</key>
+	<string>Restored built-in default</string>
+	<key>agent.detail.prompt</key>
+	<string>Prompt</string>
+	<key>agent.detail.refreshHistory</key>
+	<string>Reload version history</string>
+	<key>agent.detail.restore</key>
+	<string>Restore default</string>
+	<key>agent.detail.restoreDraft</key>
+	<string>This replaces the unsaved draft and saves the built-in prompt as a new version. The previous saved version stays in history.</string>
+	<key>agent.detail.restoreHistory</key>
+	<string>This saves the built-in prompt as a new version. The previous prompt stays in history.</string>
+	<key>agent.detail.restoreQuestion</key>
+	<string>Restore the built-in prompt?</string>
+	<key>agent.detail.restored</key>
+	<string>Restored to built-in default (v{version})</string>
+	<key>agent.detail.rounds</key>
+	<string>Effective round limit</string>
+	<key>agent.detail.save</key>
+	<string>Save as new version</string>
+	<key>agent.detail.saved</key>
+	<string>Saved version {version}</string>
+	<key>agent.detail.section</key>
+	<string>Detail section</string>
+	<key>agent.detail.taskTimeout</key>
+	<string>Task timeout wrap-up prompt body</string>
+	<key>agent.detail.uncertain</key>
+	<string>Reload the history to check the current version before saving again.</string>
+	<key>agent.detail.usesDefault</key>
+	<string>Use built-in default</string>
+	<key>agent.detail.variables</key>
+	<string>Variables</string>
+	<key>agent.detail.versions</key>
+	<string>Version history</string>
+	<key>agent.detail.wrapUp</key>
+	<string>Wrap-up prompt</string>
+	<key>agent.execution.defaultSuffix</key>
+	<string> · default</string>
+	<key>agent.execution.inherit</key>
+	<string>Follow task / global active config</string>
+	<key>agent.execution.mismatch</key>
+	<string>The guest reported different execution settings. Review the draft and retry.</string>
+	<key>agent.execution.missing</key>
+	<string>Unavailable model profile #{id}</string>
+	<key>agent.execution.model</key>
+	<string>Default model (LLM config)</string>
+	<key>agent.execution.save</key>
+	<string>Save settings</string>
+	<key>agent.execution.saved</key>
+	<string>Run settings saved (applied immediately)</string>
+	<key>agent.execution.seconds</key>
+	<string>Run time (seconds, 0 = unlimited)</string>
+	<key>agent.execution.shell</key>
+	<string>Interactive shell</string>
+	<key>agent.execution.shellHint</key>
+	<string>Allow this agent to use persistent interactive sessions inside the Linux guest after saving.</string>
+	<key>agent.execution.title</key>
+	<string>Model and execution limits</string>
+	<key>agent.execution.turns</key>
+	<string>Max turns (0 = unlimited)</string>
+	<key>agent.execution.webGateChanged</key>
+	<string>Web search is unavailable. Its draft was reset to the saved value. Review and save other edits separately.</string>
+	<key>agent.execution.webOff</key>
+	<string>You must first enable web search and configure the backend in "System settings" before you can enable it here</string>
+	<key>agent.execution.webOn</key>
+	<string>Allow this agent to use web search after saving.</string>
+	<key>agent.execution.webSearch</key>
+	<string>Web search</string>
+	<key>agent.execution.webUnavailable</key>
+	<string>The global Web search setting is unavailable.</string>
+	<key>agent.inspect.added</key>
+	<string>Added</string>
+	<key>agent.inspect.compare</key>
+	<string>Compare with current version</string>
+	<key>agent.inspect.diffTitle</key>
+	<string>Version comparison: v{from} → v{to} (current)</string>
+	<key>agent.inspect.emptyDraft</key>
+	<string>The draft is empty. Showing the saved prompt with sample values.</string>
+	<key>agent.inspect.largeDiff</key>
+	<string>These prompts are too large for a line comparison. Both original versions are shown below.</string>
+	<key>agent.inspect.preview</key>
+	<string>Preview render</string>
+	<key>agent.inspect.removed</key>
+	<string>Removed</string>
+	<key>agent.inspect.renderError</key>
+	<string>The template could not be rendered.</string>
+	<key>agent.inspect.sample</key>
+	<string>Variables are replaced with their sample values.</string>
+	<key>agent.seed.auto.description</key>
+	<string>Platform operations assistant: uses tools to manage tasks (create / view / pause / hint) and assets, and can create or modify skills, custom tools, and MCP.</string>
+	<key>agent.seed.auto.name</key>
+	<string>Auto</string>
+	<key>agent.seed.goals.description</key>
+	<string>Breaks the pentest objective down into several independent, verifiable sub-goals.</string>
+	<key>agent.seed.goals.name</key>
+	<string>Goal Decomposition</string>
+	<key>agent.seed.mainagent.description</key>
+	<string>Human-machine interface: watches progress and turns human intent into hints or high-priority intents.</string>
+	<key>agent.seed.mainagent.name</key>
+	<string>Main</string>
+	<key>agent.seed.pentest.description</key>
+	<string>Standalone pentest agent: single-handedly runs the full chain from recon → attack-surface discovery → deep exploitation → verification → wrap-up, planning, executing, and adversarially verifying on its own.</string>
+	<key>agent.seed.pentest.name</key>
+	<string>Penetration Test</string>
+	<key>agent.seed.planner.description</key>
+	<string>Reads the situation and decides on goals, adding exploration intents only when there is a genuinely uncovered new direction (one planning loop per task).</string>
+	<key>agent.seed.planner.name</key>
+	<string>Planning</string>
+	<key>agent.seed.reporter.description</key>
+	<string>Automatically prepares a detailed report when a vulnerability is found. It reviews the evidence and execution history, then saves a Markdown report to the finding.</string>
+	<key>agent.seed.reporter.name</key>
+	<string>Report Writer</string>
+	<key>agent.seed.retester.description</key>
+	<string>Launched manually from a finding's detail view; reads the original evidence and saves an independent retest conclusion.</string>
+	<key>agent.seed.retester.name</key>
+	<string>Vulnerability Retest</string>
+	<key>agent.seed.worker.description</key>
+	<string>Picks up a single intent and executes it, writing discovered facts / vulnerabilities back to the knowledge graph before stopping.</string>
+	<key>agent.seed.worker.name</key>
+	<string>Execution</string>
+	<key>agent.skill.apiReconAuthorizedDescription</key>
+	<string>Discover APIs and validate vulnerabilities, request changes, and access controls within the authorized scope.</string>
+	<key>agent.skill.apiReconDescription</key>
+	<string>Use this skill to discover a website’s API endpoints.</string>
+	<key>agent.skill.playwrightDescription</key>
+	<string>Automate browser interactions, test web pages and work with Playwright tests.</string>
+	<key>agent.toolBinding.disabled</key>
+	<string>Disabled in the tool catalog</string>
+	<key>agent.toolBinding.empty</key>
+	<string>No tools are available.</string>
+	<key>agent.toolBinding.help</key>
+	<string>Choose which tools this agent can use. Tool activation is managed in the tool catalog.</string>
+	<key>agent.toolBinding.needsCapture</key>
+	<string>Requires traffic capture</string>
+	<key>agent.trigger.add</key>
+	<string>Add trigger</string>
+	<key>agent.trigger.byTask</key>
+	<string>By task</string>
+	<key>agent.trigger.delete</key>
+	<string>Delete trigger</string>
+	<key>agent.trigger.deleteQuestion</key>
+	<string>Delete this trigger?</string>
+	<key>agent.trigger.disable</key>
+	<string>Disable</string>
+	<key>agent.trigger.disabled</key>
+	<string>Disabled</string>
+	<key>agent.trigger.edit</key>
+	<string>Edit trigger</string>
+	<key>agent.trigger.empty</key>
+	<string>No triggers configured.</string>
+	<key>agent.trigger.enable</key>
+	<string>Enable</string>
+	<key>agent.trigger.enabled</key>
+	<string>Enabled</string>
+	<key>agent.trigger.finding</key>
+	<string>Finding recorded</string>
+	<key>agent.trigger.goal</key>
+	<string>Goal met</string>
+	<key>agent.trigger.help</key>
+	<string>Choose when this agent runs automatically.</string>
+	<key>agent.trigger.lastFire</key>
+	<string>Last fired</string>
+	<key>agent.trigger.limit</key>
+	<string>Parallel limit (0 means unlimited)</string>
+	<key>agent.trigger.merge</key>
+	<string>Merge pending events</string>
+	<key>agent.trigger.mergeAll</key>
+	<string>All</string>
+	<key>agent.trigger.mergeNone</key>
+	<string>None</string>
+	<key>agent.trigger.message</key>
+	<string>Message (optional)</string>
+	<key>agent.trigger.parallel</key>
+	<string>Parallel</string>
+	<key>agent.trigger.policy</key>
+	<string>Execution policy</string>
+	<key>agent.trigger.run</key>
+	<string>Run mode</string>
+	<key>agent.trigger.save</key>
+	<string>Save trigger</string>
+	<key>agent.trigger.savePolicy</key>
+	<string>Save policy</string>
+	<key>agent.trigger.schedule</key>
+	<string>Schedule</string>
+	<key>agent.trigger.seconds</key>
+	<string>Interval in seconds</string>
+	<key>agent.trigger.serial</key>
+	<string>Serial</string>
+	<key>agent.trigger.task</key>
+	<string>Task created</string>
+	<key>agent.trigger.timeout</key>
+	<string>Task timed out</string>
+	<key>agent.trigger.title</key>
+	<string>Triggers</string>
+	<key>agent.trigger.tool</key>
+	<string>Tool called</string>
+	<key>agent.trigger.tools</key>
+	<string>Select the tools that can trigger this rule.</string>
+	<key>agent.variable.global.DataDir</key>
+	<string>Root directory for task and conversation artifacts on the server.</string>
+	<key>agent.variable.global.Now</key>
+	<string>Current server time, updated each time the prompt is rendered.</string>
+	<key>agent.variable.goals.EngagementDescription</key>
+	<string>Engagement description (target / background)</string>
+	<key>agent.variable.mainagent.AssetSummary</key>
+	<string>Opening-situation summary (optional)</string>
+	<key>agent.variable.mainagent.FindingsSummary</key>
+	<string>Confirmed-findings summary (optional)</string>
+	<key>agent.variable.mainagent.Goal</key>
+	<string>Current task goal</string>
+	<key>agent.variable.planner.AssetSummary</key>
+	<string>Asset count / type-distribution summary (optional)</string>
+	<key>agent.variable.planner.Goal</key>
+	<string>Overall task goal</string>
+	<key>agent.variable.worker.ProxyAddr</key>
+	<string>Recording proxy address (drives the if-branch wording)</string>
+	<key>agent.variable.worker.WorkerName</key>
+	<string>Worker self-identifier (optional)</string>
+	<key>agent.visibility.mcp</key>
+	<string>Select the MCP servers to show for this agent.</string>
+	<key>agent.visibility.noMCP</key>
+	<string>(no MCP)</string>
+	<key>agent.visibility.noSkills</key>
+	<string>(no Skills)</string>
+	<key>agent.visibility.skills</key>
+	<string>Select the Skills to show for this agent.</string>
+	<key>agent.wrapUp.invalidRounds</key>
+	<string>Enter a whole number from 0 to 2,147,483,647.</string>
+	<key>agent.wrapUp.mismatch</key>
+	<string>The guest returned different wrap-up settings. Check the saved values before retrying.</string>
+	<key>agent.wrapUp.restoreNormal</key>
+	<string>The normal wrap-up prompt and round limit will use their defaults.</string>
+	<key>agent.wrapUp.restoreQuestion</key>
+	<string>Restore wrap-up defaults?</string>
+	<key>agent.wrapUp.restoreTimeout</key>
+	<string>The task timeout wrap-up prompt and round limit will use their defaults.</string>
+	<key>agent.wrapUp.rounds</key>
+	<string>Round limit (0 uses the default of {count})</string>
+	<key>agent.wrapUp.save</key>
+	<string>Save wrap-up settings</string>
+	<key>agent.wrapUp.saved</key>
+	<string>Wrap-up settings saved.</string>
+	<key>assetCatalog.dsl.field.app_icp</key>
+	<string>App ICP registration</string>
+	<key>assetCatalog.dsl.field.app_name</key>
+	<string>App name</string>
+	<key>assetCatalog.dsl.field.bundle_id</key>
+	<string>App Bundle ID</string>
+	<key>assetCatalog.dsl.field.category</key>
+	<string>App category</string>
+	<key>assetCatalog.dsl.field.company_id</key>
+	<string>Owning company ID (integer)</string>
+	<key>assetCatalog.dsl.field.domain</key>
+	<string>Domain (root / subdomain / service domain)</string>
+	<key>assetCatalog.dsl.field.icp</key>
+	<string>ICP registration number</string>
+	<key>assetCatalog.dsl.field.ip</key>
+	<string>IPv4/IPv6 address</string>
+	<key>assetCatalog.dsl.field.method</key>
+	<string>HTTP method GET/POST/PUT/…</string>
+	<key>assetCatalog.dsl.field.page_title</key>
+	<string>Page title (HTTP service)</string>
+	<key>assetCatalog.dsl.field.port</key>
+	<string>Port number (integer)</string>
+	<key>assetCatalog.dsl.field.record_type</key>
+	<string>DNS record type A/CNAME/MX/…</string>
+	<key>assetCatalog.dsl.field.root_domain</key>
+	<string>Root domain</string>
+	<key>assetCatalog.dsl.field.service_name</key>
+	<string>Service name (non-HTTP services)</string>
+	<key>assetCatalog.dsl.field.service_type</key>
+	<string>Service type: http | other</string>
+	<key>assetCatalog.dsl.field.status_code</key>
+	<string>HTTP status code (integer)</string>
+	<key>assetCatalog.dsl.field.task_id</key>
+	<string>Source task ID (integer)</string>
+	<key>assetCatalog.dsl.field.technology</key>
+	<string>Technology fingerprint (array field)</string>
+	<key>assetCatalog.dsl.field.url</key>
+	<string>Full URL (service / endpoint)</string>
+	<key>assetCatalog.dsl.invalidExpression</key>
+	<string>Invalid DSL expression. Check the fields, operators, quotes, and parentheses.</string>
+	<key>assetCatalog.dsl.logic.and</key>
+	<string>AND (both conditions met)</string>
+	<key>assetCatalog.dsl.logic.or</key>
+	<string>OR (either condition met)</string>
+	<key>assetCatalog.dsl.op.eq</key>
+	<string>Equals</string>
+	<key>assetCatalog.dsl.op.exact</key>
+	<string>Exact match</string>
+	<key>assetCatalog.dsl.op.exclude</key>
+	<string>Exclude</string>
+	<key>assetCatalog.dsl.op.fuzzy</key>
+	<string>Partial match</string>
+	<key>assetCatalog.dsl.op.gt</key>
+	<string>Greater than</string>
+	<key>assetCatalog.dsl.op.gte</key>
+	<string>Greater than or equal</string>
+	<key>assetCatalog.dsl.op.lt</key>
+	<string>Less than</string>
+	<key>assetCatalog.dsl.op.lte</key>
+	<string>Less than or equal</string>
+	<key>assetCatalog.dsl.op.ne</key>
+	<string>Not equal</string>
+	<key>assetCatalog.ui.app</key>
+	<string>App</string>
+	<key>assetCatalog.ui.application</key>
+	<string>Application</string>
+	<key>assetCatalog.ui.auth</key>
+	<string>Authentication</string>
+	<key>assetCatalog.ui.boundDomains</key>
+	<string>Bound domains</string>
+	<key>assetCatalog.ui.category</key>
+	<string>Category</string>
+	<key>assetCatalog.ui.company</key>
+	<string>Company</string>
+	<key>assetCatalog.ui.count</key>
+	<string>Assets</string>
+	<key>assetCatalog.ui.delete</key>
+	<string>Delete</string>
+	<key>assetCatalog.ui.deleteBody</key>
+	<string>Permanently delete {count} asset records? This action cannot be undone.</string>
+	<key>assetCatalog.ui.deleteSelected</key>
+	<string>Delete selected ({count})</string>
+	<key>assetCatalog.ui.deleteTitle</key>
+	<string>Confirm asset deletion</string>
+	<key>assetCatalog.ui.deleteUnconfirmed</key>
+	<string>The deletion result could not be confirmed. Check the refreshed asset list.</string>
+	<key>assetCatalog.ui.deleted</key>
+	<string>Deleted assets: {count}</string>
+	<key>assetCatalog.ui.deselectPage</key>
+	<string>Deselect this page</string>
+	<key>assetCatalog.ui.domain</key>
+	<string>Domain</string>
+	<key>assetCatalog.ui.empty</key>
+	<string>No data</string>
+	<key>assetCatalog.ui.endpoint</key>
+	<string>Endpoint</string>
+	<key>assetCatalog.ui.login</key>
+	<string>Sign in to view assets.</string>
+	<key>assetCatalog.ui.method</key>
+	<string>Method</string>
+	<key>assetCatalog.ui.name</key>
+	<string>Name</string>
+	<key>assetCatalog.ui.openPorts</key>
+	<string>Open ports</string>
+	<key>assetCatalog.ui.owner</key>
+	<string>Company</string>
+	<key>assetCatalog.ui.parameters</key>
+	<string>Parameters</string>
+	<key>assetCatalog.ui.port</key>
+	<string>Port</string>
+	<key>assetCatalog.ui.recordType</key>
+	<string>Record type</string>
+	<key>assetCatalog.ui.recordValue</key>
+	<string>Record value</string>
+	<key>assetCatalog.ui.rootDomain</key>
+	<string>Root domain</string>
+	<key>assetCatalog.ui.scope</key>
+	<string>Scope</string>
+	<key>assetCatalog.ui.search</key>
+	<string>Asset DSL search</string>
+	<key>assetCatalog.ui.segment</key>
+	<string>C segment</string>
+	<key>assetCatalog.ui.select</key>
+	<string>Select</string>
+	<key>assetCatalog.ui.selectPage</key>
+	<string>Select this page</string>
+	<key>assetCatalog.ui.service</key>
+	<string>Service</string>
+	<key>assetCatalog.ui.statusCode</key>
+	<string>Status code</string>
+	<key>assetCatalog.ui.subdomain</key>
+	<string>Subdomain</string>
+	<key>assetCatalog.ui.technologies</key>
+	<string>Technologies</string>
+	<key>assetCatalog.ui.title</key>
+	<string>Page title</string>
+	<key>assetCatalog.ui.unassigned</key>
+	<string>Unassigned</string>
+	<key>auth.acceptTerms</key>
+	<string>Agree</string>
+	<key>auth.agree</key>
+	<string>I agree to the terms of use</string>
+	<key>auth.checking</key>
+	<string>Checking authentication status</string>
+	<key>auth.confirm</key>
+	<string>Confirm password</string>
+	<key>auth.connected</key>
+	<string>Connected to NetworkPNTR in the dedicated VM. Features are being migrated after comparison testing.</string>
+	<key>auth.loggedIn</key>
+	<string>Logged in</string>
+	<key>auth.login</key>
+	<string>Log in</string>
+	<key>auth.loginHelp</key>
+	<string>The username is NetworkPNTR. Enter your configured password.</string>
+	<key>auth.logout</key>
+	<string>Log out</string>
+	<key>auth.newPassword</key>
+	<string>New password</string>
+	<key>auth.password</key>
+	<string>Password</string>
+	<key>auth.passwordHint</key>
+	<string>At least 8 characters, at most 72 UTF-8 bytes</string>
+	<key>auth.readTerms</key>
+	<string>Read terms of use</string>
+	<key>auth.recovery</key>
+	<string>Try again after the database or connection recovers.</string>
+	<key>auth.repeat</key>
+	<string>Re-enter password</string>
+	<key>auth.retry</key>
+	<string>Retry</string>
+	<key>auth.setPassword</key>
+	<string>Set password</string>
+	<key>auth.setupHelp</key>
+	<string>Set a password for this Mac’s dedicated NetworkPNTR environment. The app securely passes the setup token.</string>
+	<key>auth.setupTitle</key>
+	<string>Set administrator password</string>
+	<key>auth.termsTitle</key>
+	<string>Terms of use</string>
+	<key>auth.termsUnavailable</key>
+	<string>Could not load the terms of use. Close this window and try again.</string>
+	<key>auth.unavailable</key>
+	<string>Unable to confirm authentication status</string>
+	<key>auth.username</key>
+	<string>Username</string>
+	<key>captured.ui.add</key>
+	<string>Add traffic</string>
+	<key>captured.ui.addCount</key>
+	<string>Add {count} selected</string>
+	<key>captured.ui.binding</key>
+	<string>Adding selected traffic…</string>
+	<key>captured.ui.bound</key>
+	<string>Already added</string>
+	<key>captured.ui.captureOff</key>
+	<string>Recording is off; existing history is shown.</string>
+	<key>captured.ui.empty</key>
+	<string>No matching traffic.</string>
+	<key>captured.ui.help</key>
+	<string>Choose recorded exchanges to attach as evidence. Previews may omit body content; save the original body after adding for complete data.</string>
+	<key>captured.ui.host</key>
+	<string>Host</string>
+	<key>captured.ui.keyword</key>
+	<string>Keyword</string>
+	<key>captured.ui.method</key>
+	<string>Method</string>
+	<key>captured.ui.next</key>
+	<string>Next</string>
+	<key>captured.ui.page</key>
+	<string>Page {page}</string>
+	<key>captured.ui.preview</key>
+	<string>Preview</string>
+	<key>captured.ui.previewHelp</key>
+	<string>Select an exchange to preview</string>
+	<key>captured.ui.previous</key>
+	<string>Previous</string>
+	<key>captured.ui.selectOne</key>
+	<string>Select traffic {id}</string>
+	<key>captured.ui.selectPage</key>
+	<string>Select this page</string>
+	<key>captured.ui.selected</key>
+	<string>Selected {count} · {total} matching exchanges</string>
+	<key>captured.ui.status</key>
+	<string>Status</string>
+	<key>captured.ui.time</key>
+	<string>Captured</string>
+	<key>captured.ui.title</key>
+	<string>Add captured traffic</string>
+	<key>captured.ui.unavailable</key>
+	<string>No captured-traffic index is available in this environment.</string>
+	<key>chat.ActionsPrefix</key>
+	<string>Conversation actions: </string>
+	<key>chat.Agent</key>
+	<string>Agent</string>
+	<key>chat.AllAgents</key>
+	<string>All agents</string>
+	<key>chat.App</key>
+	<string>App</string>
+	<key>chat.Attach</key>
+	<string>Attach files</string>
+	<key>chat.AttachMessage</key>
+	<string>Choose files to attach to the conversation.</string>
+	<key>chat.AttachPrompt</key>
+	<string>Attach</string>
+	<key>chat.AutoDescription</key>
+	<string>Platform operations assistant: uses tools to manage tasks (create / view / pause / hint) and assets, and can create or modify skills, custom tools, and MCP.</string>
+	<key>chat.Cancel</key>
+	<string>Cancel</string>
+	<key>chat.CancelUpload</key>
+	<string>Cancel upload</string>
+	<key>chat.Choose</key>
+	<string>Choose an agent</string>
+	<key>chat.CiteRecord</key>
+	<string>Cite a record</string>
+	<key>chat.Company</key>
+	<string>Company</string>
+	<key>chat.ConversationName</key>
+	<string>Conversation name</string>
+	<key>chat.ConversationPrefix</key>
+	<string>Conversation: </string>
+	<key>chat.CtrlEnter</key>
+	<string>Ctrl / ⌘ + Enter to send</string>
+	<key>chat.DefaultModel</key>
+	<string>Default model</string>
+	<key>chat.Delete</key>
+	<string>Delete</string>
+	<key>chat.DeleteConversation</key>
+	<string>Delete conversations</string>
+	<key>chat.DeleteMessage</key>
+	<string>This deletes the conversations and their saved messages.</string>
+	<key>chat.DeleteQuestion</key>
+	<string>Delete the selected conversations?</string>
+	<key>chat.Details</key>
+	<string>Details</string>
+	<key>chat.DetailsFailed</key>
+	<string>Cannot load event details.</string>
+	<key>chat.DetailsHelp</key>
+	<string>Load event details</string>
+	<key>chat.Domain</key>
+	<string>Domain</string>
+	<key>chat.Enter</key>
+	<string>Enter to send</string>
+	<key>chat.EventDetails</key>
+	<string>Event details</string>
+	<key>chat.FileReadFailure</key>
+	<string>Cannot read the file. Select it again.</string>
+	<key>chat.Filter</key>
+	<string>Filter conversations by agent</string>
+	<key>chat.InputTokens</key>
+	<string>Input</string>
+	<key>chat.Latest</key>
+	<string>Jump to latest message</string>
+	<key>chat.LoadMore</key>
+	<string>Load more</string>
+	<key>chat.Loading</key>
+	<string>Loading…</string>
+	<key>chat.LoadingBody</key>
+	<string>Loading message body…</string>
+	<key>chat.LoadingDetails</key>
+	<string>Loading details</string>
+	<key>chat.LoadingHistory</key>
+	<string>Loading history</string>
+	<key>chat.MentionCandidates</key>
+	<string>Citation suggestions</string>
+	<key>chat.Message</key>
+	<string>Message</string>
+	<key>chat.Model</key>
+	<string>Model</string>
+	<key>chat.MultiSelect</key>
+	<string>Multi-select</string>
+	<key>chat.New</key>
+	<string>New conversation</string>
+	<key>chat.NoConversations</key>
+	<string>No conversations yet</string>
+	<key>chat.NoDetails</key>
+	<string>No details available</string>
+	<key>chat.NoMatches</key>
+	<string>No matching records. Try a different search.</string>
+	<key>chat.NoMessages</key>
+	<string>No messages yet</string>
+	<key>chat.OlderMessages</key>
+	<string>Load earlier messages</string>
+	<key>chat.OutputTokens</key>
+	<string>Output</string>
+	<key>chat.PentestDescription</key>
+	<string>Standalone pentest agent: single-handedly runs the full chain from recon → attack-surface discovery → deep exploitation → verification → wrap-up, planning, executing, and adversarially verifying on its own.</string>
+	<key>chat.PentestName</key>
+	<string>Penetration Test</string>
+	<key>chat.PickerFailure</key>
+	<string>Cannot open the file picker. Try again.</string>
+	<key>chat.Pinned</key>
+	<string>Pinned</string>
+	<key>chat.PreparingFiles</key>
+	<string>Preparing files…</string>
+	<key>chat.ProcessingFiles</key>
+	<string>Processing attachments…</string>
+	<key>chat.ReloadBody</key>
+	<string>Reload message body</string>
+	<key>chat.RemoveAttachmentHelp</key>
+	<string>Remove from this message’s attachments</string>
+	<key>chat.RemoveAttachmentPrefix</key>
+	<string>Remove attachment: </string>
+	<key>chat.RemoveMentionPrefix</key>
+	<string>Remove citation: </string>
+	<key>chat.Rename</key>
+	<string>Rename</string>
+	<key>chat.Retry</key>
+	<string>Retry</string>
+	<key>chat.RetryMore</key>
+	<string>Retry loading more</string>
+	<key>chat.SearchAgain</key>
+	<string>Search again</string>
+	<key>chat.SearchingMentions</key>
+	<string>Searching records…</string>
+	<key>chat.SelectPrefix</key>
+	<string>Select: </string>
+	<key>chat.Send</key>
+	<string>Send</string>
+	<key>chat.SendKey</key>
+	<string>Send key</string>
+	<key>chat.Sending</key>
+	<string>Sending…</string>
+	<key>chat.Service</key>
+	<string>Service</string>
+	<key>chat.Show100</key>
+	<string>Show 100 more</string>
+	<key>chat.StartHint</key>
+	<string>Choose an agent and model, then enter a message.</string>
+	<key>chat.Stop</key>
+	<string>Stop</string>
+	<key>chat.Stopping</key>
+	<string>Requesting stop…</string>
+	<key>chat.Subdomain</key>
+	<string>Subdomain</string>
+	<key>chat.Unpin</key>
+	<string>Unpin</string>
+	<key>chat.Uploading</key>
+	<string>Uploading…</string>
+	<key>chat.You</key>
+	<string>You</string>
+	<key>company.ui.actions</key>
+	<string>Actions</string>
+	<key>company.ui.add</key>
+	<string>Add company</string>
+	<key>company.ui.append</key>
+	<string>Append scope</string>
+	<key>company.ui.created</key>
+	<string>Company created. Added {added}, skipped {skipped}, invalid {invalid}.</string>
+	<key>company.ui.delete</key>
+	<string>Delete company</string>
+	<key>company.ui.deleteAssets</key>
+	<string>Also delete attributed assets</string>
+	<key>company.ui.deleteHelp</key>
+	<string>Permanently delete this company and its scope rules? Attributed assets are kept unless you select the option below.</string>
+	<key>company.ui.deleted</key>
+	<string>Company deleted. Assets deleted: {assets}.</string>
+	<key>company.ui.duplicate</key>
+	<string>A company with this name already exists.</string>
+	<key>company.ui.invalidLines</key>
+	<string>Review these scope lines: {lines}</string>
+	<key>company.ui.name</key>
+	<string>Company name</string>
+	<key>company.ui.reason</key>
+	<string>Attribution rationale (optional)</string>
+	<key>company.ui.rejected</key>
+	<string>The company change was rejected. Review the entered values.</string>
+	<key>company.ui.replace</key>
+	<string>Edit scope</string>
+	<key>company.ui.replaceHelp</key>
+	<string>Saving replaces the entire existing scope. An empty scope removes all rules.</string>
+	<key>company.ui.save</key>
+	<string>Save</string>
+	<key>company.ui.scopeHelp</key>
+	<string>Enter one domain, IP, CIDR, ICP registration, or keyword per line. Keywords are agent hints.</string>
+	<key>company.ui.scopeSaved</key>
+	<string>Scope saved. Added {added}, skipped {skipped}, invalid {invalid}.</string>
+	<key>company.ui.scopeWarning</key>
+	<string>Existing asset data may affect attribution.</string>
+	<key>company.ui.unconfirmed</key>
+	<string>The result could not be confirmed. Close this form and check the refreshed list before trying again.</string>
+	<key>dashboard.status.engine.exploring</key>
+	<string>Exploring</string>
+	<key>dashboard.status.engine.idle</key>
+	<string>Idle</string>
+	<key>dashboard.status.engine.paused</key>
+	<string>Paused</string>
+	<key>dashboard.status.engine.stalled</key>
+	<string>Stalled</string>
+	<key>dashboard.status.severity.critical</key>
+	<string>Critical</string>
+	<key>dashboard.status.severity.high</key>
+	<string>High</string>
+	<key>dashboard.status.severity.low</key>
+	<string>Low</string>
+	<key>dashboard.status.severity.medium</key>
+	<string>Medium</string>
+	<key>dashboard.status.task.created</key>
+	<string>Created</string>
+	<key>dashboard.status.task.done</key>
+	<string>Done</string>
+	<key>dashboard.status.task.failed</key>
+	<string>Failed</string>
+	<key>dashboard.status.task.paused</key>
+	<string>Paused</string>
+	<key>dashboard.status.task.queued</key>
+	<string>Queued</string>
+	<key>dashboard.status.task.running</key>
+	<string>Running</string>
+	<key>dashboard.status.task.timeout</key>
+	<string>Timed out</string>
+	<key>dashboard.ui.activeModel</key>
+	<string>Active model</string>
+	<key>dashboard.ui.activityResult</key>
+	<string>Result</string>
+	<key>dashboard.ui.activitySystem</key>
+	<string>Activity and system</string>
+	<key>dashboard.ui.activityText</key>
+	<string>Text</string>
+	<key>dashboard.ui.activityThinking</key>
+	<string>Thinking</string>
+	<key>dashboard.ui.activityToolResult</key>
+	<string>Tool result</string>
+	<key>dashboard.ui.activityToolUse</key>
+	<string>Tool call</string>
+	<key>dashboard.ui.all</key>
+	<string>All</string>
+	<key>dashboard.ui.assetDistribution</key>
+	<string>Asset distribution</string>
+	<key>dashboard.ui.assetTotal</key>
+	<string>Total {count} nodes</string>
+	<key>dashboard.ui.assets</key>
+	<string>Assets</string>
+	<key>dashboard.ui.cache</key>
+	<string>Cache</string>
+	<key>dashboard.ui.cacheHit</key>
+	<string>Cache hit</string>
+	<key>dashboard.ui.cacheRead</key>
+	<string>Cache reads</string>
+	<key>dashboard.ui.captureOff</key>
+	<string>Capture OFF · Up to the latest 50 records</string>
+	<key>dashboard.ui.captureOn</key>
+	<string>Capture ON · Up to the latest 50 records</string>
+	<key>dashboard.ui.chartAccessibility</key>
+	<string>Daily token usage. Select a date or use the daily data table for exact values.</string>
+	<key>dashboard.ui.chartHelp</key>
+	<string>Shows the same three series as the browser version. Input includes cache reads, so the stacked height differs from total tokens.</string>
+	<key>dashboard.ui.configured</key>
+	<string>Configured</string>
+	<key>dashboard.ui.dailyTable</key>
+	<string>View daily data as a table</string>
+	<key>dashboard.ui.dataWaiting</key>
+	<string>Waiting for data</string>
+	<key>dashboard.ui.date</key>
+	<string>Date</string>
+	<key>dashboard.ui.daySummary</key>
+	<string>{date} · Input {input} · Output {output} · Cache {cache}</string>
+	<key>dashboard.ui.days</key>
+	<string>{days} days</string>
+	<key>dashboard.ui.description</key>
+	<string>Tasks, usage, findings, and isolated runtime status</string>
+	<key>dashboard.ui.engine</key>
+	<string>Engine mode</string>
+	<key>dashboard.ui.eventCount</key>
+	<string>{count} events (from the latest 30 records)</string>
+	<key>dashboard.ui.failureGroup</key>
+	<string>{group}: {error}</string>
+	<key>dashboard.ui.findings</key>
+	<string>Findings</string>
+	<key>dashboard.ui.goals</key>
+	<string>Goals</string>
+	<key>dashboard.ui.inFlight</key>
+	<string>In flight</string>
+	<key>dashboard.ui.input</key>
+	<string>Input</string>
+	<key>dashboard.ui.inspectDay</key>
+	<string>Inspect daily values</string>
+	<key>dashboard.ui.invalidHelp</key>
+	<string>The loaded data is inconsistent. Reload to try again.</string>
+	<key>dashboard.ui.invalidTitle</key>
+	<string>Unable to verify metrics</string>
+	<key>dashboard.ui.lastActivity</key>
+	<string>Last activity</string>
+	<key>dashboard.ui.ledger</key>
+	<string>Usage ledger</string>
+	<key>dashboard.ui.ledgerDailyHelp</key>
+	<string>Ledger daily data uses the UTC record date. Totals include all records; daily data covers at most 365 days.</string>
+	<key>dashboard.ui.legacy</key>
+	<string>Legacy totals</string>
+	<key>dashboard.ui.legacyDailyHelp</key>
+	<string>Legacy daily totals are estimates based on task and conversation creation dates.</string>
+	<key>dashboard.ui.loadingGroup</key>
+	<string>Loading {group}</string>
+	<key>dashboard.ui.modelsAssetsTraffic</key>
+	<string>Models, assets, and traffic</string>
+	<key>dashboard.ui.morePending</key>
+	<string>Show {count} more</string>
+	<key>dashboard.ui.noActivity</key>
+	<string>No activity.</string>
+	<key>dashboard.ui.noAssets</key>
+	<string>No assets.</string>
+	<key>dashboard.ui.noFindings</key>
+	<string>No findings.</string>
+	<key>dashboard.ui.noPending</key>
+	<string>No operations awaiting approval</string>
+	<key>dashboard.ui.noTasks</key>
+	<string>No tasks.</string>
+	<key>dashboard.ui.noTraffic</key>
+	<string>No traffic data.</string>
+	<key>dashboard.ui.noUsage</key>
+	<string>No usage in this period.</string>
+	<key>dashboard.ui.notConfigured</key>
+	<string>Not configured</string>
+	<key>dashboard.ui.notLoaded</key>
+	<string>No data has been loaded yet.</string>
+	<key>dashboard.ui.output</key>
+	<string>Output</string>
+	<key>dashboard.ui.pendingCount</key>
+	<string>{count} awaiting approval</string>
+	<key>dashboard.ui.period</key>
+	<string>Period</string>
+	<key>dashboard.ui.profiles</key>
+	<string>Model configuration</string>
+	<key>dashboard.ui.recentActivity</key>
+	<string>Recent activity</string>
+	<key>dashboard.ui.recentFindings</key>
+	<string>Recent findings</string>
+	<key>dashboard.ui.recentTasks</key>
+	<string>Recent tasks</string>
+	<key>dashboard.ui.reload</key>
+	<string>Reload</string>
+	<key>dashboard.ui.requestCount</key>
+	<string>Sample of up to the latest 50 records · {count} requests</string>
+	<key>dashboard.ui.runningTasks</key>
+	<string>Running tasks</string>
+	<key>dashboard.ui.selectDate</key>
+	<string>Select a date</string>
+	<key>dashboard.ui.series</key>
+	<string>Series</string>
+	<key>dashboard.ui.severitySummary</key>
+	<string>Critical {critical} · High {high} · Medium {medium} · Low {low}</string>
+	<key>dashboard.ui.source</key>
+	<string>Source</string>
+	<key>dashboard.ui.sourceHelp</key>
+	<string>Legacy totals estimate usage from task and conversation activity. The usage ledger records each call, including interrupted work. It excludes consumption before the ledger was introduced.</string>
+	<key>dashboard.ui.stale</key>
+	<string>Showing previously loaded data ({time})</string>
+	<key>dashboard.ui.status</key>
+	<string>Status</string>
+	<key>dashboard.ui.systemStatus</key>
+	<string>System status</string>
+	<key>dashboard.ui.taskDetail</key>
+	<string>Task details: {description}</string>
+	<key>dashboard.ui.taskSummary</key>
+	<string>Paused {paused} · Done {done}</string>
+	<key>dashboard.ui.tasks</key>
+	<string>Tasks</string>
+	<key>dashboard.ui.title</key>
+	<string>Dashboard</string>
+	<key>dashboard.ui.tokenSummary</key>
+	<string>Input {input} · Output {output}</string>
+	<key>dashboard.ui.tokenUsage</key>
+	<string>Token usage</string>
+	<key>dashboard.ui.tokens</key>
+	<string>Tokens</string>
+	<key>dashboard.ui.trafficCapture</key>
+	<string>Traffic capture</string>
+	<key>dashboard.ui.trafficSample</key>
+	<string>Traffic sample</string>
+	<key>dashboard.ui.trafficStatus</key>
+	<string>Traffic status</string>
+	<key>dashboard.ui.typeCount</key>
+	<string>{count} types</string>
+	<key>dashboard.ui.unassigned</key>
+	<string>Unassigned</string>
+	<key>dashboard.ui.uncachedInput</key>
+	<string>Input (excluding cache)</string>
+	<key>dashboard.ui.usageLoading</key>
+	<string>Loading the data required for usage metrics.</string>
+	<key>dashboard.ui.usageSummary</key>
+	<string>{tasks} tasks · Total {total} tokens</string>
+	<key>dashboard.ui.viewAll</key>
+	<string>View all</string>
+	<key>dashboard.ui.viewTasks</key>
+	<string>View tasks</string>
+	<key>dashboard.ui.waiting</key>
+	<string>Waiting for data</string>
+	<key>error.communication</key>
+	<string>Check communication with the runtime.</string>
+	<key>error.credentials</key>
+	<string>The username or password is incorrect.</string>
+	<key>error.databaseUnavailable</key>
+	<string>The database is unavailable. Try again after recovery.</string>
+	<key>error.forbidden</key>
+	<string>This operation is not allowed. Check the initial setup state.</string>
+	<key>error.httpStatus</key>
+	<string>Communication with the runtime failed (HTTP {code}).</string>
+	<key>error.invalidResponse</key>
+	<string>The runtime response could not be verified.</string>
+	<key>error.keychain</key>
+	<string>Keychain operation failed ({code}).</string>
+	<key>error.mentionSearch</key>
+	<string>Could not load reference suggestions. Search again.</string>
+	<key>error.messageBody</key>
+	<string>Could not load the message body.</string>
+	<key>error.partialDelete</key>
+	<string>Some conversations could not be deleted. Check the remaining conversations.</string>
+	<key>error.rateLimited</key>
+	<string>Too many attempts. Wait a while and try again.</string>
+	<key>error.uploadChangedFile</key>
+	<string>An attachment changed after selection. Select it again.</string>
+	<key>error.uploadInvalidFile</key>
+	<string>The selected attachment cannot be read. Select a regular file.</string>
+	<key>error.uploadInvalidFraming</key>
+	<string>The attachment transfer format could not be verified.</string>
+	<key>error.uploadReadFailure</key>
+	<string>The attachment could not be read. Select it again.</string>
+	<key>error.uploadTooLarge</key>
+	<string>Attachments and transfer metadata must total at most 128 MiB.</string>
+	<key>error.uploadUnavailable</key>
+	<string>This connection cannot transfer attachments.</string>
+	<key>error.validation.activeProfile</key>
+	<string>You cannot delete the active model configuration. Activate another configuration first.</string>
+	<key>error.validation.connectionTest</key>
+	<string>The connection test failed. Check the model, key, URL, and outbound network settings.</string>
+	<key>error.validation.conversationInput</key>
+	<string>Check the conversation input.</string>
+	<key>error.validation.mentionQuery</key>
+	<string>Check the reference search input.</string>
+	<key>error.validation.messageRequired</key>
+	<string>Enter a message.</string>
+	<key>error.validation.missingProvider</key>
+	<string>No LLM configuration exists. Add a provider under System → LLM settings.</string>
+	<key>error.validation.modelLimits</key>
+	<string>Check the rate limits, context size, and output limit.</string>
+	<key>error.validation.modelList</key>
+	<string>Could not load models. Check the key, URL, and outbound network settings.</string>
+	<key>error.validation.modelRequired</key>
+	<string>Enter a name and model.</string>
+	<key>error.validation.passwordBytes</key>
+	<string>The password must be at most 72 UTF-8 bytes.</string>
+	<key>error.validation.passwordMismatch</key>
+	<string>The passwords do not match.</string>
+	<key>error.validation.passwordRequired</key>
+	<string>Enter a password.</string>
+	<key>error.validation.passwordShort</key>
+	<string>Enter a password with at least 8 characters.</string>
+	<key>error.validation.sessionHeader</key>
+	<string>The session header name contains invalid characters.</string>
+	<key>error.validation.termsRequired</key>
+	<string>Read and agree to the terms of use.</string>
+	<key>error.validation.testModel</key>
+	<string>Enter a model to test.</string>
+	<key>evidence.ui.baseline</key>
+	<string>Baseline</string>
+	<key>evidence.ui.binary</key>
+	<string>This body contains binary data. Save the original body to preserve every byte.</string>
+	<key>evidence.ui.bindingID</key>
+	<string>Evidence ID: {id}</string>
+	<key>evidence.ui.bytes</key>
+	<string>Previewed {loaded} of {total} bytes</string>
+	<key>evidence.ui.choose</key>
+	<string>Select evidence to inspect</string>
+	<key>evidence.ui.chooseRole</key>
+	<string>Choose a role</string>
+	<key>evidence.ui.cleanupFailed</key>
+	<string>Incomplete evidence could not be removed. Check the selected destination before retrying.</string>
+	<key>evidence.ui.download</key>
+	<string>Save original body…</string>
+	<key>evidence.ui.edit</key>
+	<string>Edit role and note</string>
+	<key>evidence.ui.empty</key>
+	<string>No traffic evidence is bound to this finding.</string>
+	<key>evidence.ui.exportFailed</key>
+	<string>Could not save the original evidence. Choose a new filename and try again.</string>
+	<key>evidence.ui.exporting</key>
+	<string>Choosing a destination or saving the original body…</string>
+	<key>evidence.ui.inspect</key>
+	<string>Inspect</string>
+	<key>evidence.ui.loadMore</key>
+	<string>Load more</string>
+	<key>evidence.ui.loading</key>
+	<string>Loading evidence</string>
+	<key>evidence.ui.moveDown</key>
+	<string>Move down</string>
+	<key>evidence.ui.moveDownID</key>
+	<string>Move evidence {id} down</string>
+	<key>evidence.ui.moveUp</key>
+	<string>Move up</string>
+	<key>evidence.ui.moveUpID</key>
+	<string>Move evidence {id} up</string>
+	<key>evidence.ui.mutationsPending</key>
+	<string>Adding, editing and reordering bindings are still in development.</string>
+	<key>evidence.ui.note</key>
+	<string>Note</string>
+	<key>evidence.ui.orderHelp</key>
+	<string>Save this new evidence order:</string>
+	<key>evidence.ui.pickerPending</key>
+	<string>Adding captured traffic is still in development.</string>
+	<key>evidence.ui.proof</key>
+	<string>Proof</string>
+	<key>evidence.ui.readOnly</key>
+	<string>Inherited evidence is read-only. Original bodies can still be inspected and saved.</string>
+	<key>evidence.ui.remove</key>
+	<string>Remove binding</string>
+	<key>evidence.ui.removeHelp</key>
+	<string>Remove evidence {id} from this finding? The captured traffic remains available.</string>
+	<key>evidence.ui.reorder</key>
+	<string>Confirm evidence order</string>
+	<key>evidence.ui.request</key>
+	<string>Request</string>
+	<key>evidence.ui.response</key>
+	<string>Response</string>
+	<key>evidence.ui.reviewUnknown</key>
+	<string>Review uncertain update</string>
+	<key>evidence.ui.role</key>
+	<string>Role</string>
+	<key>evidence.ui.saveHelp</key>
+	<string>Choose a new filename. Existing files are preserved.</string>
+	<key>evidence.ui.saved</key>
+	<string>Saved {name} ({bytes} bytes).</string>
+	<key>evidence.ui.savedWarning</key>
+	<string>The file was saved, but temporary-file cleanup or directory synchronization was incomplete. Check the destination.</string>
+	<key>evidence.ui.side</key>
+	<string>Message</string>
+	<key>evidence.ui.supporting</key>
+	<string>Supporting</string>
+	<key>evidence.ui.title</key>
+	<string>Traffic evidence</string>
+	<key>evidence.ui.unknownHelp</key>
+	<string>The last update may already have been applied. Refresh and inspect the latest evidence before explicitly allowing further updates. No command will be repeated automatically.</string>
+	<key>evidence.ui.unknownID</key>
+	<string>Evidence update outcome is unknown for finding {id}.</string>
+	<key>evidence.ui.verification</key>
+	<string>Verification</string>
+	<key>feature.agents</key>
+	<string>Agents</string>
+	<key>feature.approvals</key>
+	<string>Approvals</string>
+	<key>feature.assetIntercept</key>
+	<string>Asset blocking</string>
+	<key>feature.assets</key>
+	<string>Assets</string>
+	<key>feature.chat</key>
+	<string>Chat</string>
+	<key>feature.commands</key>
+	<string>Tool runs</string>
+	<key>feature.dashboard</key>
+	<string>Dashboard</string>
+	<key>feature.findings</key>
+	<string>Findings</string>
+	<key>feature.intercept</key>
+	<string>Intercept rules</string>
+	<key>feature.llm</key>
+	<string>LLM</string>
+	<key>feature.llmRecords</key>
+	<string>LLM records</string>
+	<key>feature.logs</key>
+	<string>Logs</string>
+	<key>feature.mcp</key>
+	<string>MCP</string>
+	<key>feature.notify</key>
+	<string>Notifications</string>
+	<key>feature.settings</key>
+	<string>System settings</string>
+	<key>feature.skills</key>
+	<string>Skills</string>
+	<key>feature.sync</key>
+	<string>Asset sync</string>
+	<key>feature.tasks</key>
+	<string>Tasks</string>
+	<key>feature.tools</key>
+	<string>Tools</string>
+	<key>feature.traffic</key>
+	<string>Traffic</string>
+	<key>feature.workspace</key>
+	<string>Workspace</string>
+	<key>finding.limits</key>
+	<string>The finding request exceeds the supported limits.</string>
+	<key>finding.readOnly</key>
+	<string>This finding is inherited or has no editable record. Open its original finding to make changes.</string>
+	<key>finding.ui.acknowledge</key>
+	<string>Acknowledge uncertain result</string>
+	<key>finding.ui.actions</key>
+	<string>Actions</string>
+	<key>finding.ui.advancedPending</key>
+	<string>Finding export, report generation, lineage, deepen and retest are still in development.</string>
+	<key>finding.ui.all</key>
+	<string>All</string>
+	<key>finding.ui.asset</key>
+	<string>By asset</string>
+	<key>finding.ui.assets</key>
+	<string>Assets</string>
+	<key>finding.ui.cancel</key>
+	<string>Cancel</string>
+	<key>finding.ui.class</key>
+	<string>Vulnerability class</string>
+	<key>finding.ui.clear</key>
+	<string>Clear selection</string>
+	<key>finding.ui.close</key>
+	<string>Close details</string>
+	<key>finding.ui.collapse</key>
+	<string>Collapse</string>
+	<key>finding.ui.confirm</key>
+	<string>Confirm</string>
+	<key>finding.ui.delete</key>
+	<string>Delete finding</string>
+	<key>finding.ui.deleteHelp</key>
+	<string>Permanently delete this finding? This cannot be undone.</string>
+	<key>finding.ui.details</key>
+	<string>Finding details</string>
+	<key>finding.ui.edit</key>
+	<string>Edit finding</string>
+	<key>finding.ui.empty</key>
+	<string>No findings match these filters</string>
+	<key>finding.ui.evidence</key>
+	<string>Evidence</string>
+	<key>finding.ui.expand</key>
+	<string>Expand</string>
+	<key>finding.ui.flat</key>
+	<string>All findings</string>
+	<key>finding.ui.grouped</key>
+	<string>By task</string>
+	<key>finding.ui.inherited</key>
+	<string>Inherited from task {id}; read-only</string>
+	<key>finding.ui.legacy</key>
+	<string>This item has no standalone finding handle and is read-only.</string>
+	<key>finding.ui.name</key>
+	<string>Name</string>
+	<key>finding.ui.next</key>
+	<string>Next</string>
+	<key>finding.ui.noSelection</key>
+	<string>Select a finding to view its details</string>
+	<key>finding.ui.openTask</key>
+	<string>Open task {id}</string>
+	<key>finding.ui.orphan</key>
+	<string>Unassigned</string>
+	<key>finding.ui.page</key>
+	<string>Page {page} of {pages} · {total} items</string>
+	<key>finding.ui.pageSize</key>
+	<string>Rows per page</string>
+	<key>finding.ui.pending</key>
+	<string>Pending</string>
+	<key>finding.ui.previous</key>
+	<string>Previous</string>
+	<key>finding.ui.refresh</key>
+	<string>Refresh</string>
+	<key>finding.ui.report</key>
+	<string>Report</string>
+	<key>finding.ui.reportStale</key>
+	<string>This report predates the current evidence.</string>
+	<key>finding.ui.save</key>
+	<string>Save changes</string>
+	<key>finding.ui.search</key>
+	<string>Search findings</string>
+	<key>finding.ui.select</key>
+	<string>Select finding {id}</string>
+	<key>finding.ui.selectPage</key>
+	<string>Select visible findings</string>
+	<key>finding.ui.selected</key>
+	<string>{count} selected across pages</string>
+	<key>finding.ui.severity</key>
+	<string>Severity</string>
+	<key>finding.ui.sort</key>
+	<string>Sort by</string>
+	<key>finding.ui.stale</key>
+	<string>Showing previously loaded data. Refresh to check for changes.</string>
+	<key>finding.ui.status</key>
+	<string>Status</string>
+	<key>finding.ui.status.confirmed</key>
+	<string>Confirmed</string>
+	<key>finding.ui.status.duplicate</key>
+	<string>Duplicate</string>
+	<key>finding.ui.status.false_positive</key>
+	<string>False positive</string>
+	<key>finding.ui.status.fixed</key>
+	<string>Fixed</string>
+	<key>finding.ui.status.ignored</key>
+	<string>Ignored</string>
+	<key>finding.ui.status.in_progress</key>
+	<string>In progress</string>
+	<key>finding.ui.status.pending</key>
+	<string>Pending</string>
+	<key>finding.ui.status.resolved</key>
+	<string>Resolved</string>
+	<key>finding.ui.status.risk_accepted</key>
+	<string>Risk accepted</string>
+	<key>finding.ui.summary</key>
+	<string>Summary</string>
+	<key>finding.ui.task</key>
+	<string>Task</string>
+	<key>finding.ui.time</key>
+	<string>Found at</string>
+	<key>finding.ui.title</key>
+	<string>Findings</string>
+	<key>finding.ui.total</key>
+	<string>Total</string>
+	<key>finding.ui.treeTruncated</key>
+	<string>Some asset kinds are omitted from this snapshot.</string>
+	<key>finding.ui.unassignedAssets</key>
+	<string>Unassigned assets</string>
+	<key>finding.ui.unknown</key>
+	<string>Unconfirmed change for finding {id}</string>
+	<key>finding.ui.unknownHelp</key>
+	<string>A request may already have changed the server. Refresh and check the finding before acknowledging. Acknowledgement only unlocks further edits; it does not verify or retry the change.</string>
+	<key>finding.validation</key>
+	<string>Check the finding identifier and edited fields.</string>
+	<key>llm.local.cloudEnabled</key>
+	<string>Disable Ollama cloud features, then reload.</string>
+	<key>llm.local.description</key>
+	<string>Browse models on this Mac and test local inference. This view does not change the active agent model.</string>
+	<key>llm.local.empty</key>
+	<string>No local models are installed</string>
+	<key>llm.local.gpuMemory</key>
+	<string>Model GPU allocation</string>
+	<key>llm.local.loadedContext</key>
+	<string>Loaded context length</string>
+	<key>llm.local.maximumContext</key>
+	<string>Model context limit</string>
+	<key>llm.local.metadataUnavailable</key>
+	<string>Model details could not be loaded.</string>
+	<key>llm.local.model</key>
+	<string>Model</string>
+	<key>llm.local.quantization</key>
+	<string>Quantization</string>
+	<key>llm.local.responseTime</key>
+	<string>Response time (s)</string>
+	<key>llm.local.tab</key>
+	<string>Local models</string>
+	<key>llm.local.test</key>
+	<string>Test local inference</string>
+	<key>llm.local.tokens</key>
+	<string>Tokens (input / output)</string>
+	<key>llm.local.unavailable</key>
+	<string>Could not complete the Ollama request. Check that the local runtime is running and supports local-only status.</string>
+	<key>llm.noticeActivated</key>
+	<string>Active model configuration changed.</string>
+	<key>llm.noticeDeleted</key>
+	<string>Model configuration deleted.</string>
+	<key>llm.noticePoolReset</key>
+	<string>Rotation state recovered.</string>
+	<key>llm.noticeRetrySaved</key>
+	<string>Retry settings saved.</string>
+	<key>llm.noticeRotationSaved</key>
+	<string>Rotation settings saved.</string>
+	<key>llm.noticeSaved</key>
+	<string>Model configuration saved.</string>
+	<key>llm.ui.aPIKey</key>
+	<string>API key</string>
+	<key>llm.ui.activate</key>
+	<string>Activate</string>
+	<key>llm.ui.activateHint</key>
+	<string>Creating a configuration does not activate it. Select Activate in the list.</string>
+	<key>llm.ui.active</key>
+	<string>Active</string>
+	<key>llm.ui.allowFallback</key>
+	<string>Allow fallback for explicitly selected models</string>
+	<key>llm.ui.attemptOrder</key>
+	<string>Actual attempt order</string>
+	<key>llm.ui.attempts</key>
+	<string>Attempts (-1 to 20)</string>
+	<key>llm.ui.baseURL</key>
+	<string>Base URL (optional)</string>
+	<key>llm.ui.breaker</key>
+	<string>Rotation circuit breaker</string>
+	<key>llm.ui.breakerHelp</key>
+	<string>Consecutive transient failures temporarily exclude a provider. Permanent errors, such as invalid settings or insufficient balance, trip the breaker immediately.</string>
+	<key>llm.ui.cancel</key>
+	<string>Cancel</string>
+	<key>llm.ui.close</key>
+	<string>Close</string>
+	<key>llm.ui.connectDetail</key>
+	<string>Network failures before connection, or HTTP 408, 429, or 5xx</string>
+	<key>llm.ui.connection</key>
+	<string>Connection</string>
+	<key>llm.ui.context</key>
+	<string>Context window (K)</string>
+	<key>llm.ui.cooldown</key>
+	<string>Cooldown: {seconds}s</string>
+	<key>llm.ui.createHint</key>
+	<string>Create a configuration, then activate the one you want to use.</string>
+	<key>llm.ui.createTitle</key>
+	<string>Create model configuration</string>
+	<key>llm.ui.customConfiguration</key>
+	<string>Custom Configuration</string>
+	<key>llm.ui.defaultMaxTokens</key>
+	<string>max_tokens (default)</string>
+	<key>llm.ui.delete</key>
+	<string>Delete</string>
+	<key>llm.ui.deleteConfirm</key>
+	<string>Delete this model configuration?</string>
+	<key>llm.ui.deleteHelp</key>
+	<string>Tasks and other references to this configuration are updated by the same backend behavior as the browser version.</string>
+	<key>llm.ui.deleteProfile</key>
+	<string>Delete model configuration</string>
+	<key>llm.ui.description</key>
+	<string>Manage models, API formats, and limits for all agents. A star marks the active configuration.</string>
+	<key>llm.ui.disabled</key>
+	<string>Disabled (disabled)</string>
+	<key>llm.ui.discardConfirm</key>
+	<string>Discard unsaved changes and reload?</string>
+	<key>llm.ui.display</key>
+	<string>View</string>
+	<key>llm.ui.edit</key>
+	<string>Edit</string>
+	<key>llm.ui.editTitle</key>
+	<string>Edit model configuration</string>
+	<key>llm.ui.effort</key>
+	<string>Reasoning effort</string>
+	<key>llm.ui.effortValue</key>
+	<string>Reasoning effort: {value}</string>
+	<key>llm.ui.empty</key>
+	<string>Empty response</string>
+	<key>llm.ui.emptyDetail</key>
+	<string>An OpenAI-format response completes successfully with an empty body</string>
+	<key>llm.ui.enableRotation</key>
+	<string>Enable rotation</string>
+	<key>llm.ui.enabled</key>
+	<string>Enabled (enabled)</string>
+	<key>llm.ui.excludeHelp</key>
+	<string>Excluded configurations can still be selected explicitly by agents or tasks.</string>
+	<key>llm.ui.excludeRotation</key>
+	<string>Exclude from rotation</string>
+	<key>llm.ui.excluded</key>
+	<string>Excluded from rotation</string>
+	<key>llm.ui.failures</key>
+	<string>Consecutive failures: {count}</string>
+	<key>llm.ui.fallbackHelp</key>
+	<string>Use rotation when an explicitly selected model is unavailable.</string>
+	<key>llm.ui.fetchModels</key>
+	<string>Load models</string>
+	<key>llm.ui.fetching</key>
+	<string>Loading settings</string>
+	<key>llm.ui.format</key>
+	<string>API format</string>
+	<key>llm.ui.globalConnectDetail</key>
+	<string>Connection failures, timeouts, and HTTP 408, 429, or 500/502/503/504. Applies before receiving HTTP 200.</string>
+	<key>llm.ui.globalEmptyDetail</key>
+	<string>OpenAI format only. Retries successfully completed responses with an empty body.</string>
+	<key>llm.ui.globalRetry</key>
+	<string>Global retry policy</string>
+	<key>llm.ui.globalStreamDetail</key>
+	<string>Disconnections or transient failures before any output is delivered. Does not duplicate content after output starts.</string>
+	<key>llm.ui.healthy</key>
+	<string>Healthy</string>
+	<key>llm.ui.intent</key>
+	<string>Intent retry</string>
+	<key>llm.ui.intentHelp</key>
+	<string>Retries the entire intent when a worker exits with model_error.</string>
+	<key>llm.ui.interval</key>
+	<string>Interval (ms)</string>
+	<key>llm.ui.invalidNumber</key>
+	<string>Check the number and allowed range.</string>
+	<key>llm.ui.limits</key>
+	<string>Limits</string>
+	<key>llm.ui.limitsHelp</key>
+	<string>A request limit of 0 is unlimited and shared by all agents. Context 0 uses the default 200K; the maximum is 1000K.</string>
+	<key>llm.ui.loading</key>
+	<string>Loading settings</string>
+	<key>llm.ui.maxTokens</key>
+	<string>Output limit per response</string>
+	<key>llm.ui.maxTokensField</key>
+	<string>Output limit field name</string>
+	<key>llm.ui.maxTokensHelp</key>
+	<string>With 0, omits the limit field and uses the provider default. This is separate from total context capacity.</string>
+	<key>llm.ui.model</key>
+	<string>Model</string>
+	<key>llm.ui.modelCandidates</key>
+	<string>Model candidates ({count})</string>
+	<key>llm.ui.modelPriority</key>
+	<string>{model} · Priority {priority}</string>
+	<key>llm.ui.name</key>
+	<string>Name</string>
+	<key>llm.ui.new</key>
+	<string>New</string>
+	<key>llm.ui.noKey</key>
+	<string>API key not configured</string>
+	<key>llm.ui.noMatchingModels</key>
+	<string>No matching models</string>
+	<key>llm.ui.noProfiles</key>
+	<string>No model configurations</string>
+	<key>llm.ui.notEligible</key>
+	<string>Excluded</string>
+	<key>llm.ui.omit</key>
+	<string>Do not send</string>
+	<key>llm.ui.perMinute</key>
+	<string>Requests per minute</string>
+	<key>llm.ui.perSecond</key>
+	<string>Requests per second</string>
+	<key>llm.ui.priority</key>
+	<string>Priority</string>
+	<key>llm.ui.priorityHelp</key>
+	<string>Higher values have priority. The active configuration always comes first; equal priorities take turns.</string>
+	<key>llm.ui.priorityValue</key>
+	<string>Priority: {value}</string>
+	<key>llm.ui.profileRetry</key>
+	<string>Retries for this configuration</string>
+	<key>llm.ui.profiles</key>
+	<string>Model configurations</string>
+	<key>llm.ui.proxy</key>
+	<string>Proxy (optional)</string>
+	<key>llm.ui.proxyHelp</key>
+	<string>The proxy applies to outbound LLM traffic. HTTP, HTTPS, and SOCKS5 are supported; leave blank for a direct connection. Outbound networking in the dedicated VM is still awaiting verification.</string>
+	<key>llm.ui.proxySet</key>
+	<string>Proxy configured</string>
+	<key>llm.ui.rates</key>
+	<string>{second}/s · {minute}/min</string>
+	<key>llm.ui.recoveryHelp</key>
+	<string>The server may have completed the last change. Reload and review the current settings before resuming. Resuming does not repeat the change.</string>
+	<key>llm.ui.recoveryOverview</key>
+	<string>Latest configuration overview</string>
+	<key>llm.ui.recoveryResume</key>
+	<string>I reviewed the current settings — resume changes</string>
+	<key>llm.ui.recoveryTitle</key>
+	<string>Changes paused: result not confirmed</string>
+	<key>llm.ui.refetch</key>
+	<string>Reload</string>
+	<key>llm.ui.reload</key>
+	<string>Reload</string>
+	<key>llm.ui.resetAll</key>
+	<string>Recover all</string>
+	<key>llm.ui.resetOne</key>
+	<string>Recover this configuration</string>
+	<key>llm.ui.retryDefaults</key>
+	<string>0: use defaults · Attempts -1: disable this layer · Interval 0: default waiting strategy</string>
+	<key>llm.ui.retryHelp</key>
+	<string>Applies connection → empty response → stream → rotation circuit breaker → intent retry in order. The first three layers can be overridden per model configuration.</string>
+	<key>llm.ui.retryTab</key>
+	<string>Retries and waiting</string>
+	<key>llm.ui.rotation</key>
+	<string>Rotation</string>
+	<key>llm.ui.rotationCooldown</key>
+	<string>Cooldown {seconds}s</string>
+	<key>llm.ui.rotationFailures</key>
+	<string>Consecutive failures {count}</string>
+	<key>llm.ui.rotationHelp</key>
+	<string>Uses the active configuration first, then switches by priority when a connection fails.</string>
+	<key>llm.ui.rotationTitle</key>
+	<string>Rotation settings</string>
+	<key>llm.ui.save</key>
+	<string>Save</string>
+	<key>llm.ui.savedKeyHint</key>
+	<string>Saved: {hint} · Leave blank to keep the existing key.</string>
+	<key>llm.ui.saving</key>
+	<string>Saving changes</string>
+	<key>llm.ui.searchModels</key>
+	<string>Search models</string>
+	<key>llm.ui.sessionHeader</key>
+	<string>Session header name (optional)</string>
+	<key>llm.ui.sessionHelp</key>
+	<string>When set, sends the session ID for the same conversation or task in this header. Leave blank to omit it.</string>
+	<key>llm.ui.stale</key>
+	<string>Showing previously loaded data. Reload to update it.</string>
+	<key>llm.ui.stream</key>
+	<string>Stream</string>
+	<key>llm.ui.streamDetail</key>
+	<string>Disconnections or transient failures before receiving any tokens</string>
+	<key>llm.ui.streaming</key>
+	<string>Streaming output</string>
+	<key>llm.ui.streamingHelp</key>
+	<string>When off, receives the entire response at once. Use this if the gateway has SSE issues.</string>
+	<key>llm.ui.test</key>
+	<string>Test connection</string>
+	<key>llm.ui.testSuccess</key>
+	<string>Connected · {model} · {latency}ms</string>
+	<key>llm.ui.thinking</key>
+	<string>Thinking</string>
+	<key>llm.ui.thinkingHelp</key>
+	<string>The thinking switch and reasoning effort are independent parameters. Select Do not send for unsupported models.</string>
+	<key>llm.ui.thinkingSwitch</key>
+	<string>Thinking switch</string>
+	<key>llm.ui.unsaved</key>
+	<string>You have unsaved changes</string>
+	<key>llmRecord.ui.allTasks</key>
+	<string>All Tasks</string>
+	<key>llmRecord.ui.copyRequest</key>
+	<string>Copy Request</string>
+	<key>llmRecord.ui.copyResponse</key>
+	<string>Copy Response</string>
+	<key>llmRecord.ui.deletePrompt</key>
+	<string>Delete all recorded LLM calls for task #{task}?</string>
+	<key>llmRecord.ui.deleteTask</key>
+	<string>Delete Task History</string>
+	<key>llmRecord.ui.deleted</key>
+	<string>Deleted {count} LLM call records.</string>
+	<key>llmRecord.ui.empty</key>
+	<string>No LLM call records.</string>
+	<key>llmRecord.ui.latency</key>
+	<string>Latency (ms)</string>
+	<key>llmRecord.ui.latencyColumn</key>
+	<string>Latency</string>
+	<key>llmRecord.ui.login</key>
+	<string>Sign in to view LLM call history.</string>
+	<key>llmRecord.ui.profile</key>
+	<string>Profile</string>
+	<key>llmRecord.ui.raw</key>
+	<string>Raw Payloads</string>
+	<key>llmRecord.ui.recording</key>
+	<string>Record LLM Calls</string>
+	<key>llmRecord.ui.request</key>
+	<string>Request</string>
+	<key>llmRecord.ui.response</key>
+	<string>Response</string>
+	<key>llmRecord.ui.session</key>
+	<string>Session</string>
+	<key>llmRecord.ui.statusError</key>
+	<string>Error</string>
+	<key>llmRecord.ui.statusOK</key>
+	<string>OK</string>
+	<key>llmRecord.ui.task</key>
+	<string>Task</string>
+	<key>llmRecord.ui.tokens</key>
+	<string>Tokens</string>
+	<key>mcp.clients.activeTitle</key>
+	<string>Allowed clients</string>
+	<key>mcp.clients.agentPermission</key>
+	<string>Agent names and availability</string>
+	<key>mcp.clients.allow</key>
+	<string>Allow connection</string>
+	<key>mcp.clients.busyError</key>
+	<string>Wait until the previous connection has stopped.</string>
+	<key>mcp.clients.cancel</key>
+	<string>Cancel</string>
+	<key>mcp.clients.capacityError</key>
+	<string>Up to 16 clients can be allowed. Revoke an existing connection first.</string>
+	<key>mcp.clients.clientName</key>
+	<string>Client name</string>
+	<key>mcp.clients.connectionError</key>
+	<string>The connection could not be allowed. Check that NetworkPNTR is running and signed in.</string>
+	<key>mcp.clients.consentBody</key>
+	<string>Only the permissions listed below will be granted.</string>
+	<key>mcp.clients.consentTitle</key>
+	<string>Allow this AI client?</string>
+	<key>mcp.clients.copied</key>
+	<string>Configuration copied.</string>
+	<key>mcp.clients.copy</key>
+	<string>Copy MCP JSON</string>
+	<key>mcp.clients.description</key>
+	<string>Allow AI clients on this Mac to read NetworkPNTR data.</string>
+	<key>mcp.clients.helperUnavailable</key>
+	<string>The connection helper is unavailable. Reinstall NetworkPNTR Mac to enable connections.</string>
+	<key>mcp.clients.instructions</key>
+	<string>For clients that accept MCP JSON, paste the copied configuration into their MCP settings. Keep NetworkPNTR Mac running. Signing out or stopping the VM ends access.</string>
+	<key>mcp.clients.loginRequired</key>
+	<string>Start NetworkPNTR and sign in to allow a connection.</string>
+	<key>mcp.clients.nameError</key>
+	<string>Enter a client name of 1–80 characters on one line.</string>
+	<key>mcp.clients.noClients</key>
+	<string>No AI clients allowed yet.</string>
+	<key>mcp.clients.noTasks</key>
+	<string>No tasks available to allow.</string>
+	<key>mcp.clients.permissionError</key>
+	<string>Select at least one permission or task.</string>
+	<key>mcp.clients.placeholder</key>
+	<string>Desktop AI</string>
+	<key>mcp.clients.readOnly</key>
+	<string>Read-only access. This connection cannot start tasks or invoke an NetworkPNTR model.</string>
+	<key>mcp.clients.reload</key>
+	<string>Reload tasks</string>
+	<key>mcp.clients.revoke</key>
+	<string>Revoke access</string>
+	<key>mcp.clients.selectedTasks</key>
+	<string>Selected tasks</string>
+	<key>mcp.clients.taskError</key>
+	<string>The task selection is invalid. Reload tasks and select again.</string>
+	<key>mcp.clients.taskLoadError</key>
+	<string>Tasks could not be loaded. Try reloading.</string>
+	<key>mcp.clients.taskPermission</key>
+	<string>Task status and token counts</string>
+	<key>mcp.clients.tasksLoading</key>
+	<string>Loading tasks…</string>
+	<key>mcp.clients.title</key>
+	<string>AI connections</string>
+	<key>menu.about</key>
+	<string>About {app}</string>
+	<key>menu.appHelp</key>
+	<string>{app} Help</string>
+	<key>menu.bringAll</key>
+	<string>Bring All to Front</string>
+	<key>menu.close</key>
+	<string>Close</string>
+	<key>menu.copy</key>
+	<string>Copy</string>
+	<key>menu.customizeToolbar</key>
+	<string>Customize Toolbar…</string>
+	<key>menu.cut</key>
+	<string>Cut</string>
+	<key>menu.delete</key>
+	<string>Delete</string>
+	<key>menu.edit</key>
+	<string>Edit</string>
+	<key>menu.file</key>
+	<string>File</string>
+	<key>menu.fullScreen</key>
+	<string>Enter Full Screen</string>
+	<key>menu.help</key>
+	<string>Help</string>
+	<key>menu.hide</key>
+	<string>Hide {app}</string>
+	<key>menu.hideOthers</key>
+	<string>Hide Others</string>
+	<key>menu.minimize</key>
+	<string>Minimize</string>
+	<key>menu.paste</key>
+	<string>Paste</string>
+	<key>menu.pastePlain</key>
+	<string>Paste and Match Style</string>
+	<key>menu.quit</key>
+	<string>Quit {app}</string>
+	<key>menu.redo</key>
+	<string>Redo</string>
+	<key>menu.selectAll</key>
+	<string>Select All</string>
+	<key>menu.services</key>
+	<string>Services</string>
+	<key>menu.showAll</key>
+	<string>Show All</string>
+	<key>menu.sidebar</key>
+	<string>Toggle Sidebar</string>
+	<key>menu.toolbar</key>
+	<string>Toggle Toolbar</string>
+	<key>menu.undo</key>
+	<string>Undo</string>
+	<key>menu.view</key>
+	<string>View</string>
+	<key>menu.window</key>
+	<string>Window</string>
+	<key>menu.zoom</key>
+	<string>Zoom</string>
+	<key>runtime.ui.aRTEXStarting</key>
+	<string>Starting NetworkPNTR</string>
+	<key>runtime.ui.cloudRelayActive</key>
+	<string>Cloud API relay active · Supported providers only</string>
+	<key>runtime.ui.cloudRelayInactive</key>
+	<string>Cloud API relay inactive</string>
+	<key>runtime.ui.environment</key>
+	<string>Dedicated runtime</string>
+	<key>runtime.ui.forceStop</key>
+	<string>Force stop</string>
+	<key>runtime.ui.guestLog</key>
+	<string>Guest boot log</string>
+	<key>runtime.ui.help</key>
+	<string>Manage authentication from Account.</string>
+	<key>runtime.ui.integrity</key>
+	<string>Verify kernel, initial RAM disk, and OS disk SHA-256 before boot</string>
+	<key>runtime.ui.integrityError</key>
+	<string>Runtime validation failed. Check the runtime files and guest log.</string>
+	<key>runtime.ui.isolation</key>
+	<string>No Docker required · No host shares · No virtual NIC</string>
+	<key>runtime.ui.parityBaseline</key>
+	<string>Baseline: {commit} · {features} main features / {routes} screens / {endpoints} API handlers</string>
+	<key>runtime.ui.parityBrowser</key>
+	<string>Browser screen</string>
+	<key>runtime.ui.parityFeature</key>
+	<string>Feature</string>
+	<key>runtime.ui.parityHelp</key>
+	<string>Compare the same data, actions, errors, and saved state. LLM settings, Dashboard, and Chat are under implementation and verification. Migration remains incomplete until every feature meets its acceptance criteria.</string>
+	<key>runtime.ui.parityInProgress</key>
+	<string>Implementation and verification in progress</string>
+	<key>runtime.ui.parityStatus</key>
+	<string>Status</string>
+	<key>runtime.ui.parityTitle</key>
+	<string>Feature comparison with the browser version</string>
+	<key>runtime.ui.parityWaiting</key>
+	<string>Phase {phase} · Awaiting migration</string>
+	<key>runtime.ui.persistence</key>
+	<string>Keep settings and credentials on a dedicated disk</string>
+	<key>runtime.ui.ready</key>
+	<string>NetworkPNTR and the database are ready</string>
+	<key>runtime.ui.start</key>
+	<string>Start isolated Linux</string>
+	<key>runtime.ui.state</key>
+	<string>State: {state}</string>
+	<key>runtime.ui.stateFailed</key>
+	<string>Failed</string>
+	<key>runtime.ui.stateIdle</key>
+	<string>Not started</string>
+	<key>runtime.ui.stateRunning</key>
+	<string>Running</string>
+	<key>runtime.ui.stateStarting</key>
+	<string>Starting</string>
+	<key>runtime.ui.stateStopped</key>
+	<string>Stopped</string>
+	<key>runtime.ui.stateStopping</key>
+	<string>Stopping</string>
+	<key>runtime.ui.stop</key>
+	<string>Stop</string>
+	<key>runtime.ui.subtitle</key>
+	<string>Run NetworkPNTR and PostgreSQL in a dedicated VM</string>
+	<key>runtime.ui.timeoutError</key>
+	<string>The runtime did not respond in time. Check the guest log before retrying.</string>
+	<key>runtime.ui.title</key>
+	<string>Dedicated Linux runtime</string>
+	<key>runtime.ui.transitionError</key>
+	<string>This operation is unavailable in the current runtime state.</string>
+	<key>runtime.ui.unexpected</key>
+	<string>The runtime operation failed. Check the guest log and try again.</string>
+	<key>runtime.ui.unsupported</key>
+	<string>Hardware virtualization is unavailable on this Mac.</string>
+	<key>runtime.ui.virtualization</key>
+	<string>Run real Linux with Apple Virtualization.framework</string>
+	<key>shell.account</key>
+	<string>Account</string>
+	<key>shell.authPreparation</key>
+	<string>The account screen opens when the runtime is ready.</string>
+	<key>shell.catalogUnavailable</key>
+	<string>Cannot load features</string>
+	<key>shell.chatLogin</key>
+	<string>Log in on the Account screen before opening chat.</string>
+	<key>shell.close</key>
+	<string>Close</string>
+	<key>shell.dashboardLogin</key>
+	<string>Log in on the Account screen before opening the dashboard.</string>
+	<key>shell.features</key>
+	<string>Features</string>
+	<key>shell.guestPrefix</key>
+	<string>Isolated Linux: </string>
+	<key>shell.guestReady</key>
+	<string>Isolated Linux: ready</string>
+	<key>shell.language</key>
+	<string>Language</string>
+	<key>shell.languageHelp</key>
+	<string>Change display language</string>
+	<key>shell.llmLogin</key>
+	<string>Log in on the Account screen before opening LLM settings.</string>
+	<key>shell.loginRequired</key>
+	<string>Login required</string>
+	<key>shell.parity</key>
+	<string>Feature comparison</string>
+	<key>shell.plannedFeature</key>
+	<string>Planned for phase %lld. We will compare functionality and UI/UX with browser route %@. This feature is not available yet.</string>
+	<key>shell.productName</key>
+	<string>NetworkPNTR Mac</string>
+	<key>shell.runtime</key>
+	<string>Runtime</string>
+	<key>shell.selectedTask</key>
+	<string>Selected task: </string>
+	<key>shell.startRequired</key>
+	<string>Start NetworkPNTR</string>
+	<key>shell.system</key>
+	<string>System</string>
+	<key>shell.taskComparison</key>
+	<string>Task details will be implemented and compared with the browser version.</string>
+	<key>shell.taskPending</key>
+	<string>Task details are being migrated</string>
+	<key>task.archive.actionUnavailable</key>
+	<string>This archive state does not allow that action.</string>
+	<key>task.archive.batchValidation</key>
+	<string>Select between 1 and 100 valid items.</string>
+	<key>task.archive.phase.compact_database</key>
+	<string>Compacting database</string>
+	<key>task.archive.phase.compact_traffic</key>
+	<string>Compacting traffic</string>
+	<key>task.archive.phase.compress</key>
+	<string>Compressing</string>
+	<key>task.archive.phase.consume_package</key>
+	<string>Finishing restore</string>
+	<key>task.archive.phase.database_restored</key>
+	<string>Database restored</string>
+	<key>task.archive.phase.delete_metadata</key>
+	<string>Deleting archive metadata</string>
+	<key>task.archive.phase.failed</key>
+	<string>Failed</string>
+	<key>task.archive.phase.interrupted</key>
+	<string>Interrupted</string>
+	<key>task.archive.phase.queued</key>
+	<string>Queued</string>
+	<key>task.archive.phase.ready</key>
+	<string>Ready</string>
+	<key>task.archive.phase.restore_database</key>
+	<string>Restoring database</string>
+	<key>task.archive.phase.restore_files</key>
+	<string>Restoring files</string>
+	<key>task.archive.phase.restore_traffic</key>
+	<string>Restoring traffic</string>
+	<key>task.archive.phase.snapshot_database</key>
+	<string>Saving database snapshot</string>
+	<key>task.archive.phase.snapshot_traffic</key>
+	<string>Saving traffic snapshot</string>
+	<key>task.archive.phase.stage_files</key>
+	<string>Staging files</string>
+	<key>task.archive.phase.stage_package_delete</key>
+	<string>Preparing package deletion</string>
+	<key>task.archive.phase.starting</key>
+	<string>Starting</string>
+	<key>task.archive.phase.verify_package</key>
+	<string>Verifying package</string>
+	<key>task.archive.queryLimits</key>
+	<string>Use a valid page, size and search within the allowed limits.</string>
+	<key>task.archive.state.archive_failed</key>
+	<string>Archive failed</string>
+	<key>task.archive.state.archive_queued</key>
+	<string>Archive queued</string>
+	<key>task.archive.state.archiving</key>
+	<string>Archiving</string>
+	<key>task.archive.state.delete_failed</key>
+	<string>Deletion failed</string>
+	<key>task.archive.state.delete_queued</key>
+	<string>Deletion queued</string>
+	<key>task.archive.state.deleting</key>
+	<string>Deleting</string>
+	<key>task.archive.state.ready</key>
+	<string>Ready</string>
+	<key>task.archive.state.restore_failed</key>
+	<string>Restore failed</string>
+	<key>task.archive.state.restore_queued</key>
+	<string>Restore queued</string>
+	<key>task.archive.state.restoring</key>
+	<string>Restoring</string>
+	<key>task.archive.ui.accepted</key>
+	<string>Accepted (queued)</string>
+	<key>task.archive.ui.actions</key>
+	<string>Actions</string>
+	<key>task.archive.ui.archive</key>
+	<string>Archive tasks</string>
+	<key>task.archive.ui.archiveHelp</key>
+	<string>Queue these tasks for archiving. They leave Live tasks after archiving succeeds.</string>
+	<key>task.archive.ui.archivedAt</key>
+	<string>Archived / requested</string>
+	<key>task.archive.ui.compressedSize</key>
+	<string>Compressed size</string>
+	<key>task.archive.ui.compression</key>
+	<string>{size} ({percent}% saved)</string>
+	<key>task.archive.ui.dataCount</key>
+	<string>Data rows</string>
+	<key>task.archive.ui.delete</key>
+	<string>Permanently delete archives</string>
+	<key>task.archive.ui.deleteHelp</key>
+	<string>Permanently delete these archives and their archived data. This cannot be undone.</string>
+	<key>task.archive.ui.deleteTotals</key>
+	<string>Archived data: {rows} rows, {size}.</string>
+	<key>task.archive.ui.empty</key>
+	<string>No archived tasks</string>
+	<key>task.archive.ui.emptyHelp</key>
+	<string>Archive a paused or finished task from Live tasks.</string>
+	<key>task.archive.ui.live</key>
+	<string>Live tasks</string>
+	<key>task.archive.ui.next</key>
+	<string>Next page</string>
+	<key>task.archive.ui.noMatch</key>
+	<string>No archives match these filters. Change the search or state filter.</string>
+	<key>task.archive.ui.originalSize</key>
+	<string>Original size: {size}</string>
+	<key>task.archive.ui.originalStatus</key>
+	<string>Original status</string>
+	<key>task.archive.ui.originalUnknown</key>
+	<string>Unknown original status</string>
+	<key>task.archive.ui.page</key>
+	<string>Page {page} of {pages}</string>
+	<key>task.archive.ui.pageSize</key>
+	<string>Items per page</string>
+	<key>task.archive.ui.previous</key>
+	<string>Previous page</string>
+	<key>task.archive.ui.processingState</key>
+	<string>Archive progress</string>
+	<key>task.archive.ui.progress</key>
+	<string>{phase} · {percent}%</string>
+	<key>task.archive.ui.queuedNotice</key>
+	<string>Accepted items are queued. The operation may still fail; check progress in Archived tasks.</string>
+	<key>task.archive.ui.restore</key>
+	<string>Restore tasks</string>
+	<key>task.archive.ui.restoreHelp</key>
+	<string>Queue these archives for restoration. Tasks return to Live tasks after restoration succeeds.</string>
+	<key>task.archive.ui.retry</key>
+	<string>Retry failed operation</string>
+	<key>task.archive.ui.retryHelp</key>
+	<string>Retry the failed archive, restoration or deletion operation for this item.</string>
+	<key>task.archive.ui.rowAction</key>
+	<string>{action} — task #{id}</string>
+	<key>task.archive.ui.search</key>
+	<string>Search archived tasks</string>
+	<key>task.archive.ui.selectPage</key>
+	<string>Select eligible items on this page</string>
+	<key>task.archive.ui.selectRow</key>
+	<string>Select archived task #{id}</string>
+	<key>task.archive.ui.selected</key>
+	<string>{count} selected</string>
+	<key>task.archive.ui.state</key>
+	<string>Archive state</string>
+	<key>task.archive.ui.summary</key>
+	<string>Accepted: {ok} · Rejected: {failed} · Unconfirmed: {unknown} · Not started: {pending}</string>
+	<key>task.archive.ui.tab</key>
+	<string>Archived tasks</string>
+	<key>task.archive.ui.total</key>
+	<string>{count} archived items</string>
+	<key>task.archive.ui.unknownButton</key>
+	<string>Review unconfirmed results</string>
+	<key>task.archive.ui.unknownConfirm</key>
+	<string>Allow another attempt after checking</string>
+	<key>task.archive.ui.unknownHelp</key>
+	<string>Some operation results are unconfirmed. Check these tasks and archives before allowing another attempt. Acknowledging does not retry them.</string>
+	<key>task.archive.ui.unknownIDs</key>
+	<string>Task IDs: {tasks}
+Archive IDs: {archives}</string>
+	<key>task.archive.ui.warnings</key>
+	<string>Background warnings: {count}. Check the archive before continuing.</string>
+	<key>task.archive.ui.workerError</key>
+	<string>The background operation failed. Check the state before retrying.</string>
+	<key>task.archive.unknownPhase</key>
+	<string>Unknown processing phase</string>
+	<key>task.archive.unknownState</key>
+	<string>Unknown archive state</string>
+	<key>task.archive.validation</key>
+	<string>Use a valid task or archive identifier.</string>
+	<key>task.bulk.all</key>
+	<string>All visible tasks selected</string>
+	<key>task.bulk.checkbox</key>
+	<string>Select</string>
+	<key>task.bulk.clear</key>
+	<string>Clear selection</string>
+	<key>task.bulk.confirm</key>
+	<string>Confirm operation</string>
+	<key>task.bulk.delete</key>
+	<string>Delete selected tasks</string>
+	<key>task.bulk.deleteHelp</key>
+	<string>Delete each captured task in order. Cleanup choices apply to every task.</string>
+	<key>task.bulk.limit</key>
+	<string>Pause, resume and category moves accept at most 100 tasks at once.</string>
+	<key>task.bulk.mixed</key>
+	<string>Some visible tasks selected</string>
+	<key>task.bulk.more</key>
+	<string>And {count} more tasks</string>
+	<key>task.bulk.move</key>
+	<string>Move selected tasks</string>
+	<key>task.bulk.none</key>
+	<string>No visible tasks selected</string>
+	<key>task.bulk.notStarted</key>
+	<string>Not started</string>
+	<key>task.bulk.pause</key>
+	<string>Pause selected tasks</string>
+	<key>task.bulk.pauseHelp</key>
+	<string>Pause the captured running or queued tasks.</string>
+	<key>task.bulk.progress</key>
+	<string>Processed {done} of {total}</string>
+	<key>task.bulk.queued</key>
+	<string>Queued after resume: {count}</string>
+	<key>task.bulk.rejected</key>
+	<string>Rejected</string>
+	<key>task.bulk.resume</key>
+	<string>Resume selected tasks</string>
+	<key>task.bulk.resumeHelp</key>
+	<string>Resume paused tasks. This may start agent execution inside the guest.</string>
+	<key>task.bulk.selectTask</key>
+	<string>Select task {id}</string>
+	<key>task.bulk.selectVisible</key>
+	<string>Select visible tasks</string>
+	<key>task.bulk.selected</key>
+	<string>Selected tasks: {count}</string>
+	<key>task.bulk.stop</key>
+	<string>Stop remaining requests</string>
+	<key>task.bulk.succeeded</key>
+	<string>Succeeded</string>
+	<key>task.bulk.summary</key>
+	<string>Succeeded {ok}; rejected {failed}; unknown {unknown}; not started {pending}.</string>
+	<key>task.bulk.targetMissing</key>
+	<string>The destination category is unavailable. Select another destination.</string>
+	<key>task.bulk.title</key>
+	<string>Confirm bulk task operation</string>
+	<key>task.bulk.unconfirmed</key>
+	<string>Result unknown</string>
+	<key>task.bulk.unknown</key>
+	<string>Some task results are unknown. Check server state before explicitly clearing the retry block.</string>
+	<key>task.bulk.unlock</key>
+	<string>Review unknown results</string>
+	<key>task.bulk.unlockHelp</key>
+	<string>Check the server state first. Clearing this block does not undo changes or prove that the previous operation failed.</string>
+	<key>task.bulk.unlockTitle</key>
+	<string>Clear the local retry block?</string>
+	<key>task.category.batchValidation</key>
+	<string>Select between 1 and 100 tasks for a category move.</string>
+	<key>task.category.nameLimit</key>
+	<string>Category names must contain at most 80 characters.</string>
+	<key>task.category.validation</key>
+	<string>Enter a category name and valid identifiers.</string>
+	<key>task.categoryUI.count</key>
+	<string>{name} ({count})</string>
+	<key>task.categoryUI.create</key>
+	<string>Create category</string>
+	<key>task.categoryUI.delete</key>
+	<string>Delete category</string>
+	<key>task.categoryUI.deleteHelp</key>
+	<string>Delete {name}? Its {count} tasks will become uncategorized. The tasks will be kept.</string>
+	<key>task.categoryUI.deleteTitle</key>
+	<string>Delete this category?</string>
+	<key>task.categoryUI.dirtyHelp</key>
+	<string>Switching categories will discard the unsaved name.</string>
+	<key>task.categoryUI.dirtyTitle</key>
+	<string>Discard category name changes?</string>
+	<key>task.categoryUI.discard</key>
+	<string>Discard changes</string>
+	<key>task.categoryUI.help</key>
+	<string>Organize tasks into categories. Move tasks with the menu or drag them onto a category.</string>
+	<key>task.categoryUI.inline</key>
+	<string>Create and select category</string>
+	<key>task.categoryUI.localDiscard</key>
+	<string>Discard local operation state</string>
+	<key>task.categoryUI.localHelp</key>
+	<string>This clears the local draft and retry block. It does not undo changes that may already exist on the server.</string>
+	<key>task.categoryUI.manage</key>
+	<string>Manage categories</string>
+	<key>task.categoryUI.move</key>
+	<string>Move tasks</string>
+	<key>task.categoryUI.moveHelp</key>
+	<string>Move {count} tasks to {target}?</string>
+	<key>task.categoryUI.moveTitle</key>
+	<string>Confirm category move</string>
+	<key>task.categoryUI.new</key>
+	<string>New category</string>
+	<key>task.categoryUI.noTasks</key>
+	<string>No tasks in this category.</string>
+	<key>task.categoryUI.partial</key>
+	<string>Moved {ok} tasks; {failed} tasks could not be moved.</string>
+	<key>task.categoryUI.result</key>
+	<string>Category change confirmed.</string>
+	<key>task.categoryUI.save</key>
+	<string>Save name</string>
+	<key>task.categoryUI.selected</key>
+	<string>Selected: {count}</string>
+	<key>task.categoryUI.target</key>
+	<string>Destination category</string>
+	<key>task.categoryUI.tasks</key>
+	<string>Tasks in this category</string>
+	<key>task.categoryUI.title</key>
+	<string>Task categories</string>
+	<key>task.categoryUI.unknown</key>
+	<string>The server result is unknown. Check the list before starting a new operation. This request will not be retried automatically.</string>
+	<key>task.create.addRule</key>
+	<string>Add rule</string>
+	<key>task.create.advanced</key>
+	<string>Advanced options</string>
+	<key>task.create.allow</key>
+	<string>Allow</string>
+	<key>task.create.apply</key>
+	<string>Apply template</string>
+	<key>task.create.block</key>
+	<string>Block</string>
+	<key>task.create.cidr</key>
+	<string>CIDR network</string>
+	<key>task.create.companies</key>
+	<string>Companies (up to 32)</string>
+	<key>task.create.coverage</key>
+	<string>Track asset coverage</string>
+	<key>task.create.create</key>
+	<string>Create task</string>
+	<key>task.create.created</key>
+	<string>Task {id} created.</string>
+	<key>task.create.defaultProfile</key>
+	<string>Leave unselected to use the default model.</string>
+	<key>task.create.discard</key>
+	<string>Discard draft</string>
+	<key>task.create.discardHelp</key>
+	<string>This clears only the draft. A task already created on the server is kept.</string>
+	<key>task.create.emptyChoices</key>
+	<string>No options available.</string>
+	<key>task.create.exactDomain</key>
+	<string>Exact domain</string>
+	<key>task.create.exactIp</key>
+	<string>Exact IP address</string>
+	<key>task.create.exactUrl</key>
+	<string>Exact URL</string>
+	<key>task.create.fuzzyDomain</key>
+	<string>Partial domain</string>
+	<key>task.create.fuzzyIp</key>
+	<string>Partial IP address</string>
+	<key>task.create.fuzzyUrl</key>
+	<string>Partial URL</string>
+	<key>task.create.heartbeat</key>
+	<string>Planning interval (minutes; minimum 10)</string>
+	<key>task.create.help</key>
+	<string>Describe the work and the result you want.</string>
+	<key>task.create.moveDown</key>
+	<string>Move down</string>
+	<key>task.create.moveUp</key>
+	<string>Move up</string>
+	<key>task.create.noTemplate</key>
+	<string>No template</string>
+	<key>task.create.note</key>
+	<string>Note</string>
+	<key>task.create.optionsRefresh</key>
+	<string>Refresh choices</string>
+	<key>task.create.pattern</key>
+	<string>Pattern</string>
+	<key>task.create.profiles</key>
+	<string>Models, in execution order</string>
+	<key>task.create.removeRule</key>
+	<string>Remove rule</string>
+	<key>task.create.replaceHelp</key>
+	<string>This template replaces the description, goal, category and interception rules.</string>
+	<key>task.create.replaceTitle</key>
+	<string>Replace task content?</string>
+	<key>task.create.ruleAction</key>
+	<string>Action</string>
+	<key>task.create.ruleEnabled</key>
+	<string>Enabled</string>
+	<key>task.create.ruleKind</key>
+	<string>Match type</string>
+	<key>task.create.rules</key>
+	<string>Task interception rules</string>
+	<key>task.create.seed</key>
+	<string>Start with an initial worker instruction</string>
+	<key>task.create.sources</key>
+	<string>Related tasks (up to 8)</string>
+	<key>task.create.template</key>
+	<string>Template</string>
+	<key>task.create.timeout</key>
+	<string>Time limit (minutes; 0 means unlimited)</string>
+	<key>task.create.title</key>
+	<string>New task</string>
+	<key>task.create.unavailable</key>
+	<string>Unavailable selection #{id}</string>
+	<key>task.error.batch</key>
+	<string>Select between 1 and 100 tasks.</string>
+	<key>task.error.creation</key>
+	<string>Check the task description, goal, IDs, and time limits.</string>
+	<key>task.error.id</key>
+	<string>Enter a valid task ID.</string>
+	<key>task.error.metadata</key>
+	<string>Specify a task name or pin setting.</string>
+	<key>task.error.name</key>
+	<string>Enter a task name of 1–200 Unicode characters.</string>
+	<key>task.template.conflict</key>
+	<string>A template with this name already exists.</string>
+	<key>task.template.create</key>
+	<string>Create template</string>
+	<key>task.template.delete</key>
+	<string>Delete template</string>
+	<key>task.template.deleteHelp</key>
+	<string>This removes the saved template. Existing tasks and the task draft are kept.</string>
+	<key>task.template.deleteTitle</key>
+	<string>Delete this template?</string>
+	<key>task.template.dirtyHelp</key>
+	<string>The next selection replaces these local edits.</string>
+	<key>task.template.dirtyTitle</key>
+	<string>Discard unsaved template changes?</string>
+	<key>task.template.discard</key>
+	<string>Discard changes</string>
+	<key>task.template.empty</key>
+	<string>No templates</string>
+	<key>task.template.help</key>
+	<string>Save reusable descriptions, goals, categories and interception rules.</string>
+	<key>task.template.limits</key>
+	<string>Use at most 120 characters for the name and 16,000 for each text. The complete request must fit within 512 KiB.</string>
+	<key>task.template.localDiscard</key>
+	<string>Discard local draft</string>
+	<key>task.template.localHelp</key>
+	<string>This clears local edits only. It does not undo a change that may already be saved on the server.</string>
+	<key>task.template.manage</key>
+	<string>Manage templates</string>
+	<key>task.template.new</key>
+	<string>New template</string>
+	<key>task.template.save</key>
+	<string>Save changes</string>
+	<key>task.template.saveAs</key>
+	<string>Save as template</string>
+	<key>task.template.search</key>
+	<string>Search templates</string>
+	<key>task.template.title</key>
+	<string>Task templates</string>
+	<key>task.template.unknown</key>
+	<string>The result is unknown. Refresh the list to check before discarding local edits or trying another operation.</string>
+	<key>task.template.validation</key>
+	<string>Enter a name, description and goal, and choose a valid category.</string>
+	<key>task.ui.active</key>
+	<string>Active task</string>
+	<key>task.ui.all</key>
+	<string>All statuses</string>
+	<key>task.ui.ascending</key>
+	<string>Ascending</string>
+	<key>task.ui.cancel</key>
+	<string>Cancel</string>
+	<key>task.ui.category</key>
+	<string>Category</string>
+	<key>task.ui.changed</key>
+	<string>Task {id} updated.</string>
+	<key>task.ui.cleanupAssets</key>
+	<string>Delete linked assets</string>
+	<key>task.ui.cleanupCounts</key>
+	<string>Assets deleted: {assets}; detached: {detached}; traffic: {traffic}; findings: {findings}; LLM records: {llm}.</string>
+	<key>task.ui.cleanupFiles</key>
+	<string>Delete task files</string>
+	<key>task.ui.cleanupFindings</key>
+	<string>Delete findings</string>
+	<key>task.ui.cleanupLLM</key>
+	<string>Delete LLM records</string>
+	<key>task.ui.cleanupTraffic</key>
+	<string>Delete captured traffic</string>
+	<key>task.ui.cleanupWarning</key>
+	<string>The task was deleted, but some cleanup needs attention.</string>
+	<key>task.ui.close</key>
+	<string>Close</string>
+	<key>task.ui.completed</key>
+	<string>Completed</string>
+	<key>task.ui.created</key>
+	<string>Created</string>
+	<key>task.ui.days</key>
+	<string>{a}d {b}h</string>
+	<key>task.ui.delete</key>
+	<string>Delete task…</string>
+	<key>task.ui.deleteConfirm</key>
+	<string>Delete</string>
+	<key>task.ui.deleteHelp</key>
+	<string>Delete this task permanently. Related data is kept unless selected below.</string>
+	<key>task.ui.deleteTitle</key>
+	<string>Delete task</string>
+	<key>task.ui.deleted</key>
+	<string>Task {id} deleted.</string>
+	<key>task.ui.descending</key>
+	<string>Descending</string>
+	<key>task.ui.description</key>
+	<string>Description</string>
+	<key>task.ui.duration</key>
+	<string>Duration</string>
+	<key>task.ui.empty</key>
+	<string>No tasks yet</string>
+	<key>task.ui.filesDeleted</key>
+	<string>Task files deleted.</string>
+	<key>task.ui.findings</key>
+	<string>Findings</string>
+	<key>task.ui.goal</key>
+	<string>Goal</string>
+	<key>task.ui.goals</key>
+	<string>Goals</string>
+	<key>task.ui.hours</key>
+	<string>{a}h {b}m</string>
+	<key>task.ui.iD</key>
+	<string>ID</string>
+	<key>task.ui.loading</key>
+	<string>Loading tasks…</string>
+	<key>task.ui.login</key>
+	<string>Sign in to view and manage tasks.</string>
+	<key>task.ui.minutes</key>
+	<string>{a}m {b}s</string>
+	<key>task.ui.name</key>
+	<string>Name</string>
+	<key>task.ui.noMatch</key>
+	<string>No matching tasks</string>
+	<key>task.ui.pause</key>
+	<string>Pause</string>
+	<key>task.ui.pin</key>
+	<string>Pin</string>
+	<key>task.ui.queued</key>
+	<string>Queued</string>
+	<key>task.ui.refresh</key>
+	<string>Refresh</string>
+	<key>task.ui.rename</key>
+	<string>Rename</string>
+	<key>task.ui.resume</key>
+	<string>Resume</string>
+	<key>task.ui.save</key>
+	<string>Save</string>
+	<key>task.ui.search</key>
+	<string>Search tasks</string>
+	<key>task.ui.seconds</key>
+	<string>{a}s</string>
+	<key>task.ui.select</key>
+	<string>Select a task to view details.</string>
+	<key>task.ui.sort</key>
+	<string>Sort by</string>
+	<key>task.ui.stale</key>
+	<string>Showing previously loaded data. Refresh to check the current state.</string>
+	<key>task.ui.status</key>
+	<string>Status</string>
+	<key>task.ui.title</key>
+	<string>Tasks</string>
+	<key>task.ui.tokenBreakdown</key>
+	<string>Input: {input} · Cache read: {read} · Cache write: {write} · Output: {output}</string>
+	<key>task.ui.tokens</key>
+	<string>Tokens</string>
+	<key>task.ui.uncategorized</key>
+	<string>Uncategorized</string>
+	<key>task.ui.uncertain</key>
+	<string>The operation may have reached the server. Refresh and check before trying again.</string>
+	<key>task.ui.unnamed</key>
+	<string>Task {id}</string>
+	<key>task.ui.unpin</key>
+	<string>Unpin</string>
+	<key>task.upload.count</key>
+	<string>{count} files uploaded</string>
+	<key>task.upload.help</key>
+	<string>Files are copied into this task draft in the isolated VM. Limit: 128 MiB per upload.</string>
+	<key>task.upload.hint</key>
+	<string>The worker can open these paths with Read/Bash:</string>
+	<key>task.upload.idle</key>
+	<string>No files uploaded</string>
+	<key>task.upload.interrupted</key>
+	<string>Upload interrupted. Confirmed text is kept; some files may remain in the VM. Select files again to retry.</string>
+	<key>task.upload.marker</key>
+	<string>[Uploaded files (absolute paths)]</string>
+	<key>task.upload.pickerMessage</key>
+	<string>Choose files to attach to the task draft.</string>
+	<key>task.upload.progress</key>
+	<string>Sending {sent} of {total} bytes; awaiting storage confirmation</string>
+	<key>toolRun.ui.apply</key>
+	<string>Apply Filters</string>
+	<key>toolRun.ui.calls</key>
+	<string>Calls</string>
+	<key>toolRun.ui.details</key>
+	<string>Run Details</string>
+	<key>toolRun.ui.empty</key>
+	<string>No tool runs found.</string>
+	<key>toolRun.ui.exploration</key>
+	<string>Exploration ID</string>
+	<key>toolRun.ui.failed</key>
+	<string>Failed</string>
+	<key>toolRun.ui.input</key>
+	<string>Input</string>
+	<key>toolRun.ui.invalidID</key>
+	<string>Enter a valid nonnegative exploration ID.</string>
+	<key>toolRun.ui.login</key>
+	<string>Sign in to view tool runs.</string>
+	<key>toolRun.ui.next</key>
+	<string>Next</string>
+	<key>toolRun.ui.output</key>
+	<string>Output</string>
+	<key>toolRun.ui.pageSize</key>
+	<string>Rows per page</string>
+	<key>toolRun.ui.previous</key>
+	<string>Previous</string>
+	<key>toolRun.ui.refresh</key>
+	<string>Refresh</string>
+	<key>toolRun.ui.search</key>
+	<string>Search runs</string>
+	<key>toolRun.ui.share</key>
+	<string>Share</string>
+	<key>toolRun.ui.status</key>
+	<string>Status</string>
+	<key>toolRun.ui.succeeded</key>
+	<string>Succeeded</string>
+	<key>toolRun.ui.summary</key>
+	<string>Tool statistics</string>
+	<key>toolRun.ui.summaryScope</key>
+	<string>Totals across all pages for the current filters</string>
+	<key>toolRun.ui.time</key>
+	<string>Time</string>
+	<key>toolRun.ui.tool</key>
+	<string>Tool</string>
+	<key>toolRun.ui.worker</key>
+	<string>Worker</string>
+	<key>traffic.ui.acknowledge</key>
+	<string>Acknowledge reviewed state</string>
+	<key>traffic.ui.advanced</key>
+	<string>Advanced filters</string>
+	<key>traffic.ui.allStatuses</key>
+	<string>All statuses</string>
+	<key>traffic.ui.anyMethod</key>
+	<string>All methods</string>
+	<key>traffic.ui.body</key>
+	<string>Body contains</string>
+	<key>traffic.ui.cancel</key>
+	<string>Cancel</string>
+	<key>traffic.ui.captureOff</key>
+	<string>Recording stopped</string>
+	<key>traffic.ui.captureOn</key>
+	<string>Recording</string>
+	<key>traffic.ui.clearFlows</key>
+	<string>Clear traffic selection</string>
+	<key>traffic.ui.clearHosts</key>
+	<string>Clear host selection</string>
+	<key>traffic.ui.close</key>
+	<string>Close</string>
+	<key>traffic.ui.confirmDelete</key>
+	<string>Delete traffic</string>
+	<key>traffic.ui.confirmTitle</key>
+	<string>Delete recorded traffic?</string>
+	<key>traffic.ui.copy</key>
+	<string>Copy packet</string>
+	<key>traffic.ui.deleteMatching</key>
+	<string>Delete matching hosts…</string>
+	<key>traffic.ui.deleteSelected</key>
+	<string>Delete selected hosts…</string>
+	<key>traffic.ui.deleted</key>
+	<string>Deleted {count} exchanges.</string>
+	<key>traffic.ui.empty</key>
+	<string>No matching traffic. Change the filters or reload after recording requests.</string>
+	<key>traffic.ui.host</key>
+	<string>Host contains</string>
+	<key>traffic.ui.hostColumn</key>
+	<string>Host</string>
+	<key>traffic.ui.hostSortAscending</key>
+	<string>Sort host counts ascending</string>
+	<key>traffic.ui.hostSortDescending</key>
+	<string>Sort host counts descending</string>
+	<key>traffic.ui.hosts</key>
+	<string>Select hosts</string>
+	<key>traffic.ui.length</key>
+	<string>Response bytes</string>
+	<key>traffic.ui.link</key>
+	<string>Link traffic</string>
+	<key>traffic.ui.linkAcknowledge</key>
+	<string>Acknowledge evidence</string>
+	<key>traffic.ui.linkCount</key>
+	<string>{count} traffic records selected</string>
+	<key>traffic.ui.linkDone</key>
+	<string>Linked {count} traffic records.</string>
+	<key>traffic.ui.linkEmpty</key>
+	<string>No matching findings.</string>
+	<key>traffic.ui.linkEvidence</key>
+	<string>Finding {id}: {count} linked records</string>
+	<key>traffic.ui.linkPreserved</key>
+	<string>Linking completed. Your changed traffic selection was preserved.</string>
+	<key>traffic.ui.linkPrompt</key>
+	<string>Select a finding to link the selected traffic.</string>
+	<key>traffic.ui.linkReadOnly</key>
+	<string>Read-only finding</string>
+	<key>traffic.ui.linkRecovery</key>
+	<string>Review traffic linking</string>
+	<key>traffic.ui.linkReload</key>
+	<string>Reload evidence</string>
+	<key>traffic.ui.linkSearch</key>
+	<string>Search findings</string>
+	<key>traffic.ui.linkStale</key>
+	<string>Waiting for current search results.</string>
+	<key>traffic.ui.linkTarget</key>
+	<string>Selected finding: {name}</string>
+	<key>traffic.ui.linkUnknown</key>
+	<string>The linking result is unknown. Reload the evidence and acknowledge it before another change.</string>
+	<key>traffic.ui.maximum</key>
+	<string>Maximum response bytes</string>
+	<key>traffic.ui.method</key>
+	<string>Method</string>
+	<key>traffic.ui.minimum</key>
+	<string>Minimum response bytes</string>
+	<key>traffic.ui.next</key>
+	<string>Next page</string>
+	<key>traffic.ui.open</key>
+	<string>Open request and response</string>
+	<key>traffic.ui.page</key>
+	<string>Page {page} of {pages}</string>
+	<key>traffic.ui.pageSize</key>
+	<string>Rows per page</string>
+	<key>traffic.ui.path</key>
+	<string>Path contains</string>
+	<key>traffic.ui.pendingInput</key>
+	<string>Waiting to apply search input…</string>
+	<key>traffic.ui.previous</key>
+	<string>Previous page</string>
+	<key>traffic.ui.proxy</key>
+	<string>Proxy: {proxy}</string>
+	<key>traffic.ui.purge</key>
+	<string>Clear all traffic…</string>
+	<key>traffic.ui.query</key>
+	<string>Search traffic</string>
+	<key>traffic.ui.reclaimed</key>
+	<string>Deleted {count} exchanges and reclaimed {bytes} bytes.</string>
+	<key>traffic.ui.refresh</key>
+	<string>Reload traffic</string>
+	<key>traffic.ui.request</key>
+	<string>Request</string>
+	<key>traffic.ui.resetAdvanced</key>
+	<string>Reset advanced filters</string>
+	<key>traffic.ui.response</key>
+	<string>Response</string>
+	<key>traffic.ui.scopeAll</key>
+	<string>Delete all recorded traffic and compact its storage.</string>
+	<key>traffic.ui.scopeFilter</key>
+	<string>Delete traffic for every host containing this text:</string>
+	<key>traffic.ui.scopeSelected</key>
+	<string>Delete traffic for these exact hosts:</string>
+	<key>traffic.ui.scopeWarning</key>
+	<string>Other filters do not narrow this deletion. This action cannot be undone.</string>
+	<key>traffic.ui.selectAllHosts</key>
+	<string>Select all hosts</string>
+	<key>traffic.ui.selectFlow</key>
+	<string>Select traffic {id}</string>
+	<key>traffic.ui.selectFlows</key>
+	<string>Select visible traffic</string>
+	<key>traffic.ui.selectedHosts</key>
+	<string>{count} hosts selected</string>
+	<key>traffic.ui.sortAscending</key>
+	<string>Sort {field} ascending</string>
+	<key>traffic.ui.sortDescending</key>
+	<string>Sort {field} descending</string>
+	<key>traffic.ui.status</key>
+	<string>Response status</string>
+	<key>traffic.ui.statusColumn</key>
+	<string>Status</string>
+	<key>traffic.ui.subtitle</key>
+	<string>Inspect requests and responses recorded in the isolated runtime.</string>
+	<key>traffic.ui.time</key>
+	<string>Time</string>
+	<key>traffic.ui.title</key>
+	<string>Traffic</string>
+	<key>traffic.ui.total</key>
+	<string>{matched} matching / {total} recorded</string>
+	<key>traffic.ui.uRL</key>
+	<string>URL</string>
+	<key>traffic.ui.unavailable</key>
+	<string>Traffic storage is unavailable in this runtime.</string>
+	<key>traffic.ui.unknown</key>
+	<string>The previous operation may have completed. Reload and review the current state, then acknowledge it before deleting again.</string>
+	<key>traffic.ui.wrap</key>
+	<string>Wrap lines</string>
+</dict>
+</plist>

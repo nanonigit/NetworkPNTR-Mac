@@ -17,7 +17,7 @@ Lazyweb search `desktop API key model settings` (desktop, 2026-10-22) returned V
 
 ## Architecture
 
-ArtexCore owns Codable response types, a validated draft encoding every browser field, an authenticated finite-JSON adapter and LLM service/store. Decode snake_case consistently, including string response IDs versus numeric mutation IDs. Response models contain hints only, never api_key. Draft keys are view-local and transmitted only over authenticated vsock; no host plaintext persistence. SwiftUI owns profile cards, editor, rotation and retry views. RootView connects this feature only after actual authentication; all comparison rows remain pending until interaction/visual and end-to-end gates pass.
+NetworkPNTRCore owns Codable response types, a validated draft encoding every browser field, an authenticated finite-JSON adapter and LLM service/store. Decode snake_case consistently, including string response IDs versus numeric mutation IDs. Response models contain hints only, never api_key. Draft keys are view-local and transmitted only over authenticated vsock; no host plaintext persistence. SwiftUI owns profile cards, editor, rotation and retry views. RootView connects this feature only after actual authentication; all comparison rows remain pending until interaction/visual and end-to-end gates pass.
 
 ## Tasks and tests
 

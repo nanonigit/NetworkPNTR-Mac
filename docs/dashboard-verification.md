@@ -30,7 +30,7 @@ The first dashboard push failed CI at the chained asset filter/map/sort expressi
 
 1. Prepare the verified diagnostic guest profile described in `bugs/guest-boot-investigation.md`.
 2. Build with `ARTEX_MAC_GUEST_BUILD_DIR=/path/to/profile script/build_and_run.sh --build-only`.
-3. Run `dist/ARTEX Mac.app/Contents/MacOS/ArtexMac --native-diagnostics /private/fresh/fixture --dashboard-diagnostics --native-review`.
+3. Run `dist/NetworkPNTR Mac.app/Contents/MacOS/NetworkPNTRMac --native-diagnostics /private/fresh/fixture --dashboard-diagnostics --native-review`.
 4. Run `python3 script/compare_dashboard.py /private/fresh/fixture evidence/dashboard` after the contract JSON exists. Node.js and Docker are developer comparison dependencies only.
 5. Use the native UI for review. Create the fixed `native-review-finish` marker in the fixture directory to resume logout/Keychain cleanup/shutdown. Retain raw state/logs only in ignored `evidence/local/`.
 

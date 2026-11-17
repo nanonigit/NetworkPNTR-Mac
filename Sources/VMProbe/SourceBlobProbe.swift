@@ -1,5 +1,5 @@
 #if DEBUG
-import ArtexCore
+import NetworkPNTRCore
 import Foundation
 
 /// Fixed source-blob extension of the owned loopback experiment, not native UI acceptance.

@@ -1,4 +1,4 @@
-import ArtexCore
+import NetworkPNTRCore
 import Foundation
 
 @MainActor private final class StagingProbeVault: SessionVault {

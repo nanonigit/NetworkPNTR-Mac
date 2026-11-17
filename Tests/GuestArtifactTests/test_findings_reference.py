@@ -26,7 +26,7 @@ class Wire:
 
 class FindingsReferenceTests(unittest.TestCase):
     def goldens(self):
-        return json.loads((ROOT / 'Tests/ArtexCoreTests/Fixtures/findings-runtime-aggregates.json').read_text())
+        return json.loads((ROOT / 'Tests/NetworkPNTRCoreTests/Fixtures/findings-runtime-aggregates.json').read_text())
 
     def wire_row(self, expected):
         row = dict(expected, id=str(expected['id']), finding_id=str(expected['id']))

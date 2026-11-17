@@ -16,6 +16,6 @@ Release VMProbe build passed; diagnostic-hook symbol absence and rejection of --
 
 Next: independently download the same bodies from an owned disposable pinned browser/API reference and compare all bytes/hashes, detailed preview content/binary/truncation parity, then native F5 traffic/picker/body/save controls and current-window ownership. Unlocked visual/keyboard/VoiceOver tests, remaining16 feature screens, cloud egress, reliability, clean-Mac packaging/signing/notarization and all original release gates remain open. The successful source-candidate runs do not erase earlier intermittent failures documented in bugs/guest-boot-investigation.md.
 
-Final local receipt: release diagnostic symbols were absent, the release fixture mode exited2, dist/ARTEX Mac.app build completed and codesign --verify --strict passed. Native source hashes still match the9b41048 experiment. These checks are local; hosted CI is unverified.
+Final local receipt: release diagnostic symbols were absent, the release fixture mode exited2, dist/NetworkPNTR Mac.app build completed and codesign --verify --strict passed. Native source hashes still match the9b41048 experiment. These checks are local; hosted CI is unverified.
 
 The SQL body fixture does not populate the disposable captured-traffic index. Actual bind/edit/remove/reorder/conflict/unknown-outcome and picker persistence against nonempty traffic remain required F5 gates; successful original-body export does not substitute for them.

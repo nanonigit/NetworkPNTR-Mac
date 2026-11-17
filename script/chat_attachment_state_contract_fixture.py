@@ -17,7 +17,7 @@ def require(condition, label):
 def multipart(parts):
     if not parts:
         raise ValueError('Empty reference multipart')
-    boundary = 'ArtexAttachmentStateFixture'
+    boundary = 'NetworkPNTRAttachmentStateFixture'
     body = bytearray()
     for name, data in parts:
         if not name or name in ('.', '..') or '/' in name or '\\' in name or any(ord(char) < 32 or ord(char) == 127 for char in name) or len(name.encode()) > 255 or not isinstance(data, bytes):

@@ -35,7 +35,7 @@ class Client:
 
 
 def multipart(parts):
-    boundary = 'ArtexUserBodyFixture'
+    boundary = 'NetworkPNTRUserBodyFixture'
     if not parts: raise ValueError('Empty multipart fixture')
     output = bytearray()
     for name, data in parts:

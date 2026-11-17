@@ -10,4 +10,4 @@ TDD証拠:7871fba API未実装の実行RED →fd898ec 重点13件GREEN。60dc0e4
 
 ローカル検証: Swift517件（516成功・既存AX1スキップ）、Python86件成功。重点Findings16件とoracle2件。XCTest行カバレッジはモデル74/75（98.67%）、集計77/78（98.72%）、サービス129/130（99.23%）。安全な入力エラー3項目を英日カタログと同梱リソースへ追加。翻訳/固定版検査、画面を開かない署名付きアプリビルドと署名確認も成功。Pythonは標準ライブラリで、oracleだけ既存の開発用Nodeを使用。npm/pipの依存・manifest・アプリ実行環境の追加はなく、その依存監査対象はない。
 
-証拠: Tests/ArtexCoreTests/Fixtures/findings-contract.json、findings-browser-filters.json、evidence/findings/f1-core-verification.json、bugs/findings-tree-budget.md。固定ブラウザ配備とデータは未変更。F2状態/競合/不明な変更結果、F3 Lazywebに基づく英日画面、F4実ゲスト/独立参照/永続性、F5出力/通信/証拠/レポート/系譜/再検証/深掘り、解除後の実画面/AX/キーボード、全21機能/外部接続/カーネル信頼性/未導入Mac/配布は必須の未達ゲート。基盤の成功をFindings全体や製品完成の証拠にはしない。
+証拠: Tests/NetworkPNTRCoreTests/Fixtures/findings-contract.json、findings-browser-filters.json、evidence/findings/f1-core-verification.json、bugs/findings-tree-budget.md。固定ブラウザ配備とデータは未変更。F2状態/競合/不明な変更結果、F3 Lazywebに基づく英日画面、F4実ゲスト/独立参照/永続性、F5出力/通信/証拠/レポート/系譜/再検証/深掘り、解除後の実画面/AX/キーボード、全21機能/外部接続/カーネル信頼性/未導入Mac/配布は必須の未達ゲート。基盤の成功をFindings全体や製品完成の証拠にはしない。

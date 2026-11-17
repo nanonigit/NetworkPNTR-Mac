@@ -1,5 +1,5 @@
 #if DEBUG
-import ArtexCore
+import NetworkPNTRCore
 import Foundation
 
 /// Fixed diagnostic fixture only. This exercises Core services/stores, not native input controls.

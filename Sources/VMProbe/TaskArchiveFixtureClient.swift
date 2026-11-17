@@ -1,5 +1,5 @@
 #if DEBUG
-import ArtexCore
+import NetworkPNTRCore
 import Foundation
 
 /// Developer-only source bundle sent to the isolated guest's existing authenticated tool test route.

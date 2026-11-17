@@ -1,5 +1,5 @@
 #if DEBUG
-import ArtexCore
+import NetworkPNTRCore
 import Foundation
 
 /// Exercises controlled partial staging over the actual guest transport, not UI acceptance.

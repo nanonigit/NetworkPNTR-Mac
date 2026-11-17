@@ -1,4 +1,4 @@
-"""Synthetic tool history and API oracle for an offline disposable ARTEX backend."""
+"""Synthetic tool history and API oracle for an offline disposable NetworkPNTR backend."""
 import hashlib
 import json
 import os

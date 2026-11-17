@@ -1,7 +1,7 @@
-import ArtexCore
+import NetworkPNTRCore
 import Foundation
 import XCTest
-@testable import ArtexCore
+@testable import NetworkPNTRCore
 @testable import VMProbe
 
 @MainActor private final class SourceBlobVault: SessionVault {

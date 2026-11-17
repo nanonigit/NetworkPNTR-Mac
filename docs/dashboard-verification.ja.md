@@ -30,7 +30,7 @@ Pythonの `-O` で `assert` による投入先チェックが省略されるこ�
 
 1. `bugs/guest-boot-investigation.md` の検証済み診断ゲストを準備します。
 2. `ARTEX_MAC_GUEST_BUILD_DIR=/path/to/profile script/build_and_run.sh --build-only` でビルドします。
-3. `dist/ARTEX Mac.app/Contents/MacOS/ArtexMac --native-diagnostics /private/fresh/fixture --dashboard-diagnostics --native-review` を実行します。
+3. `dist/NetworkPNTR Mac.app/Contents/MacOS/NetworkPNTRMac --native-diagnostics /private/fresh/fixture --dashboard-diagnostics --native-review` を実行します。
 4. 契約JSON生成後、`python3 script/compare_dashboard.py /private/fresh/fixture evidence/dashboard` を実行します。Node.jsとDockerは開発時の比較だけに必要です。
 5. 実画面を操作します。診断フォルダに固定の `native-review-finish` を作ると、ログアウト・一時Keychain削除・停止へ進みます。生の状態・ログはGit対象外の `evidence/local/` のみに保存します。
 

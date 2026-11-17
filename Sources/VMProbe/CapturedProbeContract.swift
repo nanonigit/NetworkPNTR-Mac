@@ -1,5 +1,5 @@
 #if DEBUG
-import ArtexCore
+import NetworkPNTRCore
 import Foundation
 
 /// Independent native expectations for the fixed guest fixture; original bytes are never localized.

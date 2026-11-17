@@ -1,0 +1,220 @@
+{
+  "entries": [
+    {
+      "key": "runtime.ui.title",
+      "case": "runtimeUITitle",
+      "ja": "専用Linux実行環境",
+      "en": "Dedicated Linux runtime"
+    },
+    {
+      "key": "runtime.ui.subtitle",
+      "case": "runtimeUISubtitle",
+      "ja": "専用VM内でNetworkPNTRとPostgreSQLを実行",
+      "en": "Run NetworkPNTR and PostgreSQL in a dedicated VM"
+    },
+    {
+      "key": "runtime.ui.ready",
+      "case": "runtimeUIReady",
+      "ja": "NetworkPNTRとDBの起動を確認しました",
+      "en": "NetworkPNTR and the database are ready"
+    },
+    {
+      "key": "runtime.ui.aRTEXStarting",
+      "case": "runtimeUIBackendStarting",
+      "ja": "NetworkPNTRを起動しています",
+      "en": "Starting NetworkPNTR"
+    },
+    {
+      "key": "runtime.ui.isolation",
+      "case": "runtimeUIIsolation",
+      "ja": "Docker不要 · ホスト共有なし · 仮想NICなし",
+      "en": "No Docker required · No host shares · No virtual NIC"
+    },
+    {
+      "key": "runtime.ui.start",
+      "case": "runtimeUIStart",
+      "ja": "隔離Linuxを起動",
+      "en": "Start isolated Linux"
+    },
+    {
+      "key": "runtime.ui.stop",
+      "case": "runtimeUIStop",
+      "ja": "停止",
+      "en": "Stop"
+    },
+    {
+      "key": "runtime.ui.forceStop",
+      "case": "runtimeUIForceStop",
+      "ja": "強制停止",
+      "en": "Force stop"
+    },
+    {
+      "key": "runtime.ui.environment",
+      "case": "runtimeUIEnvironment",
+      "ja": "専用実行環境",
+      "en": "Dedicated runtime"
+    },
+    {
+      "key": "runtime.ui.virtualization",
+      "case": "runtimeUIVirtualization",
+      "ja": "AppleのVirtualization.frameworkで実際のLinuxを実行",
+      "en": "Run real Linux with Apple Virtualization.framework"
+    },
+    {
+      "key": "runtime.ui.integrity",
+      "case": "runtimeUIIntegrity",
+      "ja": "起動前にカーネル・初期RAM・OSディスクのSHA-256を照合",
+      "en": "Verify kernel, initial RAM disk, and OS disk SHA-256 before boot"
+    },
+    {
+      "key": "runtime.ui.persistence",
+      "case": "runtimeUIPersistence",
+      "ja": "設定と認証情報を専用ディスクに保持",
+      "en": "Keep settings and credentials on a dedicated disk"
+    },
+    {
+      "key": "runtime.ui.help",
+      "case": "runtimeUIHelp",
+      "ja": "認証はアカウント画面から操作できます。",
+      "en": "Manage authentication from Account."
+    },
+    {
+      "key": "runtime.ui.guestLog",
+      "case": "runtimeUIGuestLog",
+      "ja": "ゲスト起動ログ",
+      "en": "Guest boot log"
+    },
+    {
+      "key": "runtime.ui.state",
+      "case": "runtimeUIState",
+      "ja": "状態：{state}",
+      "en": "State: {state}"
+    },
+    {
+      "key": "runtime.ui.stateIdle",
+      "case": "runtimeUIStateIdle",
+      "ja": "未起動",
+      "en": "Not started"
+    },
+    {
+      "key": "runtime.ui.stateStarting",
+      "case": "runtimeUIStateStarting",
+      "ja": "起動中",
+      "en": "Starting"
+    },
+    {
+      "key": "runtime.ui.stateRunning",
+      "case": "runtimeUIStateRunning",
+      "ja": "実行中",
+      "en": "Running"
+    },
+    {
+      "key": "runtime.ui.stateStopping",
+      "case": "runtimeUIStateStopping",
+      "ja": "停止中",
+      "en": "Stopping"
+    },
+    {
+      "key": "runtime.ui.stateStopped",
+      "case": "runtimeUIStateStopped",
+      "ja": "停止済み",
+      "en": "Stopped"
+    },
+    {
+      "key": "runtime.ui.stateFailed",
+      "case": "runtimeUIStateFailed",
+      "ja": "失敗",
+      "en": "Failed"
+    },
+    {
+      "key": "runtime.ui.unexpected",
+      "case": "runtimeUIUnexpected",
+      "ja": "実行環境の操作に失敗しました。ゲストログを確認して再試行してください。",
+      "en": "The runtime operation failed. Check the guest log and try again."
+    },
+    {
+      "key": "runtime.ui.transitionError",
+      "case": "runtimeUITransitionError",
+      "ja": "現在の実行環境の状態では、この操作を実行できません。",
+      "en": "This operation is unavailable in the current runtime state."
+    },
+    {
+      "key": "runtime.ui.integrityError",
+      "case": "runtimeUIIntegrityError",
+      "ja": "実行環境の検証に失敗しました。実行環境のファイルとゲストログを確認してください。",
+      "en": "Runtime validation failed. Check the runtime files and guest log."
+    },
+    {
+      "key": "runtime.ui.timeoutError",
+      "case": "runtimeUITimeoutError",
+      "ja": "実行環境の応答が時間内に届きませんでした。再試行前にゲストログを確認してください。",
+      "en": "The runtime did not respond in time. Check the guest log before retrying."
+    },
+    {
+      "key": "runtime.ui.unsupported",
+      "case": "runtimeUIUnsupported",
+      "ja": "このMacではハードウェア仮想化を利用できません。",
+      "en": "Hardware virtualization is unavailable on this Mac."
+    },
+    {
+      "key": "runtime.ui.parityTitle",
+      "case": "runtimeUIParityTitle",
+      "ja": "ブラウザ版との機能比較",
+      "en": "Feature comparison with the browser version"
+    },
+    {
+      "key": "runtime.ui.parityBaseline",
+      "case": "runtimeUIParityBaseline",
+      "ja": "基準：{commit} · {features}主要機能 / {routes}画面 / {endpoints} APIハンドラー",
+      "en": "Baseline: {commit} · {features} main features / {routes} screens / {endpoints} API handlers"
+    },
+    {
+      "key": "runtime.ui.parityHelp",
+      "case": "runtimeUIParityHelp",
+      "ja": "同じデータ・操作・エラー・保存状態を比較します。LLM設定・ダッシュボード・チャットは実装・検証中です。全機能の受け入れ条件を満たすまで移植完了にはしません。",
+      "en": "Compare the same data, actions, errors, and saved state. LLM settings, Dashboard, and Chat are under implementation and verification. Migration remains incomplete until every feature meets its acceptance criteria."
+    },
+    {
+      "key": "runtime.ui.parityFeature",
+      "case": "runtimeUIParityFeature",
+      "ja": "機能",
+      "en": "Feature"
+    },
+    {
+      "key": "runtime.ui.parityBrowser",
+      "case": "runtimeUIParityBrowser",
+      "ja": "ブラウザ版の画面",
+      "en": "Browser screen"
+    },
+    {
+      "key": "runtime.ui.parityStatus",
+      "case": "runtimeUIParityStatus",
+      "ja": "状態",
+      "en": "Status"
+    },
+    {
+      "key": "runtime.ui.parityInProgress",
+      "case": "runtimeUIParityInProgress",
+      "ja": "実装・検証中",
+      "en": "Implementation and verification in progress"
+    },
+    {
+      "key": "runtime.ui.parityWaiting",
+      "case": "runtimeUIParityWaiting",
+      "ja": "フェーズ{phase}・移植待ち",
+      "en": "Phase {phase} · Awaiting migration"
+    },
+    {
+      "key": "runtime.ui.cloudRelayActive",
+      "case": "runtimeUICloudRelayActive",
+      "ja": "クラウドAPI中継：稼働中（対応プロバイダーのみ）",
+      "en": "Cloud API relay active · Supported providers only"
+    },
+    {
+      "key": "runtime.ui.cloudRelayInactive",
+      "case": "runtimeUICloudRelayInactive",
+      "ja": "クラウドAPI中継：停止中",
+      "en": "Cloud API relay inactive"
+    }
+  ]
+}
