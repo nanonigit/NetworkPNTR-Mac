@@ -3,7 +3,10 @@ import NetworkPNTRCore
 import SwiftUI
 
 @MainActor final class AppDelegate: NSObject, NSApplicationDelegate {
-    weak var environment: DesktopRuntime?
+    weak var environment: DesktopRuntime? { didSet { startDiagnosticsIfReady() } }
+    #if DEBUG
+    private var diagnosticAdmission = NativeDiagnosticAdmission()
+    #endif
     private var menuLanguage: AppMenuLanguageBridge?
     func updateMenuLanguage(_ language: AppLanguage) {
         if menuLanguage == nil {
@@ -19,12 +22,20 @@ import SwiftUI
         NSApp.activate(ignoringOtherApps: true)
         menuLanguage?.refresh()
         #if DEBUG
-        if let directory = RuntimeFactory.diagnosticsDirectory {
-            Task {
-                try? await Task.sleep(for: .milliseconds(700))
-                guard let environment else { return }
-                await NativeDiagnostics.run(environment: environment, directory: directory)
+        diagnosticAdmission.didLaunch()
+        #endif
+        startDiagnosticsIfReady()
+    }
+    private func startDiagnosticsIfReady() {
+        #if DEBUG
+        guard let directory = RuntimeFactory.diagnosticsDirectory, let environment,
+              diagnosticAdmission.admit(requested: true, hasEnvironment: true) else { return }
+        Task {
+            for _ in 0..<200 {
+                if NSApp.windows.contains(where: { $0.isVisible }) { break }
+                do { try await Task.sleep(for: .milliseconds(10)) } catch { return }
             }
+            await NativeDiagnostics.run(environment: environment, directory: directory)
         }
         #endif
     }

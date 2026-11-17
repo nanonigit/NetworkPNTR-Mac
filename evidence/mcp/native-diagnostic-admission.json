@@ -1,0 +1,41 @@
+{
+  "date": "2026-11-17",
+  "scope": "Signed native diagnostic admission; guest failed before authentication",
+  "signedStartupAdmitted": true,
+  "nativeWindowRendered": true,
+  "vmBootAttempted": true,
+  "authenticationReached": false,
+  "mcpUIWorkflowVerified": false,
+  "machineStopped": true,
+  "kernelPanicObserved": true,
+  "lastStageMarker": "state_zero_check",
+  "kernelRelease": "6.12.114-0-virt",
+  "initExitCode": "0x0000000b",
+  "manifestSHA256": "85978daf1b28bb55929d46ea156a857958dc7d4fcf54a0bac045f0832f13588e",
+  "serialLogSHA256": "022e3e0c096af66d3a3c043867bf1a71eba1a9bb46881c85e835a197a9420ec7",
+  "sourceSHA256": {
+    "Sources/NetworkPNTRMac/NativeDiagnosticAdmission.swift": "cb8eda6ca7d37818eff251d20a3475dcb47c2cedb09ab16c00e199ff132a2c9c",
+    "Sources/NetworkPNTRMac/NetworkPNTRMacApp.swift": "7526c79bc5e55e814a026e49c3820503f6846b67d8cf57bfaff6ef56f998372f",
+    "Tests/NetworkPNTRMacTests/NativeDiagnosticAdmissionTests.swift": "0d86ed078cdad85ff152c048c804e3f3156e2544c1006078241cef7783be1148"
+  },
+  "orderingTests": {
+    "total": 3,
+    "failures": 0
+  },
+  "review": "No blocker found; signed run reached VM boot after ordering fix",
+  "pending": [
+    "Guest kernel failure diagnosis and reliability qualification",
+    "Authenticated native MCP permission/cancel/revoke workflow",
+    "Real MCP-to-VM readback",
+    "Pinned browser functional and UI comparison"
+  ],
+  "counterEvidenceRetained": true,
+  "regressionTests": {
+    "swiftTotal": 1196,
+    "swiftSkipped": 1,
+    "swiftFailures": 0
+  },
+  "releaseBuildPassed": true,
+  "signedAppBinarySHA256": "cff2d773e3a1276c0312b50f9fe429cbaaff24a9f01af6410a6f92193876d9d0",
+  "signatureVerified": true
+}
