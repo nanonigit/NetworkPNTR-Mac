@@ -1,0 +1,37 @@
+{
+  "date": "2026-11-18",
+  "product": "NetworkPNTR Mac",
+  "master": "assets/branding/networkpntr-app-icon.png",
+  "masterSHA256": "3d52666ccb903e063e75043b823db61c72cdb56d44a744c64ae0054780496171",
+  "icnsSHA256": "40f3b306d18391ca40e5815b1556970d453fa9c5b2106a3c01a81df16e3282e2",
+  "representationCount": 10,
+  "standardRepresentationsDimensionsVerified": true,
+  "transparencyVerified": true,
+  "small32pxPreviewInspected": true,
+  "generation": "built-in imagegen; user-supplied ethical-hacking silhouette as reference",
+  "apps": {
+    "NetworkPNTR Mac.app": {
+      "iconFile": "AppIcon.icns",
+      "signatureVerified": true,
+      "helperSignatureVerified": true,
+      "guestHashesUnchanged": true,
+      "helperHashUnchanged": true,
+      "mainExecutableResigned": true,
+      "mainExecutableBeforeSHA256": "cff2d773e3a1276c0312b50f9fe429cbaaff24a9f01af6410a6f92193876d9d0",
+      "mainExecutableAfterSHA256": "a56a7a3deb352d44b6084f71375163a2e92a170bdc8fd8ed760bab9fc852c811",
+      "systemIconResolvedAndVisuallyInspected": true
+    },
+    "NetworkPNTR Mac Cloud Preview.app": {
+      "iconFile": "AppIcon.icns",
+      "signatureVerified": true,
+      "helperSignatureVerified": true,
+      "guestHashesUnchanged": true,
+      "helperHashUnchanged": true,
+      "mainExecutableResigned": true,
+      "mainExecutableBeforeSHA256": "b474dae04e8f37f883bb68918ad5a8409a35a9b1a312817a5cd62f48cd8ac087",
+      "mainExecutableAfterSHA256": "5ba21ba9cbf64c44e8403f7c7b86094f2ae162acc05ecee101e9bac3dc7c5108",
+      "systemIconResolvedAndVisuallyInspected": true
+    }
+  },
+  "scope": "Logo and bundle packaging only; existing app executables were re-signed, not rebuilt. Main executable whole-file hash changes with embedded signature. VM/MCP runtime acceptance remains pending."
+}

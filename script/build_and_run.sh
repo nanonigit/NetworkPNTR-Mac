@@ -18,6 +18,7 @@ fi
 python3 "$ROOT_DIR/script/export_localizations.py" --check
 swift build
 BIN_DIR="$(swift build --show-bin-path)"
+bash "$ROOT_DIR/script/build_app_icon.sh"
 APP="$ROOT_DIR/dist/NetworkPNTR Mac.app"
 # Remove only this project's generated app bundle.
 rm -rf "$APP"
@@ -27,6 +28,7 @@ cp "$BIN_DIR/NetworkPNTRMCP" "$APP/Contents/MacOS/NetworkPNTRMCP"
 codesign --force --sign - "$APP/Contents/MacOS/NetworkPNTRMCP"
 codesign --verify --strict "$APP/Contents/MacOS/NetworkPNTRMCP"
 cp -R "$BIN_DIR/NetworkPNTRMac_NetworkPNTRCore.bundle" "$APP/Contents/Resources/"
+cp "$ROOT_DIR/.build-cache/branding/AppIcon.icns" "$APP/Contents/Resources/AppIcon.icns"
 cp "$GUEST_BUILD_DIR/Image" "$GUEST_BUILD_DIR/initramfs.cpio.gz" "$GUEST_BUILD_DIR/manifest.json" "$GUEST_BUILD_DIR/system.ext4" "$APP/Contents/Resources/Guest/"
 cat > "$APP/Contents/Info.plist" <<'PLIST'
 <?xml version="1.0" encoding="UTF-8"?>
@@ -36,6 +38,7 @@ cat > "$APP/Contents/Info.plist" <<'PLIST'
 <key>CFBundleIdentifier</key><string>com.nanonigit.artex-mac</string>
 <key>CFBundleName</key><string>NetworkPNTR Mac</string>
 <key>CFBundleDisplayName</key><string>NetworkPNTR Mac</string>
+<key>CFBundleIconFile</key><string>AppIcon.icns</string>
 <key>CFBundlePackageType</key><string>APPL</string>
 <key>CFBundleShortVersionString</key><string>0.1.0</string>
 <key>CFBundleVersion</key><string>1</string>
