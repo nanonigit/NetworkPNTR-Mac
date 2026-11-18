@@ -15,3 +15,5 @@ Reference harness failures are retained privately: an overlong temporary passwor
 See [component receipt](../../evidence/mcp/task-read-metrics.json). This fix does not close task writes, external-AI execution, native outbound MCP, boot reliability, clean-Mac registration or paired UI acceptance.
 
 Verification orchestration note: the211-case Python run had two SwiftPM path-query timeouts while a Release build held the same build directory. These CLI checks must run after Swift builds finish; do not increase timeouts or restart a live build to manufacture a pass. Preserve the initial errors and recheck only the two failed cases sequentially.
+
+First signed selected-task review stopped before seed because URL representation equality distinguished the same path before/after directory creation. The canonical file-path admission correction has two focused regressions. This run had no kernel panic and is retained as a failed diagnostic attempt; it does not prove selected-task MCP acceptance.

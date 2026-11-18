@@ -4,8 +4,13 @@ import Foundation
 
 /// Fixed developer data in the private guest; never an inbound MCP operation.
 @MainActor enum NativeMCPTaskDiagnostics {
+    nonisolated static func owns(directory: URL, requested: URL?) -> Bool {
+        guard directory.isFileURL, let requested, requested.isFileURL else { return false }
+        return directory.resolvingSymlinksInPath().standardizedFileURL.path == requested.resolvingSymlinksInPath().standardizedFileURL.path
+    }
+
     static func seed(session: AuthenticationSession, directory: URL) async throws {
-        guard RuntimeFactory.diagnosticsDirectory == directory else { throw RuntimeError.integrity("owned MCP task diagnostic directory") }
+        guard owns(directory: directory, requested: RuntimeFactory.diagnosticsDirectory) else { throw RuntimeError.integrity("owned MCP task diagnostic directory") }
         let client = AuthenticatedBackendClient(session: session)
         try await NativeReviewPlan.requireNoLLM(client: client)
         let tasks = TaskService(client: client)

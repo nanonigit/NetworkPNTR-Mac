@@ -129,5 +129,18 @@
     }
   ],
   "releaseMacBuildPassed": true,
-  "signedDefaultAppBuildPassed": true
+  "signedDefaultAppBuildPassed": true,
+  "nativeSelectedTaskAttempt": {
+    "passed": false,
+    "stage": "diagnostic directory admission before seed",
+    "reason": "URL representation changed after directory creation; canonical file-path comparison added",
+    "taskSeedRan": false,
+    "kernelPanicObserved": false,
+    "retainedPrivately": true
+  },
+  "directoryAdmissionRegression": {
+    "focusedTests": 19,
+    "failures": 0,
+    "includesDirectoryCases": 2
+  }
 }
