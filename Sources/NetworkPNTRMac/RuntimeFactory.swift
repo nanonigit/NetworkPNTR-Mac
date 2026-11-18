@@ -24,7 +24,13 @@ import Foundation
             paths = .applicationDefault
             account = "dedicated-guest-session"
         }
+        #if DEBUG
+        let automaticLocalSession = diagnostics != nil && CommandLine.arguments.contains("--local-session-diagnostics")
+        #else
+        let automaticLocalSession = false
+        #endif
+        let vault: any SessionVault = automaticLocalSession ? EphemeralSessionVault() : KeychainSessionVault(account: account)
         return DesktopRuntime(artifacts: Bundle.main.resourceURL!.appendingPathComponent("Guest"),
-                              paths: paths, vault: KeychainSessionVault(account: account), cloudEgress: cloudEgress)
+                              paths: paths, vault: vault, cloudEgress: cloudEgress, automaticLocalSession: automaticLocalSession)
     }
 }

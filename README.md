@@ -1,5 +1,9 @@
 # NetworkPNTR Mac
 
+[English](README.md) | [日本語](README.ja.md)
+
+**Login-free startup (in progress):** The native automatic-session implementation and isolated guest overlays are available in an explicit developer verification mode. Real PostgreSQL initialization/preservation tests pass; signed native first-launch, migration, restart and visible EN/JA checks remain pending. Normal startup still uses the existing account flow until those checks pass. See [design and acceptance](docs/local-session-design.md).
+
 Repository: [nanonigit/NetworkPNTR-Mac](https://github.com/nanonigit/NetworkPNTR-Mac).
 
 PNTR stands for penetration testing. NetworkPNTR Mac aims to help individuals and organizations find vulnerabilities and bugs in systems they own or are authorized to assess, and strengthen their own defenses.

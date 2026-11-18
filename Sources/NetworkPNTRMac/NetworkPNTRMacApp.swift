@@ -35,7 +35,9 @@ import SwiftUI
                 if NSApp.windows.contains(where: { $0.isVisible }) { break }
                 do { try await Task.sleep(for: .milliseconds(10)) } catch { return }
             }
-            await NativeDiagnostics.run(environment: environment, directory: directory)
+            if CommandLine.arguments.contains("--local-session-diagnostics") {
+                await NativeLocalSessionDiagnostics.run(environment: environment, directory: directory)
+            } else { await NativeDiagnostics.run(environment: environment, directory: directory) }
         }
         #endif
     }

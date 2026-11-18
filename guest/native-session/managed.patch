@@ -1,0 +1,32 @@
+--- a/server/server.go
++++ b/server/server.go
+@@ -115,6 +115,7 @@
+ 
+ 	skillDir string // root directory for skill subdirectories
+ 	jwtKey   []byte // HS256 signing key loaded from / generated into dataDir/jwt.key
++	nativeSessionKey string
+ 
+ 	// authMu guards the first-run setup token, the cached password hash (tokens
+ 	// are signed with a key derived from it — see auth.go signingKey) and the
+@@ -226,11 +227,12 @@
+ }
+ 
+ func New(ctx context.Context, m *Manager, skillDir string, dataDir string, keyDir string) *Server {
++	nativeSessionKey := consumeNativeSessionCapability()
+ 	key, err := loadOrCreateJWTKey(keyDir, dataDir)
+ 	if err != nil {
+ 		log.Fatalf("[auth] JWT key: %v", err)
+ 	}
+-	s := &Server{m: m, engine: NewEngine(m), ctx: ctx, skillDir: skillDir, jwtKey: key, chatBusy: map[string]bool{},
++	s := &Server{m: m, engine: NewEngine(m), ctx: ctx, skillDir: skillDir, jwtKey: key, nativeSessionKey: nativeSessionKey, chatBusy: map[string]bool{},
+ 		chatCancel: map[string]context.CancelCauseFunc{}, triggerQ: map[string][]triggeredRun{},
+ 		triggerActive: map[string]int{}, triggerCfg: map[string]triggerBehavior{},
+ 		profChatAgents: map[int64]*agent.ChatAgent{},
+@@ -762,6 +764,7 @@
+ 	s.registerSideRoutes(mux)
+ 
+ 	// Auth routes — exempt from JWT check (handled in requireAuth)
++	mux.HandleFunc("POST /api/auth/local-session", s.nativeLocalSession)
+ 	mux.HandleFunc("GET /api/auth/status", s.authStatus)
+ 	mux.HandleFunc("POST /api/auth/init", s.authInit)
+ 	mux.HandleFunc("POST /api/auth/login", s.authLogin)

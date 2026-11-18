@@ -82,6 +82,7 @@ import Virtualization
         do {
             guard VZVirtualMachine.isSupported else { throw RuntimeError.unsupported }
             let manifest = try GuestArtifacts.load(from: directory, cloudEgress: cloudEgress)
+            if let provisioning { try manifest.requireCompatibleBootstrap(provisioning) }
             cloudEgressAuthorized = cloudEgress
             runtimeFeatures = GuestRuntimeFeatures(trafficBlobExportDeclared: manifest.declaresTrafficBlobExport)
             guard (manifest.systemDisk == nil) == (dataDisk == nil), (manifest.systemDisk == nil) == (provisioning == nil) else {

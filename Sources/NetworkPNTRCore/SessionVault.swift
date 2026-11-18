@@ -39,3 +39,12 @@ import Security
         guard status == errSecSuccess || status == errSecItemNotFound else { throw BackendAPIError.secureStorage(status) }
     }
 }
+
+/// Native local sessions have no persistent app credential or Keychain dependency.
+@MainActor public final class EphemeralSessionVault: SessionVault {
+    private var value: String?
+    public init() {}
+    public func load() throws -> String? { value }
+    public func save(_ token: String) throws { value = token }
+    public func remove() throws { value = nil }
+}

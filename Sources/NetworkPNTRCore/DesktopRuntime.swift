@@ -32,6 +32,8 @@ public struct ManagedRuntimePaths: Sendable {
     public private(set) var error: String?
     public private(set) var failure: AppErrorMessage?
     public let paths: ManagedRuntimePaths
+    public let automaticLocalSession: Bool
+    public private(set) var isReconnecting = false
     @ObservationIgnored private let artifacts: URL
     @ObservationIgnored private let cloudEgress: Bool
     @ObservationIgnored private let vault: any SessionVault
@@ -44,8 +46,8 @@ public struct ManagedRuntimePaths: Sendable {
         _ = try mcp.authorize(name: name, agents: agents, taskIDs: taskIDs, language: language,
                               session: authentication, runtimeEpoch: { [weak self] in self?.mcpRuntimeEpoch })
     }
-    public init(artifacts: URL, paths: ManagedRuntimePaths = .applicationDefault, vault: any SessionVault, cloudEgress: Bool = false) {
-        self.artifacts = artifacts; self.paths = paths; self.vault = vault; self.cloudEgress = cloudEgress
+    public init(artifacts: URL, paths: ManagedRuntimePaths = .applicationDefault, vault: any SessionVault, cloudEgress: Bool = false, automaticLocalSession: Bool = false) {
+        self.artifacts = artifacts; self.paths = paths; self.vault = vault; self.cloudEgress = cloudEgress; self.automaticLocalSession = automaticLocalSession
     }
     public func start() async {
         guard !isStarting, controller.mayStart else { return }
@@ -57,7 +59,7 @@ public struct ManagedRuntimePaths: Sendable {
             guard generation == operation, !Task.isCancelled else { return }
             try paths.prepareDirectories()
             _ = try PersistentGuestDisk.createIfMissing(at: paths.disk, byteCount: 2 * 1024 * 1024 * 1024)
-            let provisioning = try GuestProvisioning.generate()
+            let provisioning = try GuestProvisioning.generate(localSession: automaticLocalSession)
             try await controller.start(artifacts: artifacts, logs: paths.logs, readinessTimeout: .seconds(120), dataDisk: paths.disk, provisioning: provisioning, cloudEgress: cloudEgress)
             for _ in 0..<1300 {
                 guard generation == operation, !Task.isCancelled else { return }
@@ -74,13 +76,34 @@ public struct ManagedRuntimePaths: Sendable {
                 throw RuntimeError.timeout("NetworkPNTR backend startup")
             }
             if cloudEgress { try controller.enableCloudEgress() }
-            let session = AuthenticationSession(client: BackendJSONClient(runtime: controller, provisioning: provisioning), vault: vault, setupToken: provisioning.setupToken)
+            let session = AuthenticationSession(client: BackendJSONClient(runtime: controller, provisioning: provisioning), vault: vault, setupToken: provisioning.setupToken,
+                                                localCapability: provisioning.localSessionCapability, onInvalidation: { [weak self] in
+                guard let self, self.automaticLocalSession, self.generation == operation else { return }
+                self.mcp.invalidateAll()
+            })
             authentication = session
             await session.refresh()
+            if automaticLocalSession, generation == operation { await mcp.revokeAll() }
         } catch {
             if generation == operation { self.error = error.localizedDescription; failure = AppErrorMessage(error, fallback: .runtimeUIUnexpected) }
         }
     }
+    public func retryLocalConnection() async {
+        guard automaticLocalSession, !isStarting, !isReconnecting else { return }
+        if controller.guestReady, let session = authentication {
+            let operation = generation
+            isReconnecting = true
+            defer { isReconnecting = false }
+            await mcp.revokeAll()
+            guard generation == operation, authentication === session, !Task.isCancelled else { return }
+            await session.refresh()
+            guard generation == operation, authentication === session else { return }
+            await mcp.revokeAll()
+        } else if controller.mayStart {
+            await start()
+        }
+    }
+
     public func stop() async throws {
         generation = UUID(); isStarting = false; authentication = nil
         mcp.invalidateAll()

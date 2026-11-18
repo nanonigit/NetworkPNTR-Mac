@@ -1579,9 +1579,9 @@
 	<key>mcp.clients.helperUnavailable</key>
 	<string>The connection helper is unavailable. Reinstall NetworkPNTR Mac to enable connections.</string>
 	<key>mcp.clients.instructions</key>
-	<string>For clients that accept MCP JSON, paste the copied configuration into their MCP settings. Keep NetworkPNTR Mac running. Signing out or stopping the VM ends access.</string>
+	<string>For clients that accept MCP JSON, paste the copied configuration into their MCP settings. Keep NetworkPNTR Mac running. Stopping or restarting the environment ends access.</string>
 	<key>mcp.clients.loginRequired</key>
-	<string>Start NetworkPNTR and sign in to allow a connection.</string>
+	<string>Start the local environment to allow AI connections.</string>
 	<key>mcp.clients.nameError</key>
 	<string>Enter a client name of 1–80 characters on one line.</string>
 	<key>mcp.clients.noClients</key>
@@ -1666,6 +1666,18 @@
 	<string>Window</string>
 	<key>menu.zoom</key>
 	<string>Zoom</string>
+	<key>native.session.preparing</key>
+	<string>Connecting to your environment</string>
+	<key>native.session.retry</key>
+	<string>Reconnect</string>
+	<key>native.session.start</key>
+	<string>Start environment</string>
+	<key>native.session.stopped</key>
+	<string>Environment is stopped</string>
+	<key>native.session.unavailable</key>
+	<string>Could not connect to the environment</string>
+	<key>native.session.unavailableDetail</key>
+	<string>Try again or check the runtime.</string>
 	<key>runtime.ui.aRTEXStarting</key>
 	<string>Starting NetworkPNTR</string>
 	<key>runtime.ui.cloudRelayActive</key>

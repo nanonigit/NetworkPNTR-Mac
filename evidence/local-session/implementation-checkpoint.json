@@ -1,0 +1,71 @@
+{
+  "backendBuildImage": "sha256:a9a6fcb1196930454f2209e5f8b7503b65b09a4c39884c90e91653d86fcd3526",
+  "passedTests": [
+    "TestNativeCapabilityConsumedAndUnset",
+    "TestNativeSessionRejectsUntrustedRequestsBeforeDatabase/disabled",
+    "TestNativeSessionRejectsUntrustedRequestsBeforeDatabase/external",
+    "TestNativeSessionRejectsUntrustedRequestsBeforeDatabase/origin",
+    "TestNativeSessionRejectsUntrustedRequestsBeforeDatabase/query",
+    "TestNativeSessionRejectsUntrustedRequestsBeforeDatabase/wrong",
+    "TestNativeSessionRejectsUntrustedRequestsBeforeDatabase/extra",
+    "TestNativeSessionRejectsUntrustedRequestsBeforeDatabase/trailing",
+    "TestNativeSessionRejectsUntrustedRequestsBeforeDatabase/oversize",
+    "TestNativeSessionRejectsUntrustedRequestsBeforeDatabase/no_database",
+    "TestNativeSessionRejectsUntrustedRequestsBeforeDatabase",
+    "TestNativeSessionInitializesOnceAndPreservesStoredHashDB",
+    "TestNativeSessionPreservesLegacyHashAndTokenDB",
+    "TestNativeSessionRejectsMalformedHashDB",
+    "TestNativeSessionConcurrentInitializersUsePersistedWinnerDB"
+  ],
+  "skippedTests": 0,
+  "cleanupVerified": true,
+  "status": "implementation-checkpoint-not-deployed",
+  "nativeAcceptance": "pending",
+  "browserBaselineUnchanged": true,
+  "normalStartup": "legacy-until-native-acceptance",
+  "builderCleanupCorrection": "durable input pin, verified references, owned alias only, no-prune; controlled rerun pending",
+  "candidateManifests": {
+    "default": {
+      "manifestSHA256": "ff958504082071c3f7affc56c4f246049b28bbb8d27ae6593e9da2ebea256868",
+      "kernelSHA256": "42a15047f7cfc785e008b43f48c090f6340f34ead8446d7568126bb5cb9bc9f1",
+      "backendSHA256": "15afee7eaf2fb676908113c3a877c540ee386fb743c618a7b17866d652031345",
+      "cpuCount": 2,
+      "managedCapabilities": [
+        "native-local-session-v1"
+      ]
+    },
+    "cloud": {
+      "manifestSHA256": "40718971e50bd73f9ff5b1cf5bdbc03f55db400f1855fb33d3ef9b3a7c4f4057",
+      "kernelSHA256": "8e57308787c420cb42e4c4ea80e6def6438a52232692c010dc4609bb9bf21879",
+      "backendSHA256": "c52227efbdbf1a0f2fb624e26772df7c6a14b6d23f9a2cd397ddd11d9cf55c93",
+      "cpuCount": 1,
+      "managedCapabilities": [
+        "cloud-tool-history-v1",
+        "cloud-vsock-fixture-v1",
+        "native-local-session-v1",
+        "regular-source-blob-stream-v1",
+        "traffic-blob-metadata-v1"
+      ]
+    }
+  },
+  "swiftTests": {
+    "executed": 1215,
+    "failures": 0,
+    "skipped": 1
+  },
+  "pythonTests": {
+    "executed": 215,
+    "failures": 0
+  },
+  "readmeChecks": {
+    "files": 4,
+    "retiredNameMatches": 0,
+    "bilingualLinksVerified": true
+  },
+  "review": {
+    "callbackCancellationRegression": "RED reproduced, fixed, GREEN",
+    "builderInputAliasDeletion": "identified and corrected, unit checks pass; controlled Docker rerun pending",
+    "remaining": "signed native, actual HTTP router and final integration review pending"
+  },
+  "dependencyAudit": "No npm/pip dependency manifest; Python additions use standard library. Pinned Go module verification executed in Linux build."
+}

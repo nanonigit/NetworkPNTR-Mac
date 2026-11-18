@@ -1,6 +1,13 @@
 import Foundation
 
 public enum AppStringKey: String, CaseIterable, Sendable {
+    case localSessionPreparing = "native.session.preparing"
+    case localSessionUnavailable = "native.session.unavailable"
+    case localSessionUnavailableDetail = "native.session.unavailableDetail"
+    case localSessionStopped = "native.session.stopped"
+    case localSessionRetry = "native.session.retry"
+    case localSessionStart = "native.session.start"
+
     case mcpClientsTitle = "mcp.clients.title"
     case mcpClientsDescription = "mcp.clients.description"
     case mcpClientsReadOnly = "mcp.clients.readOnly"

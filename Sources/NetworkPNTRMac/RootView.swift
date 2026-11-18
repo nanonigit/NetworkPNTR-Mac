@@ -17,12 +17,18 @@ struct RootView: View {
     @State private var findingOwner: ObjectIdentifier?
     @State private var trafficScreen: TrafficScreenModel?
     @State private var trafficOwner: ObjectIdentifier?
+    init(environment: DesktopRuntime, language: AppLanguagePreferences, trafficRetirements: TrafficBodyExportRetirement) {
+        self.environment = environment; self.language = language; self.trafficRetirements = trafficRetirements
+        _selection = State(initialValue: environment.automaticLocalSession ? "dashboard" : "runtime")
+    }
     var body: some View {
         NavigationSplitView {
             List(selection: $selection) {
                 Section("Mac") {
                     Label(s(.runtime), systemImage: "desktopcomputer").tag("runtime")
-                    Label(s(.account), systemImage: "person.crop.circle").tag("auth")
+                    if !environment.automaticLocalSession {
+                        Label(s(.account), systemImage: "person.crop.circle").tag("auth")
+                    }
                     Label(s(.mcpClientsTitle), systemImage: "link").tag("mcp-clients")
                     Label(s(.parity), systemImage: "checklist").tag("parity")
                 }
@@ -40,10 +46,13 @@ struct RootView: View {
         } detail: {
             if let catalogError { ContentUnavailableView(s(.catalogUnavailable), systemImage: "exclamationmark.triangle", description: Text(catalogError)) }
             else if selection == "runtime" { RuntimeView(environment: environment) }
-            else if selection == "mcp-clients" { MCPConnectionsView(environment: environment) }
-            else if selection == "auth", let session = environment.authentication { AuthenticationView(session: session) }
-            else if selection == "auth" { ContentUnavailableView(s(.startRequired), systemImage: "power", description: Text(s(.authPreparation))) }
             else if selection == "parity", let catalog { ParityView(catalog: catalog) }
+            else if environment.automaticLocalSession, environment.authentication?.phase != .authenticated {
+                LocalConnectionView(environment: environment) { selection = "runtime" }
+            }
+            else if selection == "mcp-clients" { MCPConnectionsView(environment: environment) }
+            else if !environment.automaticLocalSession, selection == "auth", let session = environment.authentication { AuthenticationView(session: session) }
+            else if !environment.automaticLocalSession, selection == "auth" { ContentUnavailableView(s(.startRequired), systemImage: "power", description: Text(s(.authPreparation))) }
             else if selection == "dashboard", let session = environment.authentication, session.phase == .authenticated {
                 DashboardView(session: session) { destination in
                     switch destination {
@@ -159,7 +168,7 @@ struct RootView: View {
         }
         .onChange(of: environment.authentication?.phase) { _, phase in
             if phase != .authenticated { llmWorkspace.reset(); taskScreen?.reset(); findingScreen?.reset(); trafficScreen?.reset(); taskDetailID = nil }
-            if phase == .needsSetup || phase == .needsLogin || phase == .unavailable { selection = "auth" }
+            if !environment.automaticLocalSession, phase == .needsSetup || phase == .needsLogin || phase == .unavailable { selection = "auth" }
         }
     }
     @ViewBuilder private func llmContent(_ session: AuthenticationSession) -> some View {

@@ -1,0 +1,27 @@
+# Login-free native startup
+
+## Requirements (2026-11-18 user revision)
+
+The normal Mac application opens without creating an app account, setting a password, signing in or signing out. This supersedes the old native password-screen requirement. Match the direct native entry used by NetworkISPR Mac and RepoAUDT Mac. Preserve existing VM data, provider keys and task history; do not import or alter the separately frozen browser deployment. Keep guest API JWT checks, authenticated vsock, no host shares/NICs, explicit MCP grants and account/runtime ownership checks. Errors offer retry, never a password fallback. Cloud-provider API keys remain separate optional settings.
+
+## Design
+
+The application generates a distinct per-boot 256-bit local-session capability and sends it through a versioned private serial bootstrap, alongside the existing separate transport/setup secrets. Only a guest manifest declaring `native-local-session-v1` can use it. A managed server overlay registers a fixed loopback-only POST `/api/auth/local-session`, with bounded JSON, strict schema, no query/origin, constant-time capability validation and no-store responses. It uses the existing backend JWT signing and stored password-hash binding. Existing hashes are preserved. A fresh database receives only a random inaccessible internal hash through the existing atomic insert-if-absent operation; no person is assigned an ID/password. Consume and unset the environment capability when constructing the server, before tool subprocesses can inherit it. Missing/invalid capability never disables authentication or issues a token. All other APIs remain under their existing JWT middleware.
+
+Normal native sessions hold credentials only in memory. Each startup obtains a fresh internal JWT; existing Keychain/provider/VM data is not erased. Manual authentication remains an explicit DEBUG comparison mode for the independently frozen browser contract. The normal sidebar has no Account item; startup goes to the dashboard with a local-environment progress/error/retry state. No login/setup/logout form is reachable in the normal flow. A failed/expired internal session invalidates its ownership epoch and MCP grants; retry uses the private capability rather than asking the user for a password.
+
+Build the overlay from the pinned source only inside the pinned Linux Go builder. Keep the source baseline untouched. Overlay the reviewed existing guest root filesystem; preserve its kernel, CPU/memory, packages and API Recon policy. Build both ordinary/cloud-preview artifacts, bind manifests/hashes and keep pre-update artifacts for rollback. Do not use a different kernel merely to get a successful auth test.
+
+UI evidence: both sibling app entry sources use their native root views without an app account gate. Lazyweb search `desktop local app onboarding without account` returned LaunchNotes/Appcues/Userpilot onboarding metadata; its account-oriented references are not copied. Keep the existing native shell and use a compact progress/retry state, not another onboarding wizard. This user-requested native UX intentionally differs from browser login; all feature/data comparisons remain required.
+
+## Test order and acceptance
+
+1. Go: disabled/wrong capability, non-loopback, origin/query/schema/body limits, database failure, fresh initialization, preservation of an existing password hash/data, valid JWT and protected-route rejection without it; no secret output.
+2. Swift/Python: legacy bootstrap unchanged, versioned bootstrap redaction/independent random secrets, declared-artifact gating, local-session lifecycle/cancellation/401 and epoch invalidation, normal UI never selects/shows account screens, retry and EN/JA resources.
+3. Build in isolated containers; run real PostgreSQL/API fresh/existing/restart/wrong-old-capability checks. Save normalized receipts and retain failures. Serialize SwiftPM-dependent checks.
+4. Signed native disposable VM: first launch needs no typed credentials, local API operations work, data survives restart/migration and MCP permissions remain explicit. Verify visible normal UI and both languages; separately retain the unchanged browser baseline.
+5. Preserve ordinary/cloud-preview data and bundle IDs, verify signatures/guest manifests, update README/current naming, then deploy both local bundles and push reviewed changes with `[skip ci]`. No completion claim until actual startup and migration checks pass; known intermittent boot reliability remains a separate open gate.
+
+## Current implementation checkpoint
+
+README language links are present in both root and backend-extension pairs; no README contains the retired product word. The factory enables automatic sessions only with the explicit `--local-session-diagnostics` developer flag until signed native acceptance. Both overlay variants built with unchanged kernel/CPU/memory; the normal installed bundles and user state have not been replaced. Initial overlay cleanup removed two originally dangling input runtime image cache references; the original bundle artifacts remain intact. The builder now pins dangling inputs durably, verifies original references and removes only its owned temporary alias with `--no-prune`. This correction needs a new controlled builder run before deployment. Real DB tests passed without skips, but actual production HTTP mux/native VM acceptance is pending.

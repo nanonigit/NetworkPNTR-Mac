@@ -1,6 +1,102 @@
 {
   "sourceLanguage": "en",
   "strings": {
+      "native.session.preparing": {
+        "localizations": {
+          "en": {
+            "stringUnit": {
+              "state": "translated",
+              "value": "Connecting to your environment"
+            }
+          },
+          "ja": {
+            "stringUnit": {
+              "state": "translated",
+              "value": "環境に接続しています"
+            }
+          }
+        }
+      },
+      "native.session.unavailable": {
+        "localizations": {
+          "en": {
+            "stringUnit": {
+              "state": "translated",
+              "value": "Could not connect to the environment"
+            }
+          },
+          "ja": {
+            "stringUnit": {
+              "state": "translated",
+              "value": "環境に接続できませんでした"
+            }
+          }
+        }
+      },
+      "native.session.unavailableDetail": {
+        "localizations": {
+          "en": {
+            "stringUnit": {
+              "state": "translated",
+              "value": "Try again or check the runtime."
+            }
+          },
+          "ja": {
+            "stringUnit": {
+              "state": "translated",
+              "value": "もう一度試すか、実行環境を確認してください。"
+            }
+          }
+        }
+      },
+      "native.session.stopped": {
+        "localizations": {
+          "en": {
+            "stringUnit": {
+              "state": "translated",
+              "value": "Environment is stopped"
+            }
+          },
+          "ja": {
+            "stringUnit": {
+              "state": "translated",
+              "value": "環境は停止しています"
+            }
+          }
+        }
+      },
+      "native.session.retry": {
+        "localizations": {
+          "en": {
+            "stringUnit": {
+              "state": "translated",
+              "value": "Reconnect"
+            }
+          },
+          "ja": {
+            "stringUnit": {
+              "state": "translated",
+              "value": "再接続"
+            }
+          }
+        }
+      },
+      "native.session.start": {
+        "localizations": {
+          "en": {
+            "stringUnit": {
+              "state": "translated",
+              "value": "Start environment"
+            }
+          },
+          "ja": {
+            "stringUnit": {
+              "state": "translated",
+              "value": "環境を起動"
+            }
+          }
+        }
+      },
       "mcp.clients.title": {
         "localizations": {
           "en": {
@@ -310,13 +406,13 @@
           "en": {
             "stringUnit": {
               "state": "translated",
-              "value": "Start NetworkPNTR and sign in to allow a connection."
+              "value": "Start the local environment to allow AI connections."
             }
           },
           "ja": {
             "stringUnit": {
               "state": "translated",
-              "value": "NetworkPNTRを起動してログインすると接続を許可できます。"
+              "value": "AI接続を許可するには、このMacの環境を起動してください。"
             }
           }
         }
@@ -342,13 +438,13 @@
           "en": {
             "stringUnit": {
               "state": "translated",
-              "value": "For clients that accept MCP JSON, paste the copied configuration into their MCP settings. Keep NetworkPNTR Mac running. Signing out or stopping the VM ends access."
+              "value": "For clients that accept MCP JSON, paste the copied configuration into their MCP settings. Keep NetworkPNTR Mac running. Stopping or restarting the environment ends access."
             }
           },
           "ja": {
             "stringUnit": {
               "state": "translated",
-              "value": "MCP設定JSONに対応したクライアントの設定へ貼り付けてください。NetworkPNTR Macは起動したままにします。ログアウトやVM停止で接続許可は失効します。"
+              "value": "MCP設定JSONに対応したクライアントの設定へ貼り付けてください。NetworkPNTR Macは起動したままにします。環境の停止・再起動で接続許可は失効します。"
             }
           }
         }

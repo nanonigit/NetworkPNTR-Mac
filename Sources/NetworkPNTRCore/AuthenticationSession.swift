@@ -13,13 +13,17 @@ public enum AuthenticationPhase: String, Sendable { case checking, needsSetup, n
     @ObservationIgnored private let client: any BackendJSONTransport
     @ObservationIgnored private let vault: any SessionVault
     @ObservationIgnored private let setupToken: String
+    @ObservationIgnored private let localCapability: String?
+    @ObservationIgnored private let onInvalidation: @MainActor () -> Void
     @ObservationIgnored private var token: String?
     @ObservationIgnored private var revision = UUID()
     @ObservationIgnored private var uploadProgress: [UUID: BackendUploadProgressGate] = [:]
     private struct Status: Decodable { let initialized: Bool; let setup_token_required: Bool }
     private struct Session: Decodable { let token: String }
-    public init(client: any BackendJSONTransport, vault: any SessionVault, setupToken: String) {
+    public init(client: any BackendJSONTransport, vault: any SessionVault, setupToken: String,
+                localCapability: String? = nil, onInvalidation: @escaping @MainActor () -> Void = {}) {
         self.client = client; self.vault = vault; self.setupToken = setupToken
+        self.localCapability = localCapability; self.onInvalidation = onInvalidation
     }
     #if DEBUG
     /// Diagnostic witness of one authentication epoch; exposes no credentials.
@@ -32,6 +36,7 @@ public enum AuthenticationPhase: String, Sendable { case checking, needsSetup, n
     }
     #endif
     public func refresh() async {
+        if localCapability != nil { await refreshLocal(); return }
         guard !isBusy else { return }
         isBusy = true; failure = nil; token = nil; advanceRevision(); phase = .checking
         defer { isBusy = false }
@@ -49,6 +54,36 @@ public enum AuthenticationPhase: String, Sendable { case checking, needsSetup, n
             } else { phase = .needsLogin }
         } catch { phase = .unavailable; self.failure = AppErrorMessage(error) }
     }
+    private func refreshLocal() async {
+        guard !isBusy else { return }
+        isBusy = true; failure = nil; token = nil; advanceRevision(); phase = .checking
+        var ticket = revision
+        defer { isBusy = false }
+        do {
+            guard let localCapability, localCapability.utf8.count == 64,
+                  localCapability.utf8.allSatisfy({ (48...57).contains($0) || (97...102).contains($0) }) else {
+                throw BackendAPIError.invalidResponse
+            }
+            try Task.checkCancellation()
+            let body = try JSONSerialization.data(withJSONObject: ["capability": localCapability])
+            let candidate: Session = try await request(method: "POST", path: "/api/auth/local-session", body: body)
+            guard !candidate.token.isEmpty, candidate.token.utf8.count <= 8192 else { throw BackendAPIError.invalidResponse }
+            _ = try BackendHTTPRequest.make(method: "GET", path: "/api/llm/profiles", body: nil, bearer: candidate.token)
+            try Task.checkCancellation()
+            guard revision == ticket, phase == .checking else { throw CancellationError() }
+            let verified = try await client.send(method: "GET", path: "/api/llm/profiles", body: nil, bearer: candidate.token)
+            try Task.checkCancellation()
+            guard revision == ticket, phase == .checking else { throw CancellationError() }
+            guard verified.status == 200 else { throw BackendAPIError.status(verified.status) }
+            ticket = advanceRevision()
+            try Task.checkCancellation()
+            guard revision == ticket, phase == .checking else { throw CancellationError() }
+            token = candidate.token; phase = .authenticated; failure = nil
+        } catch {
+            if revision == ticket { token = nil; phase = .unavailable; failure = AppErrorMessage(error) }
+        }
+    }
+
     public func setup(password: String, confirmation: String) async {
         guard !isBusy, phase == .needsSetup else { return }
         do {
@@ -78,6 +113,10 @@ public enum AuthenticationPhase: String, Sendable { case checking, needsSetup, n
     }
     public func logout() {
         guard !isBusy else { return }
+        if localCapability != nil {
+            token = nil; advanceRevision(); phase = .unavailable; failure = nil
+            return
+        }
         do { try vault.remove(); token = nil; advanceRevision(); phase = .needsLogin; failure = nil }
         catch { self.failure = AppErrorMessage(error) }
     }
@@ -171,15 +210,19 @@ public enum AuthenticationPhase: String, Sendable { case checking, needsSetup, n
     private func validateReply(_ response: BackendHTTPResponse, ticket: UUID) throws {
         guard revision == ticket, phase == .authenticated else { throw CancellationError() }
         if response.status == 401 {
-            token = nil; advanceRevision(); phase = .needsLogin
-            // In-memory authentication must expire even if Keychain removal fails.
-            try vault.remove()
+            token = nil; advanceRevision(); phase = localCapability == nil ? .needsLogin : .unavailable
+            // Local sessions never read, replace or erase a previous user's Keychain item.
+            if localCapability == nil { try vault.remove() }
+            else { failure = AppErrorMessage(BackendAPIError.status(401)) }
         }
     }
-    private func advanceRevision() {
+    @discardableResult private func advanceRevision() -> UUID {
         for gate in uploadProgress.values { gate.close() }
         uploadProgress.removeAll()
-        revision = UUID()
+        let next = UUID()
+        revision = next
+        onInvalidation()
+        return next
     }
     private func accept(_ value: String) throws {
         _ = try BackendHTTPRequest.make(method: "GET", path: "/api/auth/status", body: nil, bearer: value)

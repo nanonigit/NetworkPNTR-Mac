@@ -1579,9 +1579,9 @@
 	<key>mcp.clients.helperUnavailable</key>
 	<string>接続ヘルパーが見つかりません。NetworkPNTR Macを再インストールしてください。</string>
 	<key>mcp.clients.instructions</key>
-	<string>MCP設定JSONに対応したクライアントの設定へ貼り付けてください。NetworkPNTR Macは起動したままにします。ログアウトやVM停止で接続許可は失効します。</string>
+	<string>MCP設定JSONに対応したクライアントの設定へ貼り付けてください。NetworkPNTR Macは起動したままにします。環境の停止・再起動で接続許可は失効します。</string>
 	<key>mcp.clients.loginRequired</key>
-	<string>NetworkPNTRを起動してログインすると接続を許可できます。</string>
+	<string>AI接続を許可するには、このMacの環境を起動してください。</string>
 	<key>mcp.clients.nameError</key>
 	<string>接続先の名前を1行・1〜80文字で入力してください。</string>
 	<key>mcp.clients.noClients</key>
@@ -1666,6 +1666,18 @@
 	<string>ウインドウ</string>
 	<key>menu.zoom</key>
 	<string>拡大／縮小</string>
+	<key>native.session.preparing</key>
+	<string>環境に接続しています</string>
+	<key>native.session.retry</key>
+	<string>再接続</string>
+	<key>native.session.start</key>
+	<string>環境を起動</string>
+	<key>native.session.stopped</key>
+	<string>環境は停止しています</string>
+	<key>native.session.unavailable</key>
+	<string>環境に接続できませんでした</string>
+	<key>native.session.unavailableDetail</key>
+	<string>もう一度試すか、実行環境を確認してください。</string>
 	<key>runtime.ui.aRTEXStarting</key>
 	<string>NetworkPNTRを起動しています</string>
 	<key>runtime.ui.cloudRelayActive</key>

@@ -28,6 +28,14 @@ public struct GuestArtifacts: Codable, Sendable {
     public let systemDisk: String?
     public let systemDiskSHA256: String?
     public let managedCapabilities: [String]?
+    public var declaresNativeLocalSession: Bool {
+        systemDisk != nil && managedCapabilities?.contains("native-local-session-v1") == true
+    }
+    func requireCompatibleBootstrap(_ provisioning: GuestProvisioning) throws {
+        guard provisioning.localSessionCapability == nil || declaresNativeLocalSession else {
+            throw RuntimeError.integrity("native local session guest capability")
+        }
+    }
     /// Compatibility declaration only; callers must load verified files and bind it to a live VM.
     public var declaresTrafficBlobExport: Bool {
         bootMode == "rootDisk" && systemDisk != nil &&
@@ -73,9 +81,11 @@ public struct GuestArtifacts: Codable, Sendable {
     package static let cloudEgressManifestSHA256 = "42c47caf03c835c974eee569f8be041b234d3f96b7d7931585e410e146f73c70"
     package static let apiReconSkillManifestSHA256 = "fe0053523608ba436f261ff41d142fe2ceca779571958ca1d19aa2ddaa54f332"
 
+    package static let nativeSessionCloudManifestSHA256 = "40718971e50bd73f9ff5b1cf5bdbc03f55db400f1855fb33d3ef9b3a7c4f4057"
+
     static func requireCloudEgressManifest(_ data: Data) throws {
         guard data.count <= 64 * 1024,
-              [cloudEgressManifestSHA256, apiReconSkillManifestSHA256].contains(ArtifactIntegrity.sha256(data)) else {
+              [cloudEgressManifestSHA256, apiReconSkillManifestSHA256, nativeSessionCloudManifestSHA256].contains(ArtifactIntegrity.sha256(data)) else {
             throw RuntimeError.integrity("cloud egress manifest digest")
         }
     }
