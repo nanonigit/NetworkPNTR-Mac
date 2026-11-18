@@ -63,12 +63,77 @@ final class MCPReadBrokerTests: XCTestCase {
         XCTAssertNil(api.calls.first?.body)
     }
 
+    private func taskFixture() throws -> [String: Any] {
+        let url = try XCTUnwrap(Bundle.module.url(forResource: "task-contract", withExtension: "json", subdirectory: "Fixtures"))
+        let root = try XCTUnwrap(JSONSerialization.jsonObject(with: Data(contentsOf: url)) as? [String: Any])
+        return try XCTUnwrap(root["task"] as? [String: Any])
+    }
+
+    @MainActor func testStatusUsesRealListMetricsAndNeverProjectsUnselectedRows() async throws {
+        let api = ChatTestTransport(), owner = Owner()
+        var selected = try taskFixture(), foreign = selected
+        selected["id"] = "7201"
+        selected["tokens"] = ["inputTokens": Int64(4_294_967_294), "outputTokens": 13, "cacheReadTokens": 0, "cacheWriteTokens": 0]
+        foreign["id"] = "7202"; foreign["name"] = "private-unselected-marker"
+        var detail = selected
+        detail["tokens"] = ["inputTokens": 0, "outputTokens": 0, "cacheReadTokens": 0, "cacheWriteTokens": 0]
+        api.handler = { call in
+            try ChatTestTransport.response(call.path == "/api/tasks" ? ["tasks": [selected, foreign], "active": ""] : detail)
+        }
+        let broker = MCPReadBroker(client: api, ownership: { owner.epoch })
+        let grant = try broker.authorize(scopes: [.taskStatus], taskIDs: ["7201"])
+        let result = try await broker.taskStatus(grant: grant, id: "7201")
+        XCTAssertEqual(result.inputTokens, 4_294_967_294)
+        XCTAssertEqual(result.outputTokens, 13)
+        XCTAssertEqual(api.calls.map(\.path), ["/api/tasks"])
+        let text = String(decoding: try JSONEncoder().encode(result), as: UTF8.self)
+        XCTAssertFalse(text.contains("7202")); XCTAssertFalse(text.contains("private-unselected-marker"))
+    }
+
+    @MainActor func testAbsentAllowedTaskNeverFallsBackToDetailOrZeroCounters() async throws {
+        let api = ChatTestTransport(), owner = Owner()
+        try api.enqueue(["tasks": [], "active": ""])
+        let broker = MCPReadBroker(client: api, ownership: { owner.epoch })
+        let grant = try broker.authorize(scopes: [.taskStatus], taskIDs: ["7201"])
+        do { _ = try await broker.taskStatus(grant: grant, id: "7201"); XCTFail("Absent selected task accepted") }
+        catch { }
+        XCTAssertEqual(api.calls.map(\.path), ["/api/tasks"])
+    }
+
+    @MainActor func testCancellationDuringTaskListSuppressesProjection() async throws {
+        let api = ChatTestTransport(), owner = Owner()
+        let item = try taskFixture()
+        let broker = MCPReadBroker(client: api, ownership: { owner.epoch })
+        let grant = try broker.authorize(scopes: [.taskStatus], taskIDs: ["9007199254740993"])
+        api.handler = { _ in
+            withUnsafeCurrentTask { $0?.cancel() }
+            return try ChatTestTransport.response(["tasks": [item], "active": ""])
+        }
+        let request = Task { try await broker.taskStatus(grant: grant, id: "9007199254740993") }
+        do { _ = try await request.value; XCTFail("Canceled task result escaped") }
+        catch { XCTAssertTrue(error is CancellationError) }
+        XCTAssertEqual(api.calls.map(\.path), ["/api/tasks"])
+    }
+
+    @MainActor func testRevocationDuringTaskListSuppressesProjection() async throws {
+        let api = ChatTestTransport(), owner = Owner()
+        let item = try taskFixture()
+        let broker = MCPReadBroker(client: api, ownership: { owner.epoch })
+        let grant = try broker.authorize(scopes: [.taskStatus], taskIDs: ["9007199254740993"])
+        api.handler = { _ in
+            broker.revoke(grant)
+            return try ChatTestTransport.response(["tasks": [item], "active": ""])
+        }
+        do { _ = try await broker.taskStatus(grant: grant, id: "9007199254740993"); XCTFail("Revoked task result escaped") }
+        catch { XCTAssertEqual(error as? MCPReadError, .unauthorized) }
+    }
+
     @MainActor func testScopedStatusPreservesLargeIDsAndTokenCounts() async throws {
         let api = ChatTestTransport(), owner = Owner()
         let url = try XCTUnwrap(Bundle.module.url(forResource: "task-contract", withExtension: "json", subdirectory: "Fixtures"))
         let root = try XCTUnwrap(JSONSerialization.jsonObject(with: Data(contentsOf: url)) as? [String: Any])
         let item = try XCTUnwrap(root["task"] as? [String: Any])
-        try api.enqueue(item)
+        try api.enqueue(["tasks": [item], "active": ""])
         let broker = MCPReadBroker(client: api, ownership: { owner.epoch })
         let id = "9007199254740993"
         let grant = try broker.authorize(scopes: [.taskStatus], taskIDs: [id])
@@ -77,7 +142,7 @@ final class MCPReadBrokerTests: XCTestCase {
         XCTAssertEqual(status.inputTokens, 9_007_199_254_740_993)
         let encoded = try XCTUnwrap(JSONSerialization.jsonObject(with: JSONEncoder().encode(status)) as? [String: Any])
         XCTAssertEqual(Set(encoded.keys), ["id", "status", "paused", "queued", "inputTokens", "outputTokens"])
-        XCTAssertEqual(api.calls.map(\.path), ["/api/tasks/" + id])
+        XCTAssertEqual(api.calls.map(\.path), ["/api/tasks"])
         XCTAssertEqual(api.calls.map(\.method), ["GET"])
     }
 

@@ -5,7 +5,7 @@ Status: core read broker and local stdio/IPC helper pass synthetic integration t
 | Tool | Arguments | Authorization | Shared native service | Execution owner |
 | --- | --- | --- | --- | --- |
 | `networkpntr_agents_list` | Empty object, no additional properties | Agent discovery | `AgentCatalogService.list`, GET `/api/agents` | External AI; no internal inference |
-| `networkpntr_task_status` | Required `id`, canonical positive decimal string, no additional properties | Task status plus exact task ID allowlist | `TaskService.detail`, GET `/api/tasks/{id}` | Read existing task; no inference is started |
+| `networkpntr_task_status` | Required `id`, canonical positive decimal string, no additional properties | Task status plus exact task ID allowlist | `TaskService.list`, GET `/api/tasks`; select only the authorized ID | Read existing task; no inference is started |
 
 Both tool descriptors set read-only and idempotent annotations. These annotations are hints; the app broker enforces the actual route, scope and account/runtime ownership. Account credentials stay inside `AuthenticatedBackendClient`; they are never MCP arguments or output.
 

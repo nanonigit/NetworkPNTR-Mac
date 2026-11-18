@@ -104,8 +104,8 @@ final class MCPIPCTests: XCTestCase {
         try api.enqueue(["agents": [["key": "worker", "name": "worker", "enabled": true, "builtin": true]]])
         let fixture = try XCTUnwrap(Bundle.module.url(forResource: "task-contract", withExtension: "json", subdirectory: "Fixtures"))
         let object = try XCTUnwrap(JSONSerialization.jsonObject(with: Data(contentsOf: fixture)) as? [String: Any])
-        try api.enqueue(try XCTUnwrap(object["task"] as? [String: Any]))
-        try api.enqueue(try XCTUnwrap(object["task"] as? [String: Any]))
+        try api.enqueue(["tasks": [try XCTUnwrap(object["task"] as? [String: Any])], "active": ""])
+        try api.enqueue(["tasks": [try XCTUnwrap(object["task"] as? [String: Any])], "active": ""])
         var canceledReads = 0
         api.handler = { call in
             if call.path == "/api/agents", api.calls.count > 1 {
@@ -136,10 +136,10 @@ final class MCPIPCTests: XCTestCase {
             XCTAssertEqual(process.terminationStatus, 0, String(decoding: diagnostics, as: UTF8.self))
             let result = output.fileHandleForReading.readDataToEndOfFile()
             XCTAssertTrue(String(decoding: result, as: UTF8.self).contains("PASS stdio"))
-            XCTAssertEqual(Array(api.calls.prefix(2)).map(\.path), ["/api/agents", "/api/tasks/9007199254740993"])
-            XCTAssertEqual(api.calls.filter { $0.path == "/api/tasks/9007199254740993" }.count, 2)
+            XCTAssertEqual(Array(api.calls.prefix(2)).map(\.path), ["/api/agents", "/api/tasks"])
+            XCTAssertEqual(api.calls.filter { $0.path == "/api/tasks" }.count, 2)
             XCTAssertGreaterThan(canceledReads, 0)
-            XCTAssertTrue(api.calls.allSatisfy { $0.method == "GET" && ["/api/agents", "/api/tasks/9007199254740993"].contains($0.path) })
+            XCTAssertTrue(api.calls.allSatisfy { $0.method == "GET" && ["/api/agents", "/api/tasks"].contains($0.path) })
             await server.stop()
         } catch {
             if process.isRunning { kill(process.processIdentifier, SIGKILL) }

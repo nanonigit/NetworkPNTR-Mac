@@ -8,6 +8,7 @@ struct NativeReviewPlan {
         "--chat-history-diagnostics", "--dashboard-diagnostics", "--upload-diagnostics",
         "--upload-limit-diagnostics", "--upload-cancellation-diagnostics", "--chat-review", "--mention-review"
     ]
+    let mcpTaskReview: Bool
     let noLLM: Bool
     let skillVisibility: Bool
     let toolRuns: Bool
@@ -15,6 +16,10 @@ struct NativeReviewPlan {
     let toolRunCancellation: Bool
     init(arguments: [String]) throws {
         let flags = Set(arguments)
+        mcpTaskReview = flags.contains("--mcp-task-review")
+        if mcpTaskReview && (!flags.contains("--native-review") || !flags.contains("--no-llm-review") || !flags.isDisjoint(with: Self.seedingFlags) || flags.contains("--tool-runs-review") || flags.contains("--skill-visibility-diagnostics")) {
+            throw RuntimeError.integrity("MCP task review requires an independent no-model native fixture")
+        }
         toolRuns = flags.contains("--tool-runs-review")
         toolRunFailure = flags.contains("--tool-runs-failure-review")
         toolRunCancellation = flags.contains("--tool-runs-cancellation-review")

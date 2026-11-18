@@ -50,6 +50,19 @@ final class NativeReviewPlanTests: XCTestCase {
             XCTAssertFalse(try NativeReviewPlan(arguments: [flag]).noLLM)
         }
     }
+    func testMCPTaskReviewRequiresIndependentNoLLMReview() throws {
+        let flag = "--mcp-task-review"
+        XCTAssertTrue(try NativeReviewPlan(arguments: [flag, "--native-review", "--no-llm-review"]).mcpTaskReview)
+        for arguments in [[flag], [flag, "--native-review"], [flag, "--no-llm-review"],
+                          [flag, "--native-review", "--no-llm-review", "--tool-runs-review"],
+                          [flag, "--native-review", "--no-llm-review", "--skill-visibility-diagnostics"]] {
+            XCTAssertThrowsError(try NativeReviewPlan(arguments: arguments))
+        }
+        for seed in NativeReviewPlan.seedingFlags {
+            XCTAssertThrowsError(try NativeReviewPlan(arguments: [flag, "--native-review", "--no-llm-review", seed]))
+        }
+        XCTAssertFalse(try NativeReviewPlan(arguments: ["--native-review", "--no-llm-review"]).mcpTaskReview)
+    }
     @MainActor func testEmptyProfilesRequiredWithoutMutation() async throws {
         let client = Client()
         try client.enqueue(["profiles": []])

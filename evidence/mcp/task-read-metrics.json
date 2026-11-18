@@ -1,0 +1,133 @@
+{
+  "baseline": "e75ae371ad777ffd1eecdd28d2781a6519b05591",
+  "backendImage": "sha256:46b3ce5d5f91cd05b9e3fd6834e33196be9626eb40d38e84b7fb398f00a172d0",
+  "sqlSHA256": "f3b87deefecb6c2cf7539135c6829dd7c866cd97468f23b164cb3226428f065a",
+  "forcedRollbackRowsAndSequencesUnchanged": true,
+  "repeatedSeedRejectedWithoutMutation": true,
+  "before": {
+    "tasks": 0,
+    "explorations": 0,
+    "activity": 0,
+    "profiles": 0,
+    "usage": 0,
+    "activitySequence": [
+      1,
+      false
+    ],
+    "taskSequence": [
+      1,
+      false
+    ],
+    "explorationSequence": [
+      1,
+      false
+    ]
+  },
+  "seeded": {
+    "tasks": 2,
+    "explorations": 2,
+    "activity": 3,
+    "profiles": 0,
+    "usage": 0,
+    "activitySequence": [
+      7204,
+      false
+    ],
+    "taskSequence": [
+      7203,
+      false
+    ],
+    "explorationSequence": [
+      7203,
+      false
+    ]
+  },
+  "taskProjection": [
+    {
+      "id": "7201",
+      "status": "done",
+      "paused": false,
+      "queued": false,
+      "tokens": {
+        "input_tokens": 4294967294,
+        "output_tokens": 13,
+        "cache_read_tokens": 0,
+        "cache_write_tokens": 0
+      }
+    },
+    {
+      "id": "7202",
+      "status": "failed",
+      "paused": false,
+      "queued": false,
+      "tokens": {
+        "input_tokens": 17,
+        "output_tokens": 5,
+        "cache_read_tokens": 0,
+        "cache_write_tokens": 0
+      }
+    }
+  ],
+  "detailTokens": [
+    {
+      "input_tokens": 0,
+      "output_tokens": 0,
+      "cache_read_tokens": 0,
+      "cache_write_tokens": 0
+    },
+    {
+      "input_tokens": 0,
+      "output_tokens": 0,
+      "cache_read_tokens": 0,
+      "cache_write_tokens": 0
+    }
+  ],
+  "renderedBrowserComparison": "pending",
+  "existingBrowserDataModified": false,
+  "cleanupVerified": true,
+  "dockerContext": "desktop-linux",
+  "localUnixSocketVerified": true,
+  "cachedExactImagesVerified": true,
+  "affectedSequenceNames": [
+    "tasks_id_seq",
+    "explorations_id_seq",
+    "activity_id_seq"
+  ],
+  "swiftRegression": {
+    "tests": 1205,
+    "skipped": 1,
+    "failures": 0
+  },
+  "focusedPythonBoundaryTests": 10,
+  "pythonFullRegression": {
+    "attempted": 211,
+    "initialErrors": 2,
+    "cause": "SwiftPM build-path queries timed out while parallel Release build held shared lock",
+    "failedCasesRecheckedSequentially": 2,
+    "recheckFailures": 0
+  },
+  "nativeSelectedTaskUI": "pending",
+  "actualMCPSelectedTask": "pending",
+  "transportAbove2To53": "synthetic-only",
+  "correction": "Use task-list aggregates; fixed task-detail DTO has zero token totals. Broker retains pre/post authorization and only projects the selected task.",
+  "priorAttempts": [
+    {
+      "phase": "reference_auth",
+      "issue": "test password exceeded bcrypt byte limit; changed to generated48-byte ASCII password"
+    },
+    {
+      "phase": "reference_task_read",
+      "issue": "fixed SQL task identities require manager restart before detail lookup"
+    },
+    {
+      "phase": "reference_decode",
+      "issue": "raw API uses snake_case fields; reference decoder corrected"
+    },
+    {
+      "phase": "rollback_audit",
+      "issue": "earlier snapshot omitted activity sequence; superseded by explicit activityIDs and complete affected-sequence snapshot"
+    }
+  ],
+  "releaseMacBuildPassed": true,
+  "signedDefaultAppBuildPassed": true
+}

@@ -77,8 +77,10 @@ public struct MCPTaskStatus: Encodable, Sendable {
 
     public func taskStatus(grant: Grant, id: String) async throws -> MCPTaskStatus {
         try check(grant, scope: .taskStatus, taskID: id)
-        let record = try await TaskService(client: client).detail(id: id)
+        // The frozen detail route omits aggregates; the list supplies real task metrics.
+        let snapshot = try await TaskService(client: client).list()
         try check(grant, scope: .taskStatus, taskID: id)
+        guard let record = snapshot.tasks.first(where: { $0.id == id }) else { throw BackendAPIError.status(404) }
         return .init(id: record.id, status: record.status, paused: record.paused, queued: record.queued,
                      inputTokens: record.tokens.inputTokens, outputTokens: record.tokens.outputTokens)
     }

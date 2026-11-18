@@ -183,6 +183,15 @@ import Foundation
                 }
             }
             try await Task.sleep(for: .milliseconds(300))
+            if plan.mcpTaskReview {
+                try await NativeMCPTaskDiagnostics.seed(session: login, directory: directory)
+                try await environment.stop()
+                await environment.start()
+                guard let restored = environment.authentication, restored.phase == .authenticated else { throw RuntimeError.integrity("MCP fixture restart authentication") }
+                login = restored
+                try await NativeMCPTaskDiagnostics.collect(session: login, directory: directory)
+                result["native_mcp_terminal_tasks_no_profiles"] = true
+            }
             result["authenticated_content_snapshot"] = try capture(to: directory.appendingPathComponent("native-authenticated.png"))
             if CommandLine.arguments.contains("--native-review") {
                 // Keep this disposable authenticated fixture open for external UI testing.
