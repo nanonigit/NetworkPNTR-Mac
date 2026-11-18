@@ -1,0 +1,76 @@
+{
+  "status": "process-context-difference-reproduced-root-cause-open",
+  "observations": [
+    {
+      "case": "local-session-process-context-v1",
+      "receipt": {
+        "scope": "developer fixed vendor GET, no key or inference; not an application fallback",
+        "host": "api.openai.com",
+        "publicIPv4": "162.159.140.245",
+        "frozenSourceSHA256": {
+          "NetworkPNTRCloudTLS.c": "63b1263e2b5ae6d24adddca77571694e1bb2f8143743d5a3bcbb1a3f438da766",
+          "NetworkPNTRCloudTLS.h": "3d4c541bf1a18b3c0a6336a6dd4dfa090dbcfeeb2ba65794c41811271a625b48"
+        },
+        "standaloneExecutableSHA256": "731b1c30a807850624b08b492f683452597b68b1a30d1cafa982c6df99bb92cf",
+        "sharedLibrarySHA256": "8b5ebcd3a531060cb3359269a35272e4c19645bfd96b3a31035f5937d01ee0b2",
+        "standalone": {
+          "result": 2,
+          "httpStatus": 0,
+          "seconds": 5.738
+        },
+        "python": {
+          "result": 0,
+          "httpStatus": 401,
+          "seconds": 0.666
+        },
+        "observation": "process-context-difference",
+        "rootCause": "not-established",
+        "applicationNetworkAcceptance": false
+      }
+    },
+    {
+      "case": "local-session-process-context-bounded-v2",
+      "receipt": {
+        "scope": "developer fixed vendor GET, no key or inference; not an application fallback",
+        "host": "api.openai.com",
+        "publicIPv4": "162.159.140.245",
+        "frozenSourceSHA256": {
+          "NetworkPNTRCloudTLS.c": "63b1263e2b5ae6d24adddca77571694e1bb2f8143743d5a3bcbb1a3f438da766",
+          "NetworkPNTRCloudTLS.h": "3d4c541bf1a18b3c0a6336a6dd4dfa090dbcfeeb2ba65794c41811271a625b48"
+        },
+        "diagnosticSourceSHA256": "b18b6020716b1fc04f91137b0c27d953b93d92bf3c25f79d1afee1cb8b216108",
+        "standaloneExecutableSHA256": "731b1c30a807850624b08b492f683452597b68b1a30d1cafa982c6df99bb92cf",
+        "sharedLibrarySHA256": "354bd2359a093c9d2adf1ffde4a13dc4fb343ac3fc27bb6149fedf59313e4633",
+        "standalone": {
+          "result": 2,
+          "httpStatus": 0,
+          "seconds": 5.557
+        },
+        "python": {
+          "result": 0,
+          "httpStatus": 401,
+          "seconds": 0.573
+        },
+        "observation": "process-context-difference",
+        "rootCause": "not-established",
+        "applicationNetworkAcceptance": false
+      }
+    }
+  ],
+  "additionalControls": {
+    "systemPythonBlockingTCP": "connected both admitted OpenAI IPv4 addresses",
+    "systemPythonNonblockingPollTCP": "connected, SO_ERROR=0",
+    "systemCurlPinnedIPv4": "HTTP401 from both admitted addresses",
+    "littleSnitchFilteredLogMatchCount": 0,
+    "filterConfigurationConclusion": "not-established"
+  },
+  "productionTransportChanged": false,
+  "networkConfigurationChanged": false,
+  "uiAcceptance": "Mac still locked on current CUA recheck",
+  "limits": "Only the fixed OpenAI model-list route without an API key is used. The standalone result is intentionally retained as failure; Python success is diagnostic evidence, not an application fallback or app-network acceptance.",
+  "automatedChecks": {
+    "pythonTests": 220,
+    "failures": 0,
+    "newFocusedTests": 4
+  }
+}
