@@ -1,0 +1,57 @@
+{
+  "date": "2026-11-18",
+  "mode": "one DEBUG-only fixed logging observation",
+  "guestManifestSHA256": "85978daf1b28bb55929d46ea156a857958dc7d4fcf54a0bac045f0832f13588e",
+  "guestLogSHA256": "c269ba7802e912f3b132399bb761f08e9d9bb11b0ad449bd530f15f79e478f0d",
+  "guestLogBytes": 2813,
+  "cpuCount": 2,
+  "memoryMiB": 2048,
+  "networkDevices": 0,
+  "hostShares": 0,
+  "preflight": {
+    "bootAttempts": 1,
+    "cooperativeStop": true,
+    "credentialLogCheckPassed": true,
+    "diagnostics": [],
+    "formatStageObserved": true,
+    "freshAuth": true,
+    "isolationVerified": true,
+    "logAuditComplete": true,
+    "machineStopped": true,
+    "passed": true,
+    "protectedStatus": 401,
+    "reachedReady": true,
+    "supplementalEvidenceComplete": true
+  },
+  "releaseRejectedBeforeOutputCreation": true,
+  "invalidArtifactControl": {
+    "exit": 1,
+    "passed": false,
+    "supplementalEvidenceComplete": false,
+    "machineStopped": true,
+    "guestLogCount": 0
+  },
+  "focusedSwiftTests": 9,
+  "focusedFailures": 0,
+  "fullSwiftRegression": {
+    "tests": 1200,
+    "skipped": 1,
+    "failures": 0,
+    "suiteCounts": [
+      46,
+      361,
+      11,
+      782
+    ]
+  },
+  "limitations": [
+    "The prior signed-native PID1 SIGSEGV/kernel panic remains counter-evidence.",
+    "A single clean logging observation does not establish boot reliability or root cause.",
+    "No account/profile/task mutation was requested; only allowlisted unauthenticated GETs.",
+    "Authenticated MCP native UI/browser parity remains unverified."
+  ],
+  "pythonRegression": {
+    "tests": 201,
+    "failures": 0
+  }
+}

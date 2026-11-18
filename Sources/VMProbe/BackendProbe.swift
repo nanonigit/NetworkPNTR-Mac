@@ -1,24 +1,56 @@
 import NetworkPNTRCore
 import Foundation
+import CryptoKit
 
 @MainActor enum BackendProbe {
-    static func run(_ args: [String], preflightOnly: Bool = false) async {
+    static func run(_ args: [String], preflightOnly: Bool = false, kernelFaultTracing: Bool = false) async {
+        guard !kernelFaultTracing || preflightOnly else { exit(2) }
+        do { _ = try VMConfiguration.bootCommandLine(directRoot: false, kernelFaultTracing: kernelFaultTracing) } catch { exit(2) }
         guard args.count == 2 else { print("Usage: VMProbe --backend guest-artifacts evidence-directory"); exit(2) }
         let artifacts = URL(fileURLWithPath: args[0])
         let logs = URL(fileURLWithPath: args[1])
         let controller = VMController()
         var privatePreflightDirectory = false
+        var supplementalEvidenceComplete = !kernelFaultTracing
         var preflightStartAttempted = false; var preflightCooperativeStop = false
         var preflightReady = false; var preflightFreshAuth = false
         var preflightProtectedStatus: Int?; var preflightTokens: [String] = []
         func preflightReport(cooperative: Bool) -> BackendPreflightReport {
             BackendPreflightReport(reachedReady: preflightReady, freshAuth: preflightFreshAuth, protectedStatus: preflightProtectedStatus,
                                    cooperativeStop: cooperative, machineStopped: !controller.hasMachine,
-                                   audit: GuestBootDiagnostics.audit(logDirectory: logs, tokens: preflightTokens), bootAttempts: preflightStartAttempted ? 1 : 0)
+                                   audit: GuestBootDiagnostics.audit(logDirectory: logs, tokens: preflightTokens), bootAttempts: preflightStartAttempted ? 1 : 0, supplementalEvidenceComplete: supplementalEvidenceComplete)
         }
-        func writePreflight(_ report: BackendPreflightReport) throws {
+        @discardableResult func writePreflight(_ report: BackendPreflightReport, accepting: Bool = false) throws -> BackendPreflightReport {
             let encoder = JSONEncoder(); encoder.outputFormatting = [.prettyPrinted, .sortedKeys]
             try encoder.encode(report).write(to: logs.appendingPathComponent("preflight.json"), options: .atomic)
+            if kernelFaultTracing {
+                do {
+                    func digest(_ url: URL, limit: Int) throws -> String {
+                        let values = try url.resourceValues(forKeys: [.isRegularFileKey, .isSymbolicLinkKey, .fileSizeKey])
+                        guard values.isRegularFile == true, values.isSymbolicLink != true,
+                              let size = values.fileSize, size > 0, size <= limit else { throw RuntimeError.integrity("trace digest input") }
+                        let handle = try FileHandle(forReadingFrom: url); defer { try? handle.close() }
+                        let data = try handle.read(upToCount: limit + 1) ?? Data()
+                        guard data.count == size, try handle.seekToEnd() == UInt64(size) else { throw RuntimeError.integrity("trace digest snapshot") }
+                        return SHA256.hash(data: data).map { String(format: "%02x", $0) }.joined()
+                    }
+                    let guestLogs = try FileManager.default.contentsOfDirectory(at: logs, includingPropertiesForKeys: nil)
+                        .filter { $0.lastPathComponent.hasPrefix("guest-") && $0.pathExtension == "log" }
+                    var receipt = ["mode": "debug-fixed-fatal-signal-logging", "manifestSHA256": try digest(artifacts.appendingPathComponent("manifest.json"), limit: 1024 * 1024)]
+                    guard guestLogs.count == 1 else { throw RuntimeError.integrity("trace log count") }
+                    receipt["guestLogSHA256"] = try digest(guestLogs[0], limit: 8 * 1024 * 1024)
+                    try JSONSerialization.data(withJSONObject: receipt, options: [.prettyPrinted, .sortedKeys]).write(to: logs.appendingPathComponent("kernel-fault-trace.json"), options: .atomic)
+                    supplementalEvidenceComplete = accepting
+                    let finalReport = preflightReport(cooperative: preflightCooperativeStop)
+                    try encoder.encode(finalReport).write(to: logs.appendingPathComponent("preflight.json"), options: .atomic)
+                    return finalReport
+                } catch {
+                    supplementalEvidenceComplete = false
+                    try encoder.encode(preflightReport(cooperative: preflightCooperativeStop)).write(to: logs.appendingPathComponent("preflight.json"), options: .atomic)
+                    throw error
+                }
+            }
+            return report
         }
         do {
             if preflightOnly {
@@ -33,7 +65,7 @@ import Foundation
             var provisioning = try GuestProvisioning.generate()
             if preflightOnly { preflightTokens = [provisioning.transportToken, provisioning.setupToken] }
             func boot(_ stateDisk: URL) async throws {
-                try await controller.start(artifacts: artifacts, logs: logs, readinessTimeout: .seconds(120), dataDisk: stateDisk, provisioning: provisioning)
+                try await controller.start(artifacts: artifacts, logs: logs, readinessTimeout: .seconds(120), dataDisk: stateDisk, provisioning: provisioning, kernelFaultTracing: kernelFaultTracing)
                 for _ in 0..<1300 {
                     if controller.guestReady || controller.state == .failed || controller.state == .stopped { break }
                     try await Task.sleep(for: .milliseconds(100))
@@ -78,8 +110,7 @@ import Foundation
             if preflightOnly {
                 try await controller.stop()
                 preflightCooperativeStop = true
-                let report = preflightReport(cooperative: true)
-                try writePreflight(report)
+                let report = try writePreflight(preflightReport(cooperative: true), accepting: true)
                 guard report.passed else { throw RuntimeError.integrity("backend preflight evidence") }
                 print("PASS backend_preflight_single_boot=true read_only_auth=true cooperative_stop=true network_devices=0 host_shares=0")
                 return

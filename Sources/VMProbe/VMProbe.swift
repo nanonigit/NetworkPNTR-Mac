@@ -4,6 +4,14 @@ import Foundation
 @main struct VMProbe {
     @MainActor static func main() async {
         let args = CommandLine.arguments
+        if args.dropFirst().first == "--kernel-fault-preflight" {
+            #if DEBUG
+            await BackendProbe.run(Array(args.dropFirst(2)), preflightOnly: true, kernelFaultTracing: true)
+            #else
+            FileHandle.standardError.write(Data("Kernel fault tracing requires a Debug probe.\n".utf8)); exit(2)
+            #endif
+            return
+        }
         if args.count >= 2, args[1] == "--local-inference" { await OllamaGuestProbe.run(Array(args.dropFirst(2))); return }
         guard args.count >= 3 else { FileHandle.standardError.write(Data("Usage: VMProbe guest-artifacts log-directory\n".utf8)); exit(2) }
         if args[1] == "--cloud-live-models" { await CloudLiveModelsProbe.run(Array(args.dropFirst(2))); return }

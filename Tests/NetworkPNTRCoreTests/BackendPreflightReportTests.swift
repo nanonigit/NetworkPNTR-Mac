@@ -11,6 +11,12 @@ final class BackendPreflightReportTests: XCTestCase {
         XCTAssertFalse(report(isolation:false).passed)
         XCTAssertFalse(report(credentials:false).passed)
     }
+    func testSupplementalEvidenceFailurePreventsPass() {
+        let audit = GuestBootLogAudit(diagnostics: [], credentialsAbsent: true, isolationWitnessesPresent: true, formatStageObserved: true, complete: true)
+        let report = BackendPreflightReport(reachedReady: true, freshAuth: true, protectedStatus: 401, cooperativeStop: true, machineStopped: true, audit: audit, supplementalEvidenceComplete: false)
+        XCTAssertFalse(report.passed)
+        XCTAssertFalse(report.supplementalEvidenceComplete)
+    }
     func testClassificationRetainsOldAmbiguityAndSeparatesExecutionFailure() {
         let old = report(log:"ARTEX_MAC_GUEST_ERROR stage=nonblank-state-disk\nSegmentation fault\nBad rss-counter state")
         XCTAssertEqual(Set(old.diagnostics),[.nonblankStateDisk,.signalFault,.memoryAccountingFault]); XCTAssertFalse(old.passed)

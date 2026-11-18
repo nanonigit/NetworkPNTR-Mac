@@ -76,14 +76,16 @@ public struct BackendPreflightReport: Encodable, Sendable {
     public let diagnostics: [GuestBootDiagnostic]
     public let formatStageObserved: Bool
     public let logAuditComplete: Bool
+    public let supplementalEvidenceComplete: Bool
     public let passed: Bool
     public init(reachedReady: Bool, freshAuth: Bool, protectedStatus: Int?, cooperativeStop: Bool,
-                machineStopped: Bool, audit: GuestBootLogAudit, bootAttempts: Int = 1) {
+                machineStopped: Bool, audit: GuestBootLogAudit, bootAttempts: Int = 1, supplementalEvidenceComplete: Bool = true) {
         self.bootAttempts = bootAttempts
         self.reachedReady = reachedReady; self.freshAuth = freshAuth; self.protectedStatus = protectedStatus
         isolationVerified = audit.isolationWitnessesPresent; credentialLogCheckPassed = audit.credentialsAbsent
         self.cooperativeStop = cooperativeStop; self.machineStopped = machineStopped
         diagnostics = audit.diagnostics; formatStageObserved = audit.formatStageObserved; logAuditComplete = audit.complete
-        passed = bootAttempts == 1 && reachedReady && freshAuth && protectedStatus == 401 && isolationVerified && credentialLogCheckPassed && cooperativeStop && machineStopped && logAuditComplete && diagnostics.isEmpty
+        self.supplementalEvidenceComplete = supplementalEvidenceComplete
+        passed = supplementalEvidenceComplete && bootAttempts == 1 && reachedReady && freshAuth && protectedStatus == 401 && isolationVerified && credentialLogCheckPassed && cooperativeStop && machineStopped && logAuditComplete && diagnostics.isEmpty
     }
 }

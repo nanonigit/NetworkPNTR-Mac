@@ -73,7 +73,8 @@ import Virtualization
         cloudEgressListener = nil
         cloudEgressAuthorized = false
     }
-    public func start(artifacts directory: URL, logs: URL, readinessTimeout: Duration = .seconds(60), dataDisk: URL? = nil, provisioning: GuestProvisioning? = nil, cloudEgress: Bool = false) async throws {
+    public func start(artifacts directory: URL, logs: URL, readinessTimeout: Duration = .seconds(60), dataDisk: URL? = nil, provisioning: GuestProvisioning? = nil, cloudEgress: Bool = false, kernelFaultTracing: Bool = false) async throws {
+        _ = try VMConfiguration.bootCommandLine(directRoot: false, kernelFaultTracing: kernelFaultTracing)
         guard mayStart else { throw RuntimeError.invalidTransition(state.rawValue, "starting") }
         runtimeFeatures = GuestRuntimeFeatures()
         try state.transition(to: .starting)
@@ -93,7 +94,7 @@ import Virtualization
             let handle = try FileHandle(forWritingTo: log)
             output = handle
             let pipe = Pipe(); input = pipe
-            let configuration = try VMConfiguration.make(kernel: directory.appendingPathComponent(manifest.kernel), initramfs: directory.appendingPathComponent(manifest.initramfs), input: pipe.fileHandleForReading, output: handle, systemDisk: manifest.systemDisk.map { directory.appendingPathComponent($0) }, dataDisk: dataDisk, directRoot: manifest.bootMode == "rootDisk", cpuCount: manifest.cpuCount ?? 2)
+            let configuration = try VMConfiguration.make(kernel: directory.appendingPathComponent(manifest.kernel), initramfs: directory.appendingPathComponent(manifest.initramfs), input: pipe.fileHandleForReading, output: handle, systemDisk: manifest.systemDisk.map { directory.appendingPathComponent($0) }, dataDisk: dataDisk, directRoot: manifest.bootMode == "rootDisk", cpuCount: manifest.cpuCount ?? 2, kernelFaultTracing: kernelFaultTracing)
             try configuration.validate()
             configuredCPUCount = configuration.cpuCount
             let vm = VZVirtualMachine(configuration: configuration)
