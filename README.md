@@ -1,5 +1,7 @@
 # NetworkPNTR Mac
 
+Repository: [nanonigit/NetworkPNTR-Mac](https://github.com/nanonigit/NetworkPNTR-Mac).
+
 PNTR stands for penetration testing. NetworkPNTR Mac aims to help individuals and organizations find vulnerabilities and bugs in systems they own or are authorized to assess, and strengthen their own defenses.
 
 Native SwiftUI macOS application with an app-managed isolated Linux VM. **Development milestone: isolated VM proof and partial native feature migration; not a complete client.** LLM settings and the dashboard are implemented and under comparison; Chat core UI is also implemented with partial comparison. The first Tasks list/detail, creation, categories and bulk surfaces are wired to finite guest APIs, with unit/offscreen checks and separate catalog runtime comparison; Basic Findings list/group/asset/detail and triage controls are also wired with controlled/offscreen checks; 16 feature screens remain unimplemented. All 21 workflow acceptance gates are still open. The existing Docker browser instance is preserved independently.
@@ -17,7 +19,7 @@ The native VM now passes one actual three-boot basic Findings experiment and mat
 - Latest checkpoint: 616 Swift cases (615 passed, one explicitly skipped AX test) and 120 Python regression tests; this does not close full UI/runtime acceptance.
 - Native application .app is built, locally ad-hoc signed with the virtualization entitlement and launched. Its developer harness runs the VM service from the real app and records readiness/shutdown. External CUA verified native LLM creation/editing, numeric validation, Return-key save and active-profile protection. The connection later failed; full click/visual acceptance is still pending. Content-view snapshots are diagnostic only and have layer-compositing limitations; they are not signed off as UI parity.
 
-The separate backend acceptance guest now boots pinned ARTEX and PostgreSQL 16 with authenticated vsock and a private persistent disk. Real normal/forced restarts preserve authentication and an LLM fixture. Five normalized API contract cases match a disposable pinned browser backend. See [Phase 2 evidence](docs/phase2-verification.md). The app now bundles this real backend by default and provides native setup/login/logout with a Keychain session. Two-vCPU experiments exposed intermittent kernel faults. A one-vCPU direct-root diagnostic profile passed repeated native auth runs; a separate database recovery readiness race was repaired and three forced recoveries passed. Release reliability is not accepted; see [the investigation](docs/bugs/guest-boot-investigation.md).
+The separate backend acceptance guest now boots pinned NetworkPNTR and PostgreSQL 16 with authenticated vsock and a private persistent disk. Real normal/forced restarts preserve authentication and an LLM fixture. Five normalized API contract cases match a disposable pinned browser backend. See [Phase 2 evidence](docs/phase2-verification.md). The app now bundles this real backend by default and provides native setup/login/logout with a Keychain session. Two-vCPU experiments exposed intermittent kernel faults. A one-vCPU direct-root diagnostic profile passed repeated native auth runs; a separate database recovery readiness race was repaired and three forced recoveries passed. Release reliability is not accepted; see [the investigation](docs/bugs/guest-boot-investigation.md).
 
 A separately source-built, hash-pinned Linux kernel candidate passed real VM recovery and signed native service/reference comparisons. Two fresh same-host builds produce identical kernel/config hashes; release reliability, cross-host/package reproducibility and UI parity remain open. See [source-kernel verification](docs/kernel-build-verification.md).
 
@@ -25,22 +27,22 @@ A separately source-built, hash-pinned Linux kernel candidate passed real VM rec
 
 ```sh
 # Prepare the real backend first (developer-only Docker build):
-python3 script/prepare_backend.py --source /path/to/pinned/artex-global
+python3 script/prepare_backend.py --source /path/to/pinned/browser-source
 ./script/build_and_run.sh --verify
 swift test
 ./script/test_vm.sh
-python3 script/check_baseline.py /path/to/pinned/artex-global
+python3 script/check_baseline.py /path/to/pinned/browser-source
 # Optional backend acceptance build (requires the pinned local browser image and Docker):
-./script/test_backend.sh /path/to/pinned/artex-global
+./script/test_backend.sh /path/to/pinned/browser-source
 ```
 
 The app is staged at `dist/NetworkPNTR Mac.app`. Developer backend construction uses a pinned Linux build container and verifies boot-artifact hashes; Linux executables never run on macOS. The application runtime uses bundled guest artifacts and calls neither Docker, Python nor a manually launched server. It creates its own private persistent disk. Quit the app normally before replacing its bundle, allowing its VM to flush and stop. This is an investigation build, not a stable release.
 
-The runtime screen starts/stops the dedicated backend VM; the account screen uses actual ARTEX authentication. The LLM screen connects actual profile, rotation and retry services; see [LLM comparison evidence](docs/llm-settings-verification.md). The dashboard reads actual tasks, activity, findings, usage, assets and system status; its 12 nonempty token scenarios match a disposable pinned reference and independent browser calculations. See [dashboard evidence](docs/dashboard-verification.md). The parity screen tracks incomplete acceptance, and the remaining feature entries show explicit migration placeholders. No browser-version API key, password or data is imported. Keychain restoration has passed an isolated native service diagnostic, but repeated reliability, external native clicks, controlled cloud networking, all feature workflows and distribution signing/notarization remain open gates.
+The runtime screen starts/stops the dedicated backend VM; the account screen uses actual NetworkPNTR authentication. The LLM screen connects actual profile, rotation and retry services; see [LLM comparison evidence](docs/llm-settings-verification.md). The dashboard reads actual tasks, activity, findings, usage, assets and system status; its 12 nonempty token scenarios match a disposable pinned reference and independent browser calculations. See [dashboard evidence](docs/dashboard-verification.md). The parity screen tracks incomplete acceptance, and the remaining feature entries show explicit migration placeholders. No browser-version API key, password or data is imported. Keychain restoration has passed an isolated native service diagnostic, but repeated reliability, external native clicks, controlled cloud networking, all feature workflows and distribution signing/notarization remain open gates.
 
 ## Plan and comparison
 
-Read docs/requirements.md, docs/design.md, docs/tasks.md. Browser baseline: nanonigit/artex-global commit e75ae371ad777ffd1eecdd28d2781a6519b05591. `docs/feature-map.json` tracks 21 primary features, 27 page source files and 243 handlers in the main router. The inventory is a coverage baseline, not proof all controls have been migrated. The matching catalog is bundled into the app and checked by tests.
+Read docs/requirements.md, docs/design.md, docs/tasks.md. Browser baseline: the frozen browser source commit e75ae371ad777ffd1eecdd28d2781a6519b05591. `docs/feature-map.json` tracks 21 primary features, 27 page source files and 243 handlers in the main router. The inventory is a coverage baseline, not proof all controls have been migrated. The matching catalog is bundled into the app and checked by tests.
 
 Maintain identical fixtures and expected outcomes before each migrated feature passes its phase. Capture browser/native controls, error/empty/progress/cancel and restart behavior separately from API tests. No external real targets or paid AI calls are needed for the first phase. Lazyweb reference search: https://www.lazyweb.com/agentic-search/d85df937-aa86-420d-ad7f-e702652210e7 (finalization was rate-limited).
 
