@@ -62,4 +62,21 @@ final class BackendPreflightReportTests: XCTestCase {
         XCTAssertFalse(completeReport.passed, "A clean tail must not hide an earlier fault")
     }
 
+    func testExplicitStoppedLogAuditKeepsMultipleAttemptEvidenceSeparate() throws {
+        let root = FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString)
+        try FileManager.default.createDirectory(at: root, withIntermediateDirectories: false)
+        defer { try? FileManager.default.removeItem(at: root) }
+        let clean = root.appendingPathComponent("guest-clean.log")
+        let dirty = root.appendingPathComponent("guest-dirty.log")
+        let witnesses = "network_hardware_devices=0\nnetwork_nonloopback_up=0\nnetwork_external_routes=0\nshared_mounts=0\n"
+        try Data(witnesses.utf8).write(to: clean)
+        try Data(("local-capability-secret\n" + witnesses).utf8).write(to: dirty)
+        XCTAssertFalse(GuestBootDiagnostics.audit(logDirectory: root, tokens: ["local-capability-secret"]).complete)
+        let first = GuestBootDiagnostics.audit(logFile: clean, tokens: ["local-capability-secret"])
+        let second = GuestBootDiagnostics.audit(logFile: dirty, tokens: ["local-capability-secret"])
+        XCTAssertTrue(first.complete && first.credentialsAbsent && first.isolationWitnessesPresent)
+        XCTAssertTrue(second.complete && second.isolationWitnessesPresent)
+        XCTAssertFalse(second.credentialsAbsent)
+    }
+
 }

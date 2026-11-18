@@ -21,7 +21,7 @@ def probe():
         raise RuntimeError('Exact guest database required')
     env = {'PATH': '/usr/libexec/postgresql16:/usr/bin:/bin', 'PGHOST': '127.0.0.1', 'PGPORT': '5432',
            'PGDATABASE': 'artex', 'PGUSER': 'artex', 'PGPASSWORD': password, 'PGCONNECT_TIMEOUT': '2'}
-    sql = "SELECT json_build_object('hash',(SELECT value FROM settings WHERE key='auth.password_hash'),'profiles',(SELECT json_agg(json_build_array(id,api_key) ORDER BY id) FROM llm_profiles),'tasks',(SELECT count(*) FROM tasks),'usage',(SELECT count(*) FROM llm_usage));"
+    sql = "SELECT json_build_object('hash',(SELECT value FROM settings WHERE key='auth.password_hash'),'profiles',(SELECT json_agg(json_build_array(id,api_key) ORDER BY id) FROM llm_profiles),'tasks',(SELECT json_agg(to_jsonb(t) ORDER BY id) FROM tasks t),'activity',(SELECT json_agg(to_jsonb(a) ORDER BY id) FROM activity a),'usage',(SELECT count(*) FROM llm_usage));"
     response = subprocess.run(['psql', '-X', '-q', '-t', '-A', '-v', 'ON_ERROR_STOP=1'], input=sql.encode(),
                               env=env, capture_output=True, timeout=5)
     if response.returncode != 0:
@@ -31,7 +31,7 @@ def probe():
         raise RuntimeError('Unexpected fixture state')
     # Only digests and nonsensitive counts leave the guest; no hashes or API keys.
     fingerprint = hashlib.sha256(json.dumps(record, sort_keys=True).encode()).hexdigest()
-    print(json.dumps({'fingerprint': fingerprint, 'capabilityNotInherited': True, 'usage': 0, 'tasks': record['tasks']}))
+    print(json.dumps({'fingerprint': fingerprint, 'capabilityNotInherited': True, 'usage': 0, 'tasks': len(record['tasks'] or []), 'activity': len(record['activity'] or [])}))
 
 
 if __name__ == '__main__':

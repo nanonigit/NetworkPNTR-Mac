@@ -2,7 +2,7 @@
 
 [English](README.md) | [日本語](README.ja.md)
 
-**Login-free startup (in progress):** The native automatic-session implementation and isolated guest overlays are available in an explicit developer verification mode. Real PostgreSQL initialization/preservation tests pass; signed native first-launch, migration, restart and visible EN/JA checks remain pending. Normal startup still uses the existing account flow until those checks pass. See [design and acceptance](docs/local-session-design.md).
+**Login-free startup (in progress):** The native automatic-session implementation and isolated guest overlays are available in an explicit developer verification mode. Real PostgreSQL and signed native fresh/migration/restart service checks pass for both guest variants. Visible EN/JA checks and normal-app deployment remain pending; live cloud regression is under investigation. See [verification](docs/local-session-native-verification.md). Normal startup still uses the existing account flow until those checks pass. See [design and acceptance](docs/local-session-design.md).
 
 Repository: [nanonigit/NetworkPNTR-Mac](https://github.com/nanonigit/NetworkPNTR-Mac).
 

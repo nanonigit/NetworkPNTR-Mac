@@ -8,7 +8,7 @@ import json
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[2] / 'script'))
 from local_session_bootstrap import NEW, patch_init
-from build_local_session import remove_owned_parent_alias
+from build_local_session import remove_owned_parent_alias, refresh_composite_metadata
 
 
 class LocalSessionBootstrapTests(unittest.TestCase):
@@ -41,6 +41,19 @@ class LocalSessionBootstrapTests(unittest.TestCase):
                 result = subprocess.run(['/bin/sh', '-c', program], input=(frame + '\n').encode(), env=env, capture_output=True, timeout=5)
                 self.assertEqual(result.returncode, 7 if native else 0 if allowed else 19)
                 self.assertEqual(result.stdout + result.stderr, b'')
+
+    def test_composite_manifest_replaces_stale_backend_identity_and_retains_parent(self):
+        old = {'managedBackend': {'binarySHA256': 'old-binary', 'buildVersion': 'old-version', 'platform': 'linux/arm64', 'deployed': True}}
+        manifest = dict(old, backendSHA256='new-binary')
+        refresh_composite_metadata(manifest, old)
+        self.assertEqual(manifest['managedBackend']['binarySHA256'], 'new-binary')
+        self.assertEqual(manifest['managedBackend']['buildVersion'], 'dev')
+        self.assertFalse(manifest['managedBackend']['deployed'])
+        self.assertEqual(manifest['nativeSessionParentManagedBackend'], old['managedBackend'])
+        self.assertEqual(old['managedBackend']['binarySHA256'], 'old-binary')
+        ordinary = {'backendSHA256': 'ordinary'}
+        refresh_composite_metadata(ordinary, {})
+        self.assertNotIn('managedBackend', ordinary)
 
     def test_cleanup_preserves_durable_input_and_disables_parent_pruning(self):
         runtime = 'sha256:' + 'a' * 64

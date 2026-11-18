@@ -16,6 +16,10 @@ public enum AuthenticationPhase: String, Sendable { case checking, needsSetup, n
     @ObservationIgnored private let localCapability: String?
     @ObservationIgnored private let onInvalidation: @MainActor () -> Void
     @ObservationIgnored private var token: String?
+    #if DEBUG
+    /// In-memory stopped-log audit only; not a diagnostic report field.
+    public var diagnosticBearerForLogAudit: String? { token }
+    #endif
     @ObservationIgnored private var revision = UUID()
     @ObservationIgnored private var uploadProgress: [UUID: BackendUploadProgressGate] = [:]
     private struct Status: Decodable { let initialized: Bool; let setup_token_required: Bool }

@@ -32,6 +32,10 @@ public struct ManagedRuntimePaths: Sendable {
     public private(set) var error: String?
     public private(set) var failure: AppErrorMessage?
     public let paths: ManagedRuntimePaths
+    #if DEBUG
+    /// In-memory developer audit only. Never serialize this value.
+    @ObservationIgnored public private(set) var diagnosticProvisioningForLogAudit: GuestProvisioning?
+    #endif
     public let automaticLocalSession: Bool
     public private(set) var isReconnecting = false
     @ObservationIgnored private let artifacts: URL
@@ -60,6 +64,9 @@ public struct ManagedRuntimePaths: Sendable {
             try paths.prepareDirectories()
             _ = try PersistentGuestDisk.createIfMissing(at: paths.disk, byteCount: 2 * 1024 * 1024 * 1024)
             let provisioning = try GuestProvisioning.generate(localSession: automaticLocalSession)
+            #if DEBUG
+            diagnosticProvisioningForLogAudit = provisioning
+            #endif
             try await controller.start(artifacts: artifacts, logs: paths.logs, readinessTimeout: .seconds(120), dataDisk: paths.disk, provisioning: provisioning, cloudEgress: cloudEgress)
             for _ in 0..<1300 {
                 guard generation == operation, !Task.isCancelled else { return }

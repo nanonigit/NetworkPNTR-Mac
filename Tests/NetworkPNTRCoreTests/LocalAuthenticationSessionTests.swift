@@ -24,6 +24,7 @@ final class LocalAuthenticationSessionTests: XCTestCase {
                 return try ChatTestTransport.response(["token":sessionToken], status:sessionStatus)
             }
             XCTAssertEqual(bearer, sessionToken)
+            if path == "/api/agents" { return try ChatTestTransport.response(["agents": []]) }
             return try ChatTestTransport.response(["profiles":[]],status:path == "/api/llm/profiles" ? 200 : operationStatus)
         }
     }
@@ -90,6 +91,38 @@ final class LocalAuthenticationSessionTests: XCTestCase {
         XCTAssertNotEqual(session.phase, .authenticated)
         XCTAssertNil(session.exportSessionGeneration)
         XCTAssertEqual(vault.calls, 0)
+    }
+
+    @MainActor func testLocal401ImmediatelyRevokesExistingMCPClientAndReconnectCannotRestoreGrant() async throws {
+        let api = API(), vault = Vault(), store = MCPClientStore(), runtimeEpoch = UUID()
+        let session = AuthenticationSession(client: api, vault: vault, setupToken: "unused",
+            localCapability: String(repeating: "f", count: 64), onInvalidation: { store.invalidateAll() })
+        await session.refresh()
+        await store.revokeAll()
+        do {
+            let grant = try store.authorize(name: "Automatic-session fixture", agents: true, taskIDs: [],
+                language: .english, session: session, runtimeEpoch: { runtimeEpoch })
+            let client = try MCPIPCClient(connection: .load(from: grant.connectionFile))
+            _ = try await client.call(.agents)
+            api.operationStatus = 401
+            _ = try await session.authenticatedRequest(method: "POST", path: "/api/tasks", body: Data("{}".utf8))
+            let dispatched = api.calls.count
+            do { _ = try await client.call(.agents); XCTFail("Old MCP grant survived local 401") } catch {}
+            XCTAssertEqual(api.calls.count, dispatched)
+            await store.revokeAll()
+            XCTAssertFalse(FileManager.default.fileExists(atPath: grant.connectionFile.path))
+            await session.refresh()
+            await store.revokeAll()
+            XCTAssertEqual(session.phase, .authenticated)
+            XCTAssertTrue(store.connections.isEmpty)
+            do { _ = try await client.call(.agents); XCTFail("Reconnect restored revoked grant") } catch {}
+            XCTAssertEqual(api.calls.filter { $0.path == "/api/tasks" }.count, 1)
+            XCTAssertEqual(vault.calls, 0)
+        } catch {
+            await store.revokeAll()
+            throw error
+        }
+        await store.revokeAll()
     }
 
 }

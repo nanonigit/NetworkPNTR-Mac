@@ -1,0 +1,127 @@
+{
+  "status": "native-service-checks-pass-visual-and-deployment-pending",
+  "runs": [
+    {
+      "bootAttempts": 2,
+      "firstSessionAuthenticated": true,
+      "guestToolDoesNotInheritCapability": true,
+      "humanCredentialsEntered": false,
+      "legacyMigration": false,
+      "manifestSHA256": "ff958504082071c3f7affc56c4f246049b28bbb8d27ae6593e9da2ebea256868",
+      "mcpGrantsAfterRestart": 0,
+      "oldBootCapabilityRejected": true,
+      "pinnedSourceCommit": "e75ae371ad777ffd1eecdd28d2781a6519b05591",
+      "protectedWithoutJWTStatus": 401,
+      "restartAuthenticatedWithoutCredentials": true,
+      "stopped": true,
+      "stoppedLogSecretAndIsolationAudit": true,
+      "storedHashProfileKeysTaskRowsAndActivityPreserved": true,
+      "virtualCPUCount": 2,
+      "visualAcceptance": "pending",
+      "case": "local-session-native-fresh-v1",
+      "serviceChecksPassed": true,
+      "binarySHA256": "0a923a2cf8cbb5aa8c963fe11bdf036b8c6d7214cc0105ef409f790a3e993f8d",
+      "processExitCode": 0
+    },
+    {
+      "bootAttempts": 2,
+      "firstSessionAuthenticated": true,
+      "guestToolDoesNotInheritCapability": true,
+      "humanCredentialsEntered": false,
+      "legacyMigration": true,
+      "manifestSHA256": "ff958504082071c3f7affc56c4f246049b28bbb8d27ae6593e9da2ebea256868",
+      "mcpGrantsAfterRestart": 0,
+      "pinnedSourceCommit": "e75ae371ad777ffd1eecdd28d2781a6519b05591",
+      "protectedWithoutJWTStatus": 401,
+      "restartAuthenticatedWithoutCredentials": true,
+      "stopped": true,
+      "stoppedLogSecretAndIsolationAudit": true,
+      "storedHashProfileKeysTaskRowsAndActivityPreserved": true,
+      "virtualCPUCount": 2,
+      "visualAcceptance": "pending",
+      "case": "local-session-native-legacy-v1",
+      "serviceChecksPassed": true,
+      "binarySHA256": "0a923a2cf8cbb5aa8c963fe11bdf036b8c6d7214cc0105ef409f790a3e993f8d",
+      "processExitCode": 0
+    },
+    {
+      "bootAttempts": 2,
+      "firstSessionAuthenticated": true,
+      "guestToolDoesNotInheritCapability": true,
+      "humanCredentialsEntered": false,
+      "legacyMigration": false,
+      "manifestSHA256": "40718971e50bd73f9ff5b1cf5bdbc03f55db400f1855fb33d3ef9b3a7c4f4057",
+      "mcpGrantsAfterRestart": 0,
+      "oldBootCapabilityRejected": true,
+      "pinnedSourceCommit": "e75ae371ad777ffd1eecdd28d2781a6519b05591",
+      "protectedWithoutJWTStatus": 401,
+      "restartAuthenticatedWithoutCredentials": true,
+      "stopped": true,
+      "stoppedLogSecretAndIsolationAudit": true,
+      "storedHashProfileKeysTaskRowsAndActivityPreserved": true,
+      "virtualCPUCount": 1,
+      "visualAcceptance": "pending",
+      "case": "local-session-cloud-native-fresh-v1",
+      "serviceChecksPassed": true,
+      "binarySHA256": "f2c1bc4429bb6038194c1905b9e3279a5bea2531dfc2d7e9f8a8ed0d32cd33cf",
+      "processExitCode": 0
+    },
+    {
+      "bootAttempts": 2,
+      "firstSessionAuthenticated": true,
+      "guestToolDoesNotInheritCapability": true,
+      "humanCredentialsEntered": false,
+      "legacyMigration": true,
+      "manifestSHA256": "40718971e50bd73f9ff5b1cf5bdbc03f55db400f1855fb33d3ef9b3a7c4f4057",
+      "mcpGrantsAfterRestart": 0,
+      "pinnedSourceCommit": "e75ae371ad777ffd1eecdd28d2781a6519b05591",
+      "protectedWithoutJWTStatus": 401,
+      "restartAuthenticatedWithoutCredentials": true,
+      "stopped": true,
+      "stoppedLogSecretAndIsolationAudit": true,
+      "storedHashProfileKeysTaskRowsAndActivityPreserved": true,
+      "virtualCPUCount": 1,
+      "visualAcceptance": "pending",
+      "case": "local-session-cloud-native-legacy-v1",
+      "serviceChecksPassed": true,
+      "binarySHA256": "f2c1bc4429bb6038194c1905b9e3279a5bea2531dfc2d7e9f8a8ed0d32cd33cf",
+      "processExitCode": 0
+    }
+  ],
+  "totalBootAttempts": 8,
+  "normalAppReplaced": false,
+  "userDataModified": false,
+  "visualAcceptance": "Mac locked; external EN/JA account-free entry and browser feature comparison pending",
+  "knownIntermittentBootReliabilityGate": "open; these eight successful boots do not close it",
+  "correctedCloudCandidateManifestSHA256": "dc0eb715b6bf14205fb7a1dc12d46fdacfe6876655b3701aef755cebf97a14ff",
+  "cloudCandidateMetadataCorrection": "managedBackend now identifies new composite binary/dev version; tested files and VM settings unchanged",
+  "buildCleanupDockerChecks": [
+    {
+      "variant": "default",
+      "inputImage": "sha256:bdc461a3332037a9ae4a1d830746b87130eaed226d3b367037ed1f9f420dfa2e",
+      "ownedAliasRemoved": true,
+      "durableInputPreserved": true
+    },
+    {
+      "variant": "cloud",
+      "inputImage": "sha256:31c282753a7714f56fc3c0d98a76f69e1281f519f7edc6fbd137676a72441e3d",
+      "ownedAliasRemoved": true,
+      "durableInputPreserved": true
+    }
+  ],
+  "automatedChecks": {
+    "fullSwift": {
+      "executed": 1220,
+      "failures": 0,
+      "skipped": 1
+    },
+    "laterTargetedCloudFailureClassification": {
+      "executed": 1,
+      "failures": 0
+    },
+    "python": {
+      "executed": 216,
+      "failures": 0
+    }
+  }
+}

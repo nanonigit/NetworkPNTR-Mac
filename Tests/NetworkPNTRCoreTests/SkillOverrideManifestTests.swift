@@ -13,4 +13,19 @@ final class SkillOverrideManifestTests: XCTestCase {
         XCTAssertThrowsError(try GuestArtifacts.requireCloudEgressManifest(JSONSerialization.data(withJSONObject: manifest)))
         XCTAssertThrowsError(try GuestArtifacts.requireCloudEgressManifest(data + Data(" ".utf8)))
     }
+    func testNativeSessionCompositeIdentityMatchesReviewedCloudManifest() throws {
+        let root = URL(fileURLWithPath: #filePath).deletingLastPathComponent().deletingLastPathComponent().deletingLastPathComponent()
+        let data = try Data(contentsOf: root.appendingPathComponent("evidence/local-session/cloud-composite-manifest.json"))
+        XCTAssertEqual(ArtifactIntegrity.sha256(data), GuestArtifacts.nativeSessionCloudCompositeManifestSHA256)
+        XCTAssertNoThrow(try GuestArtifacts.requireCloudEgressManifest(data))
+        let manifest = try XCTUnwrap(JSONSerialization.jsonObject(with: data) as? [String: Any])
+        let composite = try XCTUnwrap(manifest["managedBackend"] as? [String: Any])
+        let parent = try XCTUnwrap(manifest["nativeSessionParentManagedBackend"] as? [String: Any])
+        XCTAssertEqual(composite["binarySHA256"] as? String, manifest["backendSHA256"] as? String)
+        XCTAssertEqual(composite["buildVersion"] as? String, "dev")
+        XCTAssertNotEqual(composite["binarySHA256"] as? String, parent["binarySHA256"] as? String)
+        XCTAssertEqual(manifest["sourceCommit"] as? String, "e75ae371ad777ffd1eecdd28d2781a6519b05591")
+        XCTAssertThrowsError(try GuestArtifacts.requireCloudEgressManifest(data + Data(" ".utf8)))
+    }
+
 }

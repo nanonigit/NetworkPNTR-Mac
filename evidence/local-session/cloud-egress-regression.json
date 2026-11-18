@@ -1,0 +1,123 @@
+{
+  "status": "not-accepted-investigation-open",
+  "scope": "fixed public vendor model-list requests with intentionally invalid test value; no model inference or saved profile/conversation",
+  "runs": [
+    {
+      "case": "local-session-cloud-egress-v1",
+      "authMode": "automatic",
+      "manifestSHA256": "40718971e50bd73f9ff5b1cf5bdbc03f55db400f1855fb33d3ef9b3a7c4f4057",
+      "processExitCode": 1,
+      "results": [
+        {
+          "appRejected": true,
+          "authenticationRejected": false,
+          "provider": "openai"
+        },
+        {
+          "appRejected": true,
+          "authenticationRejected": false,
+          "provider": "anthropic"
+        },
+        {
+          "appRejected": true,
+          "authenticationRejected": false,
+          "provider": "gemini"
+        },
+        {
+          "appRejected": true,
+          "authenticationRejected": false,
+          "provider": "groq"
+        }
+      ],
+      "networkAcceptancePassed": false
+    },
+    {
+      "case": "local-session-cloud-egress-control-v1",
+      "authMode": "legacy-manual-control",
+      "manifestSHA256": "fe0053523608ba436f261ff41d142fe2ceca779571958ca1d19aa2ddaa54f332",
+      "processExitCode": 1,
+      "results": [
+        {
+          "appRejected": true,
+          "authenticationRejected": false,
+          "backendFailureKind": "unexpected-eof",
+          "downstreamStatus": 200,
+          "provider": "openai"
+        },
+        {
+          "appRejected": true,
+          "authenticationRejected": false,
+          "backendFailureKind": "unexpected-eof",
+          "downstreamStatus": 200,
+          "provider": "anthropic"
+        },
+        {
+          "appRejected": true,
+          "authenticationRejected": false,
+          "backendFailureKind": "unexpected-eof",
+          "downstreamStatus": 200,
+          "provider": "gemini"
+        },
+        {
+          "appRejected": true,
+          "authenticationRejected": false,
+          "backendFailureKind": "unexpected-eof",
+          "downstreamStatus": 200,
+          "provider": "groq"
+        }
+      ],
+      "networkAcceptancePassed": false,
+      "probeBinarySHA256": "1df2bc3502861071c46f06abe058b51f927bb8f9618494ef25f22d99246a7dec",
+      "probeSourceSHA256": "bfb1f8e890805141e789738289426e0bae9c8113057e1a51f879f85469089ebb"
+    },
+    {
+      "case": "local-session-cloud-egress-observed-v2",
+      "authMode": "automatic-observed",
+      "manifestSHA256": "dc0eb715b6bf14205fb7a1dc12d46fdacfe6876655b3701aef755cebf97a14ff",
+      "processExitCode": 1,
+      "results": [
+        {
+          "appRejected": true,
+          "authenticationRejected": false,
+          "backendFailureKind": "unexpected-eof",
+          "downstreamStatus": 200,
+          "provider": "openai"
+        },
+        {
+          "appRejected": true,
+          "authenticationRejected": false,
+          "backendFailureKind": "unexpected-eof",
+          "downstreamStatus": 200,
+          "provider": "anthropic"
+        },
+        {
+          "appRejected": true,
+          "authenticationRejected": false,
+          "backendFailureKind": "unexpected-eof",
+          "downstreamStatus": 200,
+          "provider": "gemini"
+        },
+        {
+          "appRejected": true,
+          "authenticationRejected": false,
+          "backendFailureKind": "unexpected-eof",
+          "downstreamStatus": 200,
+          "provider": "groq"
+        }
+      ],
+      "networkAcceptancePassed": false,
+      "probeBinarySHA256": "1df2bc3502861071c46f06abe058b51f927bb8f9618494ef25f22d99246a7dec",
+      "probeSourceSHA256": "bfb1f8e890805141e789738289426e0bae9c8113057e1a51f879f85469089ebb"
+    }
+  ],
+  "comparison": "The unchanged backend control and automatic candidate both return application-level rejection with unexpected-eof for all four providers; no upstream HTTP authentication rejection was established.",
+  "directHostChecks": {
+    "systemCurlOpenAIHTTPStatus": 401,
+    "systemCurlTLS12OpenAIHTTPStatus": 401,
+    "proxyEnvironmentPresent": false,
+    "productionCTransportFixedIPv4Attempts": 2,
+    "productionCTransportResult": "connect phase deadline before TLS, no HTTP status",
+    "rootCause": "unproven; do not attribute to auth, firewall or vendor without further evidence"
+  },
+  "normalBundlesAndUserDataUnmodified": true
+}

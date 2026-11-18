@@ -83,9 +83,11 @@ public struct GuestArtifacts: Codable, Sendable {
 
     package static let nativeSessionCloudManifestSHA256 = "40718971e50bd73f9ff5b1cf5bdbc03f55db400f1855fb33d3ef9b3a7c4f4057"
 
+    package static let nativeSessionCloudCompositeManifestSHA256 = "dc0eb715b6bf14205fb7a1dc12d46fdacfe6876655b3701aef755cebf97a14ff"
+
     static func requireCloudEgressManifest(_ data: Data) throws {
         guard data.count <= 64 * 1024,
-              [cloudEgressManifestSHA256, apiReconSkillManifestSHA256, nativeSessionCloudManifestSHA256].contains(ArtifactIntegrity.sha256(data)) else {
+              [cloudEgressManifestSHA256, apiReconSkillManifestSHA256, nativeSessionCloudManifestSHA256, nativeSessionCloudCompositeManifestSHA256].contains(ArtifactIntegrity.sha256(data)) else {
             throw RuntimeError.integrity("cloud egress manifest digest")
         }
     }

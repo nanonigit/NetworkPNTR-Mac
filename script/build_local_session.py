@@ -169,9 +169,20 @@ RUN --network=none echo '{digest(context / 'backend')}  /rootfs/opt/artex/artex'
                         nativeSessionInitSHA256=digest(context / 'backend-init'),
                         nativeSessionBackendBuildImage=backend_image,
                         managedCapabilities=sorted(set(original.get('managedCapabilities') or []) | {'native-local-session-v1'}))
+        refresh_composite_metadata(manifest, original)
         (output / 'manifest.json').write_text(json.dumps(manifest, indent=2) + '\n')
     finally:
         remove_owned_parent_alias(runtime, parent, original_tags)
+
+
+def refresh_composite_metadata(manifest, original):
+    """The new composite executable replaces the old managed build identity."""
+    if original.get('managedBackend') is not None:
+        manifest['nativeSessionParentManagedBackend'] = dict(original['managedBackend'])
+        manifest['managedBackend'] = dict(original['managedBackend'],
+            buildVersion='dev', binarySHA256=manifest['backendSHA256'],
+            composition='reviewed-managed-cloud-patches-plus-native-local-session', deployed=False)
+
 
 def remove_owned_parent_alias(runtime, parent, original_tags):
     # Delete only the owned alias, with parent pruning disabled, after proving

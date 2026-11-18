@@ -31,10 +31,18 @@ public enum GuestBootDiagnostics {
             let logs = try FileManager.default.contentsOfDirectory(at: logDirectory, includingPropertiesForKeys: nil)
                 .filter { $0.lastPathComponent.hasPrefix("guest-") && $0.pathExtension == "log" }
             guard logs.count == 1 else { return .unavailable }
-            let properties = try logs[0].resourceValues(forKeys: [.isRegularFileKey, .isSymbolicLinkKey, .fileSizeKey])
+            return audit(logFile: logs[0], tokens: tokens)
+        } catch { return .unavailable }
+    }
+
+    /// Audit an explicitly selected complete stopped-VM log; callers own attempt counts.
+    public static func audit(logFile: URL, tokens: [String]) -> GuestBootLogAudit {
+        guard !tokens.isEmpty, tokens.count <= 16, tokens.allSatisfy({ !$0.isEmpty && $0.utf8.count <= 8192 }) else { return .unavailable }
+        do {
+            let properties = try logFile.resourceValues(forKeys: [.isRegularFileKey, .isSymbolicLinkKey, .fileSizeKey])
             guard properties.isRegularFile == true, properties.isSymbolicLink != true,
                   let size = properties.fileSize, size > 0, size <= 8 * 1024 * 1024 else { return .unavailable }
-            let reader = try FileHandle(forReadingFrom: logs[0]); defer { try? reader.close() }
+            let reader = try FileHandle(forReadingFrom: logFile); defer { try? reader.close() }
             var snapshot = Data()
             while let chunk = try reader.read(upToCount: 65536), !chunk.isEmpty {
                 guard chunk.count <= size - snapshot.count else { return .unavailable }
