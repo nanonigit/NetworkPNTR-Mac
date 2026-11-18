@@ -175,7 +175,7 @@ actor FiniteMCPServer {
     }
 
     private static let tools: [Tool] = [
-        Tool(name: "networkpntr_agents_list", description: "Read agent names and availability. Does not run an NetworkPNTR agent or call a model.",
+        Tool(name: "networkpntr_agents_list", description: "Read agent names and availability. Does not run a NetworkPNTR agent or call a model.",
              inputSchema: .object(["type": .string("object"), "properties": .object([:]), "additionalProperties": .bool(false)]),
              annotations: .init(readOnlyHint: true, destructiveHint: false, idempotentHint: true, openWorldHint: false)),
         Tool(name: "networkpntr_task_status", description: "Read status and existing token counts for a task explicitly authorized in NetworkPNTR Mac. Does not start or resume a task.",

@@ -1593,7 +1593,7 @@
 	<key>mcp.clients.placeholder</key>
 	<string>Desktop AI</string>
 	<key>mcp.clients.readOnly</key>
-	<string>Read-only access. This connection cannot start tasks or invoke an NetworkPNTR model.</string>
+	<string>Read-only access. This connection cannot start tasks or invoke a NetworkPNTR model.</string>
 	<key>mcp.clients.reload</key>
 	<string>Reload tasks</string>
 	<key>mcp.clients.revoke</key>

@@ -38,7 +38,7 @@
           "en": {
             "stringUnit": {
               "state": "translated",
-              "value": "Read-only access. This connection cannot start tasks or invoke an NetworkPNTR model."
+              "value": "Read-only access. This connection cannot start tasks or invoke a NetworkPNTR model."
             }
           },
           "ja": {

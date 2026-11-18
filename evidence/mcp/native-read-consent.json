@@ -1,0 +1,84 @@
+{
+  "date": "2026-11-18",
+  "appSourceCommit": "cf462b9",
+  "guestManifestSHA256": "85978daf1b28bb55929d46ea156a857958dc7d4fcf54a0bac045f0832f13588e",
+  "readOnlyMCP": {
+    "initialized": true,
+    "toolNames": [
+      "networkpntr_agents_list",
+      "networkpntr_task_status"
+    ],
+    "agentReadSucceeded": true,
+    "agentProjectionSHA256": "b298e6ab4546c1e1715cfb52d4e59c2e625740d661f0cafba765b102b92da0b2",
+    "unselectedTaskRejected": true,
+    "unimplementedWriteRejected": true,
+    "privateDirectoryMode": "0700",
+    "connectionFileMode": "0600",
+    "readRejectedAfterRevocation": true,
+    "agentCount": 8,
+    "nativeUICancelConfirmed": true,
+    "nativeUIAuthorizeConfirmed": true,
+    "nativeUIRevokeConfirmed": true,
+    "nativeJapaneseAndEnglishInspected": true,
+    "languageRestoredToJapanese": true
+  },
+  "nativeDiagnosticResults": {
+    "app_owned_backend_ready": true,
+    "app_owned_backend_stopped": true,
+    "authenticated_content_snapshot": true,
+    "cooperative_stop_during_boot": true,
+    "native_login_validation_and_real_auth": true,
+    "native_review_has_no_llm_profiles": true,
+    "native_review_no_llm_after_restart": true,
+    "native_setup_authenticated": true,
+    "native_window_rendered": true,
+    "real_keychain_session_restored_after_vm_restart": true,
+    "setup_content_snapshot": true,
+    "temporary_keychain_item_removed": true,
+    "ui_click_workflow_verified": false,
+    "validation_content_snapshot": true,
+    "virtual_cpu_count": 2,
+    "visual_acceptance": "pending external native automation"
+  },
+  "privateStoppedGuestLogSnapshots": [
+    {
+      "sha256": "bc9fce42637b4643355b47150eca0d9085e9c6064c16c23cee3a134c3c2c7082",
+      "bytes": 615,
+      "isolationWitnessesPresent": true,
+      "faultMarkersPresent": false
+    },
+    {
+      "sha256": "028267a4c3bc4398e7f8014778e05881137a51f767122579cd6aa602afcaf9c0",
+      "bytes": 551,
+      "isolationWitnessesPresent": true,
+      "faultMarkersPresent": false
+    },
+    {
+      "sha256": "028267a4c3bc4398e7f8014778e05881137a51f767122579cd6aa602afcaf9c0",
+      "bytes": 551,
+      "isolationWitnessesPresent": true,
+      "faultMarkersPresent": false
+    }
+  ],
+  "ownedFixtureExit": 0,
+  "helperExitedCleanly": true,
+  "helperStderrEmpty": true,
+  "connectionDirectoryRemoved": true,
+  "hangulInAgentProjection": false,
+  "scope": "Native UI consent cancellation/authorization/revocation and packaged stdio -> app IPC -> actual VM agent read. Japanese/English AI connections text inspected; general UI diagnostic false flag does not cover these external interactions.",
+  "pending": [
+    "Selected existing-task happy path, permission narrowing, logout/VM lifecycle with active clients",
+    "GUI/MCP/browser paired data and rendered workflow comparison",
+    "Clean-Mac installation and client registration",
+    "MCP task writes and external-AI isolated execution without implicit inference",
+    "Native outbound MCP connection management and execution",
+    "Intermittent guest boot failure root cause/reliability",
+    "Exact-token native log audit was not captured in this fixture; separate one-boot preflight audit is not substituted"
+  ],
+  "followUpDescriptionRegression": {
+    "tests": 15,
+    "failures": 0,
+    "localizationExportCheckPassed": true,
+    "scope": "Grammar-only English text correction after live fixture; helper protocol and localization checks. Live receipt uses cf462b9 bundle."
+  }
+}
