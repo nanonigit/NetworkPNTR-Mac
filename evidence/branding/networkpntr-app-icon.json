@@ -2,8 +2,8 @@
   "date": "2026-11-18",
   "product": "NetworkPNTR Mac",
   "master": "assets/branding/networkpntr-app-icon.png",
-  "masterSHA256": "3d52666ccb903e063e75043b823db61c72cdb56d44a744c64ae0054780496171",
-  "icnsSHA256": "40f3b306d18391ca40e5815b1556970d453fa9c5b2106a3c01a81df16e3282e2",
+  "masterSHA256": "0730440b2f4e8b5f9092c932fff33d5dd4f215a0aff18e8fdfbdf15f636e9a78",
+  "icnsSHA256": "04df48f96f42f93c4c0e2470f1bf41afd1f45c84eacdc2b10e9da95212260cdd",
   "representationCount": 10,
   "standardRepresentationsDimensionsVerified": true,
   "transparencyVerified": true,
@@ -18,8 +18,10 @@
       "helperHashUnchanged": true,
       "mainExecutableResigned": true,
       "mainExecutableBeforeSHA256": "cff2d773e3a1276c0312b50f9fe429cbaaff24a9f01af6410a6f92193876d9d0",
-      "mainExecutableAfterSHA256": "a56a7a3deb352d44b6084f71375163a2e92a170bdc8fd8ed760bab9fc852c811",
-      "systemIconResolvedAndVisuallyInspected": true
+      "mainExecutableAfterSHA256": "ede5242329b4d52acbc49a61163c00771dac6e0a2a47b1038fcc62c6463a8b00",
+      "systemIconResolvedAndVisuallyInspected": true,
+      "bundleVersion": "2",
+      "redXVisibleInSystemResolvedIcon": true
     },
     "NetworkPNTR Mac Cloud Preview.app": {
       "iconFile": "AppIcon.icns",
@@ -29,9 +31,14 @@
       "helperHashUnchanged": true,
       "mainExecutableResigned": true,
       "mainExecutableBeforeSHA256": "b474dae04e8f37f883bb68918ad5a8409a35a9b1a312817a5cd62f48cd8ac087",
-      "mainExecutableAfterSHA256": "5ba21ba9cbf64c44e8403f7c7b86094f2ae162acc05ecee101e9bac3dc7c5108",
-      "systemIconResolvedAndVisuallyInspected": true
+      "mainExecutableAfterSHA256": "f841ee109febb4a0fac5a8772ba0f2e0bfcfd7d2c1e93efecd7f0cf26b4248b1",
+      "systemIconResolvedAndVisuallyInspected": true,
+      "bundleVersion": "2",
+      "redXVisibleInSystemResolvedIcon": true
     }
   },
-  "scope": "Logo and bundle packaging only; existing app executables were re-signed, not rebuilt. Main executable whole-file hash changes with embedded signature. VM/MCP runtime acceptance remains pending."
+  "scope": "Logo and bundle packaging only; existing app executables were re-signed, not rebuilt. Main executable whole-file hash changes with embedded signature. VM/MCP runtime acceptance remains pending.",
+  "revision": "red X over central figure, user-requested intrusion prevention symbol",
+  "editPrompt": "Keep the existing icon unchanged; add a vivid red X with two bold rounded diagonal strokes across the central hooded intruder and upper laptop; preserve network, shield, tile and transparency; no text.",
+  "cacheRefresh": "Bundle version incremented to2, bundle timestamps refreshed, LaunchServices registration refreshed; both system-resolved red-X icons visually inspected. No global cache reset."
 }

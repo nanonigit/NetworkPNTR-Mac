@@ -8,9 +8,9 @@ Use the supplied ethical-hacking silhouette as a visual reference. The icon must
 
 ## Design / 設計
 
-A silver ethical hacker and laptop, shield/check and teal network nodes on a midnight navy rounded-square tile. Transparent exterior, no lettering. The user reference is not redistributed. The final generated master lives in `assets/branding/networkpntr-app-icon.png`. Produce standard 16–1024px macOS icon representations using system `sips` and `iconutil`; copy `AppIcon.icns` into bundle Resources and set `CFBundleIconFile` before signing. Both existing default and Cloud Preview bundles receive only the icon/plist/signature change. No UI layout is changed; Lazyweb screen research is out of scope for this graphic and packaging task.
+A silver ethical hacker and laptop, shield/check and teal network nodes on a midnight navy rounded-square tile. At the user's request, a bold red X overlays the central figure to express stopping intrusion. Transparent exterior, no lettering. The user reference is not redistributed. The final generated master lives in `assets/branding/networkpntr-app-icon.png`. Produce standard 16–1024px macOS icon representations using system `sips` and `iconutil`; copy `AppIcon.icns` into bundle Resources and set `CFBundleIconFile` before signing. Both existing default and Cloud Preview bundles receive only the icon/plist/signature change. No UI layout is changed; Lazyweb screen research is out of scope for this graphic and packaging task.
 
-紺色の角丸タイルに銀色の人物・ノートPC、盾とチェック、青緑のネットワークを組み合わせる。文字は入れず、外側は透明とする。原画からmacOS標準の各サイズを生成し、署名前にバンドルへ組み込む。通常版・Cloud Preview版の既存バイナリとゲストは維持する。画面レイアウト変更ではないためLazywebのUI調査は対象外。
+紺色の角丸タイルに銀色の人物・ノートPC、盾とチェック、青緑のネットワークを組み合わせる。侵入を防ぐ意図を明確にするため、ユーザーの指定により中央の人物に赤いバッテンを重ねる。文字は入れず、外側は透明とする。原画からmacOS標準の各サイズを生成し、署名前にバンドルへ組み込む。通常版・Cloud Preview版の既存バイナリとゲストは維持する。画面レイアウト変更ではないためLazywebのUI調査は対象外。
 
 ## Implementation and verification / 実装・検証
 
@@ -25,3 +25,9 @@ Built-in imagegen was used. Prompt summary: reinterpret the supplied ethical-hac
 Verification receipt: [app icon](../evidence/branding/networkpntr-app-icon.json). Both system-resolved icons were visually inspected at 128px; the ICNS was also inspected at 32px. The installed local bundles were updated in place without rebuilding pending VM changes.
 
 Apple reference: [CFBundleIconFile](https://developer.apple.com/documentation/bundleresources/information-property-list/cfbundleiconfile).
+
+Revision: the user requested a red X to express preventing intrusion. Built-in imagegen edited only the current mark with that direction; the revised master and both bundled icons were regenerated, signature-verified and inspected through macOS icon resolution.
+
+改訂：侵入を防ぐ意図を示す赤いバッテンを、ユーザーの指定どおり中央に追加した。改訂原画から両アプリのアイコンを生成し直し、署名とmacOSでの表示を確認済み。
+
+The revision increments bundle version to 2, so macOS refreshes the previously cached icon. Both system-resolved previews show the red X. macOS may apply its own surrounding app-tile treatment.
