@@ -1,0 +1,124 @@
+{
+  "date": "2026-11-19",
+  "sourceCommit": "b8b3614aa06007bac36887fe74cbf281850b9cf5",
+  "host": {
+    "chip": "Apple M2",
+    "macOS": "27.2.1",
+    "ordinaryAppRunningConcurrently": true
+  },
+  "scope": "Read-only CLI preflight of the signed bundles’ guest artifacts. One fresh 2 GiB disk per attempt. Legacy provisioning frame with no account setup. No outbound API, inference or agent execution.",
+  "profiles": {
+    "default": {
+      "manifestSHA256": "ff958504082071c3f7affc56c4f246049b28bbb8d27ae6593e9da2ebea256868",
+      "kernelSHA256": "42a15047f7cfc785e008b43f48c090f6340f34ead8446d7568126bb5cb9bc9f1",
+      "virtualCPUs": 2
+    },
+    "cloud": {
+      "manifestSHA256": "dc0eb715b6bf14205fb7a1dc12d46fdacfe6876655b3701aef755cebf97a14ff",
+      "kernelSHA256": "8e57308787c420cb42e4c4ea80e6def6438a52232692c010dc4609bb9bf21879",
+      "virtualCPUs": 1
+    }
+  },
+  "attempts": [
+    {
+      "profile": "default",
+      "exitCode": 0,
+      "wallSeconds": 19,
+      "lastStage": "database_ready",
+      "preflight": {
+        "bootAttempts": 1,
+        "cooperativeStop": true,
+        "credentialLogCheckPassed": true,
+        "diagnostics": [],
+        "formatStageObserved": true,
+        "freshAuth": true,
+        "isolationVerified": true,
+        "logAuditComplete": true,
+        "machineStopped": true,
+        "passed": true,
+        "protectedStatus": 401,
+        "reachedReady": true,
+        "supplementalEvidenceComplete": true
+      }
+    },
+    {
+      "profile": "cloud",
+      "exitCode": 1,
+      "wallSeconds": 11,
+      "lastStage": "state_zero_check",
+      "preflight": {
+        "bootAttempts": 1,
+        "cooperativeStop": false,
+        "credentialLogCheckPassed": true,
+        "diagnostics": [
+          "kernelFault"
+        ],
+        "formatStageObserved": false,
+        "freshAuth": false,
+        "isolationVerified": false,
+        "logAuditComplete": true,
+        "machineStopped": true,
+        "passed": false,
+        "reachedReady": false,
+        "supplementalEvidenceComplete": true
+      },
+      "failureObservation": {
+        "guestProcess": "python3",
+        "kernelFrames": [
+          "pud_none_or_clear_bad",
+          "unmap_page_range",
+          "exit_mmap"
+        ],
+        "diskAfterStop": {
+          "bytes": 2147483648,
+          "allocatedBlocks": 0,
+          "fullReadAllZero": true
+        }
+      }
+    },
+    {
+      "profile": "cloud",
+      "exitCode": 0,
+      "wallSeconds": 17,
+      "lastStage": "database_ready",
+      "preflight": {
+        "bootAttempts": 1,
+        "cooperativeStop": true,
+        "credentialLogCheckPassed": true,
+        "diagnostics": [],
+        "formatStageObserved": true,
+        "freshAuth": true,
+        "isolationVerified": true,
+        "logAuditComplete": true,
+        "machineStopped": true,
+        "passed": true,
+        "protectedStatus": 401,
+        "reachedReady": true,
+        "supplementalEvidenceComplete": true
+      }
+    },
+    {
+      "profile": "default",
+      "exitCode": 0,
+      "wallSeconds": 19,
+      "lastStage": "database_ready",
+      "preflight": {
+        "bootAttempts": 1,
+        "cooperativeStop": true,
+        "credentialLogCheckPassed": true,
+        "diagnostics": [],
+        "formatStageObserved": true,
+        "freshAuth": true,
+        "isolationVerified": true,
+        "logAuditComplete": true,
+        "machineStopped": true,
+        "passed": true,
+        "protectedStatus": 401,
+        "reachedReady": true,
+        "supplementalEvidenceComplete": true
+      }
+    }
+  ],
+  "verdict": "Fresh-disk Cloud Preview kernel fault reproduced. Release boot reliability remains open for both variants.",
+  "limits": "The Python process and page-table cleanup frames identify the failure context. They do not establish the cause. The read-only diagnostic uses no cloud relay and does not exercise automated local login or desktop UI."
+}
