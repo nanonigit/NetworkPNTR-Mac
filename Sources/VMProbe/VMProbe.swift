@@ -4,6 +4,19 @@ import Foundation
 @main struct VMProbe {
     @MainActor static func main() async {
         let args = CommandLine.arguments
+        if args.dropFirst().first == "--system-disk-cache-preflight" {
+            #if DEBUG
+            guard args.count == 5, let mode = SystemDiskDiagnosticCache(rawValue: args[2]) else {
+                FileHandle.standardError.write(Data("Usage: DEBUG VMProbe --system-disk-cache-preflight cached|uncached ARTIFACTS NEW_PRIVATE_OUTPUT\n".utf8))
+                exit(2)
+            }
+            await BackendProbe.run(Array(args.dropFirst(3)), preflightOnly: true, systemDiskDiagnosticCache: mode)
+            #else
+            FileHandle.standardError.write(Data("System disk cache experiments require a Debug probe.\n".utf8))
+            exit(2)
+            #endif
+            return
+        }
         if args.dropFirst().first == "--kernel-fault-preflight" {
             #if DEBUG
             await BackendProbe.run(Array(args.dropFirst(2)), preflightOnly: true, kernelFaultTracing: true)

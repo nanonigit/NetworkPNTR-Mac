@@ -25,3 +25,13 @@ python3 script/build_static_blank_checker.py \
 ```
 
 The compiled checker is reproducible against the experiment digest. The image and ext4 filesystem can differ because the builder records timestamps and the formatter assigns fresh filesystem metadata. With the signed VMProbe binary, run `--backend-preflight` against the candidate and an unused private output directory. It uses an isolated VM and a new disk. See [current boot observations](bugs/guest-boot-investigation.md).
+
+### Isolate system disk caching
+
+A Debug VMProbe can compare explicit `cached` and `uncached` attachments with the exact same guest. Apple exposes these modes on the [disk image attachment API](https://developer.apple.com/documentation/virtualization/vzdiskimagecachingmode). Only the system attachment changes its cache setting. It remains read-only and retains full synchronization. The writable state disk uses the original attachment, with a fresh private file for every attempt. The probe uses the existing read-only API and isolation checks. Cloud egress and Release builds reject the diagnostic override.
+
+```sh
+VMProbe --system-disk-cache-preflight uncached /path/to/verified/guest /path/to/new-private-output
+```
+
+Use an ordered comparison with a fixed number of runs. A successful boot does not establish that the cache mode fixes a prior fault. Use the normalized stopped-log audit and retain all outcomes.

@@ -1,6 +1,10 @@
 import Foundation
 import Virtualization
 
+public enum SystemDiskDiagnosticCache: String, Sendable {
+    case cached, uncached
+}
+
 public enum VMConfiguration {
     public static func bootCommandLine(directRoot: Bool, kernelFaultTracing: Bool = false) throws -> String {
         #if !DEBUG
@@ -11,7 +15,13 @@ public enum VMConfiguration {
         return "console=hvc0 \(root) panic=0 \(logging)"
     }
 
-    public static func make(kernel: URL, initramfs: URL, input: FileHandle?, output: FileHandle, systemDisk: URL? = nil, dataDisk: URL? = nil, directRoot: Bool = false, cpuCount: Int = 2, kernelFaultTracing: Bool = false) throws -> VZVirtualMachineConfiguration {
+    public static func make(kernel: URL, initramfs: URL, input: FileHandle?, output: FileHandle, systemDisk: URL? = nil, dataDisk: URL? = nil, directRoot: Bool = false, cpuCount: Int = 2, kernelFaultTracing: Bool = false, systemDiskDiagnosticCache: SystemDiskDiagnosticCache? = nil) throws -> VZVirtualMachineConfiguration {
+        #if !DEBUG
+        guard systemDiskDiagnosticCache == nil else { throw RuntimeError.integrity("debug-only system disk cache experiment") }
+        #endif
+        guard systemDiskDiagnosticCache == nil || systemDisk != nil else {
+            throw RuntimeError.integrity("system disk required for cache experiment")
+        }
         let commandLine = try bootCommandLine(directRoot: directRoot, kernelFaultTracing: kernelFaultTracing)
         guard (systemDisk == nil) == (dataDisk == nil) else { throw RuntimeError.integrity("paired guest disks") }
         guard !directRoot || systemDisk != nil else { throw RuntimeError.integrity("direct-root system disk") }
@@ -37,7 +47,16 @@ public enum VMConfiguration {
             guard systemDisk.standardizedFileURL != dataDisk.standardizedFileURL else {
                 throw RuntimeError.integrity("distinct guest disks")
             }
-            let system = VZVirtioBlockDeviceConfiguration(attachment: try VZDiskImageStorageDeviceAttachment(url: systemDisk, readOnly: true))
+            let systemAttachment: VZDiskImageStorageDeviceAttachment
+            if let systemDiskDiagnosticCache {
+                let mode: VZDiskImageCachingMode = systemDiskDiagnosticCache == .cached ? .cached : .uncached
+                systemAttachment = try VZDiskImageStorageDeviceAttachment(
+                    url: systemDisk, readOnly: true, cachingMode: mode, synchronizationMode: .full
+                )
+            } else {
+                systemAttachment = try VZDiskImageStorageDeviceAttachment(url: systemDisk, readOnly: true)
+            }
+            let system = VZVirtioBlockDeviceConfiguration(attachment: systemAttachment)
             let data = VZVirtioBlockDeviceConfiguration(attachment: try VZDiskImageStorageDeviceAttachment(url: dataDisk, readOnly: false))
             configuration.storageDevices = [system, data]
             configuration.socketDevices = [VZVirtioSocketDeviceConfiguration()]

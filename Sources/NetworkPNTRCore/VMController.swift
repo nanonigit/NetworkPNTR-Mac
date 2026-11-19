@@ -73,7 +73,13 @@ import Virtualization
         cloudEgressListener = nil
         cloudEgressAuthorized = false
     }
-    public func start(artifacts directory: URL, logs: URL, readinessTimeout: Duration = .seconds(60), dataDisk: URL? = nil, provisioning: GuestProvisioning? = nil, cloudEgress: Bool = false, kernelFaultTracing: Bool = false) async throws {
+    public func start(artifacts directory: URL, logs: URL, readinessTimeout: Duration = .seconds(60), dataDisk: URL? = nil, provisioning: GuestProvisioning? = nil, cloudEgress: Bool = false, kernelFaultTracing: Bool = false, systemDiskDiagnosticCache: SystemDiskDiagnosticCache? = nil) async throws {
+        #if !DEBUG
+        guard systemDiskDiagnosticCache == nil else { throw RuntimeError.integrity("debug-only system disk cache experiment") }
+        #endif
+        guard systemDiskDiagnosticCache == nil || (!cloudEgress && dataDisk != nil) else {
+            throw RuntimeError.integrity("isolated disk cache experiment")
+        }
         _ = try VMConfiguration.bootCommandLine(directRoot: false, kernelFaultTracing: kernelFaultTracing)
         guard mayStart else { throw RuntimeError.invalidTransition(state.rawValue, "starting") }
         runtimeFeatures = GuestRuntimeFeatures()
@@ -95,7 +101,7 @@ import Virtualization
             let handle = try FileHandle(forWritingTo: log)
             output = handle
             let pipe = Pipe(); input = pipe
-            let configuration = try VMConfiguration.make(kernel: directory.appendingPathComponent(manifest.kernel), initramfs: directory.appendingPathComponent(manifest.initramfs), input: pipe.fileHandleForReading, output: handle, systemDisk: manifest.systemDisk.map { directory.appendingPathComponent($0) }, dataDisk: dataDisk, directRoot: manifest.bootMode == "rootDisk", cpuCount: manifest.cpuCount ?? 2, kernelFaultTracing: kernelFaultTracing)
+            let configuration = try VMConfiguration.make(kernel: directory.appendingPathComponent(manifest.kernel), initramfs: directory.appendingPathComponent(manifest.initramfs), input: pipe.fileHandleForReading, output: handle, systemDisk: manifest.systemDisk.map { directory.appendingPathComponent($0) }, dataDisk: dataDisk, directRoot: manifest.bootMode == "rootDisk", cpuCount: manifest.cpuCount ?? 2, kernelFaultTracing: kernelFaultTracing, systemDiskDiagnosticCache: systemDiskDiagnosticCache)
             try configuration.validate()
             configuredCPUCount = configuration.cpuCount
             let vm = VZVirtualMachine(configuration: configuration)

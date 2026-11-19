@@ -191,3 +191,9 @@ The checked-in recipe rebuilt the ARM64 checker without a compilation cache. Its
 The fixed boot sequence had one control and one rebuilt candidate. The control panicked in `anon_vma_clone` during the zero check. The candidate reached the format step, where the running guest reported a memory-accounting warning and inode checksum errors on its system disk. The formatter could not load its libraries. Both preflights stopped before backend readiness and left their private 2 GiB state disks entirely zero.
 
 Read-only `e2fsck -fn` passed for both system images inside the offline builder environment. The candidate disk exported to the VM matches the offline-checked bytes. This establishes a difference between the offline filesystem check and the live guest observation. The cause remains open. The freshly built checker remains a diagnostic candidate. [Rebuild evidence](../../evidence/native-runtime/static-blank-checker-rebuild.json)
+
+### System disk cache comparison
+
+The signed Debug probe used the exact rebuilt guest that previously reported system disk checksum errors. It varied only the read-only system attachment's cache mode. The fixed sequence completed as cached (11 s), uncached (10 s), uncached (9 s) and cached (10 s). All four reached readiness, returned 401 to the unauthenticated protected API request, passed the stopped-log audit and stopped cooperatively. Fresh private state disks were used throughout.
+
+The prior system disk and kernel errors did not recur in this four-attempt comparison. The result establishes that both diagnostic attachments can boot. It does not establish whether caching contributes to the intermittent faults. The normal runtime uses its existing setting. [Comparison record](../../evidence/native-runtime/system-disk-cache-comparison.json)

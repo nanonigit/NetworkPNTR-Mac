@@ -25,3 +25,13 @@ python3 script/build_static_blank_checker.py \
 ```
 
 検査バイナリは以前の実験と同じバイト列で再構築できます。イメージやext4全体にはビルド日時・ファイルシステムのメタデータが入るため、別ハッシュになることがあります。署名済みVMProbeの `--backend-preflight` に候補と未使用の診断出力先を渡すと、新規ディスクと隔離VMで起動を確認できます。[最新の起動記録](bugs/guest-boot-investigation.ja.md)
+
+### システムディスクのキャッシュ方式を切り分ける
+
+Debug版のVMProbeは、同じゲストで `cached` と `uncached` を明示して比較できます。設定はAppleの[ディスクイメージ接続API](https://developer.apple.com/documentation/virtualization/vzdiskimagecachingmode)を使います。変更するのはシステムディスクのキャッシュだけで、読み取り専用と完全同期は維持します。書き込み可能な状態ディスクには従来どおりの接続を用い、各回で新しい専用ファイルを使います。既存の読み取り専用APIと隔離を検査し、クラウド通信を有効にした起動とReleaseビルドでは診断用の上書きを拒否します。
+
+```sh
+VMProbe --system-disk-cache-preflight uncached /path/to/verified/guest /path/to/new-private-output
+```
+
+回数と順序を固定して比較します。停止後のログを監査し、成功・失敗ともに残します。単発の正常起動だけでキャッシュ方式が過去の障害を解決したとは判断しません。

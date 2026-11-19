@@ -49,6 +49,46 @@ final class BackendBoundaryTests: XCTestCase {
         XCTAssertEqual(config.directorySharingDevices.count, 0)
         XCTAssertThrowsError(try VMConfiguration.make(kernel: root.appendingPathComponent("Image"), initramfs: root.appendingPathComponent("initramfs"), input: nil, output: .standardOutput, systemDisk: system))
     }
+    #if DEBUG
+    func testSystemCacheExperimentChangesOnlyTheReadOnlyAttachment() throws {
+        let root = FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString)
+        try FileManager.default.createDirectory(at: root, withIntermediateDirectories: true)
+        defer { try? FileManager.default.removeItem(at: root) }
+        let system = root.appendingPathComponent("system.ext4")
+        let state = root.appendingPathComponent("state.ext4")
+        for disk in [system, state] {
+            _ = try PersistentGuestDisk.createIfMissing(at: disk, byteCount: 1024 * 1024)
+        }
+        func configuration(_ cache: SystemDiskDiagnosticCache? = nil) throws -> VZVirtualMachineConfiguration {
+            try VMConfiguration.make(kernel: root.appendingPathComponent("Image"),
+                initramfs: root.appendingPathComponent("initramfs"), input: nil, output: .standardOutput,
+                systemDisk: system, dataDisk: state, directRoot: true, systemDiskDiagnosticCache: cache)
+        }
+        func attachment(_ config: VZVirtualMachineConfiguration, _ index: Int) throws -> VZDiskImageStorageDeviceAttachment {
+            try XCTUnwrap((config.storageDevices[index] as? VZVirtioBlockDeviceConfiguration)?.attachment
+                as? VZDiskImageStorageDeviceAttachment)
+        }
+        let original = try configuration()
+        let originalSystem = try attachment(original, 0)
+        let originalState = try attachment(original, 1)
+        for mode in [SystemDiskDiagnosticCache.cached, .uncached] {
+            let config = try configuration(mode)
+            let systemDisk = try attachment(config, 0)
+            let stateDisk = try attachment(config, 1)
+            XCTAssertTrue(systemDisk.isReadOnly)
+            XCTAssertEqual(systemDisk.cachingMode, mode == .cached ? .cached : .uncached)
+            XCTAssertEqual(systemDisk.synchronizationMode, originalSystem.synchronizationMode)
+            XCTAssertFalse(stateDisk.isReadOnly)
+            XCTAssertEqual(stateDisk.cachingMode, originalState.cachingMode)
+            XCTAssertEqual(stateDisk.synchronizationMode, originalState.synchronizationMode)
+            XCTAssertTrue(config.networkDevices.isEmpty)
+            XCTAssertTrue(config.directorySharingDevices.isEmpty)
+        }
+        XCTAssertThrowsError(try VMConfiguration.make(kernel: system, initramfs: state, input: nil,
+            output: .standardOutput, systemDiskDiagnosticCache: .uncached))
+    }
+    #endif
+
     func testBackendManifestRejectsPartialAndTamperedSystemDisk() throws {
         let root = FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString)
         try FileManager.default.createDirectory(at: root, withIntermediateDirectories: true)

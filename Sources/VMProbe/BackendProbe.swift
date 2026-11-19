@@ -3,8 +3,8 @@ import Foundation
 import CryptoKit
 
 @MainActor enum BackendProbe {
-    static func run(_ args: [String], preflightOnly: Bool = false, kernelFaultTracing: Bool = false) async {
-        guard !kernelFaultTracing || preflightOnly else { exit(2) }
+    static func run(_ args: [String], preflightOnly: Bool = false, kernelFaultTracing: Bool = false, systemDiskDiagnosticCache: SystemDiskDiagnosticCache? = nil) async {
+        guard preflightOnly || (!kernelFaultTracing && systemDiskDiagnosticCache == nil) else { exit(2) }
         do { _ = try VMConfiguration.bootCommandLine(directRoot: false, kernelFaultTracing: kernelFaultTracing) } catch { exit(2) }
         guard args.count == 2 else { print("Usage: VMProbe --backend guest-artifacts evidence-directory"); exit(2) }
         let artifacts = URL(fileURLWithPath: args[0])
@@ -65,7 +65,7 @@ import CryptoKit
             var provisioning = try GuestProvisioning.generate()
             if preflightOnly { preflightTokens = [provisioning.transportToken, provisioning.setupToken] }
             func boot(_ stateDisk: URL) async throws {
-                try await controller.start(artifacts: artifacts, logs: logs, readinessTimeout: .seconds(120), dataDisk: stateDisk, provisioning: provisioning, kernelFaultTracing: kernelFaultTracing)
+                try await controller.start(artifacts: artifacts, logs: logs, readinessTimeout: .seconds(120), dataDisk: stateDisk, provisioning: provisioning, kernelFaultTracing: kernelFaultTracing, systemDiskDiagnosticCache: systemDiskDiagnosticCache)
                 for _ in 0..<1300 {
                     if controller.guestReady || controller.state == .failed || controller.state == .stopped { break }
                     try await Task.sleep(for: .milliseconds(100))

@@ -1,0 +1,109 @@
+{
+  "date": "2026-11-19",
+  "host": {
+    "chip": "Apple M2",
+    "macOS": "27.2.1"
+  },
+  "profile": {
+    "manifestSHA256": "c188947e71bf990305801e3237ba567552cf73618861db507b50bc78391549cd",
+    "systemDiskSHA256": "34411a4a02eb0b34ee6745dafd2186043a7a2d6fca269e526b94b4bcc348cc50",
+    "kernelSHA256": "8e57308787c420cb42e4c4ea80e6def6438a52232692c010dc4609bb9bf21879",
+    "signedDebugProbeSHA256": "268f8d302501a20a12c88b34ed6571f8241dc8d6e053f565816d75e58a27b9f9"
+  },
+  "scope": "Fresh 2 GiB disk per boot of the same rebuilt Cloud Preview candidate. Read-only system disk, full synchronization, no cloud egress or agent execution.",
+  "results": [
+    {
+      "systemDiskCache": "cached",
+      "exitCode": 0,
+      "wallSeconds": 11,
+      "preflight": {
+        "bootAttempts": 1,
+        "cooperativeStop": true,
+        "credentialLogCheckPassed": true,
+        "diagnostics": [],
+        "formatStageObserved": true,
+        "freshAuth": true,
+        "isolationVerified": true,
+        "logAuditComplete": true,
+        "machineStopped": true,
+        "passed": true,
+        "protectedStatus": 401,
+        "reachedReady": true,
+        "supplementalEvidenceComplete": true
+      }
+    },
+    {
+      "systemDiskCache": "uncached",
+      "exitCode": 0,
+      "wallSeconds": 10,
+      "preflight": {
+        "bootAttempts": 1,
+        "cooperativeStop": true,
+        "credentialLogCheckPassed": true,
+        "diagnostics": [],
+        "formatStageObserved": true,
+        "freshAuth": true,
+        "isolationVerified": true,
+        "logAuditComplete": true,
+        "machineStopped": true,
+        "passed": true,
+        "protectedStatus": 401,
+        "reachedReady": true,
+        "supplementalEvidenceComplete": true
+      }
+    },
+    {
+      "systemDiskCache": "uncached",
+      "exitCode": 0,
+      "wallSeconds": 9,
+      "preflight": {
+        "bootAttempts": 1,
+        "cooperativeStop": true,
+        "credentialLogCheckPassed": true,
+        "diagnostics": [],
+        "formatStageObserved": true,
+        "freshAuth": true,
+        "isolationVerified": true,
+        "logAuditComplete": true,
+        "machineStopped": true,
+        "passed": true,
+        "protectedStatus": 401,
+        "reachedReady": true,
+        "supplementalEvidenceComplete": true
+      }
+    },
+    {
+      "systemDiskCache": "cached",
+      "exitCode": 0,
+      "wallSeconds": 10,
+      "preflight": {
+        "bootAttempts": 1,
+        "cooperativeStop": true,
+        "credentialLogCheckPassed": true,
+        "diagnostics": [],
+        "formatStageObserved": true,
+        "freshAuth": true,
+        "isolationVerified": true,
+        "logAuditComplete": true,
+        "machineStopped": true,
+        "passed": true,
+        "protectedStatus": 401,
+        "reachedReady": true,
+        "supplementalEvidenceComplete": true
+      }
+    }
+  ],
+  "controls": {
+    "invalidModeRejectedBeforeOutput": true,
+    "existingOutputPreserved": true,
+    "stateAttachmentSettingsMatchDefault": true,
+    "inputArtifactsVerifiedAfterBoot": true,
+    "releaseProbeRejectedOverrideBeforeOutput": true,
+    "swiftTests": {
+      "executed": 1228,
+      "skipped": 1,
+      "failures": 0
+    }
+  },
+  "conclusion": "Both modes passed both attempts. The earlier kernel and filesystem faults were not observed. No cache-mode cause or remedy was established."
+}
