@@ -14,14 +14,9 @@ struct DashboardTokensView: View {
     var body: some View {
         GroupBox {
             VStack(alignment: .leading, spacing: 16) {
-                HStack {
-                    Label(s(.dashboardUITokenUsage), systemImage: "chart.bar").font(.headline)
-                    Spacer()
-                    Picker(s(.dashboardUISource), selection: $store.source) {
-                        Text(s(.dashboardUILegacy)).tag(DashboardTokenSource.old)
-                        Text(s(.dashboardUILedger)).tag(DashboardTokenSource.ledger)
-                    }.pickerStyle(.segmented).frame(maxWidth: 240)
-                    .help(s(.dashboardUISourceHelp))
+                ViewThatFits(in: .horizontal) {
+                    HStack { title; Spacer(); sourcePicker }
+                    VStack(alignment: .leading, spacing: 8) { title; sourcePicker }
                 }
                 ViewThatFits(in: .horizontal) {
                     HStack { profilePicker; Spacer(); daysPicker }
@@ -77,6 +72,24 @@ struct DashboardTokensView: View {
         .onChange(of: store.days) { _, _ in resetDay() }
     }
     private func resetDay() { selectedDay = nil; hoveredDay = nil }
+    private var title: some View {
+        Label(s(.dashboardUITokenUsage), systemImage: "chart.bar").font(.headline)
+    }
+    private var sourcePicker: some View {
+        HStack(spacing: 8) {
+            Text(s(.dashboardUISource))
+                .fixedSize()
+                .accessibilityHidden(true)
+            Picker(s(.dashboardUISource), selection: $store.source) {
+                Text(s(.dashboardUILegacy)).tag(DashboardTokenSource.old)
+                Text(s(.dashboardUILedger)).tag(DashboardTokenSource.ledger)
+            }
+            .labelsHidden()
+            .pickerStyle(.segmented)
+            .frame(maxWidth: 240)
+        }
+        .help(s(.dashboardUISourceHelp))
+    }
     private var profilePicker: some View {
         Picker(s(.dashboardUIProfiles), selection: $store.selection) {
             Text(s(.dashboardUIAll)).tag(DashboardProfileSelection.all)

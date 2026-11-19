@@ -47,3 +47,11 @@ An isolated signed ordinary app and the exact pinned browser backend independent
 On the ordinary app, the visible controls displayed 215 legacy tokens and 1,171 ledger tokens across all models at 30 days. At seven days the daily chart was empty and the all-record ledger total stayed 1,171. Selecting the secondary model at 30 days showed 70 tokens. Switching to English preserved all selections. The English screen still wraps “Source” at the default width and displays “1 tasks” in the singular case.
 
 The browser's fresh interactive session reached the login page and showed the terms checkbox. It was closed without entering the dashboard. All 12 comparisons describe the backend and calculations. Paired interactive and visual acceptance remains open. The temporary native session and reference containers were cleaned up. The Python suite passed 222 cases. [Evidence](../evidence/dashboard/build3-parity-checkpoint.json)
+
+### Native token display follow-up
+
+The token header places the Source label outside the segmented control's width budget. The visible label stays on one line at the default window width. The picker keeps one accessible name in each language. The English summary now reads “Tasks: 1 · Total tokens: 70” for the single-task fixture.
+
+Actual clicks on the final signed diagnostic app switched legacy totals to the 1,171-token ledger, filtered it to 70 tokens with the secondary model and preserved that result when switching back to Japanese. The 12-scenario normalized metrics digest still matches the previous pinned reference comparison. The default guest encountered a kernel panic before the first display test. Both display checks that reached the dashboard used the existing static blank-disk checker candidate in a private VM. The final fixture removed its temporary Keychain entry and stopped cleanly. This change has no guest promotion and paired interactive browser acceptance remains open.
+
+Local checks passed with 1,226 Swift tests and one skip, 222 Python tests, and a matching generated translation export.

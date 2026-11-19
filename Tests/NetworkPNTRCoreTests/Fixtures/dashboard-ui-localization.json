@@ -447,7 +447,7 @@
     {
       "key": "dashboard.ui.usageSummary",
       "case": "dashboardUIUsageSummary",
-      "en": "{tasks} tasks · Total {total} tokens",
+      "en": "Tasks: {tasks} · Total tokens: {total}",
       "ja": "{tasks} タスク · 合計 {total} tokens"
     },
     {

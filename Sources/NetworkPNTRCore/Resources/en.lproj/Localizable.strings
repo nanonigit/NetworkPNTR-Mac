@@ -917,7 +917,7 @@
 	<key>dashboard.ui.usageLoading</key>
 	<string>Loading the data required for usage metrics.</string>
 	<key>dashboard.ui.usageSummary</key>
-	<string>{tasks} tasks · Total {total} tokens</string>
+	<string>Tasks: {tasks} · Total tokens: {total}</string>
 	<key>dashboard.ui.viewAll</key>
 	<string>View all</string>
 	<key>dashboard.ui.viewTasks</key>

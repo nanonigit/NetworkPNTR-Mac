@@ -11313,7 +11313,7 @@
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "{tasks} tasks · Total {total} tokens"
+            "value": "Tasks: {tasks} · Total tokens: {total}"
           }
         },
         "ja": {
