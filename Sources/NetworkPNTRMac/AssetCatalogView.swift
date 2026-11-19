@@ -8,7 +8,7 @@ import SwiftUI
     @State private var draft = ""
     @State private var reload = 0
     @State private var selected: Set<Int64> = []
-    @State private var pendingDeletion: [Int64] = []
+    @State private var pendingDeletion: AssetCatalogStore.Deletion?
     @State private var selectedCompanyID: Int64?
     @State private var companyAction: CompanyEditorAction?
     @State private var companyResult: CompanyEditorResult?
@@ -32,8 +32,9 @@ import SwiftUI
                 Spacer()
                 if !selected.isEmpty {
                     Button(countLabel(.assetCatalogDeleteSelected, Int64(selected.count)), role: .destructive) {
-                        pendingDeletion = selected.sorted()
+                        pendingDeletion = store.prepareDeletion(ids: selected.sorted())
                     }
+                    .disabled(!store.canDeleteAssets)
                 }
                 Button(s(.companyAdd)) { companyAction = .create }
                 Button(s(.toolRunRefresh)) { reload += 1 }
@@ -74,21 +75,23 @@ import SwiftUI
         }
         .disabled(store.isDeleting)
         .alert(s(.assetCatalogDeleteTitle), isPresented: Binding(
-            get: { !pendingDeletion.isEmpty },
-            set: { if !$0 { pendingDeletion.removeAll() } }
-        ), presenting: pendingDeletion) { ids in
+            get: { pendingDeletion != nil },
+            set: { if !$0 { pendingDeletion = nil } }
+        ), presenting: pendingDeletion) { deletion in
             Button(s(.findingUICancel), role: .cancel) {}
             Button(s(.assetCatalogDelete), role: .destructive) {
-                pendingDeletion.removeAll()
-                selected.removeAll()
+                pendingDeletion = nil
                 Task {
-                    await store.deleteAssets(ids: ids)
-                    reload += 1
+                    if await store.deleteAssets(deletion) {
+                        selected.removeAll()
+                        reload += 1
+                    }
                 }
             }
-        } message: { ids in
-            Text(countLabel(.assetCatalogDeleteBody, Int64(ids.count)))
+        } message: { deletion in
+            Text(countLabel(.assetCatalogDeleteBody, Int64(deletion.ids.count)))
         }
+        .onChange(of: request) { _, _ in pendingDeletion = nil }
         .sheet(item: $companyAction) { action in
             CompanyEditor(action: action, locale: locale, service: service, refresh: {
                 store.invalidateCatalog()
@@ -174,19 +177,19 @@ import SwiftUI
                 }
                 TableColumn(s(.assetCatalogDelete)) { row in
                     Button {
-                        pendingDeletion = [row.id]
+                        pendingDeletion = store.prepareDeletion(ids: [row.id])
                     } label: {
                         Image(systemName: "trash")
                     }
                     .buttonStyle(.borderless)
                     .accessibilityLabel(s(.assetCatalogDelete))
+                    .disabled(!store.canDeleteAssets)
                 }
                 .width(62)
             }
             .id(type)
             .onDeleteCommand {
-                guard !selected.isEmpty, !store.page.isStale, !store.isDeleting else { return }
-                pendingDeletion = selected.sorted()
+                pendingDeletion = store.prepareDeletion(ids: selected.sorted())
             }
             .overlay {
                 if store.page.isLoading { ProgressView() }

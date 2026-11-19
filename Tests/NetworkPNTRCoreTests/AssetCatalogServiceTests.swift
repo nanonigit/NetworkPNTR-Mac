@@ -145,15 +145,20 @@ final class AssetCatalogServiceTests: XCTestCase {
         store.select(.rootDomain)
         store.setSize(25)
         store.setPage(1)
+        try client.enqueue(["count": 1, "total": 26, "assets": [
+            ["id": 26, "type": "root_domain", "last_seen": "2026-10-22T10:00:00Z"]
+        ]])
+        await store.refreshPage(store.query)
+        let deletion = try XCTUnwrap(store.prepareDeletion(ids: [26]))
         try client.enqueue(["deleted": 1])
-        await store.deleteAssets(ids: [26])
+        _ = await store.deleteAssets(deletion)
         XCTAssertEqual(store.deletedCount, 1)
         XCTAssertTrue(store.page.isStale)
         try client.enqueue(["count": 0, "total": 25, "assets": []])
         await store.refreshPage(store.query)
         XCTAssertEqual(store.query.page, 0)
         XCTAssertNil(store.page.value)
-        XCTAssertEqual(client.calls.map(\.method), ["DELETE", "GET"])
+        XCTAssertEqual(client.calls.map(\.method), ["GET", "DELETE", "GET"])
     }
 
     @MainActor func testCreatesCompanyWithStructuredScopeAndPreservesConflict() async throws {
@@ -270,6 +275,66 @@ final class AssetCatalogServiceTests: XCTestCase {
         XCTAssertEqual(client.calls.first?.path, client.calls.last?.path)
     }
 
+    @MainActor func testAssetDeleteConfirmationExpiresWhenResultsChangeAndCanOnlyBeUsedOnce() async throws {
+        let client = ChatTestTransport()
+        let store = AssetCatalogStore(service: AssetCatalogService(client: client))
+        store.select(.rootDomain)
+        XCTAssertNil(store.prepareDeletion(ids: [10]))
+        let response: [String: Any] = [
+            "count": 1, "total": 1, "assets": [
+                ["id": 10, "type": "root_domain", "last_seen": "2026-10-22T10:00:00Z"]
+            ]
+        ]
+        try client.enqueue(response)
+        await store.refreshPage(store.query)
+        let old = try XCTUnwrap(store.prepareDeletion(ids: [10]))
+        store.search("domain = fixture.example.test")
+        XCTAssertNil(store.prepareDeletion(ids: [10]))
+        try client.enqueue(response)
+        await store.refreshPage(store.query)
+        let ignored = await store.deleteAssets(old)
+        XCTAssertFalse(ignored)
+        XCTAssertEqual(client.calls.map(\.method), ["GET", "GET"])
+
+        let refreshed = try XCTUnwrap(store.prepareDeletion(ids: [10]))
+        try client.enqueue(response)
+        await store.refreshPage(store.query)
+        let ignoredRefresh = await store.deleteAssets(refreshed)
+        XCTAssertFalse(ignoredRefresh)
+        let accepted = try XCTUnwrap(store.prepareDeletion(ids: [10]))
+        try client.enqueue(["deleted": 1])
+        let sent = await store.deleteAssets(accepted)
+        XCTAssertTrue(sent)
+        let replayed = await store.deleteAssets(accepted)
+        XCTAssertFalse(replayed)
+        XCTAssertEqual(client.calls.map(\.method), ["GET", "GET", "GET", "DELETE"])
+    }
+
+    @MainActor func testFailedAssetRefreshDisablesDeleteWhileRetainingLastGoodRows() async throws {
+        let client = ChatTestTransport()
+        let store = AssetCatalogStore(service: AssetCatalogService(client: client))
+        store.select(.rootDomain)
+        try client.enqueue(["count": 1, "total": 1, "assets": [
+            ["id": 42, "type": "root_domain", "last_seen": "2026-10-22T10:00:00Z"]
+        ]])
+        await store.refreshPage(store.query)
+        let confirmation = try XCTUnwrap(store.prepareDeletion(ids: [42]))
+        client.handler = { [weak store] call in
+            let store = try XCTUnwrap(store)
+            XCTAssertEqual(call.method, "GET")
+            XCTAssertTrue(store.page.isLoading)
+            XCTAssertNil(store.prepareDeletion(ids: [42]))
+            return try ChatTestTransport.response(["error": "fixture"], status: 503)
+        }
+        await store.refreshPage(store.query)
+        XCTAssertEqual(store.page.value?.assets.map(\.id), [42])
+        XCTAssertTrue(store.page.isStale)
+        XCTAssertNil(store.prepareDeletion(ids: [42]))
+        let admitted = await store.deleteAssets(confirmation)
+        XCTAssertFalse(admitted)
+        XCTAssertEqual(client.calls.map(\.method), ["GET", "GET"])
+    }
+
     @MainActor func testUnconfirmedDeletionRefreshesWithoutResendingMutation() async throws {
         let client = ChatTestTransport()
         let store = AssetCatalogStore(service: AssetCatalogService(client: client))
@@ -285,7 +350,8 @@ final class AssetCatalogServiceTests: XCTestCase {
         XCTAssertEqual(store.page.value?.assets.map(\.id), [9026, 9025])
 
         try client.enqueue(["error": "Synthetic asset delete receipt lost"], status: 500)
-        await store.deleteAssets(ids: [9026])
+        let deletion = try XCTUnwrap(store.prepareDeletion(ids: [9026]))
+        _ = await store.deleteAssets(deletion)
         XCTAssertTrue(store.deletionUnconfirmed)
         XCTAssertNil(store.deletedCount)
         XCTAssertNil(store.page.value)

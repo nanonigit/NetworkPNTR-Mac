@@ -1,3 +1,4 @@
+import Foundation
 import Observation
 
 @MainActor @Observable public final class AssetCatalogStore {
@@ -13,6 +14,11 @@ import Observation
         }
     }
 
+    public struct Deletion: Sendable {
+        public let ids: [Int64]
+        fileprivate let revision: UUID
+    }
+
     public private(set) var query = Query()
     public private(set) var isDeleting = false
     public private(set) var deletedCount: Int64?
@@ -21,6 +27,7 @@ import Observation
     public let companies = FindingReadState<[AssetCatalogCompany]>()
     public let counts = FindingReadState<[String: Int64]>()
     @ObservationIgnored private let service: AssetCatalogService
+    @ObservationIgnored private var deletionRevision = UUID()
 
     public init(service: AssetCatalogService) { self.service = service }
 
@@ -56,7 +63,8 @@ import Observation
     }
 
     public func refreshPage(_ request: Query) async {
-        guard request == query, let type = request.type else { return }
+        guard request == query, let type = request.type, !isDeleting, !page.isLoading, !Task.isCancelled else { return }
+        deletionRevision = UUID()
         guard await page.refresh({
             do {
                 return try await service.list(type: type, dsl: request.dsl, page: request.page, size: request.size)
@@ -68,21 +76,33 @@ import Observation
         if request.page > lastPage { setPage(lastPage) }
     }
 
-    public func deleteAssets(ids: [Int64]) async {
-        guard !isDeleting, query.type != nil, !ids.isEmpty else { return }
+    public var canDeleteAssets: Bool {
+        query.type != nil && page.value != nil && !page.isStale && !page.isLoading && !isDeleting
+    }
+
+    public func prepareDeletion(ids: [Int64]) -> Deletion? {
+        guard canDeleteAssets, !ids.isEmpty, ids.allSatisfy({ $0 > 0 }), Set(ids).count == ids.count else { return nil }
+        return Deletion(ids: ids, revision: deletionRevision)
+    }
+
+    public func deleteAssets(_ deletion: Deletion) async -> Bool {
+        guard canDeleteAssets, deletion.revision == deletionRevision, !Task.isCancelled else { return false }
+        deletionRevision = UUID()
         isDeleting = true
         deletedCount = nil
         deletionUnconfirmed = false
         defer { isDeleting = false }
         do {
-            deletedCount = try await service.deleteAssets(ids: ids)
+            deletedCount = try await service.deleteAssets(ids: deletion.ids)
         } catch {
             deletionUnconfirmed = true
         }
         invalidateCatalog()
+        return true
     }
 
     public func invalidateCatalog() {
+        deletionRevision = UUID()
         page.invalidate(clear: true)
         companies.invalidate()
         counts.invalidate()
@@ -93,6 +113,7 @@ import Observation
 
     private func update(_ next: Query) {
         guard next != query else { return }
+        deletionRevision = UUID()
         page.invalidate(clear: true)
         query = next
     }
