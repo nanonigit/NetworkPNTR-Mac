@@ -183,3 +183,11 @@ A disposable Cloud Preview candidate replaced only the disk-check invocation wit
 Root filesystem comparison across 5,362 entries identified only the new checker binary and the one-line init change. Kernel, initramfs, CPU count and backend stayed the same. The fixed matrix passed in this order: Python control (18 seconds), static checker (12 seconds), static checker (12 seconds), Python control (16 seconds). These are whole-preflight elapsed times. Both controls passed on this run, so it adds no evidence that the checker resolves the prior kernel fault.
 
 The candidate also passed its six-boot lifecycle check, including a normal restart, three forced-stop recoveries and rejection of a nonblank disk before formatting. A full post-stop read confirmed the marker and zeros across the rest of the 2 GiB disk. The candidate remains private and release boot stability is open. [Experiment evidence](../../evidence/native-runtime/static-blank-checker-experiment.json)
+
+### Rebuilt checker and fresh boot counter-evidence
+
+The checked-in recipe rebuilt the ARM64 checker without a compilation cache. Its binary matched the original digest and the ten scan contract cases passed. The export check binds the new disk bytes and retained backend to the builder image. The existing Cloud Preview packaging gate rejected the diagnostic manifest.
+
+The fixed boot sequence had one control and one rebuilt candidate. The control panicked in `anon_vma_clone` during the zero check. The candidate reached the format step, where the running guest reported a memory-accounting warning and inode checksum errors on its system disk. The formatter could not load its libraries. Both preflights stopped before backend readiness and left their private 2 GiB state disks entirely zero.
+
+Read-only `e2fsck -fn` passed for both system images inside the offline builder environment. The candidate disk exported to the VM matches the offline-checked bytes. This establishes a difference between the offline filesystem check and the live guest observation. The cause remains open. The freshly built checker remains a diagnostic candidate. [Rebuild evidence](../../evidence/native-runtime/static-blank-checker-rebuild.json)

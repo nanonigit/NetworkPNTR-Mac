@@ -13,3 +13,15 @@ First inspect authoritative processes/hash inputs. Perform at most one fresh unc
 Requirements→design→tests RED/GREEN→review→full regression→signed probe/build→controlled hardware evidence and bilingual verification. No Lazyweb because no product UI change. New guest error marker flows through the existing generic fail-safe VMController path; this phase adds no localized UI behavior. Reliable repeated boot/recovery, actual native click/browser equality, all21features, native cloud egress and distribution remain open.
 
 Complete-log evidence correction: controller.guestLog is only a64KiB display tail. After this VM has stopped, inspect one complete bounded8MiB owned log snapshot for diagnostics, isolation witnesses and provisioning-token absence together. Invalid/missing/ambiguous/oversized/changing input makes audit unavailable and PASS impossible. Report accepts a normalized complete audit, never the display-tail string. Test an early memory/signal fault followed by100KiB clean output, with all other readiness/API/stop evidence valid. No-Fault means no recognized fault in this complete snapshot, not proof of kernel reliability.
+
+### Rebuild the static checker candidate
+
+The static checker experiment is a developer-only Linux ARM64 build. It requires the reviewed Cloud Preview guest artifacts and the cached pinned runtime and compiler images on the local Docker Desktop builder. The checker and its ten syscall fixtures compile inside the container. The build command verifies the control artifacts, extracts the rebuilt disk, confirms the original checker binary digest, and publishes a fresh private diagnostic manifest. The release packager still requires the exact reviewed Cloud Preview manifest.
+
+```sh
+python3 script/build_static_blank_checker.py \
+  --control 'dist/NetworkPNTR Mac Cloud Preview.app/Contents/Resources/Guest' \
+  --output .build-cache/new-static-checker-guest
+```
+
+The compiled checker is reproducible against the experiment digest. The image and ext4 filesystem can differ because the builder records timestamps and the formatter assigns fresh filesystem metadata. With the signed VMProbe binary, run `--backend-preflight` against the candidate and an unused private output directory. It uses an isolated VM and a new disk. See [current boot observations](bugs/guest-boot-investigation.md).

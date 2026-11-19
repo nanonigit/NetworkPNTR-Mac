@@ -1,0 +1,74 @@
+{
+  "date": "2026-11-19",
+  "controlManifestSHA256": "dc0eb715b6bf14205fb7a1dc12d46fdacfe6876655b3701aef755cebf97a14ff",
+  "checkerBinarySHA256": "825c68880529552719bb1dffabc12d8fc587971c98c434018a5b8d9ffb3d01c3",
+  "buildInputsSHA256": {
+    "Dockerfile": "8090d29b47cb23f99aea8b09a195a4b129ba54d5bde4d02d0da7b1bd7f82a474",
+    "check.c": "052af04b759e210cc74a0444a1cd6cb03dd5ae222ac20574309db8e306972ff1",
+    "test.c": "97f326ec44bac8c79a593f6c45c40657f5b3976a534db6591e343f790af20568"
+  },
+  "firstCandidateManifestSHA256": "c188947e71bf990305801e3237ba567552cf73618861db507b50bc78391549cd",
+  "secondCandidateManifestSHA256": "a0ad8aacd97716bf6fcf1af619d16637dcd6921ced27d176fd0032028ac217e3",
+  "firstCandidateSystemDiskSHA256": "34411a4a02eb0b34ee6745dafd2186043a7a2d6fca269e526b94b4bcc348cc50",
+  "secondCandidateSystemDiskSHA256": "4c6ed610f07a4ac70638477dcd2f1e29720b5699b958db5fd480022902614699",
+  "candidateCopiedDiskMatchedBuilder": true,
+  "buildsWithCompilerCacheDisabled": 2,
+  "checkerFixtureTestsPassed": 10,
+  "pythonTestsPassed": 222,
+  "existingOutputAndDanglingSymlinkRejected": true,
+  "releasePackagerRejectedCandidate": true,
+  "freshBoots": [
+    {
+      "profile": "control",
+      "lastStage": "state_zero_check",
+      "status": 1,
+      "seconds": 12,
+      "report": {
+        "bootAttempts": 1,
+        "cooperativeStop": false,
+        "credentialLogCheckPassed": true,
+        "diagnostics": [
+          "kernelFault"
+        ],
+        "formatStageObserved": false,
+        "freshAuth": false,
+        "isolationVerified": false,
+        "logAuditComplete": true,
+        "machineStopped": true,
+        "passed": false,
+        "reachedReady": false,
+        "supplementalEvidenceComplete": true
+      },
+      "stateDiskFullReadAllZero": true,
+      "offlineFilesystemCheckExit": 0
+    },
+    {
+      "profile": "rebuilt",
+      "lastStage": "state_format",
+      "status": 1,
+      "seconds": 4,
+      "report": {
+        "bootAttempts": 1,
+        "cooperativeStop": false,
+        "credentialLogCheckPassed": true,
+        "diagnostics": [
+          "memoryAccountingFault",
+          "otherGuestFailure"
+        ],
+        "formatStageObserved": true,
+        "freshAuth": false,
+        "isolationVerified": false,
+        "logAuditComplete": true,
+        "machineStopped": true,
+        "passed": false,
+        "reachedReady": false,
+        "supplementalEvidenceComplete": true
+      },
+      "stateDiskFullReadAllZero": true,
+      "offlineFilesystemCheckExit": 0
+    }
+  ],
+  "controlFailureContext": "kernel panic in anon_vma_clone while python3 was active",
+  "rebuiltFailureContext": "guest memory accounting warning and system disk inode checksum errors before mkfs.ext4 could load shared libraries",
+  "limits": "No runtime reliability promotion. The second source build verifies repeatability of the checker and export guard. Only the first rebuilt candidate was booted."
+}
