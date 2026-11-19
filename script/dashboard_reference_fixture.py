@@ -42,7 +42,9 @@ else:
         time.sleep(.5)
     else:
         raise SystemExit('Reference restart readiness failed')
-    token = request('POST', '/api/auth/login', {'username': 'NetworkPNTR', 'password': os.environ['DASHBOARD_FIXTURE_PASSWORD']})['token']
+    # The frozen browser backend uses its original protocol username.
+    # Keep this independent of the native app's display name.
+    token = request('POST', '/api/auth/login', {'username': 'ARTEX', 'password': os.environ['DASHBOARD_FIXTURE_PASSWORD']})['token']
     def get(path):
         return request('GET', path, token=token)
     print(json.dumps({'tasks': get('/api/tasks')['tasks'], 'fast': {

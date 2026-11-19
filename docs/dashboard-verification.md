@@ -39,3 +39,11 @@ The final UI review hold reached its fixed 15-minute timeout after the interrupt
 ## Open gates
 
 The runtime still uses a one-vCPU diagnostic kernel profile, not a reproducible licensed release artifact. Traffic capture is disabled by both fixture runtimes, so populated traffic is covered by unit fixtures only. Controlled cloud egress/positive LLM calls, real streaming, exact populated browser/native visual pairs, live UI stale/error/empty cases, resize/light mode and full keyboard/accessibility tests remain open. The detail/task/chat and remaining product features remain unimplemented. The dashboard catalog row stays `in_progress`; no feature is marked accepted.
+
+## Build 3 comparison on November 19, 2026
+
+An isolated signed ordinary app and the exact pinned browser backend independently loaded the same synthetic dashboard fixture. Both matched the independent browser calculations across all 12 scenarios. The first browser readback failed with HTTP 401 because the display-name migration also changed the reference fixture's username. Restoring the frozen protocol username corrected the fixture. The native Cloud Preview diagnostic stopped at `format-state-disk` before authentication, so its result remains separate from the passing ordinary run.
+
+On the ordinary app, the visible controls displayed 215 legacy tokens and 1,171 ledger tokens across all models at 30 days. At seven days the daily chart was empty and the all-record ledger total stayed 1,171. Selecting the secondary model at 30 days showed 70 tokens. Switching to English preserved all selections. The English screen still wraps “Source” at the default width and displays “1 tasks” in the singular case.
+
+The browser's fresh interactive session reached the login page and showed the terms checkbox. It was closed without entering the dashboard. All 12 comparisons describe the backend and calculations. Paired interactive and visual acceptance remains open. The temporary native session and reference containers were cleaned up. The Python suite passed 222 cases. [Evidence](../evidence/dashboard/build3-parity-checkpoint.json)

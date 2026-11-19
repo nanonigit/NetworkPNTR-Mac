@@ -1,0 +1,51 @@
+{
+  "date": "2026-11-19",
+  "baselineCommit": "e75ae371ad777ffd1eecdd28d2781a6519b05591",
+  "nativeBundleBuild": 3,
+  "browserReference": {
+    "pinnedContainer": true,
+    "syntheticDatabase": true,
+    "firstAttemptStatus": 401,
+    "cause": "Fixture login used the renamed display name as the frozen protocol username",
+    "correctedComparisonPassed": true,
+    "interactiveLogin": "pending confirmation of terms in the fresh browser session",
+    "referenceContainersAndLoopbackRemoved": true
+  },
+  "comparison": {
+    "scenarios": 12,
+    "nativeMatchesPinnedBackendAndIndependentBrowserMath": true,
+    "normalizedMetricsSHA256": "b93c0f4fdd47f0272d170d9db8f1a0025c6a65c5a31f8acd6174ecea726298b8"
+  },
+  "nativeVisibleControls": {
+    "legacyAll30Days": 215,
+    "ledgerAll30Days": 1171,
+    "ledgerAll7Days": {
+      "summaryTokens": 1171,
+      "dailyChartEmpty": true
+    },
+    "secondaryModelLedger30Days": 70,
+    "languageChangePreservedSelections": true
+  },
+  "nativeVisualIssues": [
+    "Source label wraps after Sourc at the default width",
+    "English usage summary renders 1 tasks"
+  ],
+  "nativeAttempts": [
+    {
+      "variant": "cloud-preview",
+      "outcome": "failed before authentication",
+      "lastErrorStage": "format-state-disk"
+    },
+    {
+      "variant": "ordinary",
+      "outcome": "passed dashboard comparison diagnostic",
+      "cleanShutdown": true,
+      "temporaryKeychainItemRemoved": true
+    }
+  ],
+  "pythonTests": {
+    "passed": 222,
+    "failures": 0
+  },
+  "pairedInteractiveBrowserParity": false
+}
