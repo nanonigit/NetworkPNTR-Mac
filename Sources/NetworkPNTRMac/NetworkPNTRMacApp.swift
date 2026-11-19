@@ -63,7 +63,7 @@ import SwiftUI
 
     @NSApplicationDelegateAdaptor(AppDelegate.self) private var delegate
     @State private var environment = RuntimeFactory.make()
-    @State private var language = AppLanguagePreferences()
+    @State private var language = RuntimeFactory.makeLanguagePreferences()
     @State private var guestLanguageSync = GuestOutputLanguageSync()
     @State private var trafficRetirements = TrafficBodyExportRetirement()
     var body: some Scene {

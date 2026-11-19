@@ -2,7 +2,7 @@
 
 [English](README.md) | [日本語](README.ja.md)
 
-**ログイン不要化（検証中）：** Macアプリの自動接続処理と隔離ゲストへの変更を、明示的な開発用検証モードに実装しています。実PostgreSQLと署名済みアプリで、両ゲスト版の初回接続・移行・再起動のサービス試験が通過しました。日英の実画面確認と通常アプリへの適用は未完了で、クラウド実通信は実行プロセスによる接続の違いが再現し、調査中です。[検証記録](docs/local-session-native-verification.ja.md)を参照してください。合格するまでは通常起動のアカウント画面を維持します。[設計と受け入れ条件](docs/local-session-design.ja.md)を参照してください。
+**ログイン不要で起動：** 通常版・Cloud Previewとも、アプリのIDやパスワードを入力せずダッシュボードを開けます。Macアプリは専用Linux VMに自動で認証し、既存のローカルデータを保持します。両版で実機の起動と再起動を確認しました。Cloud Previewの診断では、OpenAI・Anthropic・Gemini・Groqに到達し、無効なテストキーが拒否されることを確認しました。[検証記録](docs/local-session-native-verification.ja.md)
 
 PNTRはペネトレーション（侵入テスト）を表します。個人や企業が、自分たちの環境にある脆弱性や不具合を見つけ、自ら防御できるようにすることを目指します。
 
@@ -24,7 +24,7 @@ Findingsの固定データは実PostgreSQLで巻き戻し/読戻し/再投入拒
 
 LLM画面では実際のクリックで作成・編集・入力検証・Return保存・有効設定の削除禁止まで確認しました。途中で操作ツールの接続が切れたため、全操作と画面比較の最終判定は保留です。アプリ内部で取得したコンテンツ画像にはレイヤー合成の制限があるため、UI/UXの合格証拠として扱っていません。
 
-別のバックエンド検証用ゲストでは、NetworkPNTR・PostgreSQL 16・認証付きvsock通信・専用保存ディスクが動作しました。通常再起動と強制停止後も認証情報とLLM設定を保持し、使い捨ての固定ブラウザ版と5つのAPI条件が一致しました。[検証記録](docs/phase2-verification.ja.md)を参照してください。現在は実際のバックエンドをアプリに同梱し、ネイティブの初期設定・ログイン・ログアウトとKeychain保存を接続しました。2 vCPUでは間欠的なカーネル異常が残っています。1 vCPUの直接ルート診断では認証の反復に成功し、別途見つかったDB復旧待ちの不具合を修正後、強制復旧3回にも成功しました。配布品質の安定性は未合格です。[調査記録](docs/bugs/guest-boot-investigation.ja.md)に経緯を残しています。
+別のバックエンド検証用ゲストでは、NetworkPNTR・PostgreSQL 16・認証付きvsock通信・専用保存ディスクが動作しました。通常再起動と強制停止後も認証情報とLLM設定を保持し、使い捨ての固定ブラウザ版と5つのAPI条件が一致しました。[検証記録](docs/phase2-verification.ja.md)を参照してください。実際のバックエンドをアプリに同梱しています。当時の検証では初期設定・ログイン・ログアウトとKeychain保存を使用しました。2 vCPUでは間欠的なカーネル異常が残っています。1 vCPUの直接ルート診断では認証の反復に成功し、別途見つかったDB復旧待ちの不具合を修正後、強制復旧3回にも成功しました。配布品質の安定性は未合格です。[調査記録](docs/bugs/guest-boot-investigation.ja.md)に経緯を残しています。
 
 ## 開く・ビルドする
 
@@ -37,6 +37,7 @@ LLM画面では実際のクリックで作成・編集・入力検証・Return�
 ```sh
 # 最初にバックエンドを準備（開発時だけDockerを使用）:
 python3 script/prepare_backend.py --source /path/to/pinned/browser-source
+python3 script/build_local_session.py --source /path/to/pinned/browser-source --profile default --artifacts guest/backend-artifacts --output guest/native-session-artifacts
 ./script/build_and_run.sh --verify
 swift test
 ./script/test_vm.sh
@@ -53,7 +54,7 @@ python3 script/check_baseline.py /path/to/pinned/browser-source
 
 VM内NetworkPNTR/DB、永続化・認証付き通信、ネイティブ認証を実装しました。次は起動の安定性と画面検証を完了し、LLM設定、チャット、タスク等を移植します。同一入力・結果・エラー・進捗・キャンセル・保存状態をブラウザ版と比較してから各機能を合格にします。既存のAPIキー・パスワード・DBは流用していません。
 
-実際のKeychain復元は隔離したサービス診断で成功しています。反復安定性、実クリックと画面比較、通信先制限、データ移行、全画面、配布署名/公証、更新/復元の検証は未完了です。完成版としての配布物ではありません。Lazyweb補助資料: https://www.lazyweb.com/agentic-search/d85df937-aa86-420d-ad7f-e702652210e7 （保存確定APIはレート制限）。
+ログイン不要化の検証ではSwift 1,227件（1,226件成功、1件スキップ）とPython 222件を実行し、失敗はありませんでした。起動の反復安定性、全機能の画面・操作比較、実キーでのクラウド推論、配布署名・公証は未完了です。完成版としての配布物ではありません。Lazyweb補助資料: https://www.lazyweb.com/agentic-search/d85df937-aa86-420d-ad7f-e702652210e7 （保存確定APIはレート制限）。
 
 チャットの有限API・状態管理、基本CRUD 10グループ、データ入り履歴10グループを検証しました。署名付きアプリのVM再起動後も211件の履歴と詳細が復元できました。チャット基本画面を実装し一部比較済みですが、AI応答・実行中停止と全面的な合格は未完了です。[検証記録](docs/chat-verification.ja.md)を参照してください。
 

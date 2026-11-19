@@ -40,6 +40,7 @@ public struct ManagedRuntimePaths: Sendable {
     public private(set) var isReconnecting = false
     @ObservationIgnored private let artifacts: URL
     @ObservationIgnored private let cloudEgress: Bool
+    @ObservationIgnored private let configurationFailure: RuntimeError?
     @ObservationIgnored private let vault: any SessionVault
     @ObservationIgnored private var generation = UUID()
     public var mcpRuntimeEpoch: UUID? {
@@ -50,7 +51,8 @@ public struct ManagedRuntimePaths: Sendable {
         _ = try mcp.authorize(name: name, agents: agents, taskIDs: taskIDs, language: language,
                               session: authentication, runtimeEpoch: { [weak self] in self?.mcpRuntimeEpoch })
     }
-    public init(artifacts: URL, paths: ManagedRuntimePaths = .applicationDefault, vault: any SessionVault, cloudEgress: Bool = false, automaticLocalSession: Bool = false) {
+    public init(artifacts: URL, paths: ManagedRuntimePaths = .applicationDefault, vault: any SessionVault, cloudEgress: Bool = false, automaticLocalSession: Bool = false, configurationFailure: RuntimeError? = nil) {
+        self.configurationFailure = configurationFailure
         self.artifacts = artifacts; self.paths = paths; self.vault = vault; self.cloudEgress = cloudEgress; self.automaticLocalSession = automaticLocalSession
     }
     public func start() async {
@@ -59,6 +61,7 @@ public struct ManagedRuntimePaths: Sendable {
         let operation = UUID(); generation = operation
         defer { if generation == operation { isStarting = false } }
         do {
+            if let configurationFailure { throw configurationFailure }
             await mcp.revokeAll()
             guard generation == operation, !Task.isCancelled else { return }
             try paths.prepareDirectories()

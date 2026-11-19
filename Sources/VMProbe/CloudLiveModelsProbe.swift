@@ -65,19 +65,21 @@ import Foundation
                    parts[4] == "반환했습니다:", let status = Int(parts[2]), (400...599).contains(status) {
                     upstreamStatus = status
                     authenticationRejected = status == 401 ||
-                        (provider == .gemini && [400, 403].contains(status) && Self.rejectsGeminiKey(parts[5]))
+                        (provider == .gemini && [400, 403].contains(status) && CloudLiveModelsProbe.rejectsGeminiKey(parts[5]))
                 }
             }
             return response
         }
 
-        private static func rejectsGeminiKey(_ detail: Substring) -> Bool {
-            if detail.contains("API_KEY_INVALID") || detail.contains("API key not valid") { return true }
-            guard let body = try? JSONSerialization.jsonObject(with: Data(detail.utf8)) as? [String: Any],
-                  let error = body["error"] as? [String: Any], error["status"] as? String == "INVALID_ARGUMENT",
-                  let message = error["message"] as? String else { return false }
-            return message.lowercased().hasPrefix("api key ")
-        }
+    }
+
+    nonisolated static func rejectsGeminiKey(_ detail: Substring) -> Bool {
+        if detail.contains("API_KEY_INVALID") || detail.contains("API key not valid") { return true }
+        guard let body = try? JSONSerialization.jsonObject(with: Data(detail.utf8)) as? [String: Any],
+              let error = body["error"] as? [String: Any], error["status"] as? String == "INVALID_ARGUMENT",
+              let message = error["message"] as? String else { return false }
+        let normalized = message.trimmingCharacters(in: .whitespacesAndNewlines).lowercased()
+        return normalized.hasPrefix("api key ") || normalized == "please pass a valid api key"
     }
 
     nonisolated static func classifyBackendFailure(_ message: String) -> String {

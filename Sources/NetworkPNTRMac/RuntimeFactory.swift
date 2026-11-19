@@ -9,9 +9,44 @@ import Foundation
         #endif
         return nil
     }
+    static func usesAutomaticSession(diagnostics: URL?, arguments: [String]) -> Bool {
+        diagnostics == nil || arguments.contains("--local-session-diagnostics")
+    }
+    static func usesCloudRuntime(bundleVariant: Any?, diagnostics: URL?, arguments: [String]) throws -> Bool {
+        let variant: String
+        if let bundleVariant {
+            guard let value = bundleVariant as? String else { throw RuntimeError.integrity("runtime variant type") }
+            variant = value
+        } else { variant = "default" }
+        guard ["default", "cloud-preview"].contains(variant) else { throw RuntimeError.integrity("runtime variant") }
+        return diagnostics == nil && (variant == "cloud-preview" || arguments.contains("--cloud-egress"))
+    }
+    static let cloudBundleIdentifier = "com.nanonigit.networkpntr-mac.cloud-preview"
+    static func migrateCloudLanguagePreference(bundleIdentifier: String?, defaults: UserDefaults, legacy: UserDefaults?) {
+        guard bundleIdentifier == cloudBundleIdentifier, defaults.object(forKey: AppLanguagePreferences.key) == nil,
+              let value = legacy?.object(forKey: AppLanguagePreferences.key) as? String,
+              AppLanguage(rawValue: value) != nil else { return }
+        defaults.set(value, forKey: AppLanguagePreferences.key)
+    }
+    static func makeLanguagePreferences() -> AppLanguagePreferences {
+        if Bundle.main.bundleIdentifier == cloudBundleIdentifier {
+            migrateCloudLanguagePreference(bundleIdentifier: Bundle.main.bundleIdentifier, defaults: .standard,
+                legacy: UserDefaults(suiteName: "com.nanonigit.artex-mac"))
+        }
+        return AppLanguagePreferences()
+    }
     static func make() -> DesktopRuntime {
         let diagnostics = diagnosticsDirectory
-        let cloudEgress = diagnostics == nil && CommandLine.arguments.contains("--cloud-egress")
+        let cloudEgress: Bool
+        let configurationFailure: RuntimeError?
+        do {
+            cloudEgress = try usesCloudRuntime(bundleVariant: Bundle.main.object(forInfoDictionaryKey: "NetworkPNTRRuntimeVariant"),
+                diagnostics: diagnostics, arguments: CommandLine.arguments)
+            configurationFailure = nil
+        } catch {
+            cloudEgress = false
+            configurationFailure = .integrity("runtime variant")
+        }
         let paths: ManagedRuntimePaths
         let account: String
         if let diagnostics {
@@ -24,13 +59,9 @@ import Foundation
             paths = .applicationDefault
             account = "dedicated-guest-session"
         }
-        #if DEBUG
-        let automaticLocalSession = diagnostics != nil && CommandLine.arguments.contains("--local-session-diagnostics")
-        #else
-        let automaticLocalSession = false
-        #endif
+        let automaticLocalSession = usesAutomaticSession(diagnostics: diagnostics, arguments: CommandLine.arguments)
         let vault: any SessionVault = automaticLocalSession ? EphemeralSessionVault() : KeychainSessionVault(account: account)
         return DesktopRuntime(artifacts: Bundle.main.resourceURL!.appendingPathComponent("Guest"),
-                              paths: paths, vault: vault, cloudEgress: cloudEgress, automaticLocalSession: automaticLocalSession)
+                              paths: paths, vault: vault, cloudEgress: cloudEgress, automaticLocalSession: automaticLocalSession, configurationFailure: configurationFailure)
     }
 }

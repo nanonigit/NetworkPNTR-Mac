@@ -1,0 +1,64 @@
+{
+  "date": "2026-11-19",
+  "bundleBuild": 3,
+  "bundles": {
+    "default": {
+      "manifestSHA256": "ff958504082071c3f7affc56c4f246049b28bbb8d27ae6593e9da2ebea256868",
+      "strictLocalSignatureVerified": true,
+      "directLaunchAndRestart": "dashboard without account or password"
+    },
+    "cloud-preview": {
+      "manifestSHA256": "dc0eb715b6bf14205fb7a1dc12d46fdacfe6876655b3701aef755cebf97a14ff",
+      "strictLocalSignatureVerified": true,
+      "directLaunchAndRestart": "dashboard without account or password"
+    }
+  },
+  "state": {
+    "ordinary": "reused existing private disk",
+    "cloudPreview": "used dedicated private disk",
+    "privatePredeploymentBackupVerified": true
+  },
+  "nativeLanguageUI": {
+    "scope": "signed disposable app",
+    "switches": [
+      "ja",
+      "en",
+      "ja"
+    ],
+    "pickerChoices": [
+      "en",
+      "ja"
+    ],
+    "openIssue": "English dashboard Source label wraps at the tested width"
+  },
+  "cloudDiagnostic": {
+    "scope": "single signed VM model-list diagnostic with an intentionally invalid key after user firewall change",
+    "results": {
+      "openai": 401,
+      "anthropic": 401,
+      "gemini": 400,
+      "groq": 401
+    },
+    "allKeysRejected": true,
+    "validKeyListingAndInferenceVerified": false
+  },
+  "checks": {
+    "swift": {
+      "executed": 1227,
+      "skipped": 1,
+      "failures": 0
+    },
+    "python": {
+      "executed": 222,
+      "failures": 0
+    },
+    "browserInventory": {
+      "features": 21,
+      "routes": 27,
+      "handlers": 243,
+      "matched": true
+    },
+    "fullNativeWorkflowParity": false,
+    "remoteCIVerified": false
+  }
+}

@@ -11,3 +11,6 @@ evidence/local/
 guest/backend-artifacts/
 
 guest/source-kernel-artifacts/
+
+guest/native-session-artifacts/
+guest/native-session-cloud-artifacts/
