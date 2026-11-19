@@ -1,0 +1,118 @@
+{
+  "date": "2026-11-19",
+  "sourceCommit": "a17189177ffa5fdee6d4b241e203656b9de1a7cf",
+  "scope": "Offline Linux ARM64 differential experiment on one M2 Mac. Same kernel, initramfs, CPU, backend and guest package inventory. Each matrix attempt used a fresh private 2 GiB disk and disabled networking.",
+  "identities": {
+    "rootfsEntries": 5362,
+    "changedRootfsEntries": [
+      "./opt/artex-mac/check-blank-disk",
+      "./sbin/artex-init"
+    ],
+    "checkerSHA256": "825c68880529552719bb1dffabc12d8fc587971c98c434018a5b8d9ffb3d01c3",
+    "sourceSHA256": "052af04b759e210cc74a0444a1cd6cb03dd5ae222ac20574309db8e306972ff1",
+    "recipeSHA256": "0fdca727f18d7917aa7e2162b698b450310f4a92b82bc6818fb53e76f83db559",
+    "guestManifestSHA256": "cd79a29b6c20417680cd63062e599cffcc81f539239bab8743898f1f5e04e87e",
+    "candidateSystemDiskSHA256": "6e59223d90a39d09e13afec7180c99e8d558f478ddcd36acbec3a11f3ea4a6e7",
+    "controlManifestSHA256": "dc0eb715b6bf14205fb7a1dc12d46fdacfe6876655b3701aef755cebf97a14ff",
+    "image": "sha256:6db378fb5bdfbc58ac9288ef64c15845c5f820ef7e8fcb7a049135ca22b902c0"
+  },
+  "fixtureTests": {
+    "nativeScannerPassed": 10,
+    "existingBlankGuardPassed": 6,
+    "initialUnitHarnessBuild": "failed because POSIX feature macros were included after a system header. Corrected the harness include order without changing checker code.",
+    "initialRootfsInventory": "unprivileged in-container tar could not traverse a restricted directory. Corrected inventory with archives streamed from stopped containers."
+  },
+  "matrix": [
+    {
+      "profile": "control",
+      "exitCode": 0,
+      "wallSeconds": 18,
+      "preflight": {
+        "bootAttempts": 1,
+        "cooperativeStop": true,
+        "credentialLogCheckPassed": true,
+        "diagnostics": [],
+        "formatStageObserved": true,
+        "freshAuth": true,
+        "isolationVerified": true,
+        "logAuditComplete": true,
+        "machineStopped": true,
+        "passed": true,
+        "protectedStatus": 401,
+        "reachedReady": true,
+        "supplementalEvidenceComplete": true
+      }
+    },
+    {
+      "profile": "native",
+      "exitCode": 0,
+      "wallSeconds": 12,
+      "preflight": {
+        "bootAttempts": 1,
+        "cooperativeStop": true,
+        "credentialLogCheckPassed": true,
+        "diagnostics": [],
+        "formatStageObserved": true,
+        "freshAuth": true,
+        "isolationVerified": true,
+        "logAuditComplete": true,
+        "machineStopped": true,
+        "passed": true,
+        "protectedStatus": 401,
+        "reachedReady": true,
+        "supplementalEvidenceComplete": true
+      }
+    },
+    {
+      "profile": "native",
+      "exitCode": 0,
+      "wallSeconds": 12,
+      "preflight": {
+        "bootAttempts": 1,
+        "cooperativeStop": true,
+        "credentialLogCheckPassed": true,
+        "diagnostics": [],
+        "formatStageObserved": true,
+        "freshAuth": true,
+        "isolationVerified": true,
+        "logAuditComplete": true,
+        "machineStopped": true,
+        "passed": true,
+        "protectedStatus": 401,
+        "reachedReady": true,
+        "supplementalEvidenceComplete": true
+      }
+    },
+    {
+      "profile": "control",
+      "exitCode": 0,
+      "wallSeconds": 16,
+      "preflight": {
+        "bootAttempts": 1,
+        "cooperativeStop": true,
+        "credentialLogCheckPassed": true,
+        "diagnostics": [],
+        "formatStageObserved": true,
+        "freshAuth": true,
+        "isolationVerified": true,
+        "logAuditComplete": true,
+        "machineStopped": true,
+        "passed": true,
+        "protectedStatus": 401,
+        "reachedReady": true,
+        "supplementalEvidenceComplete": true
+      }
+    }
+  ],
+  "candidateLifecycle": {
+    "exitCode": 0,
+    "bootAttempts": 6,
+    "cooperativeRestartPassed": true,
+    "forcedStopRecoveriesPassed": 3,
+    "syntheticProfilePersisted": true,
+    "nonblankRejectedBeforeFormat": true,
+    "nonblankDiskFullReadUnchanged": true,
+    "nonblankDiskBytes": 2147483648
+  },
+  "limits": "The unchanged control also passed both attempts. The wall times measure the whole preflight, not the checker alone. Prior kernel failure remains open. The candidate is local and was not deployed."
+}
