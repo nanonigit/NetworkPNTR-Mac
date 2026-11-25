@@ -369,11 +369,12 @@
         "evidence/logs/live-sse-view.json",
         "evidence/logs/live-sse-vm-stop.json",
         "evidence/logs/heartbeat-catch-up.json",
-        "evidence/logs/native-keyboard-clear-focus.json"
+        "evidence/logs/native-keyboard-clear-focus.json",
+        "evidence/logs/native-english-keyboard.json"
       ],
       "remainingGates": [
         "Compare live burst delivery and reconnect against the fixed browser",
-        "Compare live browser keyboard behavior, verify English labels and complete VoiceOver and rendered error comparison"
+        "Compare live browser keyboard behavior, VoiceOver and rendered errors"
       ]
     },
     {

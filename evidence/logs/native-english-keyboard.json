@@ -1,0 +1,38 @@
+{
+  "date": "2026-11-25",
+  "macSourceCommit": "1c6bfe3ba4a2548859c768d9cc438ec1b2fa4859",
+  "browserSourceCommit": "e75ae371ad777ffd1eecdd28d2781a6519b05591",
+  "signedDebugExecutableSHA256": "80dc11d4065fd026b88807bebe5d7c0121ba1589b8bd39a07ec07aeb51e3280d",
+  "nativeDiagnosticSHA256": "def2745b6bd39207853fbec4ad64a81003dac4722d0c57adb47bde0533a2a4c0",
+  "verification": {
+    "languageChangedInFixtureFromJapaneseToEnglishAndBack": true,
+    "englishLabels": [
+      "Logs",
+      "Filter by message or tag",
+      "Level",
+      "All levels",
+      "Pause",
+      "Resume",
+      "Clear display",
+      "Load older logs",
+      "No matching logs"
+    ],
+    "initialDisplayedRows": 108,
+    "matchingFixtureVisibleAfterKeyboardInput": true,
+    "tabMovedToLevel": true,
+    "pauseAndResumeActivatedWithSpace": true,
+    "clearActivatedWithSpaceAndDisplayedZeroRows": true,
+    "keyboardReplacedSearchAfterClearWithoutClick": true,
+    "nextTabFocusedLevel": true,
+    "filterRetainedWhenSwitchingBackToJapanese": true,
+    "streamDetachedOnNavigation": true,
+    "fixtureVMStopped": true,
+    "temporaryKeychainItemRemoved": true,
+    "dockerDesktopSocketAbsent": true
+  },
+  "remaining": [
+    "keyboard behavior compared against the live fixed browser",
+    "VoiceOver and rendered error comparison",
+    "live burst and reconnect compared with the fixed browser"
+  ]
+}
