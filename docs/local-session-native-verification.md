@@ -25,3 +25,9 @@ Both locally signed build 3 bundles reached the dashboard on direct launch and a
 After the user changed Little Snitch to Allow, the signed VM diagnostic confirmed OpenAI, Anthropic and Groq returned HTTP 401 and Gemini returned HTTP 400 with an invalid-key error. The previous failures remain recorded above. Authenticated model listing, inference and repeat network reliability remain open.
 
 The local suites recorded 1,227 Swift cases with one skip and 222 Python cases, with no failures. Browser inventory matched the pinned baseline (21 navigation features, 27 routes and 243 handlers). Full workflow and UI parity remain open. See the [deployment receipt](../evidence/local-session/deployment-verification.json).
+
+## November 25 local Release candidate
+
+`./script/build_and_run.sh --release-build-only` built the ordinary and Cloud Preview candidates with the Docker Desktop socket absent. Both candidates passed app and bundled-helper signature checks, and their guest bytes matched the reviewed packaging inputs. A mismatched guest variant was rejected without changing the development executable. The builds use local ad-hoc signing.
+
+On Apple M2 with macOS 27.2.1, the ordinary Release app used a new private test application-support directory. Its automatic first boot reported a kernel Oops at the blank-state disk check. After stopping that failed VM, starting from the runtime screen on the same private disk reached the dashboard without prompting for credentials. Quitting stopped the guest cooperatively. Opening the app again reached the dashboard on the existing formatted disk and stopped cooperatively on Quit. Both successful boots recorded zero NICs and host shares. The fault is still open. Cloud Preview packaging was verified, and its Release runtime, clean-Mac installation and distribution signing remain open. [Verification record](../evidence/native-runtime/local-release-packaging.json)

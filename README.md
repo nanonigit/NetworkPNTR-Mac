@@ -45,6 +45,8 @@ The app is staged at `dist/NetworkPNTR Mac.app`. Developer backend construction 
 
 The runtime screen starts and stops the dedicated backend VM. The app authenticates automatically and the ordinary sidebar omits the account screen. The LLM screen connects actual profile, rotation and retry services; see [LLM comparison evidence](docs/llm-settings-verification.md). The dashboard reads actual tasks, activity, findings, usage, assets and system status; its 12 nonempty token scenarios match a disposable pinned reference and independent browser calculations. See [dashboard evidence](docs/dashboard-verification.md). The parity screen tracks incomplete acceptance, and the remaining feature entries show explicit migration placeholders. No browser-version API key, password or data is imported. Repeated boot reliability, full native workflow comparison, authenticated cloud inference and distribution signing and notarization remain open.
 
+With reviewed guest artifacts already available, run `./script/build_and_run.sh --release-build-only` to build a local Release candidate without starting Docker. The command prints the path in `dist/release/candidate.*` after verifying the app and helper signatures. Open that candidate to test it locally. The candidate uses ad-hoc signing.
+
 ## Plan and comparison
 
 Read docs/requirements.md, docs/design.md, docs/tasks.md. Browser baseline: the frozen browser source commit e75ae371ad777ffd1eecdd28d2781a6519b05591. `docs/feature-map.json` tracks 21 primary features, 27 page source files and 243 handlers in the main router. The inventory is a coverage baseline, not proof all controls have been migrated. The matching catalog is bundled into the app and checked by tests.

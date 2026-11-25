@@ -1,0 +1,80 @@
+{
+  "date": "2026-11-25",
+  "macSourceParent": "8da05eadd0966ebb348043bf1742e9bd64c01721",
+  "browserBaseline": "e75ae371ad777ffd1eecdd28d2781a6519b05591",
+  "host": {
+    "chip": "Apple M2",
+    "macOS": "27.2.1",
+    "dockerDesktopSocketAbsent": true
+  },
+  "build": {
+    "configuration": "SwiftPM Release",
+    "signing": "local ad-hoc",
+    "wrongGuestVariantRejected": true,
+    "developmentExecutableUnchangedInRejectionTest": true,
+    "ordinaryDebugFlagsAbsent": [
+      "--native-diagnostics",
+      "--asset-catalog-review"
+    ]
+  },
+  "artifacts": {
+    "ordinary": {
+      "guestManifestSHA256": "ff958504082071c3f7affc56c4f246049b28bbb8d27ae6593e9da2ebea256868",
+      "signedAppExecutableSHA256": "3796427badca65bdda006a4877097a60fdcb9488404e4fa7acd1ff8ea03e8705",
+      "signedHelperSHA256": "3a4b6a5623cbbc07465599ac073caa4798fb11ba498295a5e71211069f7e27b2",
+      "guestArtifactsMatchedReviewInputs": true,
+      "appAndHelperStrictSignaturePassed": true,
+      "virtualizationEntitlementVerified": true,
+      "debugResourceDirectoryAbsent": true
+    },
+    "cloudPreview": {
+      "guestManifestSHA256": "dc0eb715b6bf14205fb7a1dc12d46fdacfe6876655b3701aef755cebf97a14ff",
+      "signedAppExecutableSHA256": "61f1f6a13ae427694fa9b3ebbc6a4db56a9974f5a34a950c3b592d2729ea23ab",
+      "signedHelperSHA256": "3a4b6a5623cbbc07465599ac073caa4798fb11ba498295a5e71211069f7e27b2",
+      "guestArtifactsMatchedReviewInputs": true,
+      "appAndHelperStrictSignaturePassed": true,
+      "virtualizationEntitlementVerified": true,
+      "debugResourceDirectoryAbsent": true
+    }
+  },
+  "ordinaryRuntime": {
+    "privateState": "Disposable CFFIXED_USER_HOME, same disk across all attempts",
+    "loginRequiredOnceReady": false,
+    "successfulBootsPassedGuestIsolationMarkers": true,
+    "attempts": [
+      {
+        "kind": "automatic launch with new disk",
+        "lastStage": "state_zero_check",
+        "kernelOops": true,
+        "guestReady": false,
+        "forceStoppedFromRuntimeScreen": true
+      },
+      {
+        "kind": "manual VM start on same disk after failure",
+        "formattedDisk": true,
+        "guestReady": true,
+        "dashboardVisible": true,
+        "cooperativeStop": true
+      },
+      {
+        "kind": "ordinary process relaunch on same disk",
+        "formattedDisk": false,
+        "guestReady": true,
+        "dashboardVisible": true,
+        "cooperativeStop": true
+      }
+    ]
+  },
+  "verification": {
+    "pythonPassed": 222,
+    "localizationExportChecked": true,
+    "browserInventoryChecked": true
+  },
+  "remaining": [
+    "kernel fault reliability and root cause",
+    "Cloud Preview Release launch",
+    "fresh Mac install",
+    "Developer ID signing and notarization",
+    "full UI and feature parity"
+  ]
+}

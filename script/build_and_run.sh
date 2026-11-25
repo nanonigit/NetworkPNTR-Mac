@@ -1,7 +1,7 @@
 #!/bin/bash
 set -euo pipefail
 MODE="${1:-run}"
-case "$MODE" in run|--verify|--build-only|--debug|--logs|--telemetry) ;; *) echo 'Usage: build_and_run.sh [--verify|--build-only|--debug|--logs|--telemetry]' >&2; exit 2;; esac
+case "$MODE" in run|--verify|--build-only|--release-build-only|--debug|--logs|--telemetry) ;; *) echo 'Usage: build_and_run.sh [--verify|--build-only|--release-build-only|--debug|--logs|--telemetry]' >&2; exit 2;; esac
 ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 cd "$ROOT_DIR"
 [[ "$(uname -m)" == arm64 ]] || { echo 'Phase 1 currently supports Apple Silicon only.' >&2; exit 1; }
@@ -12,6 +12,14 @@ case "$VARIANT" in
   *) echo 'NETWORKPNTR_MAC_VARIANT must be default or cloud-preview.' >&2; exit 2 ;;
 esac
 APP="$ROOT_DIR/dist/$APP_NAME.app"
+CONFIGURATION=debug
+if [[ "$MODE" == --release-build-only ]]; then
+  CONFIGURATION=release
+  mkdir -p "$ROOT_DIR/dist/release"
+  RELEASE_DIR="$(mktemp -d "$ROOT_DIR/dist/release/candidate.XXXXXXXX")"
+  trap 'rm -rf -- "$RELEASE_DIR"' EXIT
+  APP="$RELEASE_DIR/$APP_NAME.app"
+fi
 GUEST_BUILD_DIR="${NETWORKPNTR_MAC_GUEST_BUILD_DIR:-${ARTEX_MAC_GUEST_BUILD_DIR:-$DEFAULT_GUEST}}"
 if [[ ! -f "$GUEST_BUILD_DIR/manifest.json" ]]; then
   echo 'Build the pinned native-session guest first; see docs/local-session-design.md.' >&2
@@ -19,13 +27,13 @@ if [[ ! -f "$GUEST_BUILD_DIR/manifest.json" ]]; then
 fi
 python3 "$ROOT_DIR/script/local_session_packaging.py" "$GUEST_BUILD_DIR" "$APP" "$VARIANT"
 python3 "$ROOT_DIR/script/skill_overrides.py" --verify "$GUEST_BUILD_DIR/manifest.json"
-if pgrep -x NetworkPNTRMac >/dev/null || pgrep -x ArtexMac >/dev/null; then
+if [[ "$CONFIGURATION" == debug ]] && { pgrep -x NetworkPNTRMac >/dev/null || pgrep -x ArtexMac >/dev/null; }; then
   echo 'Quit NetworkPNTR Mac normally before replacing its bundle so its VM can flush and stop.' >&2
   exit 1
 fi
 python3 "$ROOT_DIR/script/export_localizations.py" --check
-swift build
-BIN_DIR="$(swift build --show-bin-path)"
+swift build --configuration "$CONFIGURATION"
+BIN_DIR="$(swift build --configuration "$CONFIGURATION" --show-bin-path)"
 bash "$ROOT_DIR/script/build_app_icon.sh"
 # Remove only this project's generated app bundle.
 rm -rf "$APP"
@@ -58,6 +66,7 @@ PLIST
 codesign --force --sign - --entitlements guest/entitlements.plist "$APP"
 codesign --verify --strict "$APP"
 case "$MODE" in
+  --release-build-only) trap - EXIT; printf 'Release candidate: %s\n' "$APP" ;;
   --build-only) exit 0 ;;
   --debug) lldb -- "$APP/Contents/MacOS/NetworkPNTRMac" "${RUN_ARGS[@]}" ;;
   run) /usr/bin/open -n "$APP" --args "${RUN_ARGS[@]}" ;;
