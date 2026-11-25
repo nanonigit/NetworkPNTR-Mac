@@ -30,10 +30,12 @@ import NetworkPNTRCore
     static func restartWithActiveStream(environment: DesktopRuntime, session: AuthenticationSession) async throws -> AuthenticationSession {
         let controller = environment.controller
         var receivedRows = false
+        var receivedHeartbeat = false
         let stream = Task {
             do {
-                try await session.streamLogs(since: 0) { rows in
-                    receivedRows = !rows.isEmpty
+                try await session.streamLogs(since: 0) { batch in
+                    if !batch.rows.isEmpty { receivedRows = true }
+                    if batch.hasHeartbeat { receivedHeartbeat = true }
                     return true
                 }
                 return false
@@ -42,12 +44,12 @@ import NetworkPNTRCore
             }
         }
         defer { stream.cancel() }
-        for _ in 0..<100 {
-            if receivedRows, controller.diagnosticLogStreamsInFlight == 1 { break }
+        for _ in 0..<300 {
+            if receivedRows, receivedHeartbeat, controller.diagnosticLogStreamsInFlight == 1 { break }
             try await Task.sleep(for: .milliseconds(100))
         }
-        guard receivedRows, controller.diagnosticLogStreamsInFlight == 1 else {
-            throw RuntimeError.integrity("log stream was not receiving before VM stop")
+        guard receivedRows, receivedHeartbeat, controller.diagnosticLogStreamsInFlight == 1 else {
+            throw RuntimeError.integrity("log stream rows and heartbeat before VM stop")
         }
         try await environment.stop()
         guard try await stream.value,

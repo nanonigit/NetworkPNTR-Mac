@@ -44,10 +44,12 @@ import Observation
             await refresh()
             if hasLoaded, recentFailure == nil, !Task.isCancelled {
                 do {
-                    try await stream(cursor) { [weak self] rows in
+                    try await stream(cursor) { [weak self] batch in
                         guard let self else { return false }
-                        try acceptLive(rows)
-                        return true
+                        try acceptLive(batch.rows)
+                        // A heartbeat can follow a dropped tail without another sequence to reveal the gap.
+                        if batch.hasHeartbeat { await refresh() }
+                        return hasLoaded && recentFailure == nil
                     }
                 } catch is CancellationError {
                     return

@@ -311,7 +311,7 @@ import Virtualization
             guard let self, guestReady, state == .running, backendReads[identifier] === socket else {
                 throw CancellationError()
             }
-            return try receive(batch)
+            return try await receive(batch)
         }
     }
 

@@ -367,7 +367,8 @@
         "evidence/logs/recent-burst-recovery.json",
         "evidence/logs/sse-vsock-replay.json",
         "evidence/logs/live-sse-view.json",
-        "evidence/logs/live-sse-vm-stop.json"
+        "evidence/logs/live-sse-vm-stop.json",
+        "evidence/logs/heartbeat-catch-up.json"
       ],
       "remainingGates": [
         "Compare live burst delivery and reconnect against the fixed browser",

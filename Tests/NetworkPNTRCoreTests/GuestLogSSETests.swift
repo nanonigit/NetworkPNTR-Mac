@@ -4,7 +4,7 @@ import XCTest
 @testable import NetworkPNTRCore
 
 final class GuestLogSSETests: XCTestCase {
-    func testSplitHeadersAndEventsDeliverBeforeEOFAndIgnoreHeartbeat() throws {
+    func testSplitHeadersAndEventsReportHeartbeatWithoutAddingARow() throws {
         var decoder = GuestLogSSEDecoder()
         let wire = """
         HTTP/1.0 200 OK\r
@@ -17,7 +17,13 @@ final class GuestLogSSETests: XCTestCase {
 
         """
         var entries: [GuestLogEntry] = []
-        for byte in wire.utf8 { entries += try decoder.consume(Data([byte])) }
+        var heartbeats = 0
+        for byte in wire.utf8 {
+            let batch = try decoder.consume(Data([byte]))
+            entries += batch.rows
+            if batch.hasHeartbeat { heartbeats += 1 }
+        }
+        XCTAssertEqual(heartbeats, 1)
         XCTAssertEqual(entries.map(\.seq), [41])
         XCTAssertEqual(entries.first?.text, "日本語")
     }
@@ -46,10 +52,17 @@ final class GuestLogSSETests: XCTestCase {
         var rows: [GuestLogEntry] = []
         let next = Data("data: {\"seq\":2,\"ts\":\"fixture\",\"level\":\"info\",\"tag\":\"fixture\",\"text\":\"next\"}\n\n".utf8)
         try await GuestLogSSEExchange.stream(socket: socket, request: Data("fixture".utf8), timeout: .seconds(2)) { batch in
-            rows += batch
-            if rows.count == 1 {
+            rows += batch.rows
+            if batch.hasHeartbeat {
+                XCTAssertEqual(rows.map(\.seq), [1])
                 let written = next.withUnsafeBytes { Darwin.write(peer, $0.baseAddress!, $0.count) }
                 XCTAssertEqual(written, next.count)
+                return true
+            }
+            if rows.count == 1 {
+                let heartbeat = Data(": ping\n\n".utf8)
+                let written = heartbeat.withUnsafeBytes { Darwin.write(peer, $0.baseAddress!, $0.count) }
+                XCTAssertEqual(written, heartbeat.count)
                 return true
             }
             return false

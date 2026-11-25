@@ -1,7 +1,12 @@
 import Darwin
 import Foundation
 
-package typealias GuestLogBatchReceiver = @MainActor @Sendable ([GuestLogEntry]) throws -> Bool
+package struct GuestLogStreamBatch: Sendable {
+    package let rows: [GuestLogEntry]
+    package let hasHeartbeat: Bool
+}
+
+package typealias GuestLogBatchReceiver = @MainActor @Sendable (GuestLogStreamBatch) async throws -> Bool
 
 struct GuestLogSSEDecoder {
     private static let headerEnd = Data([13, 10, 13, 10])
@@ -11,12 +16,12 @@ struct GuestLogSSEDecoder {
     private var opened = false
     private var event: Data?
 
-    mutating func consume(_ bytes: Data) throws -> [GuestLogEntry] {
+    mutating func consume(_ bytes: Data) throws -> GuestLogStreamBatch {
         buffer.append(bytes)
         if !opened {
             guard let end = buffer.range(of: Self.headerEnd) else {
                 guard buffer.count <= Self.headerLimit else { throw BackendAPIError.invalidResponse }
-                return []
+                return GuestLogStreamBatch(rows: [], hasHeartbeat: false)
             }
             guard buffer.distance(from: buffer.startIndex, to: end.upperBound) <= Self.headerLimit,
                   let header = String(data: buffer[..<end.lowerBound], encoding: .isoLatin1) else {
@@ -28,6 +33,7 @@ struct GuestLogSSEDecoder {
         }
 
         var rows: [GuestLogEntry] = []
+        var hasHeartbeat = false
         while let end = buffer.firstIndex(of: 10) {
             var line = buffer[..<end]
             buffer.removeSubrange(...end)
@@ -40,6 +46,8 @@ struct GuestLogSSEDecoder {
                     rows.append(row)
                     self.event = nil
                 }
+            } else if line.elementsEqual(": ping".utf8) {
+                hasHeartbeat = true
             } else if line.first != 58 {
                 guard line.starts(with: "data:".utf8), event == nil else { throw BackendAPIError.invalidResponse }
                 let payload = line.dropFirst(5)
@@ -47,7 +55,7 @@ struct GuestLogSSEDecoder {
             }
         }
         guard buffer.count <= Self.eventLimit else { throw BackendAPIError.invalidResponse }
-        return rows
+        return GuestLogStreamBatch(rows: rows, hasHeartbeat: hasHeartbeat)
     }
 
     private static func validate(header: String) throws {
@@ -142,7 +150,7 @@ enum GuestLogSSEExchange {
             deadline = ContinuousClock.now.advanced(by: timeout)
             let batch = try decoder.consume(Data(buffer.prefix(received)))
             _ = try socket.checkedDescriptor()
-            if !batch.isEmpty {
+            if !batch.rows.isEmpty || batch.hasHeartbeat {
                 guard try await receive(batch) else { return }
             }
         }

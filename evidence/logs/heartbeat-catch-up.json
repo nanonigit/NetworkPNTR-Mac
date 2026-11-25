@@ -1,0 +1,24 @@
+{
+  "date": "2026-11-25",
+  "macSourceParent": "a32a0e249adc318a95209631fcfffc3f7711e3e9",
+  "browserSourceCommit": "e75ae371ad777ffd1eecdd28d2781a6519b05591",
+  "guestManifestSHA256": "c188947e71bf990305801e3237ba567552cf73618861db507b50bc78391549cd",
+  "signedDebugExecutableSHA256": "12d18af990f99143a7b1a62b20d600fb447025e8d5277d23c6bf1a891cb9c8b0",
+  "nativeDiagnosticSHA256": "e51383334cadde1ad54e1f8e02c48d8e98351a455efc9de4c1eab35f3ef43ea4",
+  "verification": {
+    "fixtureObservedBackendHeartbeatOverAuthenticatedVsock": true,
+    "fixtureVMStoppedAndRestarted": true,
+    "temporaryKeychainItemRemoved": true,
+    "dockerDesktopSocketAbsent": true,
+    "socketTestKeptOpenAcrossHeartbeatAndSecondEvent": true,
+    "storeTestRecoveredTwoOmittedTailRowsWithoutAnotherLiveRow": true,
+    "focusedSwiftPassed": 14,
+    "swiftPassed": 1248,
+    "swiftSkipped": 1,
+    "pythonPassed": 222
+  },
+  "remaining": [
+    "combined end-to-end live burst and reconnect comparison with the fixed browser",
+    "keyboard, VoiceOver and rendered error comparison"
+  ]
+}

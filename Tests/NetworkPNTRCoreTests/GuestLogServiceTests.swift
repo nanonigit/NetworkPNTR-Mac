@@ -50,6 +50,23 @@ import XCTest
         XCTAssertEqual(store.rows.map(\.seq), [8])
     }
 
+    func testHeartbeatRecoversTailWithoutWaitingForAnotherLiveRow() async throws {
+        let transport = ChatTestTransport()
+        let store = GuestLogStore(service: GuestLogService(client: transport))
+        try transport.enqueue(["items": [row(1)], "cursor": 1])
+        try transport.enqueue(["items": [row(2), row(3)], "cursor": 3])
+        await store.follow { since, receive in
+            XCTAssertEqual(since, 1)
+            let keptOpen = try await receive(GuestLogStreamBatch(rows: [], hasHeartbeat: true))
+            XCTAssertTrue(keptOpen)
+            throw CancellationError()
+        }
+        XCTAssertEqual(store.rows.map(\.seq), [1, 2, 3])
+        XCTAssertEqual(transport.calls.map(\.path), [
+            "/api/logs?since=0&limit=1000", "/api/logs?since=1&limit=1000"
+        ])
+    }
+
     func testBurstRecoversFromTheLastCursorAfterADisconnect() async throws {
         let transport = ChatTestTransport()
         let store = GuestLogStore(service: GuestLogService(client: transport))
