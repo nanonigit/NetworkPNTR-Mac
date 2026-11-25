@@ -597,3 +597,5 @@ MCPカウンター修正：一覧の実集計値から許可IDだけを返し、
 Mac側を再検証するには、確認済みゲスト入りの署名済みDebugアプリのコピーの `Contents/Resources/Diagnostics/` に `script/log_history_seed_guest.py` を配置して署名し直します。`--native-diagnostics NEW_PRIVATE_DIRECTORY --native-review --no-llm-review --log-history-review` で起動し、`native-review-ready.json` を待ちます。ログ画面で `Log history fixture 001` を入力し、過去ログを2回読み込みます。終了時は `native-review-finish` を作成します。
 
 新着ログの集中時の回復。固定Goバックエンドは直近3,000件を保持し、通常の応答に一部の行が含まれない場合も最新の通し番号を返します。Macでは確定済みカーソルとの差で欠落を検出し、保持範囲全体を1回取り直します。拡大した応答が既存のJSON転送上限を超えた場合は取得済みの行を表示し、残った欠落を日英で通知します。表示クリアで通知も消えます。模擬応答を使い、切断後の1,200件、初回0件、拡大取得の失敗からの回復、保持上限と転送上限を確認しました。Docker Desktopは停止したままです。実VMでの集中発生・再起動の比較、SSE再接続、残りの画面試験は継続します。[検証記録](../evidence/logs/recent-burst-recovery.json)
+
+ログSSEの通信確認。署名済みDebug版から既存の隔離VMソケットを使い、固定の認証付きSSEへ接続して8件を読みました。続けて0以外のカーソルから接続を開き、別の8件を読みました。いずれも順序と本文は認証付きの直近ログAPIと一致しました。ソケット試験では切断を待たずに受信し、分割されたヘッダーとイベント、ハートビート、HTTP 401と転送上限を確認しました。Docker Desktopは停止したままで、検証VMは正常停止しました。Swiftは1,246件成功・1件スキップ、Pythonは222件成功です。ログ画面は引き続き定期取得を使います。連続配信、集中時の再接続、ブラウザ版との実画面比較は引き続き検証します。[検証記録](../evidence/logs/sse-vsock-replay.json)

@@ -281,6 +281,30 @@ import Virtualization
         guard guestReady, state == .running, backendReads[identifier] === socket else { throw CancellationError() }
         return response
     }
+    #if DEBUG
+    func sampleLogStream(request: Data, count: Int, provisioning: GuestProvisioning) async throws -> [GuestLogEntry] {
+        try Task.checkCancellation()
+        guard guestReady, state == .running else { throw CancellationError() }
+        let identifier = try await connectBackend()
+        defer {
+            backendReads.removeValue(forKey: identifier)?.finish()
+            backendConnections.removeValue(forKey: identifier)?.close()
+        }
+        try Task.checkCancellation()
+        guard guestReady, state == .running, let connection = backendConnections[identifier] else {
+            throw CancellationError()
+        }
+        let descriptor = fcntl(connection.fileDescriptor, F_DUPFD_CLOEXEC, 0)
+        guard descriptor >= 0 else { throw POSIXError(.EIO) }
+        let socket = BackendUploadSocket(owning: descriptor)
+        backendReads[identifier] = socket
+        let preamble = Data(("ARTEX_VSOCK_1 " + provisioning.transportToken + "\n").utf8)
+        let entries = try await GuestLogSSEExchange.sample(socket: socket, request: preamble + request, count: count)
+        guard guestReady, state == .running, backendReads[identifier] === socket else { throw CancellationError() }
+        return entries
+    }
+    #endif
+
     /// Dedicated multipart exchange; payload files never become a shared VM directory.
     func uploadBackend(plan: ChatMultipartPlan, header: Data, provisioning: GuestProvisioning, progress: BackendUploadProgressHandler? = nil) async throws -> BackendHTTPResponse {
         try Task.checkCancellation()

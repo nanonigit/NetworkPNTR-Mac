@@ -1,0 +1,26 @@
+{
+  "date": "2026-11-25",
+  "macSourceParent": "7bb33d2d445c6d97db53734332f89b50fc10d031",
+  "browserSourceCommit": "e75ae371ad777ffd1eecdd28d2781a6519b05591",
+  "guestManifestSHA256": "c188947e71bf990305801e3237ba567552cf73618861db507b50bc78391549cd",
+  "signedDebugExecutableSHA256": "020d3d356d0f55cd41f7217503fa6866909f756e5cec7535f9c33b19f6c31e42",
+  "nativeDiagnosticSHA256": "9f68d26a33e06a4d185b035affe747fa123efe7478df17d737b4e73a72839fb3",
+  "normalizedHistorySHA256": "55236bbf6817b12770e25194d8d1b8f96f8a41cd3898f215fd9cc990cfb58390",
+  "verification": {
+    "firstAuthenticatedReplayRows": 8,
+    "resumedReplayRows": 8,
+    "bothMatchedAuthenticatedRingOrderAndText": true,
+    "fixtureRowsAcrossHistoryAndRecent": 350,
+    "dockerDesktopSocketAbsent": true,
+    "cooperativeStop": true,
+    "temporaryKeychainItemRemoved": true,
+    "swiftPassed": 1246,
+    "swiftSkipped": 1,
+    "pythonPassed": 222
+  },
+  "remaining": [
+    "continuous production stream delivery and reconnect",
+    "burst while attached and VM-stop-during-stream comparison",
+    "native/browser rendered comparison"
+  ]
+}

@@ -131,6 +131,22 @@ public enum AuthenticationPhase: String, Sendable { case checking, needsSetup, n
         try validateReply(response, ticket: ticket)
         return response
     }
+    #if DEBUG
+    package func sampleLogStream(since: Int64, count: Int) async throws -> [GuestLogEntry] {
+        guard phase == .authenticated, let token else { throw BackendAPIError.status(401) }
+        guard let backend = client as? BackendJSONClient else { throw BackendAPIError.invalidResponse }
+        let ticket = revision
+        do {
+            let rows = try await backend.sampleLogStream(since: since, count: count, bearer: token)
+            try validateReply(BackendHTTPResponse(status: 200, body: Data()), ticket: ticket)
+            return rows
+        } catch BackendAPIError.status(let status) {
+            try validateReply(BackendHTTPResponse(status: status, body: Data()), ticket: ticket)
+            throw BackendAPIError.status(status)
+        }
+    }
+    #endif
+
     public func authenticatedUpload(conversationID: Int64, files: [URL], progress: BackendUploadProgressHandler? = nil) async throws -> BackendHTTPResponse {
         try Task.checkCancellation()
         guard phase == .authenticated, token != nil else { throw BackendAPIError.status(401) }

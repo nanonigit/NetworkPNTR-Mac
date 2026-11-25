@@ -2,10 +2,23 @@ import Foundation
 
 public enum BackendHTTPRequest {
     public static func make(method: String, path: String, body: Data?, bearer: String?) throws -> Data {
+        try make(method: method, path: path, body: body, bearer: bearer, version: "1.1", accept: "application/json")
+    }
+
+    #if DEBUG
+    static func guestLogStream(since: Int64, bearer: String) throws -> Data {
+        guard since >= 0 else { throw BackendAPIError.invalidResponse }
+        return try make(method: "GET", path: "/api/logs/stream?since=\(since)", body: nil, bearer: bearer,
+                        version: "1.0", accept: "text/event-stream")
+    }
+    #endif
+
+    private static func make(method: String, path: String, body: Data?, bearer: String?,
+                             version: String, accept: String) throws -> Data {
         guard ["GET", "POST", "PUT", "PATCH", "DELETE"].contains(method), path.hasPrefix("/api/"),
               path.utf8.allSatisfy({ $0 > 32 && $0 < 127 }), path.utf8.count <= 8192,
               (body?.count ?? 0) <= 4 * 1024 * 1024 else { throw RuntimeError.integrity("backend request") }
-        var header = "\(method) \(path) HTTP/1.1\r\nHost: localhost\r\nConnection: close\r\nAccept: application/json\r\nContent-Type: application/json\r\nContent-Length: \(body?.count ?? 0)\r\n"
+        var header = "\(method) \(path) HTTP/\(version)\r\nHost: localhost\r\nConnection: close\r\nAccept: \(accept)\r\nContent-Type: application/json\r\nContent-Length: \(body?.count ?? 0)\r\n"
         if let bearer {
             guard !bearer.isEmpty, bearer.utf8.count <= 8192,
                   bearer.utf8.allSatisfy({ (48...57).contains($0) || (65...90).contains($0) || (97...122).contains($0) || [45, 46, 95, 126].contains($0) }) else { throw RuntimeError.integrity("session credential encoding") }

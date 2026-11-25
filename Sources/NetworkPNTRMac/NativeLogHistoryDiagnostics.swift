@@ -44,8 +44,22 @@ import NetworkPNTRCore
             throw RuntimeError.integrity("ordered log history readback")
         }
         let projection = rows.map { "\($0.dbId ?? 0)|\($0.level)|\($0.ts)|\($0.text)" }.joined(separator: "\n")
+        let sample = try await session.sampleLogStream(since: 0, count: 8)
+        guard sample.map(\.seq) == ring.items.prefix(8).map(\.seq),
+              sample.map(\.text) == ring.items.prefix(8).map(\.text),
+              let resume = sample.last?.seq else {
+            throw RuntimeError.integrity("guest log SSE replay")
+        }
+        let resumed = try await session.sampleLogStream(since: resume, count: 8)
+        let expected = ring.items.filter { $0.seq > resume }.prefix(8)
+        guard resumed.map(\.seq) == expected.map(\.seq),
+              resumed.map(\.text) == expected.map(\.text) else {
+            throw RuntimeError.integrity("guest log SSE resumed replay")
+        }
         let report: [String: Any] = [
             "fixture_rows": rows.count,
+            "sse_replayed_rows": sample.count,
+            "sse_resumed_rows": resumed.count,
             "initial_fixture_rows": ring.items.count(where: { $0.tag == "history-review" }),
             "first_page_fixture_rows": first.items.count(where: { $0.tag == "history-review" }),
             "second_page_fixture_rows": second.items.count(where: { $0.tag == "history-review" }),
