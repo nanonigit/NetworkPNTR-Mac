@@ -27,6 +27,43 @@ import NetworkPNTRCore
         }
     }
 
+    static func restartWithActiveStream(environment: DesktopRuntime, session: AuthenticationSession) async throws -> AuthenticationSession {
+        let controller = environment.controller
+        var receivedRows = false
+        let stream = Task {
+            do {
+                try await session.streamLogs(since: 0) { rows in
+                    receivedRows = !rows.isEmpty
+                    return true
+                }
+                return false
+            } catch is CancellationError {
+                return true
+            }
+        }
+        defer { stream.cancel() }
+        for _ in 0..<100 {
+            if receivedRows, controller.diagnosticLogStreamsInFlight == 1 { break }
+            try await Task.sleep(for: .milliseconds(100))
+        }
+        guard receivedRows, controller.diagnosticLogStreamsInFlight == 1 else {
+            throw RuntimeError.integrity("log stream was not receiving before VM stop")
+        }
+        try await environment.stop()
+        guard try await stream.value,
+              controller.diagnosticLogStreamsInFlight == 0,
+              controller.state == .stopped, !controller.hasMachine else {
+            throw RuntimeError.integrity("VM stop did not cancel and release the log stream")
+        }
+
+        await environment.start()
+        guard controller.guestReady, let restored = environment.authentication,
+              restored !== session, restored.phase == .authenticated else {
+            throw RuntimeError.integrity("log stream VM restart authentication")
+        }
+        return restored
+    }
+
     static func verify(session: AuthenticationSession, directory: URL) async throws {
         let client = AuthenticatedBackendClient(session: session)
         let service = GuestLogService(client: client)

@@ -103,7 +103,9 @@ import Foundation
                 else { try await NativeReviewPlan.requireNoLLM(client: AuthenticatedBackendClient(session: restored)) }
             }
             if plan.logHistoryReview, let restored = environment.authentication {
-                try await NativeLogHistoryDiagnostics.verify(session: restored, directory: directory)
+                let restarted = try await NativeLogHistoryDiagnostics.restartWithActiveStream(environment: environment, session: restored)
+                try await NativeLogHistoryDiagnostics.verify(session: restarted, directory: directory)
+                result["native_log_stream_cancelled_on_vm_stop_and_replayed_after_restart"] = true
                 result["native_log_history_restarted_and_read_back"] = true
             }
             if CommandLine.arguments.contains("--dashboard-diagnostics"), let restored = environment.authentication {

@@ -366,10 +366,11 @@
         "evidence/logs/populated-history-comparison.json",
         "evidence/logs/recent-burst-recovery.json",
         "evidence/logs/sse-vsock-replay.json",
-        "evidence/logs/live-sse-view.json"
+        "evidence/logs/live-sse-view.json",
+        "evidence/logs/live-sse-vm-stop.json"
       ],
       "remainingGates": [
-        "Verify SSE or equivalent delivery during bursts, reconnect and VM restart",
+        "Compare live burst delivery and reconnect against the fixed browser",
         "Complete keyboard, VoiceOver and rendered error comparison"
       ]
     },
