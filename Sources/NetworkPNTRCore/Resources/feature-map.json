@@ -362,6 +362,7 @@
       ],
       "evidence": [
         "Tests/NetworkPNTRCoreTests/GuestLogServiceTests.swift",
+        "Tests/NetworkPNTRCoreTests/GuestLogSSETests.swift",
         "evidence/logs/native-logs-first-comparison.json",
         "evidence/logs/populated-history-comparison.json",
         "evidence/logs/recent-burst-recovery.json",
