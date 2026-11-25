@@ -3,10 +3,13 @@ import NetworkPNTRCore
 import SwiftUI
 
 @MainActor struct GuestLogsView: View {
+    private enum FilterFocus: Hashable { case keyword, clear }
+
     @Environment(\.locale) private var locale
     private let session: AuthenticationSession
     @State private var store: GuestLogStore
     @State private var keyword = ""
+    @FocusState private var filterFocus: FilterFocus?
     @State private var level: GuestLogLevel?
     @State private var historyRequest: UUID?
     @State private var visibleRow: GuestLogEntry.ID?
@@ -24,7 +27,7 @@ import SwiftUI
         VStack(alignment: .leading, spacing: 12) {
             Text(s(.logs)).font(.largeTitle.bold())
             HStack {
-                TextField(s(.logsSearch), text: $keyword)
+                TextField(s(.logsSearch), text: $keyword).focused($filterFocus, equals: .keyword)
                 Picker(s(.logsLevel), selection: $level) {
                     Text(s(.logsAll)).tag(nil as GuestLogLevel?)
                     ForEach(GuestLogLevel.allCases, id: \.self) { value in
@@ -32,7 +35,12 @@ import SwiftUI
                     }
                 }.fixedSize()
                 Button(s(store.paused ? .logsResume : .logsPause)) { store.paused.toggle() }
-                Button(s(.logsClear)) { store.clear() }.disabled(store.rows.isEmpty && !store.liveHistoryGap)
+                Button(s(.logsClear)) {
+                    if filterFocus == .clear { filterFocus = .keyword }
+                    store.clear()
+                }
+                .focused($filterFocus, equals: .clear)
+                .disabled(store.rows.isEmpty && !store.liveHistoryGap)
             }
             HStack {
                 Text(count(.logsTotalCount, store.rows.count))
