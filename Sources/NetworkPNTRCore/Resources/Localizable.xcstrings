@@ -12204,6 +12204,22 @@
         }
       }
     },
+    "runtime.ui.kernelFault": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The Linux VM encountered a kernel fault. In Runtime, check the guest log, stop the VM if needed, then try starting it again."
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Linux VMでカーネル障害が発生しました。実行環境でゲストログを確認し、必要に応じてVMを停止してから再起動してください。"
+          }
+        }
+      }
+    },
     "runtime.ui.timeoutError": {
       "localizations": {
         "en": {

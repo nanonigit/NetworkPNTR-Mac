@@ -1700,6 +1700,8 @@
 	<string>Runtime validation failed. Check the runtime files and guest log.</string>
 	<key>runtime.ui.isolation</key>
 	<string>No Docker required · No host shares · No virtual NIC</string>
+	<key>runtime.ui.kernelFault</key>
+	<string>The Linux VM encountered a kernel fault. In Runtime, check the guest log, stop the VM if needed, then try starting it again.</string>
 	<key>runtime.ui.parityBaseline</key>
 	<string>Baseline: {commit} · {features} main features / {routes} screens / {endpoints} API handlers</string>
 	<key>runtime.ui.parityBrowser</key>

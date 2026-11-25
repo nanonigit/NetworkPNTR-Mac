@@ -712,6 +712,7 @@ public enum AppStringKey: String, CaseIterable, Sendable {
     case runtimeUIUnexpected = "runtime.ui.unexpected"
     case runtimeUITransitionError = "runtime.ui.transitionError"
     case runtimeUIIntegrityError = "runtime.ui.integrityError"
+    case runtimeUIKernelFault = "runtime.ui.kernelFault"
     case runtimeUITimeoutError = "runtime.ui.timeoutError"
     case runtimeUIUnsupported = "runtime.ui.unsupported"
     case runtimeUIParityTitle = "runtime.ui.parityTitle"

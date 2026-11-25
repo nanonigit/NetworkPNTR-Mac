@@ -6,6 +6,7 @@ import Virtualization
 @MainActor @Observable public final class VMController: NSObject, VZVirtualMachineDelegate {
     public private(set) var state: LifecycleState = .idle
     public private(set) var guestReady = false
+    public private(set) var hasGuestKernelFault = false
     private var runtimeFeatures = GuestRuntimeFeatures()
     /// A ready boot lease; stop/failure invalidates it before another boot can be used.
     public var trafficBlobExportGeneration: UUID? { canExportTrafficBlobs ? evidenceEpoch : nil }
@@ -85,6 +86,7 @@ import Virtualization
         runtimeFeatures = GuestRuntimeFeatures()
         try state.transition(to: .starting)
         lastError = nil; failure = nil; guestReady = false; guestLog = ""; lastStopInterruptedTransferCount = 0
+        hasGuestKernelFault = false
         do {
             guard VZVirtualMachine.isSupported else { throw RuntimeError.unsupported }
             let manifest = try GuestArtifacts.load(from: directory, cloudEgress: cloudEgress)
@@ -187,7 +189,7 @@ import Virtualization
     }
     private func completeStop() {
         refreshLog(); releaseResources()
-        if state != .stopped { try? state.transition(to: .stopped) }
+        if state != .stopped, !hasGuestKernelFault || forceStopping { try? state.transition(to: .stopped) }
         guestReady = false
     }
     nonisolated public func virtualMachine(_ virtualMachine: VZVirtualMachine, didStopWithError error: Error) {
@@ -202,15 +204,32 @@ import Virtualization
         defer { try? handle.close() }
         let length = (try? handle.seekToEnd()) ?? 0
         try? handle.seek(toOffset: length > 65536 ? length - 65536 : 0)
-        guestLog = String(decoding: (try? handle.read(upToCount: 65536)) ?? Data(), as: UTF8.self)
-        if guestLog.contains("Kernel panic") || guestLog.contains("Internal error: Oops") { guestReady = false; fail(RuntimeError.integrity("guest kernel panic")); return }
+        observeGuestLog(String(decoding: (try? handle.read(upToCount: 65536)) ?? Data(), as: UTF8.self))
+    }
+
+    func observeGuestLog(_ log: String) {
+        guestLog = log
+        if GuestBootDiagnostics.containsKernelFault(log) {
+            hasGuestKernelFault = true
+            guestReady = false
+            fail(RuntimeError.guestKernelFault)
+        }
+        guard !hasGuestKernelFault else { return }
         guestReady = guestReady || guestLog.contains("ARTEX_MAC_GUEST_READY")
         if let failure = guestLog.components(separatedBy: .newlines).last(where: { $0.hasPrefix("ARTEX_MAC_GUEST_ERROR stage=") }) {
             guestReady = false
             fail(RuntimeError.integrity(String(failure.prefix(160))))
         }
     }
-    private func fail(_ error: Error) { runtimeFeatures = GuestRuntimeFeatures(); disableCloudEgress(); cancelBackendUploads(); lastError = error.localizedDescription; failure = AppErrorMessage(error, fallback: .runtimeUIUnexpected); if state != .failed { try? state.transition(to: .failed) } }
+    private func fail(_ error: Error) {
+        let reportedError = hasGuestKernelFault ? RuntimeError.guestKernelFault : error
+        runtimeFeatures = GuestRuntimeFeatures()
+        disableCloudEgress()
+        cancelBackendUploads()
+        lastError = reportedError.localizedDescription
+        failure = AppErrorMessage(reportedError, fallback: .runtimeUIUnexpected)
+        if state != .failed { try? state.transition(to: .failed) }
+    }
     // Completion-handler calls stay on our MainActor. Older SDK async overlays treat
     // VZVirtualMachine as a non-Sendable value crossing isolation during `await`.
     private func startMachine(_ vm: VZVirtualMachine) async throws {

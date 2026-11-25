@@ -36,6 +36,31 @@ final class RuntimeLocalizationTests: XCTestCase {
         }
         XCTAssertEqual(AppErrorMessage(NSError(domain:"private",code:1,userInfo:[NSLocalizedDescriptionKey:"private-secret"]),fallback:.runtimeUIUnexpected).text(language:.english),"The runtime operation failed. Check the guest log and try again.")
     }
+    @MainActor func testLiveKernelFaultRemainsVisibleThroughLaterLogReadsAndClearsOnNewBoot() async {
+        let missing = FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString)
+        for marker in ["Kernel panic - not syncing", "Internal error: Oops"] {
+            let controller = VMController()
+            controller.observeGuestLog("ARTEX_MAC_GUEST_READY")
+            XCTAssertTrue(controller.guestReady)
+            controller.observeGuestLog(marker + " private diagnostic")
+            XCTAssertTrue(controller.hasGuestKernelFault)
+            XCTAssertFalse(controller.guestReady)
+            controller.observeGuestLog("ARTEX_MAC_GUEST_READY\nARTEX_MAC_GUEST_ERROR stage=fixture")
+            XCTAssertFalse(controller.guestReady)
+            for language in AppLanguage.allCases {
+                let expected = AppStrings.text(.runtimeUIKernelFault, language: language)
+                XCTAssertNotEqual(expected, AppStrings.text(.runtimeUIIntegrityError, language: language))
+                XCTAssertEqual(AppErrorText.text(RuntimeError.guestKernelFault, language: language), expected)
+                XCTAssertEqual(controller.failure?.text(language: language), expected)
+                XCTAssertFalse(expected.contains("private diagnostic"))
+            }
+            do {
+                try await controller.start(artifacts: missing, logs: missing)
+                XCTFail("Missing artifacts accepted")
+            } catch {}
+            XCTAssertFalse(controller.hasGuestKernelFault)
+        }
+    }
     @MainActor func testDesktopPreflightFailureKeepsDiagnosticsAndSafeIdentityWithoutStartingVM() async throws {
         let file = FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString)
         try Data("fixture".utf8).write(to:file);defer {try? FileManager.default.removeItem(at:file)}

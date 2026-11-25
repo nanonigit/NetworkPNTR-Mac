@@ -18,13 +18,14 @@ public enum LifecycleState: String, Sendable {
     }
 }
 public enum RuntimeError: LocalizedError {
-    case invalidTransition(String, String), integrity(String), timeout(String), unsupported
+    case invalidTransition(String, String), integrity(String), timeout(String), unsupported, guestKernelFault
     public var errorDescription: String? {
         switch self {
         case let .invalidTransition(a,b): return "Invalid lifecycle transition: \(a) → \(b)"
         case let .integrity(name): return "Guest artifact failed validation: \(name)"
         case let .timeout(stage): return "Timed out during \(stage). Inspect the guest log before retrying."
         case .unsupported: return "Hardware virtualization is unavailable on this Mac."
+        case .guestKernelFault: return "The guest encountered a kernel fault."
         }
     }
 }

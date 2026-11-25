@@ -1,0 +1,35 @@
+{
+  "date": "2026-11-25",
+  "macSourceParent": "37c848d16c5090a470f8e8d505ebfedbffc86bf3",
+  "precedingActualKernelFaultRecord": "local-release-packaging.json",
+  "test": {
+    "swiftPassed": 1233,
+    "swiftSkipped": 1,
+    "baselineInventoryPassed": true
+  },
+  "uiReview": {
+    "signedDebugExecutableSHA256": "2b70216c824b4a14f2a8de6cf4cca4489575367b6afdd1dbefbf8e48edda8fbf",
+    "verifiedGuestManifestSHA256": "ff958504082071c3f7affc56c4f246049b28bbb8d27ae6593e9da2ebea256868",
+    "trigger": "A synthetic Oops marker appended to the owned guest log before readiness",
+    "languagesOnConnectionAndRuntimeScreens": [
+      "ja",
+      "en"
+    ],
+    "runtimeNavigationAvailable": true,
+    "failedVMStoppedFromRuntime": true,
+    "startEnabledAfterStop": true,
+    "appExited": true
+  },
+  "cloudRelease": {
+    "signedExecutableSHA256": "2f6cf893d8a09674f5a8470fdc4d94e99ad6bc1c31623a94897ae7a50164db4c",
+    "verifiedGuestManifestSHA256": "dc0eb715b6bf14205fb7a1dc12d46fdacfe6876655b3701aef755cebf97a14ff",
+    "dockerDesktopSocketAbsent": true,
+    "bootedFromFreshPrivateDisk": true,
+    "dashboardOpenedWithoutCredentials": true,
+    "cloudRelayReportedActive": true,
+    "providerConnectionTested": false,
+    "cooperativeStop": true,
+    "guestVirtualNICsOrHostSharesDetected": false,
+    "guestExternalRoutesDetected": false
+  }
+}

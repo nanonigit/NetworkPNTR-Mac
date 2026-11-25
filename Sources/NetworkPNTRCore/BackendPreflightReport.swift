@@ -5,9 +5,13 @@ public enum GuestBootDiagnostic: String, Codable, Hashable, Sendable {
 }
 
 public enum GuestBootDiagnostics {
+    static func containsKernelFault(_ log: String) -> Bool {
+        log.contains("Kernel panic") || log.contains("Internal error: Oops")
+    }
+
     public static func classify(_ log: String) -> [GuestBootDiagnostic] {
         var found: [GuestBootDiagnostic] = []
-        if log.contains("Kernel panic") || log.contains("Internal error: Oops") { found.append(.kernelFault) }
+        if containsKernelFault(log) { found.append(.kernelFault) }
         let lower = log.lowercased()
         if ["sigsegv", "sigbus", "sigill", "segmentation fault"].contains(where: lower.contains) { found.append(.signalFault) }
         if log.contains("Bad rss-counter state") || log.contains("non-zero pgtables_bytes") { found.append(.memoryAccountingFault) }

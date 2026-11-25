@@ -22,7 +22,10 @@ struct LocalConnectionView: View {
             if busy || (!failed && !stopped) {
                 ProgressView().accessibilityLabel(s(.localSessionPreparing))
             } else {
-                if failed { Text(s(.localSessionUnavailableDetail)).foregroundStyle(.secondary) }
+                if failed {
+                    Text(s(environment.controller.hasGuestKernelFault ? .runtimeUIKernelFault : .localSessionUnavailableDetail))
+                        .foregroundStyle(.secondary)
+                }
                 HStack {
                     if environment.controller.guestReady || environment.controller.mayStart {
                         Button(s(stopped ? .localSessionStart : .localSessionRetry)) {

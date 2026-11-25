@@ -16,6 +16,7 @@ public enum RuntimeLabels {
         switch error {
         case .invalidTransition: .runtimeUITransitionError
         case .integrity: .runtimeUIIntegrityError
+        case .guestKernelFault: .runtimeUIKernelFault
         case .timeout: .runtimeUITimeoutError
         case .unsupported: .runtimeUIUnsupported
         }

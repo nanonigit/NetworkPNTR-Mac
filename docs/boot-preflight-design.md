@@ -35,3 +35,7 @@ VMProbe --system-disk-cache-preflight uncached /path/to/verified/guest /path/to/
 ```
 
 Use an ordered comparison with a fixed number of runs. A successful boot does not establish that the cache mode fixes a prior fault. Use the normalized stopped-log audit and retain all outcomes.
+
+### Preserve the observed kernel failure in the app
+
+Treat the existing panic and Oops log markers as a typed guest kernel fault. Preserve the first observed kernel failure for that VM through later log reads and stop errors, and clear it when a new boot begins. The connection failure screen shows the same localized kernel message as Runtime and keeps its Runtime navigation action. Runtime keeps the existing stop and retry controls. Lazyweb's Rarible initialization-error example informed putting the explanation and next action together. The app reports the observed failure category and does not diagnose the underlying kernel cause.

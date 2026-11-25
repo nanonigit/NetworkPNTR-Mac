@@ -1700,6 +1700,8 @@
 	<string>実行環境の検証に失敗しました。実行環境のファイルとゲストログを確認してください。</string>
 	<key>runtime.ui.isolation</key>
 	<string>Docker不要 · ホスト共有なし · 仮想NICなし</string>
+	<key>runtime.ui.kernelFault</key>
+	<string>Linux VMでカーネル障害が発生しました。実行環境でゲストログを確認し、必要に応じてVMを停止してから再起動してください。</string>
 	<key>runtime.ui.parityBaseline</key>
 	<string>基準：{commit} · {features}主要機能 / {routes}画面 / {endpoints} APIハンドラー</string>
 	<key>runtime.ui.parityBrowser</key>
