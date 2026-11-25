@@ -63,6 +63,19 @@ final class NativeReviewPlanTests: XCTestCase {
         }
         XCTAssertFalse(try NativeReviewPlan(arguments: ["--native-review", "--no-llm-review"]).mcpTaskReview)
     }
+    func testLogHistoryReviewRequiresExclusiveNoModelSession() throws {
+        let flag = "--log-history-review"
+        let args = [flag, "--native-review", "--no-llm-review"]
+        XCTAssertTrue(try NativeReviewPlan(arguments: args).logHistoryReview)
+        XCTAssertThrowsError(try NativeReviewPlan(arguments: [flag]))
+        for other in NativeReviewPlan.seedingFlags.union([
+            "--asset-catalog-review", "--local-session-diagnostics", "--mcp-task-review",
+            "--tool-runs-review", "--skill-visibility-diagnostics"
+        ]) {
+            XCTAssertThrowsError(try NativeReviewPlan(arguments: args + [other]))
+        }
+    }
+
     func testAssetCatalogReviewRequiresExclusiveNoModelSession() throws {
         let flag = "--asset-catalog-review"
         let args = [flag, "--native-review", "--no-llm-review"]

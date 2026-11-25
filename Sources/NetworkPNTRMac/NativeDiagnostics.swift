@@ -10,9 +10,9 @@ import Foundation
     static func run(environment: DesktopRuntime, directory: URL) async {
         let toolRunReview = CommandLine.arguments.contains("--tool-runs-review")
         let assetReview = CommandLine.arguments.contains("--asset-catalog-review")
-        let freshDirectory = toolRunReview || assetReview
+        let freshDirectory = toolRunReview || assetReview || CommandLine.arguments.contains("--log-history-review")
         if freshDirectory, directory.path.withCString({ Darwin.mkdir($0, 0o700) }) != 0 {
-            FileHandle.standardError.write(Data("Tool-run review requires a new private directory\n".utf8))
+            FileHandle.standardError.write(Data("This review requires a new private directory\n".utf8))
             NSApp.terminate(nil)
             return
         }
@@ -92,12 +92,19 @@ import Foundation
                 try await verifySkillFixture(session: authentication, expectedVisible: true, remove: true)
                 result["native_seeded_skill_removed"] = true
             }
+            if plan.logHistoryReview {
+                try await NativeLogHistoryDiagnostics.seed(session: authentication, directory: directory)
+            }
             try await environment.stop()
             await environment.start()
             guard environment.authentication?.phase == .authenticated else { throw RuntimeError.integrity(environment.authentication?.error ?? environment.error ?? "Keychain session restore") }
             if let restored = environment.authentication {
                 if let llm { try await NativeLLMDiagnostics.verify(llm, session: restored) }
                 else { try await NativeReviewPlan.requireNoLLM(client: AuthenticatedBackendClient(session: restored)) }
+            }
+            if plan.logHistoryReview, let restored = environment.authentication {
+                try await NativeLogHistoryDiagnostics.verify(session: restored, directory: directory)
+                result["native_log_history_restarted_and_read_back"] = true
             }
             if CommandLine.arguments.contains("--dashboard-diagnostics"), let restored = environment.authentication {
                 try await NativeDashboardDiagnostics.collect(session: restored, directory: directory)

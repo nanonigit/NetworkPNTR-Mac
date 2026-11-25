@@ -9,6 +9,7 @@ struct NativeReviewPlan {
         "--upload-limit-diagnostics", "--upload-cancellation-diagnostics", "--chat-review", "--mention-review"
     ]
     let assetReview: Bool
+    let logHistoryReview: Bool
     let mcpTaskReview: Bool
     let noLLM: Bool
     let skillVisibility: Bool
@@ -36,9 +37,10 @@ struct NativeReviewPlan {
             throw RuntimeError.integrity("tool-run review requires an independent no-LLM fixture")
         }
         assetReview = flags.contains("--asset-catalog-review")
-        if assetReview && (!explicitNoLLM || !flags.contains("--native-review") || mcpTaskReview || toolRuns || skillVisibility
+        logHistoryReview = flags.contains("--log-history-review")
+        if (assetReview || logHistoryReview) && (assetReview && logHistoryReview || !explicitNoLLM || !flags.contains("--native-review") || mcpTaskReview || toolRuns || skillVisibility
             || flags.contains("--local-session-diagnostics") || !flags.isDisjoint(with: Self.seedingFlags)) {
-            throw RuntimeError.integrity("asset catalog review requires an independent no-model native fixture")
+            throw RuntimeError.integrity("asset and log history reviews require independent no-model native fixtures")
         }
         noLLM = explicitNoLLM || skillVisibility
         if explicitNoLLM && (!flags.contains("--native-review") || !flags.isDisjoint(with: Self.seedingFlags)) {

@@ -362,10 +362,10 @@
       ],
       "evidence": [
         "Tests/NetworkPNTRCoreTests/GuestLogServiceTests.swift",
-        "evidence/logs/native-logs-first-comparison.json"
+        "evidence/logs/native-logs-first-comparison.json",
+        "evidence/logs/populated-history-comparison.json"
       ],
       "remainingGates": [
-        "Compare identical seeded history in the fixed browser and native VM",
         "Verify SSE or equivalent delivery during bursts, reconnect and VM restart",
         "Complete keyboard, VoiceOver and rendered error comparison"
       ]

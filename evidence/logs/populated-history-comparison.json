@@ -1,0 +1,58 @@
+{
+  "date": "2026-11-25",
+  "macSourceParent": "67d4ea37c5f5805f29c488c865fb17f4d9916f3c",
+  "browserSourceCommit": "e75ae371ad777ffd1eecdd28d2781a6519b05591",
+  "browserBackendSHA256": "0ebad83ddda276b03b415d64ce30af44e7a587860f3b660c12563462a0ac5e80",
+  "browserEngineImage": "sha256:eb3378c1ed0079f94db054a5fe1aaa790a254ec0d6bbc67eda052420d86a179d",
+  "guestSeedSourceSHA256": "f0c62460dfe4192804eeb84fe3b854344a5c24ecc03e43d7abce557709b11a3d",
+  "browserEffectiveOracleSHA256": "13f54c3cbd2d348b6c943a50b75ed4e5392fe130010cd8763a72c803e4f0ca9b",
+  "browserReceiptSHA256": "0be357b9ae198eb3fbfe73aa545e35f8d33bdad3e5f4b806871c3c041dcf81a2",
+  "nativeDiagnosticSHA256": "9f68d26a33e06a4d185b035affe747fa123efe7478df17d737b4e73a72839fb3",
+  "matchedReadback": {
+    "first_page_fixture_rows": 200,
+    "fixture_rows": 350,
+    "initial_fixture_rows": 100,
+    "projection_sha256": "7c85f6302de0a32fab8e37d57508d67ddda2feba15d74adfcec4c03953024582",
+    "second_page_fixture_rows": 50
+  },
+  "browser": {
+    "locale": "en",
+    "isolatedContainersRemoved": true,
+    "noCookieHistoryStatus": 401,
+    "initial": 100,
+    "afterFirst": 300,
+    "afterSecond": 350,
+    "oldestMatched": true
+  },
+  "native": {
+    "locale": "ja",
+    "signedDebugApp": true,
+    "dockerDesktopStopped": true,
+    "diagnosticGuestManifestSHA256": "c188947e71bf990305801e3237ba567552cf73618861db507b50bc78391549cd",
+    "visibleTotalsIncludingStartupLogs": [
+      108,
+      308,
+      361
+    ],
+    "oldestMatchedAfterSecondPage": true,
+    "oldestNineVisibleIDs": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9
+    ],
+    "historyButtonHiddenWhenExhausted": true,
+    "temporaryKeychainItemRemoved": true,
+    "cooperativeStop": true
+  },
+  "tests": {
+    "swiftPassed": 1238,
+    "swiftSkipped": 1,
+    "pythonPassed": 222
+  }
+}
