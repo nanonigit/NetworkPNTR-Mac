@@ -1,0 +1,40 @@
+{
+  "date": "2026-11-25",
+  "macSourceCommit": "4f5a411aa276d9e513dc325071580a0baf3082c1",
+  "macUIReceipt": "selection-confirmation-native.json",
+  "browserSourceCommit": "e75ae371ad777ffd1eecdd28d2781a6519b05591",
+  "browserReferenceParentImage": "sha256:735d063ffd4290be40a870c4c77f6a6f9ad16ae306262e2e21e3865cd9c2b91d",
+  "browserBackendSHA256": "0ebad83ddda276b03b415d64ce30af44e7a587860f3b660c12563462a0ac5e80",
+  "browserEngineImage": "sha256:eb3378c1ed0079f94db054a5fe1aaa790a254ec0d6bbc67eda052420d86a179d",
+  "browserOracleSHA256": "63c3d5fae1f1624734c6d940af135f8b14ecfca548c836548b76c6e93bd73d41",
+  "browserFixtureSHA256": "bd09ca7e390a8cb8af5714b20f2b2b35036e4ad6b05cae60a217f4b1f8a398e7",
+  "browserRawReceiptSHA256": "d4bb2d1fbf5c8a851756d80404926744fad935add86ff5195a51993b7bc976e9",
+  "browser": {
+    "chromiumVersion": "HeadlessChrome/124.0.6367.78",
+    "selectedPageDialogCount": 26,
+    "cancelInitiallyFocused": true,
+    "rowsAfterCancel": 26,
+    "invalidQueryVisible": true,
+    "invalidQueryBulkDelete": "enabled",
+    "clearingSearchRestoredBulkDelete": true,
+    "rowsAfterClear": 26
+  },
+  "browserIsolation": {
+    "nonloopbackInterfacesUp": 0,
+    "externalRoutes": 0,
+    "backendStopped": true,
+    "bothContainersRemoved": true
+  },
+  "comparison": {
+    "same26SyntheticDomainNames": true,
+    "matchingContextualConfirmationAndCancelRetention": true,
+    "bothShowInvalidSearchAndRecoverWhenCleared": true,
+    "bulkDeleteDuringInvalidSearch": {
+      "browser": "enabled",
+      "mac": "disabled"
+    },
+    "browserLocale": "en",
+    "macLocale": "ja",
+    "deleteConfirmed": false
+  }
+}

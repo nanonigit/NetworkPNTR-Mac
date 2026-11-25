@@ -138,7 +138,7 @@
         "Verify mutations, persistence, cancellation and keyboard access"
       ],
       "evidence": [
-        "Tests/ArtexCoreTests/AssetCatalogServiceTests.swift",
+        "Tests/NetworkPNTRCoreTests/AssetCatalogServiceTests.swift",
         "evidence/assets/read-reference.json",
         "evidence/assets/read-vm-and-browser-ui.json",
         "evidence/assets/read-native-ui.json",
@@ -157,6 +157,8 @@
         "evidence/assets/delete-response-loss-ui.json",
         "evidence/assets/delete-keyboard-ui.json",
         "evidence/assets/delete-keyboard-confirm-ui.json",
+        "evidence/assets/selection-confirmation-native.json",
+        "evidence/assets/selection-confirmation-comparison.json",
         "evidence/assets/company-keyboard-ui.json",
         "evidence/assets/company-keyboard-save-ui.json"
       ],
