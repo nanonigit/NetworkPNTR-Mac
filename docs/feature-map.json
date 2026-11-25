@@ -353,12 +353,21 @@
       "title": "Logs",
       "browserPath": "/system/logs",
       "icon": "ScrollText",
-      "nativeStatus": "pending",
+      "nativeStatus": "in_progress",
       "phase": 4,
       "acceptance": [
-        "Compare equivalent fixture data and visible controls",
-        "Compare success, empty, validation and server-error states",
-        "Verify mutations, persistence, cancellation and keyboard access"
+        "Compare recent and older log rows, severity and keyword filters, counts and scroll behavior",
+        "Verify pause, clear display, restart recovery, empty and error states",
+        "Compare live delivery, reconnect behavior, keyboard navigation and VoiceOver"
+      ],
+      "evidence": [
+        "Tests/NetworkPNTRCoreTests/GuestLogServiceTests.swift",
+        "evidence/logs/native-logs-first-comparison.json"
+      ],
+      "remainingGates": [
+        "Compare identical seeded history in the fixed browser and native VM",
+        "Verify SSE or equivalent delivery during bursts, reconnect and VM restart",
+        "Complete keyboard, VoiceOver and rendered error comparison"
       ]
     },
     {

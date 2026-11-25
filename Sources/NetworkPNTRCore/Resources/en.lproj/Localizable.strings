@@ -1552,6 +1552,36 @@
 	<string>Task</string>
 	<key>llmRecord.ui.tokens</key>
 	<string>Tokens</string>
+	<key>logs.ui.all</key>
+	<string>All levels</string>
+	<key>logs.ui.clear</key>
+	<string>Clear display</string>
+	<key>logs.ui.empty</key>
+	<string>No matching logs</string>
+	<key>logs.ui.error</key>
+	<string>Error</string>
+	<key>logs.ui.errorCount</key>
+	<string>Errors · {count}</string>
+	<key>logs.ui.info</key>
+	<string>Info</string>
+	<key>logs.ui.level</key>
+	<string>Level</string>
+	<key>logs.ui.login</key>
+	<string>Connect to the isolated runtime to read backend logs.</string>
+	<key>logs.ui.older</key>
+	<string>Load older logs</string>
+	<key>logs.ui.pause</key>
+	<string>Pause</string>
+	<key>logs.ui.resume</key>
+	<string>Resume</string>
+	<key>logs.ui.search</key>
+	<string>Filter by message or tag</string>
+	<key>logs.ui.totalCount</key>
+	<string>Total · {count}</string>
+	<key>logs.ui.warning</key>
+	<string>Warning</string>
+	<key>logs.ui.warningCount</key>
+	<string>Warnings · {count}</string>
 	<key>mcp.clients.activeTitle</key>
 	<string>Allowed clients</string>
 	<key>mcp.clients.agentPermission</key>

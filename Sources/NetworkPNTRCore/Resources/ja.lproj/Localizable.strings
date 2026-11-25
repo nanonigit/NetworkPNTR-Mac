@@ -1552,6 +1552,36 @@
 	<string>タスク</string>
 	<key>llmRecord.ui.tokens</key>
 	<string>トークン</string>
+	<key>logs.ui.all</key>
+	<string>すべてのレベル</string>
+	<key>logs.ui.clear</key>
+	<string>表示をクリア</string>
+	<key>logs.ui.empty</key>
+	<string>一致するログはありません</string>
+	<key>logs.ui.error</key>
+	<string>エラー</string>
+	<key>logs.ui.errorCount</key>
+	<string>エラー{count}件</string>
+	<key>logs.ui.info</key>
+	<string>情報</string>
+	<key>logs.ui.level</key>
+	<string>レベル</string>
+	<key>logs.ui.login</key>
+	<string>バックエンドのログを見るには、隔離実行環境に接続してください。</string>
+	<key>logs.ui.older</key>
+	<string>過去のログを読み込む</string>
+	<key>logs.ui.pause</key>
+	<string>一時停止</string>
+	<key>logs.ui.resume</key>
+	<string>再開</string>
+	<key>logs.ui.search</key>
+	<string>本文またはタグで絞り込み</string>
+	<key>logs.ui.totalCount</key>
+	<string>全{count}件</string>
+	<key>logs.ui.warning</key>
+	<string>警告</string>
+	<key>logs.ui.warningCount</key>
+	<string>警告{count}件</string>
 	<key>mcp.clients.activeTitle</key>
 	<string>許可した接続先</string>
 	<key>mcp.clients.agentPermission</key>
