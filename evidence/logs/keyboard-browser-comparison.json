@@ -1,0 +1,40 @@
+{
+  "date": "2026-11-25",
+  "macSourceCommit": "21af9637cdbad3236b16f2df83b29d9e33d6c92a",
+  "browserSourceCommit": "e75ae371ad777ffd1eecdd28d2781a6519b05591",
+  "browserBackendSHA256": "0ebad83ddda276b03b415d64ce30af44e7a587860f3b660c12563462a0ac5e80",
+  "browserEngineImage": "sha256:eb3378c1ed0079f94db054a5fe1aaa790a254ec0d6bbc67eda052420d86a179d",
+  "browserEffectiveOracleSHA256": "63c3d5fae1f1624734c6d940af135f8b14ecfca548c836548b76c6e93bd73d41",
+  "browserReceiptSHA256": "079cb92aa755010ceae1b1a9b7225cd0644d34581a995c950271f20c28179ec4",
+  "browser": {
+    "locale": "en",
+    "initialFixtureRows": 100,
+    "tabOrder": [
+      "All",
+      "info",
+      "warn",
+      "error",
+      "Pause",
+      "Clear"
+    ],
+    "keywordFiltered": true,
+    "severityActivatedWithSpace": true,
+    "pauseAndResumeWithSpace": true,
+    "clearDisplayedZeroRows": true,
+    "clearRetainedButtonFocus": true,
+    "keywordRetainedAfterClear": true,
+    "nonLoopbackInterfacesUp": 0,
+    "externalRoutes": 0,
+    "ownedContainersRemoved": true
+  },
+  "mac": {
+    "englishKeyboardEvidence": "evidence/logs/native-english-keyboard.json",
+    "japaneseKeyboardEvidence": "evidence/logs/native-keyboard-clear-focus.json",
+    "severityControl": "Single native level picker",
+    "focusAfterClear": "Keyword input"
+  },
+  "remaining": [
+    "VoiceOver and rendered error comparison",
+    "live burst and reconnect compared with the fixed browser"
+  ]
+}
