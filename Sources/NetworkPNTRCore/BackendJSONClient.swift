@@ -44,12 +44,10 @@ import Foundation
         try Task.checkCancellation()
         return try await runtime.stageBackendEvidence(request: manifest.request(bearer: bearer), manifest: manifest, destination: destination, provisioning: provisioning)
     }
-    #if DEBUG
-    func sampleLogStream(since: Int64, count: Int, bearer: String) async throws -> [GuestLogEntry] {
+    func streamLogs(since: Int64, bearer: String, receive: @escaping GuestLogBatchReceiver) async throws {
         let request = try BackendHTTPRequest.guestLogStream(since: since, bearer: bearer)
-        return try await runtime.sampleLogStream(request: request, count: count, provisioning: provisioning)
+        try await runtime.streamLogs(request: request, provisioning: provisioning, receive: receive)
     }
-    #endif
 
     public func send(method: String, path: String, body: Data?, bearer: String?) async throws -> BackendHTTPResponse {
         let request = try BackendHTTPRequest.make(method: method, path: path, body: body, bearer: bearer)

@@ -33,7 +33,7 @@ final class GuestLogSSETests: XCTestCase {
         XCTAssertThrowsError(try oversized.consume(Data(repeating: 65, count: 17_000)))
     }
 
-    func testSocketSampleCompletesWhilePeerIsStillOpen() async throws {
+    @MainActor func testSocketSampleCompletesWhilePeerIsStillOpen() async throws {
         var descriptors = [Int32](repeating: -1, count: 2)
         XCTAssertEqual(socketpair(AF_UNIX, SOCK_STREAM, 0, &descriptors), 0)
         let peer = descriptors[1]
@@ -43,9 +43,18 @@ final class GuestLogSSETests: XCTestCase {
             "data: {\"seq\":1,\"ts\":\"fixture\",\"level\":\"info\",\"tag\":\"fixture\",\"text\":\"fixture\"}\n\n").utf8)
         let written = wire.withUnsafeBytes { Darwin.write(peer, $0.baseAddress!, $0.count) }
         XCTAssertEqual(written, wire.count)
-        let rows = try await GuestLogSSEExchange.sample(socket: socket, request: Data("fixture".utf8),
-                                                       count: 1, timeout: .seconds(2))
-        XCTAssertEqual(rows.map(\.seq), [1])
+        var rows: [GuestLogEntry] = []
+        let next = Data("data: {\"seq\":2,\"ts\":\"fixture\",\"level\":\"info\",\"tag\":\"fixture\",\"text\":\"next\"}\n\n".utf8)
+        try await GuestLogSSEExchange.stream(socket: socket, request: Data("fixture".utf8), timeout: .seconds(2)) { batch in
+            rows += batch
+            if rows.count == 1 {
+                let written = next.withUnsafeBytes { Darwin.write(peer, $0.baseAddress!, $0.count) }
+                XCTAssertEqual(written, next.count)
+                return true
+            }
+            return false
+        }
+        XCTAssertEqual(rows.map(\.seq), [1, 2])
         XCTAssertTrue(socket.isFinished)
     }
 

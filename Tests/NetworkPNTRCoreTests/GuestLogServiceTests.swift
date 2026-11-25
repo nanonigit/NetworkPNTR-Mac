@@ -26,6 +26,30 @@ import XCTest
         XCTAssertTrue(transport.calls.allSatisfy { $0.method == "GET" && $0.body == nil })
     }
 
+    func testLiveBatchesDeduplicateAndRecoverFromLastAcceptedSequence() async throws {
+        let transport = ChatTestTransport()
+        let store = GuestLogStore(service: GuestLogService(client: transport))
+        func entries(_ sequences: [Int64]) throws -> [GuestLogEntry] {
+            try BackendJSONCoding.decode([GuestLogEntry].self, from:
+                JSONSerialization.data(withJSONObject: sequences.map { row($0) }))
+        }
+        try transport.enqueue(["items": [row(1)], "cursor": 1])
+        await store.refresh()
+        try store.acceptLive(entries([1, 2, 2, 3]))
+        XCTAssertEqual(store.rows.map(\.seq), [1, 2, 3])
+        XCTAssertThrowsError(try store.acceptLive(entries([4, 6])))
+        XCTAssertEqual(store.rows.map(\.seq), [1, 2, 3])
+        try transport.enqueue(["items": [row(4), row(5), row(6)], "cursor": 6])
+        await store.refresh()
+        XCTAssertEqual(transport.calls.last?.path, "/api/logs?since=3&limit=1000")
+        store.paused = true
+        try store.acceptLive(entries([7]))
+        store.clear()
+        store.paused = false
+        try store.acceptLive(entries([8]))
+        XCTAssertEqual(store.rows.map(\.seq), [8])
+    }
+
     func testBurstRecoversFromTheLastCursorAfterADisconnect() async throws {
         let transport = ChatTestTransport()
         let store = GuestLogStore(service: GuestLogService(client: transport))

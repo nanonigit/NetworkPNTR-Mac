@@ -131,19 +131,32 @@ public enum AuthenticationPhase: String, Sendable { case checking, needsSetup, n
         try validateReply(response, ticket: ticket)
         return response
     }
-    #if DEBUG
-    package func sampleLogStream(since: Int64, count: Int) async throws -> [GuestLogEntry] {
+    package func streamLogs(since: Int64, receive: @escaping GuestLogBatchReceiver) async throws {
         guard phase == .authenticated, let token else { throw BackendAPIError.status(401) }
         guard let backend = client as? BackendJSONClient else { throw BackendAPIError.invalidResponse }
         let ticket = revision
         do {
-            let rows = try await backend.sampleLogStream(since: since, count: count, bearer: token)
-            try validateReply(BackendHTTPResponse(status: 200, body: Data()), ticket: ticket)
-            return rows
+            try await backend.streamLogs(since: since, bearer: token) { [weak self] batch in
+                guard let self else { throw CancellationError() }
+                try validateReply(BackendHTTPResponse(status: 200, body: Data()), ticket: ticket)
+                return try receive(batch)
+            }
         } catch BackendAPIError.status(let status) {
             try validateReply(BackendHTTPResponse(status: status, body: Data()), ticket: ticket)
             throw BackendAPIError.status(status)
         }
+    }
+
+    #if DEBUG
+    package func sampleLogStream(since: Int64, count: Int) async throws -> [GuestLogEntry] {
+        guard (1...32).contains(count) else { throw BackendAPIError.invalidResponse }
+        var entries: [GuestLogEntry] = []
+        try await streamLogs(since: since) { batch in
+            entries += batch.prefix(count - entries.count)
+            return entries.count < count
+        }
+        guard entries.count == count else { throw BackendAPIError.invalidResponse }
+        return entries
     }
     #endif
 

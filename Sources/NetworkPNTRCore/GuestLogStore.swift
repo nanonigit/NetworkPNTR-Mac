@@ -39,6 +39,38 @@ import Observation
         historyFailure = nil
     }
 
+    package func follow(_ stream: (Int64, @escaping GuestLogBatchReceiver) async throws -> Void) async {
+        while !Task.isCancelled {
+            await refresh()
+            if hasLoaded, recentFailure == nil, !Task.isCancelled {
+                do {
+                    try await stream(cursor) { [weak self] rows in
+                        guard let self else { return false }
+                        try acceptLive(rows)
+                        return true
+                    }
+                } catch is CancellationError {
+                    return
+                } catch {
+                    if !Task.isCancelled { recentFailure = AppErrorMessage(error) }
+                }
+            }
+            do { try await Task.sleep(for: .seconds(2)) } catch { return }
+        }
+    }
+
+    func acceptLive(_ batch: [GuestLogEntry]) throws {
+        var latest = cursor
+        var accepted: [GuestLogEntry] = []
+        for row in batch where row.seq > latest {
+            guard row.seq - latest == 1 else { throw BackendAPIError.invalidResponse }
+            latest = row.seq
+            accepted.append(row)
+        }
+        cursor = latest
+        if !paused { appendRecent(accepted) }
+    }
+
     public func refresh() async {
         guard !Task.isCancelled, !isRefreshing, !isLoadingHistory else { return }
         let generation = displayGeneration
@@ -70,12 +102,7 @@ import Observation
             cursor = page.cursor
             guard !paused, generation == displayGeneration else { return }
             if followsEarlierSnapshot, page.hasGap(after: previousCursor) { liveHistoryGap = true }
-            guard !page.items.isEmpty else { return }
-            rows = Self.merge(rows, page.items, cap: GuestLogService.liveCapacity)
-            if let earliest = rows.compactMap(\.dbId).min(), let olderBoundary, olderBoundary < earliest {
-                self.olderBoundary = nil
-                historyExhausted = false
-            }
+            appendRecent(page.items)
         } catch {
             if !Task.isCancelled, generation == displayGeneration { recentFailure = AppErrorMessage(error) }
         }
@@ -95,6 +122,15 @@ import Observation
             historyFailure = nil
         } catch {
             if !Task.isCancelled, generation == displayGeneration { historyFailure = AppErrorMessage(error) }
+        }
+    }
+
+    private func appendRecent(_ items: [GuestLogEntry]) {
+        guard !items.isEmpty else { return }
+        rows = Self.merge(rows, items, cap: GuestLogService.liveCapacity)
+        if let earliest = rows.compactMap(\.dbId).min(), let olderBoundary, olderBoundary < earliest {
+            self.olderBoundary = nil
+            historyExhausted = false
         }
     }
 

@@ -4,6 +4,7 @@ import SwiftUI
 
 @MainActor struct GuestLogsView: View {
     @Environment(\.locale) private var locale
+    private let session: AuthenticationSession
     @State private var store: GuestLogStore
     @State private var keyword = ""
     @State private var level: GuestLogLevel?
@@ -13,6 +14,7 @@ import SwiftUI
     @State private var followingLatest = true
 
     init(session: AuthenticationSession) {
+        self.session = session
         let service = GuestLogService(client: AuthenticatedBackendClient(session: session))
         _store = State(initialValue: GuestLogStore(service: service))
     }
@@ -47,9 +49,8 @@ import SwiftUI
         .navigationTitle(s(.logs))
         .padding()
         .task {
-            while !Task.isCancelled {
-                await store.refresh()
-                do { try await Task.sleep(for: .seconds(2)) } catch { return }
+            await store.follow { since, receive in
+                try await session.streamLogs(since: since, receive: receive)
             }
         }
         .task(id: historyRequest) {

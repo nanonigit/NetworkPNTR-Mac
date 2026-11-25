@@ -248,6 +248,8 @@ import Virtualization
     #if DEBUG
     @ObservationIgnored private var diagnosticToolRunReads: Set<UUID> = []
     public var diagnosticToolRunReadsInFlight: Int { diagnosticToolRunReads.count }
+    @ObservationIgnored private var diagnosticLogStreams: Set<UUID> = []
+    package var diagnosticLogStreamsInFlight: Int { diagnosticLogStreams.count }
     #endif
 
     /// Bounded HTTP exchange for backend acceptance probes. Streaming UI integration is a separate pending gate.
@@ -281,12 +283,15 @@ import Virtualization
         guard guestReady, state == .running, backendReads[identifier] === socket else { throw CancellationError() }
         return response
     }
-    #if DEBUG
-    func sampleLogStream(request: Data, count: Int, provisioning: GuestProvisioning) async throws -> [GuestLogEntry] {
+    func streamLogs(request: Data, provisioning: GuestProvisioning,
+                    receive: @escaping GuestLogBatchReceiver) async throws {
         try Task.checkCancellation()
         guard guestReady, state == .running else { throw CancellationError() }
         let identifier = try await connectBackend()
         defer {
+            #if DEBUG
+            diagnosticLogStreams.remove(identifier)
+            #endif
             backendReads.removeValue(forKey: identifier)?.finish()
             backendConnections.removeValue(forKey: identifier)?.close()
         }
@@ -298,12 +303,17 @@ import Virtualization
         guard descriptor >= 0 else { throw POSIXError(.EIO) }
         let socket = BackendUploadSocket(owning: descriptor)
         backendReads[identifier] = socket
+        #if DEBUG
+        diagnosticLogStreams.insert(identifier)
+        #endif
         let preamble = Data(("ARTEX_VSOCK_1 " + provisioning.transportToken + "\n").utf8)
-        let entries = try await GuestLogSSEExchange.sample(socket: socket, request: preamble + request, count: count)
-        guard guestReady, state == .running, backendReads[identifier] === socket else { throw CancellationError() }
-        return entries
+        try await GuestLogSSEExchange.stream(socket: socket, request: preamble + request) { [weak self] batch in
+            guard let self, guestReady, state == .running, backendReads[identifier] === socket else {
+                throw CancellationError()
+            }
+            return try receive(batch)
+        }
     }
-    #endif
 
     /// Dedicated multipart exchange; payload files never become a shared VM directory.
     func uploadBackend(plan: ChatMultipartPlan, header: Data, provisioning: GuestProvisioning, progress: BackendUploadProgressHandler? = nil) async throws -> BackendHTTPResponse {

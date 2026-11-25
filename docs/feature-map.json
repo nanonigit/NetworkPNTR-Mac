@@ -365,7 +365,8 @@
         "evidence/logs/native-logs-first-comparison.json",
         "evidence/logs/populated-history-comparison.json",
         "evidence/logs/recent-burst-recovery.json",
-        "evidence/logs/sse-vsock-replay.json"
+        "evidence/logs/sse-vsock-replay.json",
+        "evidence/logs/live-sse-view.json"
       ],
       "remainingGates": [
         "Verify SSE or equivalent delivery during bursts, reconnect and VM restart",

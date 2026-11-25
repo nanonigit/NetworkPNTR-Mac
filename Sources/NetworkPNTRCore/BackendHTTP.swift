@@ -5,13 +5,11 @@ public enum BackendHTTPRequest {
         try make(method: method, path: path, body: body, bearer: bearer, version: "1.1", accept: "application/json")
     }
 
-    #if DEBUG
     static func guestLogStream(since: Int64, bearer: String) throws -> Data {
         guard since >= 0 else { throw BackendAPIError.invalidResponse }
         return try make(method: "GET", path: "/api/logs/stream?since=\(since)", body: nil, bearer: bearer,
                         version: "1.0", accept: "text/event-stream")
     }
-    #endif
 
     private static func make(method: String, path: String, body: Data?, bearer: String?,
                              version: String, accept: String) throws -> Data {

@@ -1,6 +1,7 @@
-#if DEBUG
 import Darwin
 import Foundation
+
+package typealias GuestLogBatchReceiver = @MainActor @Sendable ([GuestLogEntry]) throws -> Bool
 
 struct GuestLogSSEDecoder {
     private static let headerEnd = Data([13, 10, 13, 10])
@@ -77,15 +78,14 @@ struct GuestLogSSEDecoder {
 }
 
 enum GuestLogSSEExchange {
-    static func sample(socket: BackendUploadSocket, request: Data, count: Int,
-                       timeout: Duration = .seconds(15)) async throws -> [GuestLogEntry] {
+    static func stream(socket: BackendUploadSocket, request: Data, timeout: Duration = .seconds(45),
+                       receive: @escaping GuestLogBatchReceiver) async throws {
         try await withTaskCancellationHandler {
             try Task.checkCancellation()
-            let entries: [GuestLogEntry]
             do {
-                entries = try await Task.detached {
+                try await Task.detached {
                     defer { socket.finish() }
-                    return try read(socket: socket, request: request, count: count, timeout: timeout)
+                    try await read(socket: socket, request: request, timeout: timeout, receive: receive)
                 }.value
             } catch {
                 try Task.checkCancellation()
@@ -94,13 +94,12 @@ enum GuestLogSSEExchange {
             }
             try Task.checkCancellation()
             try socket.validateCompletion()
-            return entries
         } onCancel: { socket.cancel() }
     }
 
-    private static func read(socket: BackendUploadSocket, request: Data, count: Int,
-                             timeout: Duration) throws -> [GuestLogEntry] {
-        guard (1...32).contains(count), (1...16_384).contains(request.count), timeout > .zero else {
+    private static func read(socket: BackendUploadSocket, request: Data, timeout: Duration,
+                             receive: @escaping GuestLogBatchReceiver) async throws {
+        guard (1...16_384).contains(request.count), timeout > .zero else {
             throw BackendAPIError.invalidResponse
         }
         let descriptor = try socket.checkedDescriptor()
@@ -110,7 +109,7 @@ enum GuestLogSSEExchange {
               setsockopt(descriptor, SOL_SOCKET, SO_NOSIGPIPE, &noSignal, socklen_t(MemoryLayout<Int32>.size)) == 0 else {
             throw POSIXError(.EIO)
         }
-        let deadline = ContinuousClock.now.advanced(by: timeout)
+        var deadline = ContinuousClock.now.advanced(by: timeout)
         func wait(_ events: Int16) throws {
             while ContinuousClock.now < deadline {
                 _ = try socket.checkedDescriptor()
@@ -120,7 +119,7 @@ enum GuestLogSSEExchange {
                 guard ready >= 0, state.revents & Int16(POLLNVAL) == 0 else { throw POSIXError(.EIO) }
                 if ready > 0 { return }
             }
-            throw RuntimeError.timeout("guest log stream sample")
+            throw RuntimeError.timeout("guest log stream")
         }
         try request.withUnsafeBytes { buffer in
             var written = 0
@@ -133,17 +132,19 @@ enum GuestLogSSEExchange {
             }
         }
         var decoder = GuestLogSSEDecoder()
-        var entries: [GuestLogEntry] = []
         var buffer = [UInt8](repeating: 0, count: 16_384)
-        while entries.count < count {
+        while true {
             try wait(Int16(POLLIN))
             let received = Darwin.read(descriptor, &buffer, buffer.count)
             if received < 0 && [EINTR, EAGAIN, EWOULDBLOCK].contains(errno) { continue }
-            guard received > 0 else { throw BackendAPIError.invalidResponse }
+            guard received >= 0 else { throw POSIXError(.EIO) }
+            if received == 0 { return }
+            deadline = ContinuousClock.now.advanced(by: timeout)
             let batch = try decoder.consume(Data(buffer.prefix(received)))
-            entries += batch.prefix(count - entries.count)
+            _ = try socket.checkedDescriptor()
+            if !batch.isEmpty {
+                guard try await receive(batch) else { return }
+            }
         }
-        return entries
     }
 }
-#endif

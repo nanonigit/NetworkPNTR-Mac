@@ -214,7 +214,23 @@ import Foundation
                 // The fixed completion marker cannot execute commands or access the guest.
                 try JSONSerialization.data(withJSONObject: ["ready": true, "fixture_only": true], options: [.sortedKeys]).write(to: directory.appendingPathComponent("native-review-ready.json"))
                 let finish = directory.appendingPathComponent("native-review-finish")
-                try await waitForReviewMarker(finish)
+                var attachedLogStream = false
+                var detachedLogStream = false
+                try await waitForReviewMarker(finish) {
+                    guard plan.logHistoryReview, !detachedLogStream else { return }
+                    let count = environment.controller.diagnosticLogStreamsInFlight
+                    if count == 1, !attachedLogStream {
+                        attachedLogStream = true
+                        try Data().write(to: directory.appendingPathComponent("native-log-stream-attached"))
+                    } else if count == 0, attachedLogStream {
+                        detachedLogStream = true
+                        try Data().write(to: directory.appendingPathComponent("native-log-stream-detached"))
+                    }
+                }
+                if plan.logHistoryReview {
+                    result["native_log_stream_view_attached"] = attachedLogStream
+                    result["native_log_stream_view_detached"] = detachedLogStream
+                }
             }
             if !userBodyIDs.isEmpty {
                 try await NativeUserBodyDiagnostics.cleanup(client: AuthenticatedBackendClient(session: login), ids: userBodyIDs)
@@ -302,9 +318,10 @@ import Foundation
         }
     }
 
-    private static func waitForReviewMarker(_ marker: URL) async throws {
+    private static func waitForReviewMarker(_ marker: URL, poll: (() throws -> Void)? = nil) async throws {
         for _ in 0..<900 {
             if FileManager.default.fileExists(atPath: marker.path) { return }
+            try poll?()
             try await Task.sleep(for: .seconds(1))
         }
         guard FileManager.default.fileExists(atPath: marker.path) else {
