@@ -9,7 +9,9 @@ import Foundation
 @MainActor enum NativeDiagnostics {
     static func run(environment: DesktopRuntime, directory: URL) async {
         let toolRunReview = CommandLine.arguments.contains("--tool-runs-review")
-        if toolRunReview, directory.path.withCString({ Darwin.mkdir($0, 0o700) }) != 0 {
+        let assetReview = CommandLine.arguments.contains("--asset-catalog-review")
+        let freshDirectory = toolRunReview || assetReview
+        if freshDirectory, directory.path.withCString({ Darwin.mkdir($0, 0o700) }) != 0 {
             FileHandle.standardError.write(Data("Tool-run review requires a new private directory\n".utf8))
             NSApp.terminate(nil)
             return
@@ -19,7 +21,7 @@ import Foundation
         var faultToRestore: ToolRunDiagnosticFixture.Reference?
         do {
             let plan = try NativeReviewPlan(arguments: CommandLine.arguments)
-            if !toolRunReview {
+            if !freshDirectory {
                 try FileManager.default.createDirectory(at: directory, withIntermediateDirectories: true)
             }
             let toolRunReference: ToolRunDiagnosticFixture.Reference?
@@ -191,6 +193,13 @@ import Foundation
                 login = restored
                 try await NativeMCPTaskDiagnostics.collect(session: login, directory: directory)
                 result["native_mcp_terminal_tasks_no_profiles"] = true
+            }
+            if plan.assetReview {
+                let stage = directory.appendingPathComponent("native-asset-stage")
+                try Data("seeding\n".utf8).write(to: stage, options: .atomic)
+                try await NativeAssetDiagnostics.seed(session: login, directory: directory)
+                try Data("seeded\n".utf8).write(to: stage, options: .atomic)
+                result["native_asset_fixture_rows"] = 26
             }
             result["authenticated_content_snapshot"] = try capture(to: directory.appendingPathComponent("native-authenticated.png"))
             if CommandLine.arguments.contains("--native-review") {

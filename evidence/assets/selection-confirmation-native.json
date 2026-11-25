@@ -1,0 +1,28 @@
+{
+  "date": "2026-11-25",
+  "macSourceParent": "1236f69f18953672ef0cace80c9a469d43a10c9f",
+  "browserSourceCommit": "e75ae371ad777ffd1eecdd28d2781a6519b05591",
+  "browserPriorUIReceipt": "delete-keyboard-confirm-ui.json",
+  "freshBrowserRun": false,
+  "initialNativeReviewBlockedAtCheckoutFileOpen": true,
+  "nativeDiagnosticSHA256": "e2ece48fc28e9965a343e75fc9156df0bead17e6625ab15ffcb4d989861a0c36",
+  "native": {
+    "signedDebugApp": true,
+    "syntheticRootDomainsReadBack": 26,
+    "llmProfileCount": 0,
+    "selectedPageDialogCount": 26,
+    "cancelInitiallyFocused": true,
+    "rowsAfterCancel": 26,
+    "invalidDSLShowsLocalizedError": true,
+    "invalidDSLDisablesBulkDelete": true,
+    "clearingDSLRestoresRowsAndBulkDelete": true,
+    "deleteConfirmedInThisRun": false,
+    "backendStopped": true,
+    "temporaryKeychainItemRemoved": true
+  },
+  "tests": {
+    "swiftPassed": 1230,
+    "swiftSkipped": 1,
+    "pythonPassed": 222
+  }
+}

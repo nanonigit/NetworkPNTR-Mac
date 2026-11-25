@@ -63,6 +63,20 @@ final class NativeReviewPlanTests: XCTestCase {
         }
         XCTAssertFalse(try NativeReviewPlan(arguments: ["--native-review", "--no-llm-review"]).mcpTaskReview)
     }
+    func testAssetCatalogReviewRequiresExclusiveNoModelSession() throws {
+        let flag = "--asset-catalog-review"
+        let args = [flag, "--native-review", "--no-llm-review"]
+        XCTAssertTrue(try NativeReviewPlan(arguments: args).assetReview)
+        for omitted in ["--native-review", "--no-llm-review"] {
+            XCTAssertThrowsError(try NativeReviewPlan(arguments: args.filter { $0 != omitted }))
+        }
+        for other in NativeReviewPlan.seedingFlags.union([
+            "--local-session-diagnostics", "--mcp-task-review", "--tool-runs-review", "--skill-visibility-diagnostics"
+        ]) {
+            XCTAssertThrowsError(try NativeReviewPlan(arguments: args + [other]))
+        }
+    }
+
     @MainActor func testEmptyProfilesRequiredWithoutMutation() async throws {
         let client = Client()
         try client.enqueue(["profiles": []])
