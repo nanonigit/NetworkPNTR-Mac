@@ -6,7 +6,7 @@
   "browserReferenceParentImage": "sha256:735d063ffd4290be40a870c4c77f6a6f9ad16ae306262e2e21e3865cd9c2b91d",
   "browserBackendSHA256": "0ebad83ddda276b03b415d64ce30af44e7a587860f3b660c12563462a0ac5e80",
   "browserEngineImage": "sha256:eb3378c1ed0079f94db054a5fe1aaa790a254ec0d6bbc67eda052420d86a179d",
-  "browserOracleSHA256": "63c3d5fae1f1624734c6d940af135f8b14ecfca548c836548b76c6e93bd73d41",
+  "browserOracleSHA256": "450595cbb4b7f2f0d064e875ff5b61e66ce378614ee255b5c567a9d41efaf5f5",
   "browserFixtureSHA256": "bd09ca7e390a8cb8af5714b20f2b2b35036e4ad6b05cae60a217f4b1f8a398e7",
   "browserRawReceiptSHA256": "d4bb2d1fbf5c8a851756d80404926744fad935add86ff5195a51993b7bc976e9",
   "browser": {

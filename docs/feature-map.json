@@ -160,11 +160,12 @@
         "evidence/assets/selection-confirmation-native.json",
         "evidence/assets/selection-confirmation-comparison.json",
         "evidence/assets/company-keyboard-ui.json",
-        "evidence/assets/company-keyboard-save-ui.json"
+        "evidence/assets/company-keyboard-save-ui.json",
+        "evidence/assets/company-scope-response-loss-comparison.json"
       ],
       "remainingGates": [
         "Remaining asset fixtures and error states outside filtered reads",
-        "Company server errors and VoiceOver for company and asset deletion"
+        "Additional company error paths and VoiceOver for company and asset deletion"
       ]
     },
     {

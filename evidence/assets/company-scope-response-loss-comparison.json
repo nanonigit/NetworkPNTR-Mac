@@ -1,0 +1,43 @@
+{
+  "date": "2026-11-25",
+  "macSourceCommit": "8f797dac819675621b107cc9b953762048831de7",
+  "browserSourceCommit": "e75ae371ad777ffd1eecdd28d2781a6519b05591",
+  "browserBackendSHA256": "0ebad83ddda276b03b415d64ce30af44e7a587860f3b660c12563462a0ac5e80",
+  "browserEngineImage": "sha256:eb3378c1ed0079f94db054a5fe1aaa790a254ec0d6bbc67eda052420d86a179d",
+  "browserEffectiveOracleSHA256": "8d275e9e840b3885edfb62b5ac43088254a690ab52c93d66558bd46e75d0068b",
+  "browserRawReceiptSHA256": "cd9c5fc145bd4f380d75fbdd2269f3e787398754135b2d2f20347317de883c83",
+  "nativeDiagnosticSHA256": "e2ece48fc28e9965a343e75fc9156df0bead17e6625ab15ffcb4d989861a0c36",
+  "nativeDiagnosticEditorSourceSHA256": "f8076c3d703f62a1e5654587956620fd4fb947ee622dc37afb336ec959fadabf",
+  "fixture": {
+    "company": "Fixture Company",
+    "originalScope": "fixture-26.example.test",
+    "replacementScope": "fixture-25.example.test",
+    "syntheticRootDomainCount": 26
+  },
+  "browser": {
+    "language": "en",
+    "fault": "Replace HTTP 200 with HTTP 500 at the browser response boundary",
+    "originalStatus": 200,
+    "syntheticStatus": 500,
+    "errorVisible": true,
+    "draftPreserved": true,
+    "manualRefreshFoundReplacement": true,
+    "scopeWriteRequests": 1,
+    "isolated": true,
+    "temporaryContainersRemoved": true
+  },
+  "native": {
+    "language": "ja",
+    "fault": "Throw synthetic BackendAPIError.status(500) from the Debug editor immediately after the real VM confirmed the scope replacement",
+    "signedDebugApp": true,
+    "errorVisible": true,
+    "draftPreserved": true,
+    "repeatSaveDisabled": true,
+    "successfulScopeWrites": 1,
+    "successMessageHidden": true,
+    "automaticRefreshFoundReplacement": true,
+    "manualRefreshAlsoFoundReplacement": true,
+    "backendStopped": true,
+    "temporaryKeychainItemRemoved": true
+  }
+}
