@@ -26,6 +26,36 @@ enum CompanyEditorAction: Identifiable {
     }
 }
 
+enum CompanyEditorFailure: Equatable {
+    case duplicate, rejected, missing, unconfirmed
+
+    init(_ error: any Error, action: CompanyEditorAction) {
+        switch (error, action) {
+        case (BackendAPIError.status(409), .create):
+            self = .duplicate
+        case (BackendAPIError.status(404), .append),
+             (BackendAPIError.status(404), .replace),
+             (BackendAPIError.status(404), .delete):
+            self = .missing
+        case (BackendAPIError.status(400), _), (AssetCatalogQueryError.invalidQuery, _):
+            self = .rejected
+        default:
+            self = .unconfirmed
+        }
+    }
+
+    var message: AppStringKey {
+        switch self {
+        case .duplicate: .companyDuplicate
+        case .rejected: .companyRejected
+        case .missing: .companyMissing
+        case .unconfirmed: .companyUnconfirmed
+        }
+    }
+
+    var requiresRefresh: Bool { self == .missing || self == .unconfirmed }
+}
+
 struct CompanyEditorResult {
     let message: AppStringKey
     var added: Int = 0
@@ -48,7 +78,7 @@ struct CompanyEditorResult {
     @State private var reason = ""
     @State private var deleteAssets = false
     @State private var busy = false
-    @State private var failure: AppStringKey?
+    @State private var failure: CompanyEditorFailure?
 
     init(action: CompanyEditorAction, locale: Locale, service: AssetCatalogService, refresh: @escaping () -> Void,
          completed: @escaping (CompanyEditorResult) -> Void) {
@@ -79,7 +109,7 @@ struct CompanyEditorResult {
                 scopeEditor(parsed)
                 TextField(s(.companyReason), text: $reason)
             }
-            if let failure { Text(s(failure)).foregroundStyle(.red) }
+            if let failure { Text(s(failure.message)).foregroundStyle(.red) }
             HStack {
                 if busy { ProgressView().controlSize(.small) }
                 Spacer()
@@ -88,11 +118,11 @@ struct CompanyEditorResult {
                     .disabled(busy)
                 if case .delete = action {
                     Button(s(.companyDelete), role: .destructive) { submit(parsed.rules) }
-                        .disabled(busy || failure == .companyUnconfirmed)
+                        .disabled(busy || failure?.requiresRefresh == true)
                 } else {
                     Button(s(.companySave)) { submit(parsed.rules) }
                         .keyboardShortcut(.defaultAction)
-                        .disabled(busy || failure == .companyUnconfirmed || !canSave(parsed))
+                        .disabled(busy || failure?.requiresRefresh == true || !canSave(parsed))
                 }
             }
         }
@@ -129,7 +159,7 @@ struct CompanyEditorResult {
     }
 
     private func submit(_ rules: [CompanyScopeInput]) {
-        guard !busy else { return }
+        guard !busy, failure?.requiresRefresh != true else { return }
         busy = true
         failure = nil
         let requestedName = name
@@ -158,15 +188,10 @@ struct CompanyEditorResult {
                 refresh()
                 completed(result)
                 dismiss()
-            } catch BackendAPIError.status(409) {
-                failure = .companyDuplicate
-            } catch BackendAPIError.status(400) {
-                failure = .companyRejected
-            } catch AssetCatalogQueryError.invalidQuery {
-                failure = .companyRejected
             } catch {
-                refresh()
-                failure = .companyUnconfirmed
+                let result = CompanyEditorFailure(error, action: action)
+                failure = result
+                if result.requiresRefresh { refresh() }
             }
         }
     }

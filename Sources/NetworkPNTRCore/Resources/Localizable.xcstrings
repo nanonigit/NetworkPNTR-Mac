@@ -1783,6 +1783,22 @@
           }
         }
       },
+      "company.ui.missing": {
+        "localizations": {
+          "en": {
+            "stringUnit": {
+              "state": "translated",
+              "value": "This company could not be found. Close this form to check the updated list."
+            }
+          },
+          "ja": {
+            "stringUnit": {
+              "state": "translated",
+              "value": "会社が見つかりませんでした。この画面を閉じて、更新後の一覧を確認してください。"
+            }
+          }
+        }
+      },
       "company.ui.rejected": {
         "localizations": {
           "en": {

@@ -698,6 +698,8 @@
 	<string>同じ名前の会社が既に存在します。</string>
 	<key>company.ui.invalidLines</key>
 	<string>スコープの次の行を確認してください。{lines}</string>
+	<key>company.ui.missing</key>
+	<string>会社が見つかりませんでした。この画面を閉じて、更新後の一覧を確認してください。</string>
 	<key>company.ui.name</key>
 	<string>会社名</string>
 	<key>company.ui.reason</key>

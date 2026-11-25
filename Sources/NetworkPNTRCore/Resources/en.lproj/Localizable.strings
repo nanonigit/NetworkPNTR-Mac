@@ -698,6 +698,8 @@
 	<string>A company with this name already exists.</string>
 	<key>company.ui.invalidLines</key>
 	<string>Review these scope lines: {lines}</string>
+	<key>company.ui.missing</key>
+	<string>This company could not be found. Close this form to check the updated list.</string>
 	<key>company.ui.name</key>
 	<string>Company name</string>
 	<key>company.ui.reason</key>

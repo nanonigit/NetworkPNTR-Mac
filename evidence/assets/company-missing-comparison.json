@@ -1,0 +1,40 @@
+{
+  "date": "2026-11-25",
+  "macSourceParent": "2d334c0df29370315fd7d081d6fa2ebd5351ccee",
+  "browserSourceCommit": "e75ae371ad777ffd1eecdd28d2781a6519b05591",
+  "browserBackendSHA256": "0ebad83ddda276b03b415d64ce30af44e7a587860f3b660c12563462a0ac5e80",
+  "browserEngineImage": "sha256:eb3378c1ed0079f94db054a5fe1aaa790a254ec0d6bbc67eda052420d86a179d",
+  "browserEffectiveOracleSHA256": "02f54f032ba231915b247448abff8aca9cfdcc25cd31db0a93fcd338742b6ae2",
+  "browserRawReceiptSHA256": "412abda1943d6be668bf67211812d0e15ffbc11d6677ef4b5eafea9c568c78af",
+  "nativeDiagnosticSHA256": "e2ece48fc28e9965a343e75fc9156df0bead17e6625ab15ffcb4d989861a0c36",
+  "nativeDiagnosticEditorSourceSHA256": "f8de23905e13cae60ccdef9fefc996ac49a34dd57f7a2fca1a8787f7318230a2",
+  "nativeDiagnosticRunnerSourceSHA256": "890224d6ef02287e80294c0c1d5e734c28386bbe5660ac01a25aa1a144f19fed",
+  "browser": {
+    "language": "en",
+    "actualStatus": 404,
+    "draftPreserved": true,
+    "missingMessageVisible": true,
+    "oldRowPresentBeforeManualRefresh": true,
+    "removedAfterRefresh": true,
+    "scopeWriteRequests": 1,
+    "disposableContainersRemoved": true
+  },
+  "native": {
+    "language": "ja",
+    "signedDebugApp": true,
+    "actualStatus": 404,
+    "draftPreserved": true,
+    "missingMessageVisible": true,
+    "repeatSaveDisabled": true,
+    "companyRemovedFromListWithoutManualRefresh": true,
+    "rootDomainsRemaining": 26,
+    "temporaryKeychainItemRemoved": true,
+    "backendStopped": true
+  },
+  "testMethod": "Remove the lone synthetic company without deleting its assets in a separate authenticated request after the editor opens, then submit the original form against the real server.",
+  "localTests": {
+    "swiftPassed": 1232,
+    "swiftSkipped": 1,
+    "pythonPassed": 222
+  }
+}

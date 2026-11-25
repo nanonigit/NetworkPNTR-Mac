@@ -161,7 +161,8 @@
         "evidence/assets/selection-confirmation-comparison.json",
         "evidence/assets/company-keyboard-ui.json",
         "evidence/assets/company-keyboard-save-ui.json",
-        "evidence/assets/company-scope-response-loss-comparison.json"
+        "evidence/assets/company-scope-response-loss-comparison.json",
+        "evidence/assets/company-missing-comparison.json"
       ],
       "remainingGates": [
         "Remaining asset fixtures and error states outside filtered reads",

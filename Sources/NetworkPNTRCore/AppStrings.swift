@@ -114,6 +114,7 @@ public enum AppStringKey: String, CaseIterable, Sendable {
     case companyScopeSaved = "company.ui.scopeSaved"
     case companyDeleted = "company.ui.deleted"
     case companyDuplicate = "company.ui.duplicate"
+    case companyMissing = "company.ui.missing"
     case companyRejected = "company.ui.rejected"
     case companyUnconfirmed = "company.ui.unconfirmed"
     case companyScopeWarning = "company.ui.scopeWarning"
