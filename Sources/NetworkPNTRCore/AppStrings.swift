@@ -1249,6 +1249,7 @@ public enum AppStringKey: String, CaseIterable, Sendable {
     case logsPause = "logs.ui.pause"
     case logsResume = "logs.ui.resume"
     case logsClear = "logs.ui.clear"
+    case logsGap = "logs.ui.gap"
     case logsOlder = "logs.ui.older"
     case logsEmpty = "logs.ui.empty"
     case logsTotalCount = "logs.ui.totalCount"

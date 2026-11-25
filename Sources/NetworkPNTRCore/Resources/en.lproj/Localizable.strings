@@ -1562,6 +1562,8 @@
 	<string>Error</string>
 	<key>logs.ui.errorCount</key>
 	<string>Errors · {count}</string>
+	<key>logs.ui.gap</key>
+	<string>Some incoming logs could not be retrieved.</string>
 	<key>logs.ui.info</key>
 	<string>Info</string>
 	<key>logs.ui.level</key>

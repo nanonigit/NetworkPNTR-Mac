@@ -7,6 +7,7 @@ import Observation
     public private(set) var isRefreshing = false
     public private(set) var isLoadingHistory = false
     public private(set) var hasLoaded = false
+    public private(set) var liveHistoryGap = false
     public private(set) var recentFailure: AppErrorMessage?
     public private(set) var historyFailure: AppErrorMessage?
     private var historyExhausted = false
@@ -32,6 +33,7 @@ import Observation
     public func clear() {
         displayGeneration = UUID()
         rows.removeAll()
+        liveHistoryGap = false
         olderBoundary = nil
         historyExhausted = false
         historyFailure = nil
@@ -43,17 +45,33 @@ import Observation
         isRefreshing = true
         defer { isRefreshing = false }
         do {
-            let page = try await service.recent(since: cursor)
+            let followsEarlierSnapshot = hasLoaded
+            let previousCursor = cursor
+            var page = try await service.recent(since: previousCursor)
+            if followsEarlierSnapshot, page.hasGap(after: previousCursor), !paused, generation == displayGeneration {
+                do {
+                    let expanded = try await service.recent(since: previousCursor, includeFullRing: true)
+                    guard expanded.cursor >= page.cursor || expanded.cursor < previousCursor else {
+                        throw BackendAPIError.invalidResponse
+                    }
+                    page = expanded
+                } catch RuntimeError.integrity("JSON response size") {
+                    // Keep the valid smaller snapshot and surface its known gap.
+                }
+            }
             hasLoaded = true
             recentFailure = nil
             if page.cursor < cursor {
                 clear()
                 cursor = 0
+                hasLoaded = false
                 return
             }
             cursor = page.cursor
-            guard !paused, generation == displayGeneration, !page.items.isEmpty else { return }
-            rows = Self.merge(rows, page.items, cap: 3_000)
+            guard !paused, generation == displayGeneration else { return }
+            if followsEarlierSnapshot, page.hasGap(after: previousCursor) { liveHistoryGap = true }
+            guard !page.items.isEmpty else { return }
+            rows = Self.merge(rows, page.items, cap: GuestLogService.liveCapacity)
             if let earliest = rows.compactMap(\.dbId).min(), let olderBoundary, olderBoundary < earliest {
                 self.olderBoundary = nil
                 historyExhausted = false

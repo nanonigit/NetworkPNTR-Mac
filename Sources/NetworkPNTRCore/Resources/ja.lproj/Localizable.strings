@@ -1562,6 +1562,8 @@
 	<string>エラー</string>
 	<key>logs.ui.errorCount</key>
 	<string>エラー{count}件</string>
+	<key>logs.ui.gap</key>
+	<string>一部の新着ログを取得できませんでした。</string>
 	<key>logs.ui.info</key>
 	<string>情報</string>
 	<key>logs.ui.level</key>

@@ -6014,6 +6014,22 @@
         }
       }
     },
+    "logs.ui.gap": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Some incoming logs could not be retrieved."
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "一部の新着ログを取得できませんでした。"
+          }
+        }
+      }
+    },
     "logs.ui.older": {
       "localizations": {
         "en": {

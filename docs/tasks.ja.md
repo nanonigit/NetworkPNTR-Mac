@@ -595,3 +595,5 @@ MCPカウンター修正：一覧の実集計値から許可IDだけを返し、
 データ入りの過去ログ比較。隔離した固定ブラウザ版と署名済みMac Debug版で同じ350件を使いました。MacではVM再起動後に直近100件を取得し、過去2ページから200件と50件を追加しました。両版の認証付きAPIで、DB ID、レベル、時刻、本文を順番どおりにまとめたダイジェストが一致しました。両画面で過去ログを2回読み込むと、最古の行が検索で見つかりました。Macでは最古の9行を昇順で表示し、過去ログを読み切ると読込ボタンが消えました。件数には通常の起動ログも含まれます。Mac試験はDocker Desktopを停止した状態で既存の静的チェッカー付き検証ゲストを使いました。Swiftは1,238件成功、1件スキップです。ログが連続発生した場合と再接続時の表示、キーボード・VoiceOver、Releaseでの確認は引き続き検証します。[比較記録](../evidence/logs/populated-history-comparison.json)
 
 Mac側を再検証するには、確認済みゲスト入りの署名済みDebugアプリのコピーの `Contents/Resources/Diagnostics/` に `script/log_history_seed_guest.py` を配置して署名し直します。`--native-diagnostics NEW_PRIVATE_DIRECTORY --native-review --no-llm-review --log-history-review` で起動し、`native-review-ready.json` を待ちます。ログ画面で `Log history fixture 001` を入力し、過去ログを2回読み込みます。終了時は `native-review-finish` を作成します。
+
+新着ログの集中時の回復。固定Goバックエンドは直近3,000件を保持し、通常の応答に一部の行が含まれない場合も最新の通し番号を返します。Macでは確定済みカーソルとの差で欠落を検出し、保持範囲全体を1回取り直します。拡大した応答が既存のJSON転送上限を超えた場合は取得済みの行を表示し、残った欠落を日英で通知します。表示クリアで通知も消えます。模擬応答を使い、切断後の1,200件、初回0件、拡大取得の失敗からの回復、保持上限と転送上限を確認しました。Docker Desktopは停止したままです。実VMでの集中発生・再起動の比較、SSE再接続、残りの画面試験は継続します。[検証記録](../evidence/logs/recent-burst-recovery.json)

@@ -363,7 +363,8 @@
       "evidence": [
         "Tests/NetworkPNTRCoreTests/GuestLogServiceTests.swift",
         "evidence/logs/native-logs-first-comparison.json",
-        "evidence/logs/populated-history-comparison.json"
+        "evidence/logs/populated-history-comparison.json",
+        "evidence/logs/recent-burst-recovery.json"
       ],
       "remainingGates": [
         "Verify SSE or equivalent delivery during bursts, reconnect and VM restart",

@@ -26,6 +26,83 @@ import XCTest
         XCTAssertTrue(transport.calls.allSatisfy { $0.method == "GET" && $0.body == nil })
     }
 
+    func testBurstRecoversFromTheLastCursorAfterADisconnect() async throws {
+        let transport = ChatTestTransport()
+        let store = GuestLogStore(service: GuestLogService(client: transport))
+        try transport.enqueue(["items": [row(1)], "cursor": 1])
+        await store.refresh()
+        try transport.enqueue(["error": "fixture"], status: 503)
+        await store.refresh()
+        XCTAssertNotNil(store.recentFailure)
+        try transport.enqueue(["items": (202...1201).map { row(Int64($0)) }, "cursor": 1201])
+        try transport.enqueue(["items": (2...1201).map { row(Int64($0)) }, "cursor": 1201])
+        await store.refresh()
+        XCTAssertEqual(store.rows.map(\.seq), (1...1201).map(Int64.init))
+        XCTAssertNil(store.recentFailure)
+        XCTAssertFalse(store.liveHistoryGap)
+        XCTAssertEqual(Array(transport.calls.suffix(3).map(\.path)), [
+            "/api/logs?since=1&limit=1000", "/api/logs?since=1&limit=1000", "/api/logs?since=1&limit=3000"
+        ])
+    }
+
+    func testOverflowReportsMissingRowsUntilClear() async throws {
+        let transport = ChatTestTransport()
+        let store = GuestLogStore(service: GuestLogService(client: transport))
+        try transport.enqueue(["items": [row(1)], "cursor": 1])
+        await store.refresh()
+        try transport.enqueue(["items": (2302...3301).map { row(Int64($0)) }, "cursor": 3301])
+        try transport.enqueue(["items": (302...3301).map { row(Int64($0)) }, "cursor": 3301])
+        await store.refresh()
+        XCTAssertEqual(store.rows.count, 3000)
+        XCTAssertEqual(store.rows.first?.seq, 302)
+        XCTAssertTrue(store.liveHistoryGap)
+        store.clear()
+        XCTAssertFalse(store.liveHistoryGap)
+        try transport.enqueue(["items": [row(3302)], "cursor": 3302])
+        await store.refresh()
+        XCTAssertEqual(store.rows.map(\.seq), [3302])
+        XCTAssertEqual(transport.calls.last?.path, "/api/logs?since=3301&limit=1000")
+    }
+
+    func testEmptySnapshotStillEstablishesCursorAndFailedExpansionDoesNotSkipRows() async throws {
+        let transport = ChatTestTransport()
+        let store = GuestLogStore(service: GuestLogService(client: transport))
+        try transport.enqueue(["items": NSNull(), "cursor": 0])
+        await store.refresh()
+        let truncated: [String: Any] = ["items": (2...1001).map { row(Int64($0)) }, "cursor": 1001]
+        try transport.enqueue(truncated)
+        try transport.enqueue(["error": "fixture"], status: 503)
+        await store.refresh()
+        XCTAssertNotNil(store.recentFailure)
+        XCTAssertTrue(store.rows.isEmpty)
+        try transport.enqueue(truncated)
+        try transport.enqueue(["items": (1...1001).map { row(Int64($0)) }, "cursor": 1001])
+        await store.refresh()
+        XCTAssertEqual(store.rows.map(\.seq), (1...1001).map(Int64.init))
+        XCTAssertFalse(store.liveHistoryGap)
+        XCTAssertEqual(transport.calls.map(\.path), [
+            "/api/logs?since=0&limit=1000", "/api/logs?since=0&limit=1000", "/api/logs?since=0&limit=3000",
+            "/api/logs?since=0&limit=1000", "/api/logs?since=0&limit=3000"
+        ])
+    }
+
+    func testOversizedExpansionKeepsReadableTailAndReportsGap() async throws {
+        let transport = ChatTestTransport()
+        let store = GuestLogStore(service: GuestLogService(client: transport))
+        try transport.enqueue(["items": [row(1)], "cursor": 1])
+        await store.refresh()
+        let truncated = try ChatTestTransport.response(["items": (3...1002).map { row(Int64($0)) }, "cursor": 1002])
+        transport.handler = { call in
+            if call.path.hasSuffix("limit=3000") { throw RuntimeError.integrity("JSON response size") }
+            return truncated
+        }
+        await store.refresh()
+        XCTAssertEqual(store.rows.last?.seq, 1002)
+        XCTAssertFalse(store.rows.contains(where: { $0.seq == 2 }))
+        XCTAssertTrue(store.liveHistoryGap)
+        XCTAssertNil(store.recentFailure)
+    }
+
     func testHistoryRequiresAscendingDatabaseIDsBelowRequest() async throws {
         let transport = ChatTestTransport()
         let service = GuestLogService(client: transport)

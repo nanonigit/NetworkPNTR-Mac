@@ -25,6 +25,10 @@ public struct GuestLogEntry: Decodable, Identifiable, Sendable {
 public struct GuestLogRecentPage: Sendable {
     public let items: [GuestLogEntry]
     public let cursor: Int64
+
+    func hasGap(after previousCursor: Int64) -> Bool {
+        cursor > previousCursor && cursor - previousCursor > Int64(items.count)
+    }
 }
 
 public struct GuestLogHistoryPage: Decodable, Sendable {
@@ -33,14 +37,19 @@ public struct GuestLogHistoryPage: Decodable, Sendable {
 }
 
 @MainActor public final class GuestLogService {
+    static let liveCapacity = 3_000
     private let client: any BackendJSONTransport
 
     public init(client: any BackendJSONTransport) { self.client = client }
 
     public func recent(since: Int64) async throws -> GuestLogRecentPage {
+        try await recent(since: since, includeFullRing: false)
+    }
+
+    func recent(since: Int64, includeFullRing: Bool) async throws -> GuestLogRecentPage {
         struct Reply: Decodable { let items: [GuestLogEntry]?; let cursor: Int64 }
         guard since >= 0 else { throw BackendAPIError.invalidResponse }
-        let limit = 1_000
+        let limit = includeFullRing ? Self.liveCapacity : 1_000
         let reply: Reply = try await read("/api/logs?since=\(since)&limit=\(limit)")
         let rows = reply.items ?? []
         // The backend prepends restored rows with newer sequence IDs than earlier startup rows.
@@ -73,7 +82,7 @@ public struct GuestLogHistoryPage: Decodable, Sendable {
         let response = try await client.send(method: "GET", path: path, body: nil, bearer: nil)
         try Task.checkCancellation()
         guard response.status == 200 else { throw BackendAPIError.status(response.status) }
-        guard response.body.count <= 4 * 1024 * 1024 else { throw BackendAPIError.invalidResponse }
+        guard response.body.count <= 4 * 1024 * 1024 else { throw RuntimeError.integrity("JSON response size") }
         return try BackendJSONCoding.decode(T.self, from: response.body)
     }
 }

@@ -30,13 +30,16 @@ import SwiftUI
                     }
                 }.fixedSize()
                 Button(s(store.paused ? .logsResume : .logsPause)) { store.paused.toggle() }
-                Button(s(.logsClear)) { store.clear() }.disabled(store.rows.isEmpty)
+                Button(s(.logsClear)) { store.clear() }.disabled(store.rows.isEmpty && !store.liveHistoryGap)
             }
             HStack {
                 Text(count(.logsTotalCount, store.rows.count))
                 Text(count(.logsWarningCount, store.rows.count(where: { $0.level == "warn" })))
                 Text(count(.logsErrorCount, store.rows.count(where: { $0.level == "error" })))
             }.font(.caption).foregroundStyle(.secondary).monospacedDigit()
+            if store.liveHistoryGap {
+                Label(s(.logsGap), systemImage: "exclamationmark.triangle").foregroundStyle(.secondary)
+            }
             if let failure = store.recentFailure { error(failure) }
             if let failure = store.historyFailure { error(failure) }
             logList(rows)
